@@ -85,7 +85,6 @@
         const tablaCuerpo = document.getElementById("tabla");
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        // Cargar datos al iniciar
         window.onload = () => {
             totalDisplay.innerText = totalGeneral;
             actualizarTablaUI();
@@ -141,7 +140,6 @@
 
         function actualizarTablaUI() {
             tablaCuerpo.innerHTML = "";
-            // Mostrar últimos escaneados arriba
             let claves = Object.keys(inventario).reverse();
             claves.forEach(codigo => {
                 let nuevaFila = document.createElement("tr");
@@ -195,17 +193,24 @@
 
         function exportar() {
             let datos = Object.entries(inventario);
-            if (datos.length === 0) return alert("Sin datos.");
-            let texto = "CODIGO|CANTIDAD\n"; 
-            datos.forEach(([c, q]) => { texto += `${c}|${q}\n`; });
+            if (datos.length === 0) return alert("Sin datos para exportar.");
+            
+            let texto = ""; 
+            // Genera SOLO datos: código|cantidad
+            datos.forEach(([c, q]) => { 
+                texto += `${c}|${q}\n`; 
+            });
+            
             const blob = new Blob([texto], { type: "text/plain" });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.download = `inventario_${new Date().toLocaleDateString()}.txt`;
+            
+            const fecha = new Date().toLocaleDateString().replace(/\//g, '-');
+            link.download = `inv_pieers_${fecha}.txt`;
+            
             link.click();
         }
 
-        // Mantener el foco en el input siempre
         document.addEventListener("click", (e) => {
             if (!bloqueado && e.target.tagName !== 'BUTTON') inputScanner.focus();
         });
