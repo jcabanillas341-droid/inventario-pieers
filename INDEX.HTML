@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pieers Inventario Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="manifest.json">
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #eef2f7; padding: 15px; margin: 0; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; overflow: hidden; }
+        .total-container { background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; padding: 10px; margin-bottom: 10px; flex-shrink: 0; border-top: 5px solid #3498db; }
+        .total-numero { font-size: 50px; font-weight: bold; color: #27ae60; line-height: 1; }
+        .ultimo-codigo-panel { background: #34495e; color: #ecf0f1; width: 100%; text-align: center; padding: 8px; border-radius: 8px; margin-bottom: 10px; flex-shrink: 0; }
+        .ultimo-valor { font-family: monospace; font-size: 22px; font-weight: bold; color: #f1c40f; display: block; }
+        
+        #scanner { width: 100%; padding: 15px; font-size: 18px; border-radius: 10px; border: 3px solid #3498db; outline: none; margin-bottom: 8px; box-sizing: border-box; text-align: center; }
+        #scanner.error-input { background-color: #ffd6d6; border-color: #e74c3c; color: #e74c3c; }
+
+        .excel-container { flex-grow: 1; overflow-y: auto; background: white; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; }
+        thead { position: sticky; top: 0; z-index: 10; }
+        th { background: #2c3e50; color: white; padding: 10px; font-size: 13px; }
+        td { padding: 10px; border: 1px solid #eee; text-align: center; font-size: 14px; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+
+        #alerta-inferior { 
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%; 
+            background: #e74c3c; color: white; padding: 15px; box-sizing: border-box;
+            text-align: center; z-index: 1000; flex-direction: column; align-items: center;
+        }
+        .btn-autorizar { background: #f1c40f; color: #2c3e50; border: none; padding: 12px 25px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+        
+        .footer-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-bottom: 10px; }
+        .btn-footer { border: none; padding: 12px; font-size: 14px; font-weight: bold; border-radius: 8px; color: white; cursor: pointer; }
+        .exportar { background: #3498db; }
+        .limpiar { background: #95a5a6; }
+    </style>
+</head>
+<body>
+
+    <div class="total-container">
+        <div style="font-size: 12px; font-weight: bold; color: #7f8c8d;">TOTAL UNIDADES</div>
+        <div class="total-numero" id="total">0</div>
+    </div>
+
+    <div class="ultimo-codigo-panel">
+        ÚLTIMO REGISTRO: <span id="ultimo-valor" class="ultimo-valor">---</span>
+    </div>
+
+    <input id="scanner" inputmode="none" autofocus placeholder="ESCANEE AQUÍ" autocomplete="off">
+
+    <div class="excel-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Cant.</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody id="tabla"></tbody>
+        </table>
+    </div>
+
+    <div id="alerta-inferior">
+        <div style="font-weight: bold; font-size: 16px;">⚠️ LECTURA ERRÓNEA: <span id="cod-erroneo"></span></div>
+        <button class="btn-autorizar" onclick="desbloquear()">CORREGIR Y SEGUIR</button>
+    </div>
+
+    <div class="footer-actions">
+        <button class="btn-footer limpiar" onclick="resetearTodo()">BORRAR TODO</button>
+        <button class="btn-footer exportar" onclick="exportar()">EXPORTAR TXT</button>
+    </div>
+
+    <script>
+        // --- PERSISTENCIA DE DATOS ---
+        let inventario = JSON.parse(localStorage.getItem("inv_data")) || {};
+        let totalGeneral = parseInt(localStorage.getItem("inv_total")) || 0;
+        
+        let bloqueado = false;
+        let intervaloAlarma;
+        const inputScanner = document.getElementById("scanner");
+        const totalDisplay = document.getElementById("total");
+        const ultimoValorTxt = document.getElementById("ultimo-valor");
+        const alertaInf = document.getElementById("alerta-inferior");
+        const tablaCuerpo = document.getElementById("tabla");
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Cargar datos al iniciar
+        window.onload = () => {
+            totalDisplay.innerText = totalGeneral;
+            actualizarTablaUI();
+            inputScanner.focus();
+        };
+
+        function guardar() {
+            localStorage.setItem("inv_data", JSON.stringify(inventario));
+            localStorage.setItem("inv_total", totalGeneral.toString());
+        }
+
+        function sonar(freq, dur) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            osc.start(); osc.stop(audioCtx.currentTime + dur);
+        }
+
+        inputScanner.addEventListener("input", function() {
+            if (bloqueado) { inputScanner.value = ""; return; }
+            
+            clearTimeout(window.scanTimeout);
+            window.scanTimeout = setTimeout(() => {
+                let cod = inputScanner.value.trim();
+                if (cod === "") return;
+                
+                if (cod.length !== 13) {
+                    lanzarError(cod);
+                } else {
+                    registrar(cod);
+                    inputScanner.value = ""; 
+                }
+            }, 50);
+        });
+
+        function registrar(codigo) {
+            totalGeneral++;
+            totalDisplay.innerText = totalGeneral;
+            ultimoValorTxt.innerText = codigo;
+            sonar(800, 0.08);
+
+            if (inventario[codigo]) {
+                inventario[codigo]++;
+            } else {
+                inventario[codigo] = 1;
+            }
+            guardar();
+            actualizarTablaUI();
+        }
+
+        function actualizarTablaUI() {
+            tablaCuerpo.innerHTML = "";
+            // Mostrar últimos escaneados arriba
+            let claves = Object.keys(inventario).reverse();
+            claves.forEach(codigo => {
+                let nuevaFila = document.createElement("tr");
+                nuevaFila.innerHTML = `
+                    <td><b>${codigo}</b></td>
+                    <td><b style="color:#27ae60">${inventario[codigo]}</b></td>
+                    <td><button style="background:#f39c12; color:white; border:none; padding:5px 10px; border-radius:4px;" onclick="restar('${codigo}')">-1</button></td>
+                `;
+                tablaCuerpo.appendChild(nuevaFila);
+            });
+        }
+
+        function restar(cod) {
+            if (bloqueado) return;
+            if (inventario[cod] > 1) {
+                inventario[cod]--;
+            } else {
+                delete inventario[cod];
+            }
+            totalGeneral--;
+            totalDisplay.innerText = totalGeneral;
+            guardar();
+            actualizarTablaUI();
+        }
+
+        function lanzarError(cod) {
+            bloqueado = true;
+            inputScanner.classList.add("error-input");
+            document.getElementById("cod-erroneo").innerText = cod;
+            alertaInf.style.display = "flex";
+            sonar(200, 0.4);
+            intervaloAlarma = setInterval(() => sonar(200, 0.4), 800);
+            if (navigator.vibrate) navigator.vibrate([400, 200, 400]);
+        }
+
+        function desbloquear() {
+            bloqueado = false;
+            clearInterval(intervaloAlarma);
+            alertaInf.style.display = "none";
+            inputScanner.classList.remove("error-input");
+            inputScanner.value = "";
+            inputScanner.focus();
+        }
+
+        function resetearTodo() {
+            if(confirm("¿ESTÁS SEGURO? Se borrarán todas las lecturas guardadas.")){
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        function exportar() {
+            let datos = Object.entries(inventario);
+            if (datos.length === 0) return alert("Sin datos.");
+            let texto = "CODIGO|CANTIDAD\n"; 
+            datos.forEach(([c, q]) => { texto += `${c}|${q}\n`; });
+            const blob = new Blob([texto], { type: "text/plain" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `inventario_${new Date().toLocaleDateString()}.txt`;
+            link.click();
+        }
+
+        // Mantener el foco en el input siempre
+        document.addEventListener("click", (e) => {
+            if (!bloqueado && e.target.tagName !== 'BUTTON') inputScanner.focus();
+        });
+    </script>
+</body>
+</html>
