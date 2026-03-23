@@ -4,15 +4,12 @@
     <meta charset="UTF-8">
     <title>Pieers Pro - Cajamarca</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <link rel="manifest" href="manifest.json">
     <style>
-        :root { --fondo: #000000; --tarjeta: #ffffff; --texto-oscuro: #1a1a1a; --primario: #007bff; --wsp: #25d366; --gmail: #d44638; --error: #ff0000; }
+        :root { --fondo: #000000; --tarjeta: #ffffff; --texto-oscuro: #1a1a1a; --primario: #007bff; --wsp: #25d366; --gmail: #d44638; --error: #e74c3c; }
         
         body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--fondo); color: #fff; padding: 15px; margin: 0; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; overflow: hidden; }
         
-        /* PANTALLA DE ERROR DE PRECISIÓN */
-        .error-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--error); z-index: 5000; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .btn-retry { background: white; color: red; border: none; padding: 20px 50px; border-radius: 15px; font-size: 25px; font-weight: bold; cursor: pointer; margin-top: 20px; }
-
         .header { display: flex; align-items: center; margin-top: 30px; margin-bottom: 15px; flex-shrink: 0; }
         .menu-icon { cursor: pointer; width: 35px; height: 35px; display: flex; flex-direction: column; justify-content: center; gap: 6px; z-index: 1001; }
         .menu-icon div { width: 100%; height: 4px; background: var(--primario); border-radius: 5px; }
@@ -29,7 +26,8 @@
         .total-val { font-size: 55px; font-weight: 900; color: #27ae60; line-height: 1; }
         .recent-val { font-family: monospace; font-size: 22px; font-weight: bold; color: var(--primario); }
 
-        #scanner { width: 100%; padding: 16px; font-size: 18px; border-radius: 12px; border: 2px solid #333; background: #111; color: white; text-align: center; outline: none; margin-bottom: 10px; }
+        #scanner { width: 100%; padding: 16px; font-size: 18px; border-radius: 12px; border: 2px solid #333; background: #111; color: white; text-align: center; outline: none; margin-bottom: 10px; transition: 0.2s; }
+        #scanner.error-input { border-color: var(--error); background: #2a1111; }
         
         .table-container { flex-grow: 1; overflow-y: auto; background: var(--tarjeta); border-radius: 15px; color: var(--texto-oscuro); }
         table { width: 100%; border-collapse: collapse; }
@@ -44,12 +42,6 @@
     </style>
 </head>
 <body>
-
-    <div id="errorScreen" class="error-screen">
-        <h1>⚠️</h1>
-        <p id="msgError" style="font-size:24px; font-weight:bold;"></p>
-        <button class="btn-retry" onclick="cerrarError()">REINTENTAR</button>
-    </div>
 
     <div id="overlay" onclick="toggleMenu()"></div>
 
@@ -77,7 +69,7 @@
         <div class="recent-val" id="ultimo">---</div>
     </div>
 
-    <input id="scanner" inputmode="none" autofocus placeholder="ESCANEE AQUÍ..." autocomplete="off">
+    <input id="scanner" inputmode="none" autofocus placeholder="ESCANEE AQUÍ (13 DÍGITOS)" autocomplete="off">
 
     <div class="table-container">
         <table>
@@ -96,8 +88,6 @@
         let inv = JSON.parse(localStorage.getItem("p_inv_v3")) || {};
         let total = parseInt(localStorage.getItem("p_total_v3")) || 0;
         let historial = [];
-        let errorActivo = false;
-        let alarmaLoop;
 
         const input = document.getElementById("scanner");
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -111,26 +101,29 @@
             over.style.display = nav.classList.contains("active") ? "block" : "none";
         }
 
-        // LÓGICA DE PRECISIÓN POR ENTER (Pistola)
-        input.addEventListener("keydown", function(e) {
-            if (e.keyCode === 13 || e.key === "Enter") {
-                e.preventDefault();
-                procesarLectura();
-            }
+        input.addEventListener("input", () => {
+            clearTimeout(window.t);
+            input.classList.remove("error-input");
+            
+            window.t = setTimeout(() => {
+                let cod = input.value.trim();
+                if (cod.length > 0) {
+                    if (cod.length === 13) {
+                        registrar(cod);
+                        input.value = "";
+                    } else {
+                        // Alarma visual y auditiva si no son 13 dígitos
+                        manejarError();
+                    }
+                }
+            }, 300); 
         });
 
-        function procesarLectura() {
-            if (errorActivo) return;
-            let cod = input.value.trim();
-            if (!cod) return;
-
-            // VALIDACIÓN ESTRICTA DE 13 DÍGITOS
-            if (cod.length === 13) {
-                registrar(cod);
-                input.value = "";
-            } else {
-                lanzarError(`ERROR: ${cod.length} DÍGITOS<br>EL CÓDIGO DEBE SER DE 13`);
-            }
+        function manejarError() {
+            beep(150, 0.4); 
+            input.classList.add("error-input");
+            input.value = ""; 
+            input.focus();
         }
 
         function registrar(cod) {
@@ -138,26 +131,9 @@
             historial = [cod, historial[0]].slice(0, 2);
             inv[cod] = (inv[cod] || 0) + 1;
             document.getElementById("ultimo").innerText = cod;
-            beep(800, 0.08);
+            beep(800, 0.08); 
             save();
             render();
-        }
-
-        function lanzarError(msg) {
-            errorActivo = true;
-            document.getElementById("msgError").innerHTML = msg;
-            document.getElementById("errorScreen").style.display = "flex";
-            beep(200, 0.5);
-            alarmaLoop = setInterval(() => beep(200, 0.5), 800);
-            if (navigator.vibrate) navigator.vibrate([500, 200, 500]);
-        }
-
-        function cerrarError() {
-            errorActivo = false;
-            clearInterval(alarmaLoop);
-            document.getElementById("errorScreen").style.display = "none";
-            input.value = "";
-            input.focus();
         }
 
         function render() {
@@ -186,27 +162,27 @@
         }
 
         function beep(f, d) {
-            let o = ctx.createOscillator(); let g = ctx.createGain();
-            o.connect(g); g.connect(ctx.destination);
-            o.frequency.value = f; g.gain.value = 0.1;
-            o.start(); o.stop(ctx.currentTime + d);
+            try {
+                let o = ctx.createOscillator(); let g = ctx.createGain();
+                o.connect(g); g.connect(ctx.destination);
+                o.frequency.value = f; g.gain.value = 0.1;
+                o.start(); o.stop(ctx.currentTime + d);
+            } catch(e) {}
         }
 
         function enviarWhatsApp() {
-            let texto = "📊 *INVENTARIO PIEERS ELITE*%0A";
-            texto += "----------------------------%0A";
-            Object.entries(inv).forEach(([c, q]) => texto += `${c} | Cant: ${q}%0A`);
-            texto += "----------------------------%0A";
-            texto += `*TOTAL UNIDADES: ${total}*`;
-            window.open(`https://wa.me/?text=${texto}`, '_blank');
+            if (Object.keys(inv).length === 0) { alert("No hay datos para enviar"); return; }
+            let texto = "*INVENTARIO PIEERS ELITE*\n\n"; 
+            Object.entries(inv).forEach(([c, q]) => texto += `• ${c} | Cant: ${q}\n`);
+            texto += `\n*TOTAL: ${total} unidades*`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
             toggleMenu();
         }
 
         function enviarGmail() {
-            let body = "Inventario detallado:\n\n";
-            Object.entries(inv).forEach(([c, q]) => body += `${c}|${q}\n`);
-            body += `\nTotal: ${total}`;
-            window.location.href = `mailto:?subject=Inventario Pieers Elite&body=${encodeURIComponent(body)}`;
+            let body = "";
+            Object.entries(inv).forEach(([c, q]) => body += `${c}|${q}%0A`);
+            window.location.href = `mailto:?subject=Inventario&body=${body}`;
             toggleMenu();
         }
 
@@ -216,17 +192,17 @@
             let b = new Blob([txt], {type: "text/plain"});
             let a = document.createElement("a");
             a.href = URL.createObjectURL(b);
-            a.download = `inv_pieers_elite.txt`;
+            a.download = `inv_datos.txt`;
             a.click();
             toggleMenu();
         }
 
         function resetear() {
-            if (confirm("¿Borrar todo el inventario?")) { localStorage.clear(); location.reload(); }
+            if (confirm("¿Seguro que deseas borrar TODO?")) { localStorage.clear(); location.reload(); }
         }
 
         document.addEventListener("click", e => {
-            if (e.target.tagName !== 'BUTTON' && !e.target.closest('.side-nav') && !errorActivo) input.focus();
+            if (e.target.tagName !== 'BUTTON' && !e.target.closest('.side-nav') && e.target.id !== 'scanner') input.focus();
         });
     </script>
 </body>
