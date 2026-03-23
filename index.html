@@ -2,120 +2,154 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pieers Pro - Cajamarca</title>
+    <title>Pieers Elite - SINCRO PRO</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel="manifest" href="manifest.json">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        :root { --fondo: #000000; --tarjeta: #ffffff; --texto-oscuro: #1a1a1a; --primario: #007bff; --wsp: #25d366; --gmail: #d44638; }
+        :root { --fondo: #000000; --tarjeta: #ffffff; --texto: #1a1a1a; --primario: #007bff; --error: #e74c3c; --wsp: #25d366; }
         
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--fondo); color: #fff; padding: 15px; margin: 0; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; overflow: hidden; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--fondo); color: #fff; padding: 15px; margin: 0; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; overflow: hidden; }
         
         .header { display: flex; align-items: center; margin-top: 30px; margin-bottom: 15px; flex-shrink: 0; }
         .menu-icon { cursor: pointer; width: 35px; height: 35px; display: flex; flex-direction: column; justify-content: center; gap: 6px; z-index: 1001; }
         .menu-icon div { width: 100%; height: 4px; background: var(--primario); border-radius: 5px; }
 
-        .side-nav { position: fixed; top: 0; left: -280px; width: 260px; height: 100%; background: #1a1a1a; z-index: 1000; transition: 0.4s cubic-bezier(0.1, 0.7, 0.1, 1); padding: 90px 20px; border-right: 2px solid var(--primario); }
+        /* ALERTAS DE ERROR */
+        .error-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--error); z-index: 2000; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; }
+        .error-overlay h1 { font-size: 80px; margin: 0; }
+        .error-overlay p { font-size: 20px; font-weight: bold; }
+        .btn-fix { background: white; color: var(--error); border: none; padding: 20px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; margin-top: 20px; cursor: pointer; }
+
+        .side-nav { position: fixed; top: 0; left: -280px; width: 260px; height: 100%; background: #1a1a1a; z-index: 1000; transition: 0.4s; padding: 90px 20px; border-right: 2px solid var(--primario); }
         .side-nav.active { left: 0; }
-        .nav-item { width: 100%; padding: 15px; margin-bottom: 15px; border: none; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; color: #fff; }
-        .nav-wsp { background: var(--wsp); }
-        .nav-gmail { background: var(--gmail); }
-        .nav-export { background: var(--primario); }
-        .nav-clear { background: #444; }
+        .nav-item { width: 100%; padding: 15px; margin-bottom: 15px; border: none; border-radius: 12px; font-weight: bold; color: #fff; cursor: pointer; }
 
-        .card { background: var(--tarjeta); color: var(--texto-oscuro); border-radius: 15px; padding: 15px; margin-bottom: 10px; text-align: center; }
+        .card { background: var(--tarjeta); color: var(--texto); border-radius: 15px; padding: 15px; margin-bottom: 10px; text-align: center; }
         .total-val { font-size: 55px; font-weight: 900; color: #27ae60; line-height: 1; }
-        .recent-val { font-family: monospace; font-size: 22px; font-weight: bold; color: var(--primario); }
-
-        #scanner { width: 100%; padding: 16px; font-size: 18px; border-radius: 12px; border: 2px solid #333; background: #111; color: white; text-align: center; outline: none; margin-bottom: 10px; }
         
-        .table-container { flex-grow: 1; overflow-y: auto; background: var(--tarjeta); border-radius: 15px; color: var(--texto-oscuro); }
+        #scanner { width: 100%; padding: 16px; font-size: 18px; border-radius: 12px; border: 2px solid #333; background: #111; color: white; text-align: center; margin-bottom: 10px; outline: none; }
+        #scanner.input-error { border-color: var(--error); background: #321; }
+
+        .table-container { flex-grow: 1; overflow-y: auto; background: var(--tarjeta); border-radius: 15px; color: var(--texto); }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f8f9fa; color: #666; padding: 12px; font-size: 11px; text-transform: uppercase; position: sticky; top: 0; border-bottom: 2px solid #eee; }
-        td { padding: 14px 10px; border-bottom: 1px solid #eee; text-align: center; font-size: 14px; }
-
+        th { background: #f8f9fa; padding: 12px; font-size: 11px; position: sticky; top: 0; }
+        td { padding: 14px 10px; border-bottom: 1px solid #eee; text-align: center; }
         .row-last { background: #e3f2fd !important; font-weight: bold; border-left: 5px solid var(--primario); }
-        .row-penult { background: #f5f5f5 !important; }
-
-        .btn-minus { background: #fff; color: #e74c3c; border: 1px solid #e74c3c; padding: 5px 10px; border-radius: 8px; font-weight: bold; }
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; }
+        
+        #overlay-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; }
     </style>
 </head>
 <body>
 
-    <div id="overlay" onclick="toggleMenu()"></div>
+    <div id="errorOverlay" class="error-overlay">
+        <h1>⚠️</h1>
+        <p id="errorMsg">ERROR DE LECTURA<br>DEBE TENER 13 DÍGITOS</p>
+        <button class="btn-fix" onclick="desbloquear()">CONTINUAR</button>
+    </div>
 
+    <div id="overlay-bg" onclick="toggleMenu()"></div>
+    
     <div class="header">
-        <div class="menu-icon" onclick="toggleMenu()">
-            <div></div><div></div><div></div>
-        </div>
-        <div style="margin-left: 15px; font-size: 18px; font-weight: bold; letter-spacing: 1px; color: var(--primario);">PIEERS ELITE</div>
+        <div class="menu-icon" onclick="toggleMenu()"><div></div><div></div><div></div></div>
+        <div style="margin-left: 15px; font-weight: bold; color: var(--primario);">PIEERS LIVE (13 DIGIT)</div>
     </div>
 
     <nav id="sideNav" class="side-nav">
-        <button class="nav-item nav-wsp" onclick="enviarWhatsApp()">💬 WHATSAPP</button>
-        <button class="nav-item nav-gmail" onclick="enviarGmail()">📧 GMAIL</button>
-        <button class="nav-item nav-export" onclick="exportar()">💾 EXPORTAR (.TXT)</button>
-        <button class="nav-item nav-clear" onclick="resetear()">🗑️ BORRAR TODO</button>
+        <button class="nav-item" style="background:var(--wsp)" onclick="enviarWhatsApp()">💬 WHATSAPP</button>
+        <button class="nav-item" style="background:var(--primario)" onclick="exportar()">💾 EXPORTAR (.TXT)</button>
+        <button class="nav-item" style="background:#444" onclick="resetear()">🗑️ BORRAR TODO</button>
     </nav>
 
     <div class="card">
-        <div style="font-size: 11px; font-weight: bold; color: #888;">TOTAL DE UNIDADES</div>
+        <div style="font-size: 11px; font-weight: bold; color: #888;">TOTAL EN LA NUBE</div>
         <div class="total-val" id="total">0</div>
     </div>
 
-    <div class="card" style="padding: 10px;">
-        <div style="font-size: 11px; font-weight: bold; color: var(--primario);">ÚLTIMO REGISTRO</div>
-        <div class="recent-val" id="ultimo">---</div>
-    </div>
-
-    <input id="scanner" inputmode="none" autofocus placeholder="ESCANEE AQUÍ..." autocomplete="off">
+    <input id="scanner" inputmode="none" autofocus placeholder="ESCANEE CÓDIGO (13 DIG)" autocomplete="off">
 
     <div class="table-container">
         <table>
-            <thead>
-                <tr>
-                    <th style="text-align:left">CÓDIGO</th>
-                    <th>CANT.</th>
-                    <th>-</th>
-                </tr>
-            </thead>
+            <thead><tr><th style="text-align:left">CÓDIGO</th><th>CANT.</th><th>-</th></tr></thead>
             <tbody id="lista"></tbody>
         </table>
     </div>
 
     <script>
-        let inv = JSON.parse(localStorage.getItem("p_inv_v3")) || {};
-        let total = parseInt(localStorage.getItem("p_total_v3")) || 0;
-        let historial = [];
+        // CONFIGURACIÓN FIREBASE
+        const firebaseConfig = { databaseURL: "TU_URL_DE_FIREBASE" }; 
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database().ref("inventario");
+
+        let inv = {};
+        let total = 0;
+        let ultimoCod = "";
+        let bloqueado = false;
+        let intervaloAlarma;
 
         const input = document.getElementById("scanner");
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        window.onload = () => { render(); input.focus(); };
+        db.on("value", (snapshot) => {
+            const data = snapshot.val();
+            inv = data ? data.items || {} : {};
+            total = data ? data.total || 0 : 0;
+            render();
+        });
 
-        function toggleMenu() {
-            const nav = document.getElementById("sideNav");
-            const over = document.getElementById("overlay");
-            nav.classList.toggle("active");
-            over.style.display = nav.classList.contains("active") ? "block" : "none";
-        }
-
+        // PRECISION 13 DÍGITOS + ALERTAS
         input.addEventListener("input", () => {
+            if (bloqueado) return;
             clearTimeout(window.t);
             window.t = setTimeout(() => {
                 let cod = input.value.trim();
-                if (cod.length >= 10) { registrar(cod); input.value = ""; }
-            }, 45);
+                if (cod === "") return;
+
+                if (cod.length === 13) {
+                    ultimoCod = cod;
+                    registrar(cod);
+                    input.value = "";
+                } else if (cod.length > 13 || (cod.length > 0 && cod.length < 13)) {
+                    activarAlarma(`ERROR: ${cod.length} DÍGITOS<br>EL CÓDIGO DEBE SER DE 13`);
+                }
+            }, 100); 
         });
 
         function registrar(cod) {
-            total++;
-            historial = [cod, historial[0]].slice(0, 2);
-            inv[cod] = (inv[cod] || 0) + 1;
-            document.getElementById("ultimo").innerText = cod;
-            beep(800, 0.08);
-            save();
-            render();
+            let nuevaCant = (inv[cod] || 0) + 1;
+            let nuevoTotal = total + 1;
+            db.update({ [`items/${cod}`]: nuevaCant, total: nuevoTotal });
+            sonar(800, 0.1); // Sonido de éxito
+        }
+
+        function activarAlarma(msg) {
+            bloqueado = true;
+            document.getElementById("errorMsg").innerHTML = msg;
+            document.getElementById("errorOverlay").style.display = "flex";
+            document.getElementById("scanner").classList.add("input-error");
+            
+            // Alarma sonora repetitiva
+            sonar(200, 0.5);
+            intervaloAlarma = setInterval(() => sonar(200, 0.5), 800);
+            if (navigator.vibrate) navigator.vibrate([400, 200, 400]);
+        }
+
+        function desbloquear() {
+            bloqueado = false;
+            clearInterval(intervaloAlarma);
+            document.getElementById("errorOverlay").style.display = "none";
+            document.getElementById("scanner").classList.remove("input-error");
+            input.value = "";
+            input.focus();
+        }
+
+        function sonar(f, d) {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.connect(g); g.connect(audioCtx.destination);
+            o.frequency.value = f;
+            g.gain.value = 0.1;
+            o.start(); o.stop(audioCtx.currentTime + d);
         }
 
         function render() {
@@ -124,44 +158,33 @@
             tbody.innerHTML = "";
             Object.keys(inv).reverse().forEach(cod => {
                 let tr = document.createElement("tr");
-                if (cod === historial[0]) tr.className = "row-last";
-                else if (cod === historial[1]) tr.className = "row-penult";
+                if (cod === ultimoCod) tr.className = "row-last";
                 tr.innerHTML = `<td style="text-align:left; font-family:monospace"><b>${cod}</b></td>
                                 <td><b style="color:#27ae60">${inv[cod]}</b></td>
-                                <td><button class="btn-minus" onclick="restar('${cod}')">-1</button></td>`;
+                                <td><button style="color:red; background:none; border:none;" onclick="restar('${cod}')">✖</button></td>`;
                 tbody.appendChild(tr);
             });
         }
 
         function restar(cod) {
-            if (inv[cod] > 1) inv[cod]--; else delete inv[cod];
-            total--; save(); render();
+            let nuevaCant = inv[cod] - 1;
+            let nuevoTotal = total - 1;
+            if (nuevaCant <= 0) {
+                firebase.database().ref(`inventario/items/${cod}`).remove();
+            } else {
+                db.child("items").update({ [cod]: nuevaCant });
+            }
+            db.update({ total: nuevoTotal });
         }
 
-        function save() {
-            localStorage.setItem("p_inv_v3", JSON.stringify(inv));
-            localStorage.setItem("p_total_v3", total);
+        function resetear() {
+            if (confirm("¿Borrar todo en la NUBE?")) db.remove();
         }
 
-        function beep(f, d) {
-            let o = ctx.createOscillator(); let g = ctx.createGain();
-            o.connect(g); g.connect(ctx.destination);
-            o.frequency.value = f; g.gain.value = 0.1;
-            o.start(); o.stop(ctx.currentTime + d);
-        }
-
-        function enviarWhatsApp() {
-            let texto = ""; 
-            Object.entries(inv).forEach(([c, q]) => texto += `${c}|${q}%0A`);
-            window.open(`https://wa.me/?text=${texto}`, '_blank');
-            toggleMenu();
-        }
-
-        function enviarGmail() {
-            let body = "";
-            Object.entries(inv).forEach(([c, q]) => body += `${c}|${q}%0A`);
-            window.location.href = `mailto:?subject=Inventario&body=${body}`;
-            toggleMenu();
+        function toggleMenu() {
+            const nav = document.getElementById("sideNav");
+            nav.classList.toggle("active");
+            document.getElementById("overlay-bg").style.display = nav.classList.contains("active") ? "block" : "none";
         }
 
         function exportar() {
@@ -170,18 +193,17 @@
             let b = new Blob([txt], {type: "text/plain"});
             let a = document.createElement("a");
             a.href = URL.createObjectURL(b);
-            a.download = `inv_datos.txt`;
+            a.download = `inv_sincro_pieers.txt`;
             a.click();
-            toggleMenu();
         }
 
-        function resetear() {
-            if (confirm("¿Borrar todo?")) { localStorage.clear(); location.reload(); }
+        function enviarWhatsApp() {
+            let texto = ""; 
+            Object.entries(inv).forEach(([c, q]) => texto += `${c}|${q}%0A`);
+            window.open(`https://wa.me/?text=${texto}`, '_blank');
         }
 
-        document.addEventListener("click", e => {
-            if (e.target.tagName !== 'BUTTON' && !e.target.closest('.side-nav')) input.focus();
-        });
+        document.addEventListener("click", e => { if (e.target.tagName !== 'BUTTON' && !e.target.closest('.side-nav')) input.focus(); });
     </script>
 </body>
 </html>
