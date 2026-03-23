@@ -2,207 +2,248 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pieers Pro - Cajamarca</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <link rel="manifest" href="manifest.json">
+    <title>Pieers Inventario Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-        :root { --fondo: #000000; --tarjeta: #ffffff; --texto-oscuro: #1a1a1a; --primario: #007bff; --wsp: #25d366; --gmail: #d44638; --error: #e74c3c; }
+        /* --- CAMBIO DE COLORES: MODO OSCURO --- */
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background: #121212; /* Fondo oscuro */
+            color: #e0e0e0;
+            padding: 15px; margin: 0; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; overflow: hidden; 
+        }
+
+        /* --- MENÚ DESPLEGABLE (HAMBURGUESA) --- */
+        .menu-container { position: fixed; top: 15px; right: 15px; z-index: 2000; }
+        .hamburger {
+            width: 35px; height: 30px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer;
+        }
+        .hamburger div { width: 100%; height: 4px; background-color: #3498db; border-radius: 2px; transition: 0.3s; }
         
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background: var(--fondo); color: #fff; padding: 15px; margin: 0; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; overflow: hidden; }
+        .menu-content {
+            display: none; position: absolute; right: 0; top: 40px; background: #1e1e1e; 
+            min-width: 180px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); border-radius: 8px; overflow: hidden;
+        }
+        .menu-content button {
+            width: 100%; border: none; padding: 12px 16px; text-align: left; background: none; color: white;
+            font-size: 14px; cursor: pointer; border-bottom: 1px solid #333;
+        }
+        .menu-content button:hover { background-color: #333; }
+        .menu-content.show { display: block; }
+
+        /* --- CONTENEDORES --- */
+        .total-container { 
+            background: #1e1e1e; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
+            display: flex; flex-direction: column; align-items: center; padding: 10px; margin-bottom: 10px; 
+            flex-shrink: 0; border-top: 5px solid #3498db; 
+        }
+        .total-numero { font-size: 50px; font-weight: bold; color: #2ecc71; line-height: 1; }
         
-        .header { display: flex; align-items: center; margin-top: 30px; margin-bottom: 15px; flex-shrink: 0; }
-        .menu-icon { cursor: pointer; width: 35px; height: 35px; display: flex; flex-direction: column; justify-content: center; gap: 6px; z-index: 1001; }
-        .menu-icon div { width: 100%; height: 4px; background: var(--primario); border-radius: 5px; }
-
-        .side-nav { position: fixed; top: 0; left: -280px; width: 260px; height: 100%; background: #1a1a1a; z-index: 1000; transition: 0.4s cubic-bezier(0.1, 0.7, 0.1, 1); padding: 90px 20px; border-right: 2px solid var(--primario); }
-        .side-nav.active { left: 0; }
-        .nav-item { width: 100%; padding: 15px; margin-bottom: 15px; border: none; border-radius: 12px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; color: #fff; }
-        .nav-wsp { background: var(--wsp); }
-        .nav-gmail { background: var(--gmail); }
-        .nav-export { background: var(--primario); }
-        .nav-clear { background: #444; }
-
-        .card { background: var(--tarjeta); color: var(--texto-oscuro); border-radius: 15px; padding: 15px; margin-bottom: 10px; text-align: center; }
-        .total-val { font-size: 55px; font-weight: 900; color: #27ae60; line-height: 1; }
-        .recent-val { font-family: monospace; font-size: 22px; font-weight: bold; color: var(--primario); }
-
-        #scanner { width: 100%; padding: 16px; font-size: 18px; border-radius: 12px; border: 2px solid #333; background: #111; color: white; text-align: center; outline: none; margin-bottom: 10px; transition: 0.2s; }
-        #scanner.error-input { border-color: var(--error); background: #2a1111; }
+        .ultimo-codigo-panel { background: #2c3e50; color: #ecf0f1; width: 100%; text-align: center; padding: 8px; border-radius: 8px; margin-bottom: 10px; flex-shrink: 0; }
+        .ultimo-valor { font-family: monospace; font-size: 22px; font-weight: bold; color: #f1c40f; display: block; }
         
-        .table-container { flex-grow: 1; overflow-y: auto; background: var(--tarjeta); border-radius: 15px; color: var(--texto-oscuro); }
-        table { width: 100%; border-collapse: collapse; }
-        th { background: #f8f9fa; color: #666; padding: 12px; font-size: 11px; text-transform: uppercase; position: sticky; top: 0; border-bottom: 2px solid #eee; }
-        td { padding: 14px 10px; border-bottom: 1px solid #eee; text-align: center; font-size: 14px; }
+        #scanner { 
+            width: 100%; padding: 15px; font-size: 18px; border-radius: 10px; border: 3px solid #3498db; 
+            outline: none; margin-bottom: 8px; box-sizing: border-box; text-align: center; background: #fff; color: #333;
+        }
+        #scanner.error-input { background-color: #ffd6d6; border-color: #e74c3c; color: #e74c3c; }
 
-        .row-last { background: #e3f2fd !important; font-weight: bold; border-left: 5px solid var(--primario); }
-        .row-penult { background: #f5f5f5 !important; }
+        .excel-container { flex-grow: 1; overflow-y: auto; background: white; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; color: #333; }
+        thead { position: sticky; top: 0; z-index: 10; }
+        th { background: #2c3e50; color: white; padding: 10px; font-size: 13px; }
+        td { padding: 10px; border: 1px solid #eee; text-align: center; font-size: 14px; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
 
-        .btn-minus { background: #fff; color: #e74c3c; border: 1px solid #e74c3c; padding: 5px 10px; border-radius: 8px; font-weight: bold; }
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; }
+        #alerta-inferior { 
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%; 
+            background: #e74c3c; color: white; padding: 15px; box-sizing: border-box;
+            text-align: center; z-index: 1000; flex-direction: column; align-items: center;
+        }
+        .btn-autorizar { background: #f1c40f; color: #2c3e50; border: none; padding: 12px 25px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="overlay" onclick="toggleMenu()"></div>
-
-    <div class="header">
-        <div class="menu-icon" onclick="toggleMenu()">
+    <div class="menu-container">
+        <div class="hamburger" onclick="toggleMenu()">
             <div></div><div></div><div></div>
         </div>
-        <div style="margin-left: 15px; font-size: 18px; font-weight: bold; letter-spacing: 1px; color: var(--primario);">PIEERS ELITE</div>
+        <div id="menuContent" class="menu-content">
+            <button onclick="compartirWhatsApp()" style="color: #25D366;">WhatsApp 📱</button>
+            <button onclick="exportar()">Exportar TXT 📄</button>
+            <button onclick="resetearTodo()" style="color: #e74c3c;">Borrar Todo 🗑️</button>
+        </div>
     </div>
 
-    <nav id="sideNav" class="side-nav">
-        <button class="nav-item nav-wsp" onclick="enviarWhatsApp()">💬 WHATSAPP</button>
-        <button class="nav-item nav-gmail" onclick="enviarGmail()">📧 GMAIL</button>
-        <button class="nav-item nav-export" onclick="exportar()">💾 EXPORTAR (.TXT)</button>
-        <button class="nav-item nav-clear" onclick="resetear()">🗑️ BORRAR TODO</button>
-    </nav>
-
-    <div class="card">
-        <div style="font-size: 11px; font-weight: bold; color: #888;">TOTAL DE UNIDADES</div>
-        <div class="total-val" id="total">0</div>
+    <div class="total-container">
+        <div style="font-size: 12px; font-weight: bold; color: #bdc3c7;">TOTAL UNIDADES</div>
+        <div class="total-numero" id="total">0</div>
     </div>
 
-    <div class="card" style="padding: 10px;">
-        <div style="font-size: 11px; font-weight: bold; color: var(--primario);">ÚLTIMO REGISTRO</div>
-        <div class="recent-val" id="ultimo">---</div>
+    <div class="ultimo-codigo-panel">
+        ÚLTIMO REGISTRO: <span id="ultimo-valor" class="ultimo-valor">---</span>
     </div>
 
-    <input id="scanner" inputmode="none" autofocus placeholder="ESCANEE AQUÍ (13 DÍGITOS)" autocomplete="off">
+    <input id="scanner" inputmode="none" autofocus placeholder="ESCANEE AQUÍ" autocomplete="off">
 
-    <div class="table-container">
+    <div class="excel-container">
         <table>
             <thead>
                 <tr>
-                    <th style="text-align:left">CÓDIGO</th>
-                    <th>CANT.</th>
-                    <th>-</th>
+                    <th>Código</th>
+                    <th>Cant.</th>
+                    <th>Acción</th>
                 </tr>
             </thead>
-            <tbody id="lista"></tbody>
+            <tbody id="tabla"></tbody>
         </table>
     </div>
 
+    <div id="alerta-inferior">
+        <div style="font-weight: bold; font-size: 16px;">⚠️ LECTURA ERRÓNEA: <span id="cod-erroneo"></span></div>
+        <button class="btn-autorizar" onclick="desbloquear()">CORREGIR Y SEGUIR</button>
+    </div>
+
     <script>
-        let inv = JSON.parse(localStorage.getItem("p_inv_v3")) || {};
-        let total = parseInt(localStorage.getItem("p_total_v3")) || 0;
-        let historial = [];
+        let inventario = JSON.parse(localStorage.getItem("inv_data")) || {};
+        let totalGeneral = parseInt(localStorage.getItem("inv_total")) || 0;
+        let bloqueado = false;
+        let intervaloAlarma;
+        const inputScanner = document.getElementById("scanner");
+        const totalDisplay = document.getElementById("total");
+        const ultimoValorTxt = document.getElementById("ultimo-valor");
+        const alertaInf = document.getElementById("alerta-inferior");
+        const tablaCuerpo = document.getElementById("tabla");
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        const input = document.getElementById("scanner");
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
-        window.onload = () => { render(); input.focus(); };
+        window.onload = () => {
+            totalDisplay.innerText = totalGeneral;
+            actualizarTablaUI();
+            inputScanner.focus();
+        };
 
         function toggleMenu() {
-            const nav = document.getElementById("sideNav");
-            const over = document.getElementById("overlay");
-            nav.classList.toggle("active");
-            over.style.display = nav.classList.contains("active") ? "block" : "none";
+            document.getElementById("menuContent").classList.toggle("show");
         }
 
-        input.addEventListener("input", () => {
-            clearTimeout(window.t);
-            input.classList.remove("error-input");
-            
-            window.t = setTimeout(() => {
-                let cod = input.value.trim();
-                if (cod.length > 0) {
-                    if (cod.length === 13) {
-                        registrar(cod);
-                        input.value = "";
-                    } else {
-                        // Alarma visual y auditiva si no son 13 dígitos
-                        manejarError();
-                    }
-                }
-            }, 300); 
+        // Cerrar menú si se hace clic fuera
+        window.onclick = function(event) {
+            if (!event.target.matches('.hamburger') && !event.target.matches('.hamburger div')) {
+                document.getElementById("menuContent").classList.remove("show");
+            }
+        }
+
+        function guardar() {
+            localStorage.setItem("inv_data", JSON.stringify(inventario));
+            localStorage.setItem("inv_total", totalGeneral.toString());
+        }
+
+        function sonar(freq, dur) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            osc.start(); osc.stop(audioCtx.currentTime + dur);
+        }
+
+        inputScanner.addEventListener("input", function() {
+            if (bloqueado) { inputScanner.value = ""; return; }
+            clearTimeout(window.scanTimeout);
+            window.scanTimeout = setTimeout(() => {
+                let cod = inputScanner.value.trim();
+                if (cod === "") return;
+                if (cod.length !== 13) { lanzarError(cod); } 
+                else { registrar(cod); inputScanner.value = ""; }
+            }, 50);
         });
 
-        function manejarError() {
-            beep(150, 0.4); 
-            input.classList.add("error-input");
-            input.value = ""; 
-            input.focus();
+        function registrar(codigo) {
+            totalGeneral++;
+            totalDisplay.innerText = totalGeneral;
+            ultimoValorTxt.innerText = codigo;
+            sonar(800, 0.08);
+            inventario[codigo] = (inventario[codigo] || 0) + 1;
+            guardar();
+            actualizarTablaUI();
         }
 
-        function registrar(cod) {
-            total++;
-            historial = [cod, historial[0]].slice(0, 2);
-            inv[cod] = (inv[cod] || 0) + 1;
-            document.getElementById("ultimo").innerText = cod;
-            beep(800, 0.08); 
-            save();
-            render();
-        }
-
-        function render() {
-            document.getElementById("total").innerText = total;
-            const tbody = document.getElementById("lista");
-            tbody.innerHTML = "";
-            Object.keys(inv).reverse().forEach(cod => {
-                let tr = document.createElement("tr");
-                if (cod === historial[0]) tr.className = "row-last";
-                else if (cod === historial[1]) tr.className = "row-penult";
-                tr.innerHTML = `<td style="text-align:left; font-family:monospace"><b>${cod}</b></td>
-                                <td><b style="color:#27ae60">${inv[cod]}</b></td>
-                                <td><button class="btn-minus" onclick="restar('${cod}')">-1</button></td>`;
-                tbody.appendChild(tr);
+        function actualizarTablaUI() {
+            tablaCuerpo.innerHTML = "";
+            let claves = Object.keys(inventario).reverse();
+            claves.forEach(codigo => {
+                let nuevaFila = document.createElement("tr");
+                nuevaFila.innerHTML = `
+                    <td><b>${codigo}</b></td>
+                    <td><b style="color:#27ae60">${inventario[codigo]}</b></td>
+                    <td><button style="background:#f39c12; color:white; border:none; padding:5px 10px; border-radius:4px;" onclick="restar('${codigo}')">-1</button></td>
+                `;
+                tablaCuerpo.appendChild(nuevaFila);
             });
         }
 
         function restar(cod) {
-            if (inv[cod] > 1) inv[cod]--; else delete inv[cod];
-            total--; save(); render();
+            if (bloqueado) return;
+            if (inventario[cod] > 1) { inventario[cod]--; } 
+            else { delete inventario[cod]; }
+            totalGeneral--;
+            totalDisplay.innerText = totalGeneral;
+            guardar();
+            actualizarTablaUI();
         }
 
-        function save() {
-            localStorage.setItem("p_inv_v3", JSON.stringify(inv));
-            localStorage.setItem("p_total_v3", total);
+        function lanzarError(cod) {
+            bloqueado = true;
+            inputScanner.classList.add("error-input");
+            document.getElementById("cod-erroneo").innerText = cod;
+            alertaInf.style.display = "flex";
+            sonar(200, 0.4);
+            intervaloAlarma = setInterval(() => sonar(200, 0.4), 800);
+            if (navigator.vibrate) navigator.vibrate([400, 200, 400]);
         }
 
-        function beep(f, d) {
-            try {
-                let o = ctx.createOscillator(); let g = ctx.createGain();
-                o.connect(g); g.connect(ctx.destination);
-                o.frequency.value = f; g.gain.value = 0.1;
-                o.start(); o.stop(ctx.currentTime + d);
-            } catch(e) {}
+        function desbloquear() {
+            bloqueado = false;
+            clearInterval(intervaloAlarma);
+            alertaInf.style.display = "none";
+            inputScanner.classList.remove("error-input");
+            inputScanner.value = "";
+            inputScanner.focus();
         }
 
-        function enviarWhatsApp() {
-            if (Object.keys(inv).length === 0) { alert("No hay datos para enviar"); return; }
-            let texto = "*INVENTARIO PIEERS ELITE*\n\n"; 
-            Object.entries(inv).forEach(([c, q]) => texto += `• ${c} | Cant: ${q}\n`);
-            texto += `\n*TOTAL: ${total} unidades*`;
-            window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
-            toggleMenu();
-        }
-
-        function enviarGmail() {
-            let body = "";
-            Object.entries(inv).forEach(([c, q]) => body += `${c}|${q}%0A`);
-            window.location.href = `mailto:?subject=Inventario&body=${body}`;
-            toggleMenu();
+        function resetearTodo() {
+            if(confirm("¿ESTÁS SEGURO? Se borrarán todas las lecturas.")){
+                localStorage.clear();
+                location.reload();
+            }
         }
 
         function exportar() {
-            let txt = ""; 
-            Object.entries(inv).forEach(([c, q]) => txt += `${c}|${q}\n`);
-            let b = new Blob([txt], {type: "text/plain"});
-            let a = document.createElement("a");
-            a.href = URL.createObjectURL(b);
-            a.download = `inv_datos.txt`;
-            a.click();
-            toggleMenu();
+            let datos = Object.entries(inventario);
+            if (datos.length === 0) return alert("Sin datos.");
+            let texto = "CODIGO|CANTIDAD\n"; 
+            datos.forEach(([c, q]) => { texto += `${c}|${q}\n`; });
+            const blob = new Blob([texto], { type: "text/plain" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `inventario_${new Date().toLocaleDateString()}.txt`;
+            link.click();
         }
 
-        function resetear() {
-            if (confirm("¿Seguro que deseas borrar TODO?")) { localStorage.clear(); location.reload(); }
+        function compartirWhatsApp() {
+            let datos = Object.entries(inventario);
+            if (datos.length === 0) return alert("Sin datos para compartir.");
+            let mensaje = "*REPORTE DE INVENTARIO PIEERS*\n\n";
+            datos.forEach(([c, q]) => { mensaje += `• ${c}: ${q} und\n`; });
+            mensaje += `\n*TOTAL: ${totalGeneral}*`;
+            let url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(mensaje);
+            window.open(url, "_blank");
         }
 
-        document.addEventListener("click", e => {
-            if (e.target.tagName !== 'BUTTON' && !e.target.closest('.side-nav') && e.target.id !== 'scanner') input.focus();
+        document.addEventListener("click", (e) => {
+            if (!bloqueado && e.target.tagName !== 'BUTTON' && !e.target.closest('.menu-container')) inputScanner.focus();
         });
     </script>
 </body>
