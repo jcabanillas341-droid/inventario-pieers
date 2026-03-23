@@ -7,6 +7,21 @@
     <link rel="manifest" href="manifest.json">
     <style>
         body { font-family: 'Segoe UI', Arial, sans-serif; background: #eef2f7; padding: 15px; margin: 0; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; overflow: hidden; }
+        
+        /* Espacio superior para que no salga muy arriba en el celular */
+        .header-actions { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 10px; 
+            margin-top: 25px; /* Franja de espacio superior */
+            margin-bottom: 15px; 
+            flex-shrink: 0; 
+        }
+        
+        .btn-header { border: none; padding: 12px; font-size: 14px; font-weight: bold; border-radius: 8px; color: white; cursor: pointer; text-transform: uppercase; }
+        .limpiar { background: #95a5a6; }
+        .exportar { background: #3498db; }
+
         .total-container { background: white; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; padding: 10px; margin-bottom: 10px; flex-shrink: 0; border-top: 5px solid #3498db; }
         .total-numero { font-size: 50px; font-weight: bold; color: #27ae60; line-height: 1; }
         .ultimo-codigo-panel { background: #34495e; color: #ecf0f1; width: 100%; text-align: center; padding: 8px; border-radius: 8px; margin-bottom: 10px; flex-shrink: 0; }
@@ -28,14 +43,14 @@
             text-align: center; z-index: 1000; flex-direction: column; align-items: center;
         }
         .btn-autorizar { background: #f1c40f; color: #2c3e50; border: none; padding: 12px 25px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-        
-        .footer-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-bottom: 10px; }
-        .btn-footer { border: none; padding: 12px; font-size: 14px; font-weight: bold; border-radius: 8px; color: white; cursor: pointer; }
-        .exportar { background: #3498db; }
-        .limpiar { background: #95a5a6; }
     </style>
 </head>
 <body>
+
+    <div class="header-actions">
+        <button class="btn-header limpiar" onclick="resetearTodo()">BORRAR TODO</button>
+        <button class="btn-header exportar" onclick="exportar()">EXPORTAR TXT</button>
+    </div>
 
     <div class="total-container">
         <div style="font-size: 12px; font-weight: bold; color: #7f8c8d;">TOTAL UNIDADES</div>
@@ -66,13 +81,7 @@
         <button class="btn-autorizar" onclick="desbloquear()">CORREGIR Y SEGUIR</button>
     </div>
 
-    <div class="footer-actions">
-        <button class="btn-footer limpiar" onclick="resetearTodo()">BORRAR TODO</button>
-        <button class="btn-footer exportar" onclick="exportar()">EXPORTAR TXT</button>
-    </div>
-
     <script>
-        // --- PERSISTENCIA DE DATOS ---
         let inventario = JSON.parse(localStorage.getItem("inv_data")) || {};
         let totalGeneral = parseInt(localStorage.getItem("inv_total")) || 0;
         
@@ -108,12 +117,10 @@
 
         inputScanner.addEventListener("input", function() {
             if (bloqueado) { inputScanner.value = ""; return; }
-            
             clearTimeout(window.scanTimeout);
             window.scanTimeout = setTimeout(() => {
                 let cod = inputScanner.value.trim();
                 if (cod === "") return;
-                
                 if (cod.length !== 13) {
                     lanzarError(cod);
                 } else {
@@ -193,21 +200,13 @@
 
         function exportar() {
             let datos = Object.entries(inventario);
-            if (datos.length === 0) return alert("Sin datos para exportar.");
-            
+            if (datos.length === 0) return alert("Sin datos.");
             let texto = ""; 
-            // Genera SOLO datos: código|cantidad
-            datos.forEach(([c, q]) => { 
-                texto += `${c}|${q}\n`; 
-            });
-            
+            datos.forEach(([c, q]) => { texto += `${c}|${q}\n`; });
             const blob = new Blob([texto], { type: "text/plain" });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            
-            const fecha = new Date().toLocaleDateString().replace(/\//g, '-');
-            link.download = `inv_pieers_${fecha}.txt`;
-            
+            link.download = `inventario_pieers.txt`;
             link.click();
         }
 
