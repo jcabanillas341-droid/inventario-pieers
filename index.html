@@ -2,81 +2,79 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pieers Elite - SINCRO PRO</title>
+    <title>Pieers Elite - Precisión 13</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        :root { --fondo: #000000; --tarjeta: #ffffff; --texto: #1a1a1a; --primario: #007bff; --error: #e74c3c; --wsp: #25d366; }
-        
+        :root { --fondo: #000000; --tarjeta: #ffffff; --primario: #007bff; --error: #ff0000; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--fondo); color: #fff; padding: 15px; margin: 0; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; overflow: hidden; }
         
-        .header { display: flex; align-items: center; margin-top: 30px; margin-bottom: 15px; flex-shrink: 0; }
-        .menu-icon { cursor: pointer; width: 35px; height: 35px; display: flex; flex-direction: column; justify-content: center; gap: 6px; z-index: 1001; }
-        .menu-icon div { width: 100%; height: 4px; background: var(--primario); border-radius: 5px; }
+        /* ALERTA DE ERROR ULTRA VISIBLE */
+        .error-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--error); z-index: 5000; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .error-screen h1 { font-size: 100px; margin: 0; }
+        .error-screen p { font-size: 24px; font-weight: bold; margin: 20px; }
+        .btn-retry { background: white; color: red; border: none; padding: 20px 50px; border-radius: 15px; font-size: 25px; font-weight: bold; cursor: pointer; }
 
-        /* ALERTAS DE ERROR */
-        .error-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--error); z-index: 2000; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white; }
-        .error-overlay h1 { font-size: 80px; margin: 0; }
-        .error-overlay p { font-size: 20px; font-weight: bold; }
-        .btn-fix { background: white; color: var(--error); border: none; padding: 20px 40px; border-radius: 10px; font-size: 20px; font-weight: bold; margin-top: 20px; cursor: pointer; }
+        .header { display: flex; align-items: center; margin-top: 30px; margin-bottom: 10px; }
+        .menu-icon { cursor: pointer; width: 35px; z-index: 1001; }
+        .menu-icon div { width: 100%; height: 4px; background: var(--primario); margin: 6px 0; border-radius: 5px; }
 
-        .side-nav { position: fixed; top: 0; left: -280px; width: 260px; height: 100%; background: #1a1a1a; z-index: 1000; transition: 0.4s; padding: 90px 20px; border-right: 2px solid var(--primario); }
+        .side-nav { position: fixed; top: 0; left: -280px; width: 260px; height: 100%; background: #111; z-index: 1000; transition: 0.3s; padding: 80px 20px; border-right: 2px solid var(--primario); }
         .side-nav.active { left: 0; }
-        .nav-item { width: 100%; padding: 15px; margin-bottom: 15px; border: none; border-radius: 12px; font-weight: bold; color: #fff; cursor: pointer; }
+        .nav-btn { width: 100%; padding: 15px; margin-bottom: 10px; border: none; border-radius: 10px; color: white; font-weight: bold; cursor: pointer; }
 
-        .card { background: var(--tarjeta); color: var(--texto); border-radius: 15px; padding: 15px; margin-bottom: 10px; text-align: center; }
-        .total-val { font-size: 55px; font-weight: 900; color: #27ae60; line-height: 1; }
+        .card { background: var(--tarjeta); color: #000; border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 10px; }
+        .total-num { font-size: 60px; font-weight: 900; color: #27ae60; line-height: 1; }
         
-        #scanner { width: 100%; padding: 16px; font-size: 18px; border-radius: 12px; border: 2px solid #333; background: #111; color: white; text-align: center; margin-bottom: 10px; outline: none; }
-        #scanner.input-error { border-color: var(--error); background: #321; }
-
-        .table-container { flex-grow: 1; overflow-y: auto; background: var(--tarjeta); border-radius: 15px; color: var(--texto); }
+        #scanner { width: 100%; padding: 18px; font-size: 20px; border-radius: 12px; border: 2px solid #333; background: #111; color: white; text-align: center; outline: none; }
+        
+        .table-area { flex-grow: 1; overflow-y: auto; background: var(--tarjeta); border-radius: 15px; margin-top: 10px; color: #000; }
         table { width: 100%; border-collapse: collapse; }
-        th { background: #f8f9fa; padding: 12px; font-size: 11px; position: sticky; top: 0; }
-        td { padding: 14px 10px; border-bottom: 1px solid #eee; text-align: center; }
-        .row-last { background: #e3f2fd !important; font-weight: bold; border-left: 5px solid var(--primario); }
-        
-        #overlay-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; }
+        th { background: #f0f0f0; padding: 12px; font-size: 12px; position: sticky; top: 0; }
+        td { padding: 15px 10px; border-bottom: 1px solid #eee; text-align: center; font-family: monospace; }
+        .row-active { background: #e3f2fd !important; font-weight: bold; border-left: 6px solid var(--primario); }
+
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; }
     </style>
 </head>
 <body>
 
-    <div id="errorOverlay" class="error-overlay">
+    <div id="errorScreen" class="error-screen">
         <h1>⚠️</h1>
-        <p id="errorMsg">ERROR DE LECTURA<br>DEBE TENER 13 DÍGITOS</p>
-        <button class="btn-fix" onclick="desbloquear()">CONTINUAR</button>
+        <p id="msgError">CÓDIGO INVÁLIDO</p>
+        <button class="btn-retry" onclick="cerrarError()">REINTENTAR</button>
     </div>
 
-    <div id="overlay-bg" onclick="toggleMenu()"></div>
-    
+    <div id="overlay" onclick="toggleMenu()"></div>
+
     <div class="header">
         <div class="menu-icon" onclick="toggleMenu()"><div></div><div></div><div></div></div>
-        <div style="margin-left: 15px; font-weight: bold; color: var(--primario);">PIEERS LIVE (13 DIGIT)</div>
+        <div style="margin-left: 15px; font-weight: bold; color: var(--primario);">PIEERS PRECISION SINCRO</div>
     </div>
 
     <nav id="sideNav" class="side-nav">
-        <button class="nav-item" style="background:var(--wsp)" onclick="enviarWhatsApp()">💬 WHATSAPP</button>
-        <button class="nav-item" style="background:var(--primario)" onclick="exportar()">💾 EXPORTAR (.TXT)</button>
-        <button class="nav-item" style="background:#444" onclick="resetear()">🗑️ BORRAR TODO</button>
+        <button class="nav-btn" style="background:#25d366" onclick="enviarWhatsApp()">WHATSAPP</button>
+        <button class="nav-btn" style="background:#007bff" onclick="exportar()">EXPORTAR TXT</button>
+        <button class="nav-btn" style="background:#444" onclick="resetear()">BORRAR TODO</button>
     </nav>
 
     <div class="card">
-        <div style="font-size: 11px; font-weight: bold; color: #888;">TOTAL EN LA NUBE</div>
-        <div class="total-val" id="total">0</div>
+        <div style="font-size: 12px; color: #666; font-weight: bold;">UNIDADES REGISTRADAS</div>
+        <div class="total-num" id="total">0</div>
     </div>
 
-    <input id="scanner" inputmode="none" autofocus placeholder="ESCANEE CÓDIGO (13 DIG)" autocomplete="off">
+    <input id="scanner" inputmode="none" autofocus placeholder="ESCANEE AQUÍ (13 DÍGITOS)" autocomplete="off">
 
-    <div class="table-container">
+    <div class="table-area">
         <table>
-            <thead><tr><th style="text-align:left">CÓDIGO</th><th>CANT.</th><th>-</th></tr></thead>
+            <thead><tr><th style="text-align:left">CÓDIGO</th><th>CANT</th><th>-</th></tr></thead>
             <tbody id="lista"></tbody>
         </table>
     </div>
 
     <script>
-        // CONFIGURACIÓN FIREBASE
+        // CONFIGURACIÓN
         const firebaseConfig = { databaseURL: "TU_URL_DE_FIREBASE" }; 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database().ref("inventario");
@@ -84,72 +82,74 @@
         let inv = {};
         let total = 0;
         let ultimoCod = "";
-        let bloqueado = false;
-        let intervaloAlarma;
+        let errorActivo = false;
+        let alarmaLoop;
 
         const input = document.getElementById("scanner");
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audio = new (window.AudioContext || window.webkitAudioContext)();
 
-        db.on("value", (snapshot) => {
-            const data = snapshot.val();
-            inv = data ? data.items || {} : {};
-            total = data ? data.total || 0 : 0;
+        db.on("value", (s) => {
+            const d = s.val();
+            inv = d ? d.items || {} : {};
+            total = d ? d.total || 0 : 0;
             render();
         });
 
-        // PRECISION 13 DÍGITOS + ALERTAS
+        // LÓGICA DE PRECISIÓN 13 DÍGITOS
         input.addEventListener("input", () => {
-            if (bloqueado) return;
-            clearTimeout(window.t);
-            window.t = setTimeout(() => {
+            if (errorActivo) return;
+            
+            clearTimeout(window.timer);
+            window.timer = setTimeout(() => {
                 let cod = input.value.trim();
-                if (cod === "") return;
+                if (!cod) return;
 
                 if (cod.length === 13) {
+                    // ÉXITO: Registrar
                     ultimoCod = cod;
                     registrar(cod);
                     input.value = "";
-                } else if (cod.length > 13 || (cod.length > 0 && cod.length < 13)) {
-                    activarAlarma(`ERROR: ${cod.length} DÍGITOS<br>EL CÓDIGO DEBE SER DE 13`);
+                } else if (cod.length > 13) {
+                    lanzarError(`DEMASIADOS DÍGITOS (${cod.length})`);
+                } else {
+                    // Si el usuario deja de escribir y no son 13, error
+                    lanzarError(`CÓDIGO INCOMPLETO (${cod.length} DÍGITOS)`);
                 }
-            }, 100); 
+            }, 150); // Tiempo de espera para que la pistola termine de escribir
         });
 
         function registrar(cod) {
-            let nuevaCant = (inv[cod] || 0) + 1;
-            let nuevoTotal = total + 1;
-            db.update({ [`items/${cod}`]: nuevaCant, total: nuevoTotal });
-            sonar(800, 0.1); // Sonido de éxito
+            let nCant = (inv[cod] || 0) + 1;
+            let nTotal = total + 1;
+            db.update({ [`items/${cod}`]: nCant, total: nTotal });
+            beep(800, 0.1); 
         }
 
-        function activarAlarma(msg) {
-            bloqueado = true;
-            document.getElementById("errorMsg").innerHTML = msg;
-            document.getElementById("errorOverlay").style.display = "flex";
-            document.getElementById("scanner").classList.add("input-error");
+        function lanzarError(msg) {
+            errorActivo = true;
+            document.getElementById("msgError").innerHTML = msg;
+            document.getElementById("errorScreen").style.display = "flex";
             
-            // Alarma sonora repetitiva
-            sonar(200, 0.5);
-            intervaloAlarma = setInterval(() => sonar(200, 0.5), 800);
-            if (navigator.vibrate) navigator.vibrate([400, 200, 400]);
+            // Alarma sonora y vibración
+            beep(200, 0.5);
+            alarmaLoop = setInterval(() => beep(200, 0.5), 800);
+            if (navigator.vibrate) navigator.vibrate([500, 200, 500]);
         }
 
-        function desbloquear() {
-            bloqueado = false;
-            clearInterval(intervaloAlarma);
-            document.getElementById("errorOverlay").style.display = "none";
-            document.getElementById("scanner").classList.remove("input-error");
+        function cerrarError() {
+            errorActivo = false;
+            clearInterval(alarmaLoop);
+            document.getElementById("errorScreen").style.display = "none";
             input.value = "";
             input.focus();
         }
 
-        function sonar(f, d) {
-            const o = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            o.connect(g); g.connect(audioCtx.destination);
-            o.frequency.value = f;
-            g.gain.value = 0.1;
-            o.start(); o.stop(audioCtx.currentTime + d);
+        function beep(f, d) {
+            let o = audio.createOscillator();
+            let g = audio.createGain();
+            o.connect(g); g.connect(audio.destination);
+            o.frequency.value = f; g.gain.value = 0.1;
+            o.start(); o.stop(audio.currentTime + d);
         }
 
         function render() {
@@ -158,50 +158,41 @@
             tbody.innerHTML = "";
             Object.keys(inv).reverse().forEach(cod => {
                 let tr = document.createElement("tr");
-                if (cod === ultimoCod) tr.className = "row-last";
-                tr.innerHTML = `<td style="text-align:left; font-family:monospace"><b>${cod}</b></td>
+                if (cod === ultimoCod) tr.className = "row-active";
+                tr.innerHTML = `<td style="text-align:left"><b>${cod}</b></td>
                                 <td><b style="color:#27ae60">${inv[cod]}</b></td>
-                                <td><button style="color:red; background:none; border:none;" onclick="restar('${cod}')">✖</button></td>`;
+                                <td><button style="color:red; background:none; border:none; font-size:18px;" onclick="restar('${cod}')">✕</button></td>`;
                 tbody.appendChild(tr);
             });
         }
 
         function restar(cod) {
-            let nuevaCant = inv[cod] - 1;
-            let nuevoTotal = total - 1;
-            if (nuevaCant <= 0) {
-                firebase.database().ref(`inventario/items/${cod}`).remove();
-            } else {
-                db.child("items").update({ [cod]: nuevaCant });
-            }
-            db.update({ total: nuevoTotal });
-        }
-
-        function resetear() {
-            if (confirm("¿Borrar todo en la NUBE?")) db.remove();
+            let nCant = inv[cod] - 1;
+            let nTotal = total - 1;
+            if (nCant <= 0) firebase.database().ref(`inventario/items/${cod}`).remove();
+            else db.child("items").update({ [cod]: nCant });
+            db.update({ total: nTotal });
         }
 
         function toggleMenu() {
             const nav = document.getElementById("sideNav");
             nav.classList.toggle("active");
-            document.getElementById("overlay-bg").style.display = nav.classList.contains("active") ? "block" : "none";
+            document.getElementById("overlay").style.display = nav.classList.contains("active") ? "block" : "none";
         }
 
         function exportar() {
-            let txt = ""; 
-            Object.entries(inv).forEach(([c, q]) => txt += `${c}|${q}\n`);
-            let b = new Blob([txt], {type: "text/plain"});
+            let t = ""; Object.entries(inv).forEach(([c, q]) => t += `${c}|${q}\n`);
+            let b = new Blob([t], {type: "text/plain"});
             let a = document.createElement("a");
-            a.href = URL.createObjectURL(b);
-            a.download = `inv_sincro_pieers.txt`;
-            a.click();
+            a.href = URL.createObjectURL(b); a.download = `inv_final.txt`; a.click();
         }
 
         function enviarWhatsApp() {
-            let texto = ""; 
-            Object.entries(inv).forEach(([c, q]) => texto += `${c}|${q}%0A`);
-            window.open(`https://wa.me/?text=${texto}`, '_blank');
+            let t = ""; Object.entries(inv).forEach(([c, q]) => t += `${c}|${q}%0A`);
+            window.open(`https://wa.me/?text=${t}`, '_blank');
         }
+
+        function resetear() { if (confirm("¿BORRAR TODO?")) db.remove(); }
 
         document.addEventListener("click", e => { if (e.target.tagName !== 'BUTTON' && !e.target.closest('.side-nav')) input.focus(); });
     </script>
