@@ -5,33 +5,29 @@
     <title>Pieers Inventario Pro</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
-        /* --- CAMBIO DE COLORES: MODO OSCURO --- */
         body { 
             font-family: 'Segoe UI', Arial, sans-serif; 
-            background: #121212; /* Fondo oscuro */
+            background: #121212; 
             color: #e0e0e0;
             padding: 15px; margin: 0; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; overflow: hidden; 
         }
 
-        /* --- MENÚ DESPLEGABLE (HAMBURGUESA) --- */
         .menu-container { position: fixed; top: 15px; right: 15px; z-index: 2000; }
         .hamburger {
             width: 35px; height: 30px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer;
         }
-        .hamburger div { width: 100%; height: 4px; background-color: #3498db; border-radius: 2px; transition: 0.3s; }
+        .hamburger div { width: 100%; height: 4px; background-color: #3498db; border-radius: 2px; }
         
         .menu-content {
             display: none; position: absolute; right: 0; top: 40px; background: #1e1e1e; 
             min-width: 180px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); border-radius: 8px; overflow: hidden;
         }
         .menu-content button {
-            width: 100%; border: none; padding: 12px 16px; text-align: left; background: none; color: white;
+            width: 100%; border: none; padding: 15px 16px; text-align: left; background: none; color: white;
             font-size: 14px; cursor: pointer; border-bottom: 1px solid #333;
         }
-        .menu-content button:hover { background-color: #333; }
         .menu-content.show { display: block; }
 
-        /* --- CONTENEDORES --- */
         .total-container { 
             background: #1e1e1e; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
             display: flex; flex-direction: column; align-items: center; padding: 10px; margin-bottom: 10px; 
@@ -70,9 +66,9 @@
             <div></div><div></div><div></div>
         </div>
         <div id="menuContent" class="menu-content">
-            <button onclick="compartirWhatsApp()" style="color: #25D366;">WhatsApp 📱</button>
-            <button onclick="exportar()">Exportar TXT 📄</button>
-            <button onclick="resetearTodo()" style="color: #e74c3c;">Borrar Todo 🗑️</button>
+            <button onclick="compartirArchivo()" style="color: #25D366; font-weight: bold;">COMPARTIR TXT 📱</button>
+            <button onclick="exportar()">DESCARGAR TXT 📄</button>
+            <button onclick="resetearTodo()" style="color: #e74c3c;">BORRAR TODO 🗑️</button>
         </div>
     </div>
 
@@ -123,16 +119,7 @@
             inputScanner.focus();
         };
 
-        function toggleMenu() {
-            document.getElementById("menuContent").classList.toggle("show");
-        }
-
-        // Cerrar menú si se hace clic fuera
-        window.onclick = function(event) {
-            if (!event.target.matches('.hamburger') && !event.target.matches('.hamburger div')) {
-                document.getElementById("menuContent").classList.remove("show");
-            }
-        }
+        function toggleMenu() { document.getElementById("menuContent").classList.toggle("show"); }
 
         function guardar() {
             localStorage.setItem("inv_data", JSON.stringify(inventario));
@@ -175,11 +162,7 @@
             let claves = Object.keys(inventario).reverse();
             claves.forEach(codigo => {
                 let nuevaFila = document.createElement("tr");
-                nuevaFila.innerHTML = `
-                    <td><b>${codigo}</b></td>
-                    <td><b style="color:#27ae60">${inventario[codigo]}</b></td>
-                    <td><button style="background:#f39c12; color:white; border:none; padding:5px 10px; border-radius:4px;" onclick="restar('${codigo}')">-1</button></td>
-                `;
+                nuevaFila.innerHTML = `<td><b>${codigo}</b></td><td><b style="color:#27ae60">${inventario[codigo]}</b></td><td><button style="background:#f39c12; color:white; border:none; padding:5px 10px; border-radius:4px;" onclick="restar('${codigo}')">-1</button></td>`;
                 tablaCuerpo.appendChild(nuevaFila);
             });
         }
@@ -201,7 +184,6 @@
             alertaInf.style.display = "flex";
             sonar(200, 0.4);
             intervaloAlarma = setInterval(() => sonar(200, 0.4), 800);
-            if (navigator.vibrate) navigator.vibrate([400, 200, 400]);
         }
 
         function desbloquear() {
@@ -214,17 +196,20 @@
         }
 
         function resetearTodo() {
-            if(confirm("¿ESTÁS SEGURO? Se borrarán todas las lecturas.")){
-                localStorage.clear();
-                location.reload();
-            }
+            if(confirm("¿BORRAR TODO?")){ localStorage.clear(); location.reload(); }
+        }
+
+        // Generar el contenido del texto (Sin encabezados como pediste antes)
+        function generarContenido() {
+            let datos = Object.entries(inventario);
+            let texto = ""; 
+            datos.forEach(([c, q]) => { texto += `${c}|${q}\n`; });
+            return texto;
         }
 
         function exportar() {
-            let datos = Object.entries(inventario);
-            if (datos.length === 0) return alert("Sin datos.");
-            let texto = "CODIGO|CANTIDAD\n"; 
-            datos.forEach(([c, q]) => { texto += `${c}|${q}\n`; });
+            let texto = generarContenido();
+            if (!texto) return alert("Sin datos.");
             const blob = new Blob([texto], { type: "text/plain" });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
@@ -232,14 +217,29 @@
             link.click();
         }
 
-        function compartirWhatsApp() {
-            let datos = Object.entries(inventario);
-            if (datos.length === 0) return alert("Sin datos para compartir.");
-            let mensaje = "*REPORTE DE INVENTARIO PIEERS*\n\n";
-            datos.forEach(([c, q]) => { mensaje += `• ${c}: ${q} und\n`; });
-            mensaje += `\n*TOTAL: ${totalGeneral}*`;
-            let url = "https://api.whatsapp.com/send?text=" + encodeURIComponent(mensaje);
-            window.open(url, "_blank");
+        // NUEVA FUNCIÓN: COMPARTIR ARCHIVO REAL
+        async function compartirArchivo() {
+            let texto = generarContenido();
+            if (!texto) return alert("Sin datos.");
+
+            const nombreArchivo = `inventario_pieers.txt`;
+            const blob = new Blob([texto], { type: 'text/plain' });
+            const file = new File([blob], nombreArchivo, { type: 'text/plain' });
+
+            // Verificar si el celular soporta compartir archivos
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Inventario Pieers',
+                        text: 'Adjunto reporte de inventario.'
+                    });
+                } catch (err) {
+                    console.log("Error al compartir:", err);
+                }
+            } else {
+                alert("Tu navegador no soporta compartir archivos directamente. Usa la opción 'Descargar TXT'.");
+            }
         }
 
         document.addEventListener("click", (e) => {
