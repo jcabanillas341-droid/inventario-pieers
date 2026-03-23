@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pieers Elite - SINCRO PRECISO</title>
+    <title>Pieers Elite - SINCRO ENTER</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -10,11 +10,9 @@
         :root { --fondo: #000000; --tarjeta: #ffffff; --primario: #007bff; --error: #ff0000; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--fondo); color: #fff; padding: 15px; margin: 0; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; overflow: hidden; }
         
-        /* PANTALLA DE ERROR CRÍTICO */
         .error-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--error); z-index: 5000; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .error-screen h1 { font-size: 100px; margin: 0; }
-        .error-screen p { font-size: 24px; font-weight: bold; margin: 20px; }
-        .btn-retry { background: white; color: red; border: none; padding: 20px 50px; border-radius: 15px; font-size: 25px; font-weight: bold; cursor: pointer; }
+        .btn-retry { background: white; color: red; border: none; padding: 20px 50px; border-radius: 15px; font-size: 25px; font-weight: bold; cursor: pointer; margin-top: 20px; }
 
         .header { display: flex; align-items: center; margin-top: 30px; margin-bottom: 10px; }
         .menu-icon { cursor: pointer; width: 35px; z-index: 1001; }
@@ -27,7 +25,6 @@
         .card { background: var(--tarjeta); color: #000; border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 10px; }
         .total-num { font-size: 60px; font-weight: 900; color: #27ae60; line-height: 1; }
         
-        /* INPUT DE LECTURA */
         #scanner { width: 100%; padding: 18px; font-size: 20px; border-radius: 12px; border: 2px solid #333; background: #111; color: white; text-align: center; outline: none; }
         
         .table-area { flex-grow: 1; overflow-y: auto; background: var(--tarjeta); border-radius: 15px; margin-top: 10px; color: #000; }
@@ -43,7 +40,7 @@
 
     <div id="errorScreen" class="error-screen">
         <h1>⚠️</h1>
-        <p id="msgError">CÓDIGO INVÁLIDO</p>
+        <p id="msgError" style="font-size:24px; font-weight:bold;"></p>
         <button class="btn-retry" onclick="cerrarError()">REINTENTAR</button>
     </div>
 
@@ -51,7 +48,7 @@
 
     <div class="header">
         <div class="menu-icon" onclick="toggleMenu()"><div></div><div></div><div></div></div>
-        <div style="margin-left: 15px; font-weight: bold; color: var(--primario);">PIEERS PRECISION (SINCRO)</div>
+        <div style="margin-left: 15px; font-weight: bold; color: var(--primario);">PIEERS PRECISION (ENTER)</div>
     </div>
 
     <nav id="sideNav" class="side-nav">
@@ -61,11 +58,11 @@
     </nav>
 
     <div class="card">
-        <div style="font-size: 12px; color: #666; font-weight: bold;">UNIDADES REGISTRADAS</div>
+        <div style="font-size: 12px; color: #666; font-weight: bold;">TOTAL UNIDADES</div>
         <div class="total-num" id="total">0</div>
     </div>
 
-    <input id="scanner" autofocus placeholder="ESCANEE CÓDIGO (13 DÍGITOS)" autocomplete="off">
+    <input id="scanner" type="text" autofocus placeholder="ESPERANDO LECTURA..." autocomplete="off">
 
     <div class="table-area">
         <table>
@@ -96,29 +93,22 @@
             render();
         });
 
-        // ESCUCHA EL "ENTER" DE LA PISTOLA (Key 13)
-        input.addEventListener("keypress", function(e) {
-            if (e.key === "Enter") {
-                e.preventDefault(); // Evita que la página se refresque
-                procesarLectura();
-            }
-        });
-
-        function procesarLectura() {
+        // LÓGICA REFORZADA: Solo procesa cuando el input detecta un cambio completo (Enter de la pistola)
+        input.addEventListener("change", function() {
             if (errorActivo) return;
             
             let cod = input.value.trim();
             if (!cod) return;
 
-            // VALIDACIÓN ESTRICTA DE 13 DÍGITOS
+            // VALIDACIÓN ESTRICTA DE 13 DÍGITOS AL RECIBIR EL ENTER
             if (cod.length === 13) {
                 ultimoCod = cod;
                 registrar(cod);
-                input.value = ""; // Limpia para el siguiente
+                input.value = ""; // Limpia para la siguiente lectura
             } else {
                 lanzarError(`ERROR: ${cod.length} DÍGITOS<br>EL CÓDIGO DEBE SER DE 13`);
             }
-        }
+        });
 
         function registrar(cod) {
             let nCant = (inv[cod] || 0) + 1;
@@ -185,7 +175,7 @@
             let t = ""; Object.entries(inv).forEach(([c, q]) => t += `${c}|${q}\n`);
             let b = new Blob([t], {type: "text/plain"});
             let a = document.createElement("a");
-            a.href = URL.createObjectURL(b); a.download = `inv_limpio.txt`; a.click();
+            a.href = URL.createObjectURL(b); a.download = `inventario.txt`; a.click();
         }
 
         function enviarWhatsApp() {
@@ -193,9 +183,8 @@
             window.open(`https://wa.me/?text=${t}`, '_blank');
         }
 
-        function resetear() { if (confirm("¿BORRAR TODO EL INVENTARIO?")) db.remove(); }
+        function resetear() { if (confirm("¿BORRAR TODO?")) db.remove(); }
 
-        // Foco automático
         document.addEventListener("click", e => { if (e.target.tagName !== 'BUTTON' && !e.target.closest('.side-nav')) input.focus(); });
     </script>
 </body>
