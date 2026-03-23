@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pieers Elite - SINCRO ENTER</title>
+    <title>Pieers Elite - SINCRO ENTER FIX</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -11,7 +11,6 @@
         body { font-family: 'Segoe UI', sans-serif; background: var(--fondo); color: #fff; padding: 15px; margin: 0; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; overflow: hidden; }
         
         .error-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--error); z-index: 5000; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
-        .error-screen h1 { font-size: 100px; margin: 0; }
         .btn-retry { background: white; color: red; border: none; padding: 20px 50px; border-radius: 15px; font-size: 25px; font-weight: bold; cursor: pointer; margin-top: 20px; }
 
         .header { display: flex; align-items: center; margin-top: 30px; margin-bottom: 10px; }
@@ -48,7 +47,7 @@
 
     <div class="header">
         <div class="menu-icon" onclick="toggleMenu()"><div></div><div></div><div></div></div>
-        <div style="margin-left: 15px; font-weight: bold; color: var(--primario);">PIEERS PRECISION (ENTER)</div>
+        <div style="margin-left: 15px; font-weight: bold; color: var(--primario);">PIEERS PRECISION (FIX ENTER)</div>
     </div>
 
     <nav id="sideNav" class="side-nav">
@@ -62,7 +61,7 @@
         <div class="total-num" id="total">0</div>
     </div>
 
-    <input id="scanner" type="text" autofocus placeholder="ESPERANDO LECTURA..." autocomplete="off">
+    <input id="scanner" type="text" autofocus placeholder="ESCANEE AHORA..." autocomplete="off">
 
     <div class="table-area">
         <table>
@@ -93,20 +92,20 @@
             render();
         });
 
-        // LÓGICA REFORZADA: Solo procesa cuando el input detecta un cambio completo (Enter de la pistola)
-        input.addEventListener("change", function() {
-            if (errorActivo) return;
-            
-            let cod = input.value.trim();
-            if (!cod) return;
-
-            // VALIDACIÓN ESTRICTA DE 13 DÍGITOS AL RECIBIR EL ENTER
-            if (cod.length === 13) {
-                ultimoCod = cod;
-                registrar(cod);
-                input.value = ""; // Limpia para la siguiente lectura
-            } else {
-                lanzarError(`ERROR: ${cod.length} DÍGITOS<br>EL CÓDIGO DEBE SER DE 13`);
+        // DETECCIÓN DE ENTER MEDIANTE KEYDOWN (Súper rápido para pistolas)
+        input.addEventListener("keydown", function(e) {
+            if (e.keyCode === 13 || e.key === "Enter") {
+                e.preventDefault(); // Detenemos cualquier acción por defecto
+                
+                let cod = input.value.trim();
+                
+                if (cod.length === 13) {
+                    ultimoCod = cod;
+                    registrar(cod);
+                    input.value = ""; // Limpiamos inmediato para la siguiente lectura
+                } else if (cod.length > 0) {
+                    lanzarError(`ERROR: ${cod.length} DÍGITOS<br>EL CÓDIGO DEBE SER DE 13`);
+                }
             }
         });
 
@@ -121,7 +120,6 @@
             errorActivo = true;
             document.getElementById("msgError").innerHTML = msg;
             document.getElementById("errorScreen").style.display = "flex";
-            
             beep(200, 0.5);
             alarmaLoop = setInterval(() => beep(200, 0.5), 800);
             if (navigator.vibrate) navigator.vibrate([500, 200, 500]);
@@ -185,6 +183,7 @@
 
         function resetear() { if (confirm("¿BORRAR TODO?")) db.remove(); }
 
+        // Mantenemos el cursor siempre listo
         document.addEventListener("click", e => { if (e.target.tagName !== 'BUTTON' && !e.target.closest('.side-nav')) input.focus(); });
     </script>
 </body>
