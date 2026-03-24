@@ -199,7 +199,6 @@
             if(confirm("¿BORRAR TODO?")){ localStorage.clear(); location.reload(); }
         }
 
-        // Generar el contenido del texto (Sin encabezados como pediste antes)
         function generarContenido() {
             let datos = Object.entries(inventario);
             let texto = ""; 
@@ -210,36 +209,30 @@
         function exportar() {
             let texto = generarContenido();
             if (!texto) return alert("Sin datos.");
+            let nombre = prompt("Nombre del archivo:", "inventario");
+            if (!nombre) return;
             const blob = new Blob([texto], { type: "text/plain" });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.download = `inventario_${new Date().toLocaleDateString()}.txt`;
+            link.download = `${nombre}.txt`;
             link.click();
         }
 
-        // NUEVA FUNCIÓN: COMPARTIR ARCHIVO REAL
         async function compartirArchivo() {
             let texto = generarContenido();
             if (!texto) return alert("Sin datos.");
-
-            const nombreArchivo = `inventario_pieers.txt`;
-            const blob = new Blob([texto], { type: 'text/plain' });
-            const file = new File([blob], nombreArchivo, { type: 'text/plain' });
-
-            // Verificar si el celular soporta compartir archivos
+            let nombre = prompt("Nombre para compartir:", "inventario");
+            if (!nombre) return;
+            const file = new File([new Blob([texto], { type: 'text/plain' })], `${nombre}.txt`, { type: 'text/plain' });
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 try {
                     await navigator.share({
                         files: [file],
                         title: 'Inventario Pieers',
-                        text: 'Adjunto reporte de inventario.'
+                        text: 'Adjunto reporte.'
                     });
-                } catch (err) {
-                    console.log("Error al compartir:", err);
-                }
-            } else {
-                alert("Tu navegador no soporta compartir archivos directamente. Usa la opción 'Descargar TXT'.");
-            }
+                } catch (err) { console.log(err); }
+            } else { alert("Tu dispositivo no soporta compartir archivos."); }
         }
 
         document.addEventListener("click", (e) => {
