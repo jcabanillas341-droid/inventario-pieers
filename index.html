@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pieers Inventario Pro - Final con Totales</title>
+    <title>Pieers Inventario Pro - Ultra Rápido</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         * {
@@ -16,7 +16,7 @@
             padding: 10px; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; 
         }
 
-        /* --- CABECERA Y MENÚ --- */
+        /* CABECERA */
         .menu-container { position: fixed; top: 10px; right: 10px; z-index: 2000; }
         .hamburger {
             width: 30px; height: 25px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer;
@@ -47,23 +47,22 @@
         
         .ultimo-codigo-panel { 
             background: #2c3e50; color: #ecf0f1; width: 100%; text-align: center; 
-            padding: 6px; border-radius: 8px; margin-bottom: 8px; flex-shrink: 0; font-size: 12px;
+            padding: 6px; border-radius: 8px; margin-bottom: 8px; flex-shrink: 0; font-size: 11px;
         }
         .ultimo-valor { font-family: monospace; font-size: 20px; font-weight: bold; color: #f1c40f; display: block; }
         
-        /* --- TABLA --- */
+        /* TABLA */
         .excel-container { flex-grow: 1; overflow-y: auto; background: white; border-radius: 10px; border: 1px solid #ddd; }
         table { width: 100%; border-collapse: collapse; color: #333; table-layout: fixed; }
         thead { position: sticky; top: 0; z-index: 10; }
         th { background: #2c3e50; color: white; padding: 10px 5px; font-size: 12px; text-transform: uppercase; }
         td { padding: 10px 5px; border: 1px solid #eee; text-align: center; font-size: 14px; background-color: #ffffff; }
         
-        /* Resaltado solo en ITEM */
         td:first-child { background-color: #d4edda; font-weight: bold; width: 60px; } 
         th:nth-child(1) { width: 60px; }
         th:nth-child(3), td:nth-child(3) { width: 70px; }
 
-        /* --- MODALES --- */
+        /* MODALES */
         .modal-pantalla {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); z-index: 3000; padding: 15px; flex-direction: column;
@@ -71,10 +70,9 @@
         .lista-items { flex-grow: 1; overflow-y: auto; background: #222; border-radius: 8px; padding: 8px; }
         .card-grupo { background: #333; padding: 10px; margin-bottom: 8px; border-left: 4px solid #3498db; }
         
-        /* Resaltado de conteo total en búsquedas */
-        .resumen-busqueda { background: #2ecc71; color: #000; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 10px; font-size: 16px; }
+        .resumen-busqueda { background: #2ecc71; color: #000; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 10px; font-weight: bold; }
 
-        .btn-accion { padding: 10px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 12px; }
+        .btn-accion { padding: 10px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 11px; }
         .btn-cerrar { background: #e74c3c; padding: 12px; width: 100%; margin-top: 8px; }
 
         #alerta-inferior { 
@@ -101,7 +99,7 @@
     <input id="scanner" inputmode="none" autofocus placeholder="ESCANEE AQUÍ" autocomplete="off">
 
     <div class="total-container">
-        <div class="total-label">Total Unidades</div>
+        <div class="total-label">Unidades en Pantalla</div>
         <div class="total-numero" id="total">0</div>
     </div>
 
@@ -110,14 +108,14 @@
     </div>
 
     <div class="excel-container">
-        <table>
-            <thead><tr><th>Item</th><th>Código</th><th>Acción</th></tr></thead>
+        <table id="mainTable">
+            <thead><tr><th>Item</th><th>Código</th><th>X</th></tr></thead>
             <tbody id="tabla"></tbody>
         </table>
     </div>
 
     <div id="modalGrupos" class="modal-pantalla">
-        <h2 style="color: #f1c40f; text-align: center;">GRUPOS</h2>
+        <h2 style="color: #f1c40f; text-align: center;">GRUPOS GUARDADOS</h2>
         <div id="listaGrupos" class="lista-items"></div>
         <button class="btn-accion btn-cerrar" onclick="cerrarModal('modalGrupos')">VOLVER</button>
     </div>
@@ -125,20 +123,21 @@
     <div id="modalDetalle" class="modal-pantalla">
         <h2 id="tituloDetalle" style="color: #3498db; text-align: center;"></h2>
         <div id="resumenDetalle" class="resumen-busqueda" style="display:none;"></div>
-        <input id="input-buscar-lote" style="width:100%; padding:10px; margin-bottom:10px; text-align:center;" placeholder="FILTRAR EN ESTE LOTE">
+        <input id="input-buscar-lote" style="width:100%; padding:10px; margin-bottom:10px; text-align:center;" placeholder="BUSCAR EN ESTE LOTE">
         <div class="excel-container" style="margin-bottom: 8px;">
             <table>
                 <thead><tr><th>Item</th><th>Código</th></tr></thead>
                 <tbody id="tablaDetalle"></tbody>
             </table>
         </div>
+        <button id="btnReanudar" class="btn-accion" style="background:#3498db; width:100%; padding:15px; margin-bottom:5px;">➕ REANUDAR LECTURA AQUÍ</button>
         <button class="btn-accion btn-cerrar" onclick="cerrarDetalle()">VOLVER</button>
     </div>
 
     <div id="modalBuscadorGeneral" class="modal-pantalla">
         <h2 style="color: #2ecc71; text-align: center;">BUSCADOR GENERAL</h2>
         <div id="resumenGeneral" class="resumen-busqueda" style="display:none;"></div>
-        <input id="input-buscar-general" style="width:100%; padding:15px; text-align:center; margin-bottom:10px;" placeholder="BUSCAR EN TODO">
+        <input id="input-buscar-general" style="width:100%; padding:15px; text-align:center; margin-bottom:10px;" placeholder="ESCANEE PARA BUSCAR">
         <div id="resultadosGeneral" class="lista-items"></div>
         <button class="btn-accion btn-cerrar" onclick="cerrarModal('modalBuscadorGeneral')">CERRAR</button>
     </div>
@@ -153,7 +152,7 @@
         let gruposGuardados = JSON.parse(localStorage.getItem("pieers_grupos")) || [];
         let bloqueado = false;
         let modoModal = false;
-        let grupoSeleccionadoDetalle = null;
+        let idxGrupoAbierto = null;
 
         const inputScanner = document.getElementById("scanner");
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -178,40 +177,49 @@
                 if (cod === "") return;
                 if (cod.length !== 13) { lanzarError(cod); } 
                 else { registrar(cod); inputScanner.value = ""; }
-            }, 50);
+            }, 30);
         });
 
+        // OPTIMIZACIÓN: Solo insertar una fila, no recrear toda la tabla
         function registrar(codigo) {
             historialActual.push(codigo);
             document.getElementById("ultimo-valor").innerText = codigo;
             sonar(800, 0.08);
             localStorage.setItem("pieers_actual", JSON.stringify(historialActual));
-            actualizarUI();
+            
+            const tbody = document.getElementById("tabla");
+            const row = tbody.insertRow(0); // Insertar al inicio para velocidad
+            const idx = historialActual.length - 1;
+            row.id = "fila-" + idx;
+            row.innerHTML = `<td>${idx + 1}</td><td>${codigo}</td><td><button onclick="eliminarFila(${idx})" style="background:red; color:white; border:none; padding:5px; border-radius:4px;">X</button></td>`;
+            
+            document.getElementById("total").innerText = historialActual.length;
         }
 
-        function actualizarUI() {
+        function actualizarUICompleta() {
             document.getElementById("total").innerText = historialActual.length;
             const t = document.getElementById("tabla");
             t.innerHTML = "";
+            // Cargar de atrás hacia adelante para ver lo último arriba
             for (let i = historialActual.length - 1; i >= 0; i--) {
-                t.innerHTML += `<tr><td>${i+1}</td><td>${historialActual[i]}</td><td><button onclick="eliminarFila(${i})" style="background:red; color:white; border:none; padding:5px; border-radius:4px;">X</button></td></tr>`;
+                t.innerHTML += `<tr id="fila-${i}"><td>${i+1}</td><td>${historialActual[i]}</td><td><button onclick="eliminarFila(${i})" style="background:red; color:white; border:none; padding:5px; border-radius:4px;">X</button></td></tr>`;
             }
         }
 
         function eliminarFila(i) {
             historialActual.splice(i, 1);
             localStorage.setItem("pieers_actual", JSON.stringify(historialActual));
-            actualizarUI();
+            actualizarUICompleta();
         }
 
         function guardarGrupoActual() {
-            if (historialActual.length === 0) return alert("Sin datos.");
+            if (historialActual.length === 0) return alert("Nada que guardar.");
             let nom = prompt("Nombre lote:", "Lote " + (gruposGuardados.length + 1));
             if (!nom) return;
-            gruposGuardados.push({ nombre: nom, fecha: new Date().toLocaleString(), datos: [...historialActual] });
+            gruposGuardados.push({ nombre: nom, datos: [...historialActual] });
             localStorage.setItem("pieers_grupos", JSON.stringify(gruposGuardados));
             historialActual = []; localStorage.removeItem("pieers_actual");
-            actualizarUI(); toggleMenu();
+            actualizarUICompleta(); toggleMenu();
         }
 
         function abrirModalGrupos() {
@@ -223,7 +231,7 @@
                     <div class="card-grupo">
                         <div style="color:white; font-size: 13px; margin-bottom:5px;"><strong>${g.nombre}</strong> (${g.datos.length} uds)</div>
                         <div style="display:flex; gap:5px;">
-                            <button class="btn-accion" style="background:#3498db; flex:1;" onclick="verLecturasGrupo(${i})">VER/BUSCAR</button>
+                            <button class="btn-accion" style="background:#3498db; flex:1;" onclick="verLecturasGrupo(${i})">VER / REANUDAR</button>
                             <button class="btn-accion" style="background:#2ecc71; flex:1;" onclick="exportarGrupo(${i})">TXT</button>
                         </div>
                     </div>`;
@@ -233,13 +241,31 @@
         }
 
         function verLecturasGrupo(idx) {
-            grupoSeleccionadoDetalle = gruposGuardados[idx];
-            document.getElementById("tituloDetalle").innerText = grupoSeleccionadoDetalle.nombre;
-            document.getElementById("resumenDetalle").style.display = "none";
-            renderizarTablaDetalle(grupoSeleccionadoDetalle.datos);
+            idxGrupoAbierto = idx;
+            const g = gruposGuardados[idx];
+            document.getElementById("tituloDetalle").innerText = g.nombre;
+            renderizarTablaDetalle(g.datos);
             document.getElementById("modalDetalle").style.display = "flex";
-            document.getElementById("input-buscar-lote").focus();
         }
+
+        // FUNCIÓN CLAVE: REANUDAR LECTURA
+        document.getElementById("btnReanudar").onclick = () => {
+            if (historialActual.length > 0) {
+                if(!confirm("Tienes lecturas en pantalla. ¿Deseas unirlas con este grupo guardado?")) return;
+            }
+            const g = gruposGuardados[idxGrupoAbierto];
+            historialActual = [...g.datos]; // Cargar datos del grupo
+            localStorage.setItem("pieers_actual", JSON.stringify(historialActual));
+            
+            // Eliminar el grupo de la lista de guardados para que no esté duplicado
+            gruposGuardados.splice(idxGrupoAbierto, 1);
+            localStorage.setItem("pieers_grupos", JSON.stringify(gruposGuardados));
+            
+            actualizarUICompleta();
+            cerrarModal('modalDetalle');
+            cerrarModal('modalGrupos');
+            alert("Grupo cargado. Puedes seguir escaneando.");
+        };
 
         function renderizarTablaDetalle(datos, filtro = "") {
             const t = document.getElementById("tablaDetalle");
@@ -253,23 +279,17 @@
                 }
             });
             if (filtro !== "") {
-                res.innerText = `TOTAL ENCONTRADO: ${cont} UNIDADES`;
+                res.innerText = `CANTIDAD: ${cont} UNIDADES`;
                 res.style.display = "block";
             } else { res.style.display = "none"; }
         }
 
-        document.getElementById("input-buscar-lote").addEventListener("input", function() {
-            let val = this.value.trim();
-            if (val.length === 13) {
-                renderizarTablaDetalle(grupoSeleccionadoDetalle.datos, val);
-                sonar(1000, 0.1);
-                this.value = "";
-            } else if (val === "") {
-                renderizarTablaDetalle(grupoSeleccionadoDetalle.datos);
-            }
-        });
-
-        function cerrarDetalle() { document.getElementById("modalDetalle").style.display = "none"; }
+        document.getElementById("input-buscar-lote").oninput = function() {
+            if(this.value.length === 13) {
+                renderizarTablaDetalle(gruposGuardados[idxGrupoAbierto].datos, this.value);
+                sonar(1000, 0.1); this.value = "";
+            } else if(this.value === "") { renderizarTablaDetalle(gruposGuardados[idxGrupoAbierto].datos); }
+        };
 
         function exportarGrupo(idx) {
             let g = gruposGuardados[idx];
@@ -280,64 +300,39 @@
             const blob = new Blob([txt], { type: "text/plain" });
             const a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
-            a.download = `${g.nombre}.txt`;
-            a.click();
+            a.download = `${g.nombre}.txt`; a.click();
         }
 
-        function cerrarModal(id) {
-            document.getElementById(id).style.display = "none";
-            modoModal = false;
-            inputScanner.focus();
-        }
+        function cerrarModal(id) { document.getElementById(id).style.display = "none"; modoModal = false; inputScanner.focus(); }
+        function cerrarDetalle() { document.getElementById("modalDetalle").style.display = "none"; }
 
         function abrirBuscadorGeneral() {
             modoModal = true;
             document.getElementById("modalBuscadorGeneral").style.display = "flex";
-            document.getElementById("resumenGeneral").style.display = "none";
-            document.getElementById("resultadosGeneral").innerHTML = "";
             document.getElementById("input-buscar-general").focus();
             toggleMenu();
         }
 
-        document.getElementById("input-buscar-general").addEventListener("input", function() {
-            let cod = this.value.trim();
-            if (cod.length === 13) {
+        document.getElementById("input-buscar-general").oninput = function() {
+            if (this.value.length === 13) {
+                let cod = this.value;
                 let resDiv = document.getElementById("resultadosGeneral");
                 let resumen = document.getElementById("resumenGeneral");
-                resDiv.innerHTML = `<h4 style="text-align:center; font-size:14px; color:white;">Resultados para: ${cod}</h4>`;
-                let hallado = false;
+                resDiv.innerHTML = "";
                 let granTotal = 0;
-
                 gruposGuardados.forEach(g => {
-                    let itemsEncontrados = [];
-                    g.datos.forEach((c, idx) => { 
-                        if(c === cod) {
-                            itemsEncontrados.push(idx + 1);
-                            granTotal++;
-                        }
-                    });
-                    if (itemsEncontrados.length > 0) {
-                        hallado = true;
-                        resDiv.innerHTML += `
-                        <div class="card-grupo">
-                            <span style="color:white; font-size:12px;">GRUPO: ${g.nombre}</span><br>
-                            <b style="color:#f1c40f; font-size:12px;">ITEMS: ${itemsEncontrados.join(", ")}</b><br>
-                            <small style="color:#2ecc71;">Cant. en este grupo: ${itemsEncontrados.length}</small>
-                        </div>`;
+                    let items = [];
+                    g.datos.forEach((c, idx) => { if(c === cod) { items.push(idx + 1); granTotal++; } });
+                    if (items.length > 0) {
+                        resDiv.innerHTML += `<div class="card-grupo"><span style="color:white; font-size:12px;">${g.nombre}</span><br><b style="color:#f1c40f;">ITEMS: ${items.join(", ")}</b></div>`;
                     }
                 });
-
-                if (hallado) {
-                    resumen.innerText = `CANTIDAD TOTAL GLOBAL: ${granTotal} UNIDADES`;
-                    resumen.style.display = "block";
-                } else {
-                    resDiv.innerHTML += "<p style='color:red; text-align:center;'>No encontrado en ningún grupo.</p>";
-                    resumen.style.display = "none";
-                }
-                this.value = "";
-                sonar(1000, 0.1);
+                resumen.innerText = "TOTAL ENCONTRADO: " + granTotal;
+                resumen.style.display = granTotal > 0 ? "block" : "none";
+                if(granTotal === 0) resDiv.innerHTML = "<p>No hallado.</p>";
+                this.value = ""; sonar(1000, 0.1);
             }
-        });
+        };
 
         function lanzarError(c) {
             bloqueado = true;
@@ -352,10 +347,9 @@
             inputScanner.value = ""; inputScanner.focus();
         }
 
-        function resetearTodo() {
-            if(confirm("¿BORRAR TODO?")) { localStorage.clear(); location.reload(); }
-        }
+        function resetearTodo() { if(confirm("¿BORRAR TODO?")) { localStorage.clear(); location.reload(); } }
 
+        actualizarUICompleta();
         document.addEventListener("click", () => { if(!bloqueado && !modoModal) inputScanner.focus(); });
     </script>
 </body>
