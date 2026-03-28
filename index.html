@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pieers Inventario Pro - Búsqueda en Lotes</title>
+    <title>Pieers Inventario Pro - Mobile Optimized</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         * {
@@ -13,65 +13,74 @@
         body { 
             background: #121212; 
             color: #e0e0e0;
-            padding: 15px; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; 
+            padding: 10px; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; 
         }
 
-        .menu-container { position: fixed; top: 15px; right: 15px; z-index: 2000; }
+        /* --- CABECERA Y MENÚ --- */
+        .menu-container { position: fixed; top: 10px; right: 10px; z-index: 2000; }
         .hamburger {
-            width: 35px; height: 30px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer;
+            width: 30px; height: 25px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer;
         }
         .hamburger div { width: 100%; height: 4px; background-color: #3498db; border-radius: 2px; }
         
         .menu-content {
-            display: none; position: absolute; right: 0; top: 40px; background: #1e1e1e; 
-            min-width: 250px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); border-radius: 8px; overflow: hidden;
+            display: none; position: absolute; right: 0; top: 35px; background: #1e1e1e; 
+            min-width: 220px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); border-radius: 8px; overflow: hidden;
         }
         .menu-content button {
-            width: 100%; border: none; padding: 15px 16px; text-align: left; background: none; color: white;
-            font-size: 13px; cursor: pointer; border-bottom: 1px solid #333;
+            width: 100%; border: none; padding: 12px 15px; text-align: left; background: none; color: white;
+            font-size: 12px; cursor: pointer; border-bottom: 1px solid #333;
         }
         .menu-content.show { display: block; }
 
+        /* --- AJUSTE DE TAMAÑOS PARA CELULAR --- */
         #scanner { 
-            width: 100%; padding: 15px; font-size: 20px; border-radius: 10px; border: 3px solid #3498db; 
-            outline: none; margin-bottom: 10px; flex-shrink: 0; text-align: center; background: #fff; color: #333;
+            width: 100%; padding: 12px; font-size: 18px; border-radius: 10px; border: 3px solid #3498db; 
+            outline: none; margin-bottom: 8px; flex-shrink: 0; text-align: center; background: #fff; color: #333;
         }
-        #scanner.error-input { background-color: #ffd6d6; border-color: #e74c3c; color: #e74c3c; }
 
         .total-container { 
-            background: #1e1e1e; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
-            display: flex; flex-direction: column; align-items: center; padding: 10px; margin-bottom: 10px; 
-            flex-shrink: 0; border-top: 5px solid #3498db; 
+            background: #1e1e1e; border-radius: 12px; padding: 8px; margin-bottom: 8px; 
+            flex-shrink: 0; border-top: 4px solid #3498db; text-align: center;
         }
-        .total-numero { font-size: 50px; font-weight: bold; color: #2ecc71; line-height: 1; }
+        .total-numero { font-size: 45px; font-weight: bold; color: #2ecc71; line-height: 1; margin: 5px 0; }
+        .total-label { font-size: 12px; color: #bdc3c7; text-transform: uppercase; }
         
-        .ultimo-codigo-panel { background: #2c3e50; color: #ecf0f1; width: 100%; text-align: center; padding: 8px; border-radius: 8px; margin-bottom: 10px; flex-shrink: 0; }
-        .ultimo-valor { font-family: monospace; font-size: 22px; font-weight: bold; color: #f1c40f; display: block; }
+        .ultimo-codigo-panel { 
+            background: #2c3e50; color: #ecf0f1; width: 100%; text-align: center; 
+            padding: 6px; border-radius: 8px; margin-bottom: 8px; flex-shrink: 0; font-size: 12px;
+        }
+        .ultimo-valor { font-family: monospace; font-size: 20px; font-weight: bold; color: #f1c40f; display: block; }
         
+        /* --- TABLA OPTIMIZADA --- */
         .excel-container { flex-grow: 1; overflow-y: auto; background: white; border-radius: 10px; border: 1px solid #ddd; }
         table { width: 100%; border-collapse: collapse; color: #333; table-layout: fixed; }
         thead { position: sticky; top: 0; z-index: 10; }
-        th { background: #2c3e50; color: white; padding: 12px 10px; font-size: 14px; text-transform: uppercase; }
+        th { background: #2c3e50; color: white; padding: 10px 5px; font-size: 12px; text-transform: uppercase; }
         
-        td { padding: 12px 10px; border: 1px solid #eee; text-align: center; font-size: 15px; background-color: #ffffff; }
-        td:first-child { background-color: #d4edda; font-weight: bold; }
+        td { padding: 10px 5px; border: 1px solid #eee; text-align: center; font-size: 14px; background-color: #ffffff; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* Resaltado solo en ITEM */
+        td:first-child { background-color: #d4edda; font-weight: bold; width: 60px; } 
+        th:nth-child(1) { width: 60px; }
+        th:nth-child(3), td:nth-child(3) { width: 70px; }
 
+        /* --- MODALES CELULAR --- */
         .modal-pantalla {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 3000; padding: 20px; flex-direction: column;
+            background: rgba(0,0,0,0.95); z-index: 3000; padding: 15px; flex-direction: column;
         }
-        .lista-items { flex-grow: 1; overflow-y: auto; background: #222; border-radius: 8px; padding: 10px; }
-        .card-grupo { background: #333; padding: 12px; margin-bottom: 10px; border-left: 5px solid #3498db; display: flex; flex-direction: column; gap: 8px; }
+        .modal-pantalla h2 { font-size: 18px; margin-top: 5px; }
+        .lista-items { flex-grow: 1; overflow-y: auto; background: #222; border-radius: 8px; padding: 8px; }
+        .card-grupo { background: #333; padding: 10px; margin-bottom: 8px; border-left: 4px solid #3498db; }
         
-        .btn-accion { padding: 8px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; color: white; }
-        .btn-cerrar { background: #e74c3c; padding: 15px; width: 100%; margin-top: 10px; }
+        .btn-accion { padding: 10px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 12px; }
+        .btn-cerrar { background: #e74c3c; padding: 12px; width: 100%; margin-top: 8px; }
 
         #alerta-inferior { 
             display: none; position: fixed; bottom: 0; left: 0; width: 100%; 
-            background: #e74c3c; color: white; padding: 15px; text-align: center; z-index: 4000;
+            background: #e74c3c; color: white; padding: 12px; text-align: center; z-index: 4000; font-size: 14px;
         }
-
-        .input-busqueda-lote { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #3498db; border-radius: 5px; text-align: center; }
     </style>
 </head>
 <body>
@@ -81,10 +90,10 @@
             <div></div><div></div><div></div>
         </div>
         <div id="menuContent" class="menu-content">
-            <button onclick="guardarGrupoActual()" style="color: #3498db; font-weight: bold;">💾 GUARDAR GRUPO ACTUAL</button>
-            <button onclick="abrirModalGrupos()" style="color: #f1c40f;">📂 VER GRUPOS GUARDADOS</button>
-            <button onclick="abrirBuscadorGeneral()" style="color: #2ecc71;">🔍 BUSCADOR GENERAL</button>
-            <hr style="border: 0; border-top: 1px solid #444;">
+            <button onclick="guardarGrupoActual()">💾 GUARDAR GRUPO ACTUAL</button>
+            <button onclick="abrirModalGrupos()">📂 VER GRUPOS GUARDADOS</button>
+            <button onclick="abrirBuscadorGeneral()">🔍 BUSCADOR GENERAL</button>
+            <hr style="border: 0; border-top: 1px solid #444; margin: 0;">
             <button onclick="resetearTodo()" style="color: #e74c3c;">🗑️ BORRAR TODO</button>
         </div>
     </div>
@@ -92,12 +101,12 @@
     <input id="scanner" inputmode="none" autofocus placeholder="ESCANEE AQUÍ" autocomplete="off">
 
     <div class="total-container">
-        <div style="font-size: 14px; font-weight: bold; color: #bdc3c7; text-transform: uppercase;">Total Unidades</div>
+        <div class="total-label">Total Unidades</div>
         <div class="total-numero" id="total">0</div>
     </div>
 
     <div class="ultimo-codigo-panel">
-        ÚLTIMO REGISTRO: <span id="ultimo-valor" class="ultimo-valor">---</span>
+        ÚLTIMO: <span id="ultimo-valor" class="ultimo-valor">---</span>
     </div>
 
     <div class="excel-container">
@@ -108,33 +117,33 @@
     </div>
 
     <div id="modalGrupos" class="modal-pantalla">
-        <h2 style="color: #f1c40f; text-align: center;">GRUPOS GUARDADOS</h2>
+        <h2 style="color: #f1c40f; text-align: center;">GRUPOS</h2>
         <div id="listaGrupos" class="lista-items"></div>
         <button class="btn-accion btn-cerrar" onclick="cerrarModal('modalGrupos')">VOLVER</button>
     </div>
 
     <div id="modalDetalle" class="modal-pantalla">
-        <h2 id="tituloDetalle" style="color: #3498db; text-align: center; margin-bottom: 5px;"></h2>
-        <input id="input-buscar-lote" class="input-busqueda-lote" placeholder="ESCANEE PARA FILTRAR ITEMS">
-        <div class="excel-container" style="margin-bottom: 10px;">
+        <h2 id="tituloDetalle" style="color: #3498db; text-align: center;"></h2>
+        <input id="input-buscar-lote" style="width:100%; padding:10px; margin-bottom:10px; text-align:center;" placeholder="ESCANEE PARA FILTRAR">
+        <div class="excel-container" style="margin-bottom: 8px;">
             <table>
                 <thead><tr><th>Item</th><th>Código</th></tr></thead>
                 <tbody id="tablaDetalle"></tbody>
             </table>
         </div>
-        <button class="btn-accion btn-cerrar" onclick="cerrarDetalle()">VOLVER A LISTA</button>
+        <button class="btn-accion btn-cerrar" onclick="cerrarDetalle()">VOLVER</button>
     </div>
 
     <div id="modalBuscadorGeneral" class="modal-pantalla">
         <h2 style="color: #2ecc71; text-align: center;">BUSCADOR GENERAL</h2>
-        <input id="input-buscar-general" style="width:100%; padding:15px; text-align:center; margin-bottom:10px;" placeholder="ESCANEE PARA BUSCAR EN TODOS LOS GRUPOS">
+        <input id="input-buscar-general" style="width:100%; padding:15px; text-align:center; margin-bottom:10px;" placeholder="ESCANEE CÓDIGO">
         <div id="resultadosGeneral" class="lista-items"></div>
         <button class="btn-accion btn-cerrar" onclick="cerrarModal('modalBuscadorGeneral')">CERRAR</button>
     </div>
 
     <div id="alerta-inferior">
         <div id="cod-erroneo"></div>
-        <button onclick="desbloquear()" style="background:#f1c40f; padding:10px; border:none; margin-top:5px; color: black; font-weight: bold;">CORREGIR</button>
+        <button onclick="desbloquear()" style="background:#f1c40f; padding:8px; border:none; margin-top:5px; color:black; font-weight:bold;">CORREGIR</button>
     </div>
 
     <script>
@@ -183,7 +192,7 @@
             const t = document.getElementById("tabla");
             t.innerHTML = "";
             for (let i = historialActual.length - 1; i >= 0; i--) {
-                t.innerHTML += `<tr><td>${i+1}</td><td><b>${historialActual[i]}</b></td><td><button onclick="eliminarFila(${i})" style="background:red; color:white; border:none; padding:8px; border-radius:4px;">X</button></td></tr>`;
+                t.innerHTML += `<tr><td>${i+1}</td><td>${historialActual[i]}</td><td><button onclick="eliminarFila(${i})" style="background:red; color:white; border:none; padding:5px; border-radius:4px;">X</button></td></tr>`;
             }
         }
 
@@ -194,8 +203,8 @@
         }
 
         function guardarGrupoActual() {
-            if (historialActual.length === 0) return alert("Nada que guardar.");
-            let nom = prompt("Nombre del lote:", "Lote " + (gruposGuardados.length + 1));
+            if (historialActual.length === 0) return alert("Sin datos.");
+            let nom = prompt("Nombre lote:", "Lote " + (gruposGuardados.length + 1));
             if (!nom) return;
             gruposGuardados.push({ nombre: nom, fecha: new Date().toLocaleString(), datos: [...historialActual] });
             localStorage.setItem("pieers_grupos", JSON.stringify(gruposGuardados));
@@ -210,10 +219,10 @@
             gruposGuardados.forEach((g, i) => {
                 lista.innerHTML += `
                     <div class="card-grupo">
-                        <div style="color:white; font-size: 14px;"><strong>${g.nombre}</strong> (${g.datos.length} uds)</div>
+                        <div style="color:white; font-size: 13px; margin-bottom:5px;"><strong>${g.nombre}</strong> (${g.datos.length} uds)</div>
                         <div style="display:flex; gap:5px;">
-                            <button class="btn-accion" style="background:#3498db; flex:1;" onclick="verLecturasGrupo(${i})">VER/BUSCAR</button>
-                            <button class="btn-accion" style="background:#2ecc71; flex:1;" onclick="exportarGrupo(${i})">EXPORTAR</button>
+                            <button class="btn-accion" style="background:#3498db; flex:1;" onclick="verLecturasGrupo(${i})">VER</button>
+                            <button class="btn-accion" style="background:#2ecc71; flex:1;" onclick="exportarGrupo(${i})">TXT</button>
                         </div>
                     </div>`;
             });
@@ -239,22 +248,18 @@
             });
         }
 
-        // BÚSQUEDA INTERNA POR LECTURA EN EL LOTE
         document.getElementById("input-buscar-lote").addEventListener("input", function() {
             let val = this.value.trim();
             if (val.length === 13) {
                 renderizarTablaDetalle(grupoSeleccionadoDetalle.datos, val);
                 sonar(1000, 0.1);
-                this.value = ""; // Limpiar para nueva lectura
+                this.value = "";
             } else if (val === "") {
                 renderizarTablaDetalle(grupoSeleccionadoDetalle.datos);
             }
         });
 
-        function cerrarDetalle() {
-            document.getElementById("modalDetalle").style.display = "none";
-            document.getElementById("input-buscar-lote").value = "";
-        }
+        function cerrarDetalle() { document.getElementById("modalDetalle").style.display = "none"; }
 
         function exportarGrupo(idx) {
             let g = gruposGuardados[idx];
@@ -286,18 +291,17 @@
             let cod = this.value.trim();
             if (cod.length === 13) {
                 let res = document.getElementById("resultadosGeneral");
-                res.innerHTML = `<h4 style="text-align:center;">Buscando: ${cod}</h4>`;
+                res.innerHTML = `<h4 style="text-align:center; font-size:14px;">Buscando: ${cod}</h4>`;
                 let hallado = false;
                 gruposGuardados.forEach(g => {
                     let itemsEncontrados = [];
                     g.datos.forEach((c, idx) => { if(c === cod) itemsEncontrados.push(idx + 1); });
-                    
                     if (itemsEncontrados.length > 0) {
                         hallado = true;
                         res.innerHTML += `
                         <div class="card-grupo">
-                            <span style="color:white">GRUPO: ${g.nombre}</span>
-                            <b style="color:#f1c40f;">EN ITEMS: ${itemsEncontrados.join(", ")}</b>
+                            <span style="color:white; font-size:12px;">GRUPO: ${g.nombre}</span><br>
+                            <b style="color:#f1c40f; font-size:12px;">ITEMS: ${itemsEncontrados.join(", ")}</b>
                         </div>`;
                     }
                 });
