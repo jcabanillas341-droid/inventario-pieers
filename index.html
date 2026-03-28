@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pieers Inventario Pro - Mobile Optimized</title>
+    <title>Pieers Inventario Pro - Final con Totales</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         * {
@@ -33,7 +33,6 @@
         }
         .menu-content.show { display: block; }
 
-        /* --- AJUSTE DE TAMAÑOS PARA CELULAR --- */
         #scanner { 
             width: 100%; padding: 12px; font-size: 18px; border-radius: 10px; border: 3px solid #3498db; 
             outline: none; margin-bottom: 8px; flex-shrink: 0; text-align: center; background: #fff; color: #333;
@@ -52,34 +51,35 @@
         }
         .ultimo-valor { font-family: monospace; font-size: 20px; font-weight: bold; color: #f1c40f; display: block; }
         
-        /* --- TABLA OPTIMIZADA --- */
+        /* --- TABLA --- */
         .excel-container { flex-grow: 1; overflow-y: auto; background: white; border-radius: 10px; border: 1px solid #ddd; }
         table { width: 100%; border-collapse: collapse; color: #333; table-layout: fixed; }
         thead { position: sticky; top: 0; z-index: 10; }
         th { background: #2c3e50; color: white; padding: 10px 5px; font-size: 12px; text-transform: uppercase; }
-        
-        td { padding: 10px 5px; border: 1px solid #eee; text-align: center; font-size: 14px; background-color: #ffffff; overflow: hidden; text-overflow: ellipsis; }
+        td { padding: 10px 5px; border: 1px solid #eee; text-align: center; font-size: 14px; background-color: #ffffff; }
         
         /* Resaltado solo en ITEM */
         td:first-child { background-color: #d4edda; font-weight: bold; width: 60px; } 
         th:nth-child(1) { width: 60px; }
         th:nth-child(3), td:nth-child(3) { width: 70px; }
 
-        /* --- MODALES CELULAR --- */
+        /* --- MODALES --- */
         .modal-pantalla {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.95); z-index: 3000; padding: 15px; flex-direction: column;
         }
-        .modal-pantalla h2 { font-size: 18px; margin-top: 5px; }
         .lista-items { flex-grow: 1; overflow-y: auto; background: #222; border-radius: 8px; padding: 8px; }
         .card-grupo { background: #333; padding: 10px; margin-bottom: 8px; border-left: 4px solid #3498db; }
         
+        /* Resaltado de conteo total en búsquedas */
+        .resumen-busqueda { background: #2ecc71; color: #000; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 10px; font-size: 16px; }
+
         .btn-accion { padding: 10px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 12px; }
         .btn-cerrar { background: #e74c3c; padding: 12px; width: 100%; margin-top: 8px; }
 
         #alerta-inferior { 
             display: none; position: fixed; bottom: 0; left: 0; width: 100%; 
-            background: #e74c3c; color: white; padding: 12px; text-align: center; z-index: 4000; font-size: 14px;
+            background: #e74c3c; color: white; padding: 12px; text-align: center; z-index: 4000;
         }
     </style>
 </head>
@@ -124,7 +124,8 @@
 
     <div id="modalDetalle" class="modal-pantalla">
         <h2 id="tituloDetalle" style="color: #3498db; text-align: center;"></h2>
-        <input id="input-buscar-lote" style="width:100%; padding:10px; margin-bottom:10px; text-align:center;" placeholder="ESCANEE PARA FILTRAR">
+        <div id="resumenDetalle" class="resumen-busqueda" style="display:none;"></div>
+        <input id="input-buscar-lote" style="width:100%; padding:10px; margin-bottom:10px; text-align:center;" placeholder="FILTRAR EN ESTE LOTE">
         <div class="excel-container" style="margin-bottom: 8px;">
             <table>
                 <thead><tr><th>Item</th><th>Código</th></tr></thead>
@@ -136,7 +137,8 @@
 
     <div id="modalBuscadorGeneral" class="modal-pantalla">
         <h2 style="color: #2ecc71; text-align: center;">BUSCADOR GENERAL</h2>
-        <input id="input-buscar-general" style="width:100%; padding:15px; text-align:center; margin-bottom:10px;" placeholder="ESCANEE CÓDIGO">
+        <div id="resumenGeneral" class="resumen-busqueda" style="display:none;"></div>
+        <input id="input-buscar-general" style="width:100%; padding:15px; text-align:center; margin-bottom:10px;" placeholder="BUSCAR EN TODO">
         <div id="resultadosGeneral" class="lista-items"></div>
         <button class="btn-accion btn-cerrar" onclick="cerrarModal('modalBuscadorGeneral')">CERRAR</button>
     </div>
@@ -221,7 +223,7 @@
                     <div class="card-grupo">
                         <div style="color:white; font-size: 13px; margin-bottom:5px;"><strong>${g.nombre}</strong> (${g.datos.length} uds)</div>
                         <div style="display:flex; gap:5px;">
-                            <button class="btn-accion" style="background:#3498db; flex:1;" onclick="verLecturasGrupo(${i})">VER</button>
+                            <button class="btn-accion" style="background:#3498db; flex:1;" onclick="verLecturasGrupo(${i})">VER/BUSCAR</button>
                             <button class="btn-accion" style="background:#2ecc71; flex:1;" onclick="exportarGrupo(${i})">TXT</button>
                         </div>
                     </div>`;
@@ -233,6 +235,7 @@
         function verLecturasGrupo(idx) {
             grupoSeleccionadoDetalle = gruposGuardados[idx];
             document.getElementById("tituloDetalle").innerText = grupoSeleccionadoDetalle.nombre;
+            document.getElementById("resumenDetalle").style.display = "none";
             renderizarTablaDetalle(grupoSeleccionadoDetalle.datos);
             document.getElementById("modalDetalle").style.display = "flex";
             document.getElementById("input-buscar-lote").focus();
@@ -240,12 +243,19 @@
 
         function renderizarTablaDetalle(datos, filtro = "") {
             const t = document.getElementById("tablaDetalle");
+            const res = document.getElementById("resumenDetalle");
             t.innerHTML = "";
+            let cont = 0;
             datos.forEach((cod, i) => {
-                if (filtro === "" || cod.includes(filtro)) {
+                if (filtro === "" || cod === filtro) {
                     t.innerHTML += `<tr><td>${i+1}</td><td>${cod}</td></tr>`;
+                    if(filtro !== "") cont++;
                 }
             });
+            if (filtro !== "") {
+                res.innerText = `TOTAL ENCONTRADO: ${cont} UNIDADES`;
+                res.style.display = "block";
+            } else { res.style.display = "none"; }
         }
 
         document.getElementById("input-buscar-lote").addEventListener("input", function() {
@@ -283,6 +293,8 @@
         function abrirBuscadorGeneral() {
             modoModal = true;
             document.getElementById("modalBuscadorGeneral").style.display = "flex";
+            document.getElementById("resumenGeneral").style.display = "none";
+            document.getElementById("resultadosGeneral").innerHTML = "";
             document.getElementById("input-buscar-general").focus();
             toggleMenu();
         }
@@ -290,22 +302,38 @@
         document.getElementById("input-buscar-general").addEventListener("input", function() {
             let cod = this.value.trim();
             if (cod.length === 13) {
-                let res = document.getElementById("resultadosGeneral");
-                res.innerHTML = `<h4 style="text-align:center; font-size:14px;">Buscando: ${cod}</h4>`;
+                let resDiv = document.getElementById("resultadosGeneral");
+                let resumen = document.getElementById("resumenGeneral");
+                resDiv.innerHTML = `<h4 style="text-align:center; font-size:14px; color:white;">Resultados para: ${cod}</h4>`;
                 let hallado = false;
+                let granTotal = 0;
+
                 gruposGuardados.forEach(g => {
                     let itemsEncontrados = [];
-                    g.datos.forEach((c, idx) => { if(c === cod) itemsEncontrados.push(idx + 1); });
+                    g.datos.forEach((c, idx) => { 
+                        if(c === cod) {
+                            itemsEncontrados.push(idx + 1);
+                            granTotal++;
+                        }
+                    });
                     if (itemsEncontrados.length > 0) {
                         hallado = true;
-                        res.innerHTML += `
+                        resDiv.innerHTML += `
                         <div class="card-grupo">
                             <span style="color:white; font-size:12px;">GRUPO: ${g.nombre}</span><br>
-                            <b style="color:#f1c40f; font-size:12px;">ITEMS: ${itemsEncontrados.join(", ")}</b>
+                            <b style="color:#f1c40f; font-size:12px;">ITEMS: ${itemsEncontrados.join(", ")}</b><br>
+                            <small style="color:#2ecc71;">Cant. en este grupo: ${itemsEncontrados.length}</small>
                         </div>`;
                     }
                 });
-                if (!hallado) res.innerHTML += "<p style='color:red; text-align:center;'>No encontrado.</p>";
+
+                if (hallado) {
+                    resumen.innerText = `CANTIDAD TOTAL GLOBAL: ${granTotal} UNIDADES`;
+                    resumen.style.display = "block";
+                } else {
+                    resDiv.innerHTML += "<p style='color:red; text-align:center;'>No encontrado en ningún grupo.</p>";
+                    resumen.style.display = "none";
+                }
                 this.value = "";
                 sonar(1000, 0.1);
             }
