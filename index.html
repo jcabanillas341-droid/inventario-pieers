@@ -2,14 +2,18 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pieers Inventario Pro</title>
+    <title>Pieers Inventario Pro - Búsqueda en Lotes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
+        * {
+            font-family: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
+            box-sizing: border-box;
+        }
+
         body { 
-            font-family: 'Segoe UI', Arial, sans-serif; 
             background: #121212; 
             color: #e0e0e0;
-            padding: 15px; margin: 0; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; overflow: hidden; 
+            padding: 15px; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; 
         }
 
         .menu-container { position: fixed; top: 15px; right: 15px; z-index: 2000; }
@@ -20,13 +24,19 @@
         
         .menu-content {
             display: none; position: absolute; right: 0; top: 40px; background: #1e1e1e; 
-            min-width: 180px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); border-radius: 8px; overflow: hidden;
+            min-width: 250px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); border-radius: 8px; overflow: hidden;
         }
         .menu-content button {
             width: 100%; border: none; padding: 15px 16px; text-align: left; background: none; color: white;
-            font-size: 14px; cursor: pointer; border-bottom: 1px solid #333;
+            font-size: 13px; cursor: pointer; border-bottom: 1px solid #333;
         }
         .menu-content.show { display: block; }
+
+        #scanner { 
+            width: 100%; padding: 15px; font-size: 20px; border-radius: 10px; border: 3px solid #3498db; 
+            outline: none; margin-bottom: 10px; flex-shrink: 0; text-align: center; background: #fff; color: #333;
+        }
+        #scanner.error-input { background-color: #ffd6d6; border-color: #e74c3c; color: #e74c3c; }
 
         .total-container { 
             background: #1e1e1e; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); 
@@ -38,25 +48,30 @@
         .ultimo-codigo-panel { background: #2c3e50; color: #ecf0f1; width: 100%; text-align: center; padding: 8px; border-radius: 8px; margin-bottom: 10px; flex-shrink: 0; }
         .ultimo-valor { font-family: monospace; font-size: 22px; font-weight: bold; color: #f1c40f; display: block; }
         
-        #scanner { 
-            width: 100%; padding: 15px; font-size: 18px; border-radius: 10px; border: 3px solid #3498db; 
-            outline: none; margin-bottom: 8px; box-sizing: border-box; text-align: center; background: #fff; color: #333;
-        }
-        #scanner.error-input { background-color: #ffd6d6; border-color: #e74c3c; color: #e74c3c; }
-
-        .excel-container { flex-grow: 1; overflow-y: auto; background: white; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 10px; }
-        table { width: 100%; border-collapse: collapse; color: #333; }
+        .excel-container { flex-grow: 1; overflow-y: auto; background: white; border-radius: 10px; border: 1px solid #ddd; }
+        table { width: 100%; border-collapse: collapse; color: #333; table-layout: fixed; }
         thead { position: sticky; top: 0; z-index: 10; }
-        th { background: #2c3e50; color: white; padding: 10px; font-size: 13px; }
-        td { padding: 10px; border: 1px solid #eee; text-align: center; font-size: 14px; }
-        tr:nth-child(even) { background-color: #f2f2f2; }
+        th { background: #2c3e50; color: white; padding: 12px 10px; font-size: 14px; text-transform: uppercase; }
+        
+        td { padding: 12px 10px; border: 1px solid #eee; text-align: center; font-size: 15px; background-color: #ffffff; }
+        td:first-child { background-color: #d4edda; font-weight: bold; }
+
+        .modal-pantalla {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 3000; padding: 20px; flex-direction: column;
+        }
+        .lista-items { flex-grow: 1; overflow-y: auto; background: #222; border-radius: 8px; padding: 10px; }
+        .card-grupo { background: #333; padding: 12px; margin-bottom: 10px; border-left: 5px solid #3498db; display: flex; flex-direction: column; gap: 8px; }
+        
+        .btn-accion { padding: 8px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; color: white; }
+        .btn-cerrar { background: #e74c3c; padding: 15px; width: 100%; margin-top: 10px; }
 
         #alerta-inferior { 
             display: none; position: fixed; bottom: 0; left: 0; width: 100%; 
-            background: #e74c3c; color: white; padding: 15px; box-sizing: border-box;
-            text-align: center; z-index: 1000; flex-direction: column; align-items: center;
+            background: #e74c3c; color: white; padding: 15px; text-align: center; z-index: 4000;
         }
-        .btn-autorizar { background: #f1c40f; color: #2c3e50; border: none; padding: 12px 25px; font-size: 16px; font-weight: bold; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+
+        .input-busqueda-lote { width: 100%; padding: 12px; margin-bottom: 10px; border: 2px solid #3498db; border-radius: 5px; text-align: center; }
     </style>
 </head>
 <body>
@@ -66,14 +81,18 @@
             <div></div><div></div><div></div>
         </div>
         <div id="menuContent" class="menu-content">
-            <button onclick="compartirArchivo()" style="color: #25D366; font-weight: bold;">COMPARTIR TXT 📱</button>
-            <button onclick="exportar()">DESCARGAR TXT 📄</button>
-            <button onclick="resetearTodo()" style="color: #e74c3c;">BORRAR TODO 🗑️</button>
+            <button onclick="guardarGrupoActual()" style="color: #3498db; font-weight: bold;">💾 GUARDAR GRUPO ACTUAL</button>
+            <button onclick="abrirModalGrupos()" style="color: #f1c40f;">📂 VER GRUPOS GUARDADOS</button>
+            <button onclick="abrirBuscadorGeneral()" style="color: #2ecc71;">🔍 BUSCADOR GENERAL</button>
+            <hr style="border: 0; border-top: 1px solid #444;">
+            <button onclick="resetearTodo()" style="color: #e74c3c;">🗑️ BORRAR TODO</button>
         </div>
     </div>
 
+    <input id="scanner" inputmode="none" autofocus placeholder="ESCANEE AQUÍ" autocomplete="off">
+
     <div class="total-container">
-        <div style="font-size: 12px; font-weight: bold; color: #bdc3c7;">TOTAL UNIDADES</div>
+        <div style="font-size: 14px; font-weight: bold; color: #bdc3c7; text-transform: uppercase;">Total Unidades</div>
         <div class="total-numero" id="total">0</div>
     </div>
 
@@ -81,50 +100,54 @@
         ÚLTIMO REGISTRO: <span id="ultimo-valor" class="ultimo-valor">---</span>
     </div>
 
-    <input id="scanner" inputmode="none" autofocus placeholder="ESCANEE AQUÍ" autocomplete="off">
-
     <div class="excel-container">
         <table>
-            <thead>
-                <tr>
-                    <th>Código</th>
-                    <th>Cant.</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
+            <thead><tr><th>Item</th><th>Código</th><th>Acción</th></tr></thead>
             <tbody id="tabla"></tbody>
         </table>
     </div>
 
+    <div id="modalGrupos" class="modal-pantalla">
+        <h2 style="color: #f1c40f; text-align: center;">GRUPOS GUARDADOS</h2>
+        <div id="listaGrupos" class="lista-items"></div>
+        <button class="btn-accion btn-cerrar" onclick="cerrarModal('modalGrupos')">VOLVER</button>
+    </div>
+
+    <div id="modalDetalle" class="modal-pantalla">
+        <h2 id="tituloDetalle" style="color: #3498db; text-align: center; margin-bottom: 5px;"></h2>
+        <input id="input-buscar-lote" class="input-busqueda-lote" placeholder="ESCANEE PARA FILTRAR ITEMS">
+        <div class="excel-container" style="margin-bottom: 10px;">
+            <table>
+                <thead><tr><th>Item</th><th>Código</th></tr></thead>
+                <tbody id="tablaDetalle"></tbody>
+            </table>
+        </div>
+        <button class="btn-accion btn-cerrar" onclick="cerrarDetalle()">VOLVER A LISTA</button>
+    </div>
+
+    <div id="modalBuscadorGeneral" class="modal-pantalla">
+        <h2 style="color: #2ecc71; text-align: center;">BUSCADOR GENERAL</h2>
+        <input id="input-buscar-general" style="width:100%; padding:15px; text-align:center; margin-bottom:10px;" placeholder="ESCANEE PARA BUSCAR EN TODOS LOS GRUPOS">
+        <div id="resultadosGeneral" class="lista-items"></div>
+        <button class="btn-accion btn-cerrar" onclick="cerrarModal('modalBuscadorGeneral')">CERRAR</button>
+    </div>
+
     <div id="alerta-inferior">
-        <div style="font-weight: bold; font-size: 16px;">⚠️ LECTURA ERRÓNEA: <span id="cod-erroneo"></span></div>
-        <button class="btn-autorizar" onclick="desbloquear()">CORREGIR Y SEGUIR</button>
+        <div id="cod-erroneo"></div>
+        <button onclick="desbloquear()" style="background:#f1c40f; padding:10px; border:none; margin-top:5px; color: black; font-weight: bold;">CORREGIR</button>
     </div>
 
     <script>
-        let inventario = JSON.parse(localStorage.getItem("inv_data")) || {};
-        let totalGeneral = parseInt(localStorage.getItem("inv_total")) || 0;
+        let historialActual = JSON.parse(localStorage.getItem("pieers_actual")) || [];
+        let gruposGuardados = JSON.parse(localStorage.getItem("pieers_grupos")) || [];
         let bloqueado = false;
-        let intervaloAlarma;
+        let modoModal = false;
+        let grupoSeleccionadoDetalle = null;
+
         const inputScanner = document.getElementById("scanner");
-        const totalDisplay = document.getElementById("total");
-        const ultimoValorTxt = document.getElementById("ultimo-valor");
-        const alertaInf = document.getElementById("alerta-inferior");
-        const tablaCuerpo = document.getElementById("tabla");
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        window.onload = () => {
-            totalDisplay.innerText = totalGeneral;
-            actualizarTablaUI();
-            inputScanner.focus();
-        };
-
         function toggleMenu() { document.getElementById("menuContent").classList.toggle("show"); }
-
-        function guardar() {
-            localStorage.setItem("inv_data", JSON.stringify(inventario));
-            localStorage.setItem("inv_total", totalGeneral.toString());
-        }
 
         function sonar(freq, dur) {
             const osc = audioCtx.createOscillator();
@@ -136,10 +159,10 @@
             osc.start(); osc.stop(audioCtx.currentTime + dur);
         }
 
-        inputScanner.addEventListener("input", function() {
-            if (bloqueado) { inputScanner.value = ""; return; }
-            clearTimeout(window.scanTimeout);
-            window.scanTimeout = setTimeout(() => {
+        inputScanner.addEventListener("input", () => {
+            if (bloqueado) return;
+            clearTimeout(window.scanT);
+            window.scanT = setTimeout(() => {
                 let cod = inputScanner.value.trim();
                 if (cod === "") return;
                 if (cod.length !== 13) { lanzarError(cod); } 
@@ -148,96 +171,160 @@
         });
 
         function registrar(codigo) {
-            totalGeneral++;
-            totalDisplay.innerText = totalGeneral;
-            ultimoValorTxt.innerText = codigo;
+            historialActual.push(codigo);
+            document.getElementById("ultimo-valor").innerText = codigo;
             sonar(800, 0.08);
-            inventario[codigo] = (inventario[codigo] || 0) + 1;
-            guardar();
-            actualizarTablaUI();
+            localStorage.setItem("pieers_actual", JSON.stringify(historialActual));
+            actualizarUI();
         }
 
-        function actualizarTablaUI() {
-            tablaCuerpo.innerHTML = "";
-            let claves = Object.keys(inventario).reverse();
-            claves.forEach(codigo => {
-                let nuevaFila = document.createElement("tr");
-                nuevaFila.innerHTML = `<td><b>${codigo}</b></td><td><b style="color:#27ae60">${inventario[codigo]}</b></td><td><button style="background:#f39c12; color:white; border:none; padding:5px 10px; border-radius:4px;" onclick="restar('${codigo}')">-1</button></td>`;
-                tablaCuerpo.appendChild(nuevaFila);
+        function actualizarUI() {
+            document.getElementById("total").innerText = historialActual.length;
+            const t = document.getElementById("tabla");
+            t.innerHTML = "";
+            for (let i = historialActual.length - 1; i >= 0; i--) {
+                t.innerHTML += `<tr><td>${i+1}</td><td><b>${historialActual[i]}</b></td><td><button onclick="eliminarFila(${i})" style="background:red; color:white; border:none; padding:8px; border-radius:4px;">X</button></td></tr>`;
+            }
+        }
+
+        function eliminarFila(i) {
+            historialActual.splice(i, 1);
+            localStorage.setItem("pieers_actual", JSON.stringify(historialActual));
+            actualizarUI();
+        }
+
+        function guardarGrupoActual() {
+            if (historialActual.length === 0) return alert("Nada que guardar.");
+            let nom = prompt("Nombre del lote:", "Lote " + (gruposGuardados.length + 1));
+            if (!nom) return;
+            gruposGuardados.push({ nombre: nom, fecha: new Date().toLocaleString(), datos: [...historialActual] });
+            localStorage.setItem("pieers_grupos", JSON.stringify(gruposGuardados));
+            historialActual = []; localStorage.removeItem("pieers_actual");
+            actualizarUI(); toggleMenu();
+        }
+
+        function abrirModalGrupos() {
+            modoModal = true;
+            const lista = document.getElementById("listaGrupos");
+            lista.innerHTML = "";
+            gruposGuardados.forEach((g, i) => {
+                lista.innerHTML += `
+                    <div class="card-grupo">
+                        <div style="color:white; font-size: 14px;"><strong>${g.nombre}</strong> (${g.datos.length} uds)</div>
+                        <div style="display:flex; gap:5px;">
+                            <button class="btn-accion" style="background:#3498db; flex:1;" onclick="verLecturasGrupo(${i})">VER/BUSCAR</button>
+                            <button class="btn-accion" style="background:#2ecc71; flex:1;" onclick="exportarGrupo(${i})">EXPORTAR</button>
+                        </div>
+                    </div>`;
+            });
+            document.getElementById("modalGrupos").style.display = "flex";
+            toggleMenu();
+        }
+
+        function verLecturasGrupo(idx) {
+            grupoSeleccionadoDetalle = gruposGuardados[idx];
+            document.getElementById("tituloDetalle").innerText = grupoSeleccionadoDetalle.nombre;
+            renderizarTablaDetalle(grupoSeleccionadoDetalle.datos);
+            document.getElementById("modalDetalle").style.display = "flex";
+            document.getElementById("input-buscar-lote").focus();
+        }
+
+        function renderizarTablaDetalle(datos, filtro = "") {
+            const t = document.getElementById("tablaDetalle");
+            t.innerHTML = "";
+            datos.forEach((cod, i) => {
+                if (filtro === "" || cod.includes(filtro)) {
+                    t.innerHTML += `<tr><td>${i+1}</td><td>${cod}</td></tr>`;
+                }
             });
         }
 
-        function restar(cod) {
-            if (bloqueado) return;
-            if (inventario[cod] > 1) { inventario[cod]--; } 
-            else { delete inventario[cod]; }
-            totalGeneral--;
-            totalDisplay.innerText = totalGeneral;
-            guardar();
-            actualizarTablaUI();
+        // BÚSQUEDA INTERNA POR LECTURA EN EL LOTE
+        document.getElementById("input-buscar-lote").addEventListener("input", function() {
+            let val = this.value.trim();
+            if (val.length === 13) {
+                renderizarTablaDetalle(grupoSeleccionadoDetalle.datos, val);
+                sonar(1000, 0.1);
+                this.value = ""; // Limpiar para nueva lectura
+            } else if (val === "") {
+                renderizarTablaDetalle(grupoSeleccionadoDetalle.datos);
+            }
+        });
+
+        function cerrarDetalle() {
+            document.getElementById("modalDetalle").style.display = "none";
+            document.getElementById("input-buscar-lote").value = "";
         }
 
-        function lanzarError(cod) {
+        function exportarGrupo(idx) {
+            let g = gruposGuardados[idx];
+            let conteo = {};
+            g.datos.forEach(c => conteo[c] = (conteo[c] || 0) + 1);
+            let txt = "";
+            Object.entries(conteo).forEach(([c, q]) => txt += `${c}|${q}\n`);
+            const blob = new Blob([txt], { type: "text/plain" });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(blob);
+            a.download = `${g.nombre}.txt`;
+            a.click();
+        }
+
+        function cerrarModal(id) {
+            document.getElementById(id).style.display = "none";
+            modoModal = false;
+            inputScanner.focus();
+        }
+
+        function abrirBuscadorGeneral() {
+            modoModal = true;
+            document.getElementById("modalBuscadorGeneral").style.display = "flex";
+            document.getElementById("input-buscar-general").focus();
+            toggleMenu();
+        }
+
+        document.getElementById("input-buscar-general").addEventListener("input", function() {
+            let cod = this.value.trim();
+            if (cod.length === 13) {
+                let res = document.getElementById("resultadosGeneral");
+                res.innerHTML = `<h4 style="text-align:center;">Buscando: ${cod}</h4>`;
+                let hallado = false;
+                gruposGuardados.forEach(g => {
+                    let itemsEncontrados = [];
+                    g.datos.forEach((c, idx) => { if(c === cod) itemsEncontrados.push(idx + 1); });
+                    
+                    if (itemsEncontrados.length > 0) {
+                        hallado = true;
+                        res.innerHTML += `
+                        <div class="card-grupo">
+                            <span style="color:white">GRUPO: ${g.nombre}</span>
+                            <b style="color:#f1c40f;">EN ITEMS: ${itemsEncontrados.join(", ")}</b>
+                        </div>`;
+                    }
+                });
+                if (!hallado) res.innerHTML += "<p style='color:red; text-align:center;'>No encontrado.</p>";
+                this.value = "";
+                sonar(1000, 0.1);
+            }
+        });
+
+        function lanzarError(c) {
             bloqueado = true;
-            inputScanner.classList.add("error-input");
-            document.getElementById("cod-erroneo").innerText = cod;
-            alertaInf.style.display = "flex";
-            sonar(200, 0.4);
-            intervaloAlarma = setInterval(() => sonar(200, 0.4), 800);
+            document.getElementById("cod-erroneo").innerText = "ERROR: " + c;
+            document.getElementById("alerta-inferior").style.display = "block";
+            sonar(200, 0.5);
         }
 
         function desbloquear() {
             bloqueado = false;
-            clearInterval(intervaloAlarma);
-            alertaInf.style.display = "none";
-            inputScanner.classList.remove("error-input");
-            inputScanner.value = "";
-            inputScanner.focus();
+            document.getElementById("alerta-inferior").style.display = "none";
+            inputScanner.value = ""; inputScanner.focus();
         }
 
         function resetearTodo() {
-            if(confirm("¿BORRAR TODO?")){ localStorage.clear(); location.reload(); }
+            if(confirm("¿BORRAR TODO?")) { localStorage.clear(); location.reload(); }
         }
 
-        function generarContenido() {
-            let datos = Object.entries(inventario);
-            let texto = ""; 
-            datos.forEach(([c, q]) => { texto += `${c}|${q}\n`; });
-            return texto;
-        }
-
-        function exportar() {
-            let texto = generarContenido();
-            if (!texto) return alert("Sin datos.");
-            let nombre = prompt("Nombre del archivo:", "inventario");
-            if (!nombre) return;
-            const blob = new Blob([texto], { type: "text/plain" });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `${nombre}.txt`;
-            link.click();
-        }
-
-        async function compartirArchivo() {
-            let texto = generarContenido();
-            if (!texto) return alert("Sin datos.");
-            let nombre = prompt("Nombre para compartir:", "inventario");
-            if (!nombre) return;
-            const file = new File([new Blob([texto], { type: 'text/plain' })], `${nombre}.txt`, { type: 'text/plain' });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                try {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Inventario Pieers',
-                        text: 'Adjunto reporte.'
-                    });
-                } catch (err) { console.log(err); }
-            } else { alert("Tu dispositivo no soporta compartir archivos."); }
-        }
-
-        document.addEventListener("click", (e) => {
-            if (!bloqueado && e.target.tagName !== 'BUTTON' && !e.target.closest('.menu-container')) inputScanner.focus();
-        });
+        document.addEventListener("click", () => { if(!bloqueado && !modoModal) inputScanner.focus(); });
     </script>
 </body>
 </html>
