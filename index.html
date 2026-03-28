@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pieers Inventario Pro - Ultra Rápido</title>
+    <title>Pieers Inventario Pro - Ultra Fast</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         * {
@@ -51,7 +51,7 @@
         }
         .ultimo-valor { font-family: monospace; font-size: 20px; font-weight: bold; color: #f1c40f; display: block; }
         
-        /* TABLA */
+        /* TABLA OPTIMIZADA */
         .excel-container { flex-grow: 1; overflow-y: auto; background: white; border-radius: 10px; border: 1px solid #ddd; }
         table { width: 100%; border-collapse: collapse; color: #333; table-layout: fixed; }
         thead { position: sticky; top: 0; z-index: 10; }
@@ -99,7 +99,7 @@
     <input id="scanner" inputmode="none" autofocus placeholder="ESCANEE AQUÍ" autocomplete="off">
 
     <div class="total-container">
-        <div class="total-label">Unidades en Pantalla</div>
+        <div class="total-label">Total en Lote</div>
         <div class="total-numero" id="total">0</div>
     </div>
 
@@ -171,16 +171,17 @@
 
         inputScanner.addEventListener("input", () => {
             if (bloqueado) return;
-            clearTimeout(window.scanT);
-            window.scanT = setTimeout(() => {
-                let cod = inputScanner.value.trim();
-                if (cod === "") return;
-                if (cod.length !== 13) { lanzarError(cod); } 
-                else { registrar(cod); inputScanner.value = ""; }
-            }, 30);
+            let cod = inputScanner.value.trim();
+            if (cod.length === 13) {
+                registrar(cod);
+                inputScanner.value = "";
+            } else if (cod.length > 13) {
+                lanzarError(cod);
+                inputScanner.value = "";
+            }
         });
 
-        // OPTIMIZACIÓN: Solo insertar una fila, no recrear toda la tabla
+        // OPTIMIZACIÓN EXTREMA: Solo inserta y limita el DOM a los últimos 50 para fluidez total
         function registrar(codigo) {
             historialActual.push(codigo);
             document.getElementById("ultimo-valor").innerText = codigo;
@@ -188,10 +189,16 @@
             localStorage.setItem("pieers_actual", JSON.stringify(historialActual));
             
             const tbody = document.getElementById("tabla");
-            const row = tbody.insertRow(0); // Insertar al inicio para velocidad
+            const row = document.createElement("tr");
             const idx = historialActual.length - 1;
-            row.id = "fila-" + idx;
             row.innerHTML = `<td>${idx + 1}</td><td>${codigo}</td><td><button onclick="eliminarFila(${idx})" style="background:red; color:white; border:none; padding:5px; border-radius:4px;">X</button></td>`;
+            
+            tbody.prepend(row); // Insertar arriba instantáneo
+
+            // Mantener solo los últimos 50 visibles en la tabla principal para que no pese al escaneas
+            if (tbody.children.length > 50) {
+                tbody.removeChild(tbody.lastChild);
+            }
             
             document.getElementById("total").innerText = historialActual.length;
         }
@@ -200,9 +207,10 @@
             document.getElementById("total").innerText = historialActual.length;
             const t = document.getElementById("tabla");
             t.innerHTML = "";
-            // Cargar de atrás hacia adelante para ver lo último arriba
-            for (let i = historialActual.length - 1; i >= 0; i--) {
-                t.innerHTML += `<tr id="fila-${i}"><td>${i+1}</td><td>${historialActual[i]}</td><td><button onclick="eliminarFila(${i})" style="background:red; color:white; border:none; padding:5px; border-radius:4px;">X</button></td></tr>`;
+            // Mostramos solo los últimos 50 para carga inmediata
+            const inicio = Math.max(0, historialActual.length - 50);
+            for (let i = historialActual.length - 1; i >= inicio; i--) {
+                t.innerHTML += `<tr><td>${i+1}</td><td>${historialActual[i]}</td><td><button onclick="eliminarFila(${i})" style="background:red; color:white; border:none; padding:5px; border-radius:4px;">X</button></td></tr>`;
             }
         }
 
@@ -213,13 +221,15 @@
         }
 
         function guardarGrupoActual() {
-            if (historialActual.length === 0) return alert("Nada que guardar.");
+            if (historialActual.length === 0) return alert("Sin datos.");
             let nom = prompt("Nombre lote:", "Lote " + (gruposGuardados.length + 1));
             if (!nom) return;
             gruposGuardados.push({ nombre: nom, datos: [...historialActual] });
             localStorage.setItem("pieers_grupos", JSON.stringify(gruposGuardados));
-            historialActual = []; localStorage.removeItem("pieers_actual");
-            actualizarUICompleta(); toggleMenu();
+            historialActual = []; 
+            localStorage.removeItem("pieers_actual");
+            actualizarUICompleta(); 
+            toggleMenu();
         }
 
         function abrirModalGrupos() {
@@ -248,23 +258,15 @@
             document.getElementById("modalDetalle").style.display = "flex";
         }
 
-        // FUNCIÓN CLAVE: REANUDAR LECTURA
         document.getElementById("btnReanudar").onclick = () => {
-            if (historialActual.length > 0) {
-                if(!confirm("Tienes lecturas en pantalla. ¿Deseas unirlas con este grupo guardado?")) return;
-            }
             const g = gruposGuardados[idxGrupoAbierto];
-            historialActual = [...g.datos]; // Cargar datos del grupo
+            historialActual = [...g.datos]; 
             localStorage.setItem("pieers_actual", JSON.stringify(historialActual));
-            
-            // Eliminar el grupo de la lista de guardados para que no esté duplicado
             gruposGuardados.splice(idxGrupoAbierto, 1);
             localStorage.setItem("pieers_grupos", JSON.stringify(gruposGuardados));
-            
             actualizarUICompleta();
             cerrarModal('modalDetalle');
             cerrarModal('modalGrupos');
-            alert("Grupo cargado. Puedes seguir escaneando.");
         };
 
         function renderizarTablaDetalle(datos, filtro = "") {
@@ -272,6 +274,7 @@
             const res = document.getElementById("resumenDetalle");
             t.innerHTML = "";
             let cont = 0;
+            // En el detalle sí mostramos todo, pero solo cuando se filtra o se abre específicamente
             datos.forEach((cod, i) => {
                 if (filtro === "" || cod === filtro) {
                     t.innerHTML += `<tr><td>${i+1}</td><td>${cod}</td></tr>`;
@@ -329,7 +332,6 @@
                 });
                 resumen.innerText = "TOTAL ENCONTRADO: " + granTotal;
                 resumen.style.display = granTotal > 0 ? "block" : "none";
-                if(granTotal === 0) resDiv.innerHTML = "<p>No hallado.</p>";
                 this.value = ""; sonar(1000, 0.1);
             }
         };
