@@ -2,338 +2,194 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pieers Inventario Pro - Precisión 13 Dígitos</title>
+    <title>Pieers Inventario Cloud</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
-        * {
-            font-family: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
-            box-sizing: border-box;
-        }
-
         body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
             background: #121212; 
             color: #e0e0e0;
-            padding: 10px; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; 
+            padding: 15px; margin: 0; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box; overflow: hidden; 
         }
 
-        /* CABECERA */
-        .menu-container { position: fixed; top: 10px; right: 10px; z-index: 2000; }
-        .hamburger {
-            width: 30px; height: 25px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer;
+        /* Pantalla de Login */
+        #login-screen {
+            position: fixed; top:0; left:0; width:100%; height:100%; background:#121212;
+            z-index: 5000; display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
+        .login-box { background:#1e1e1e; padding:30px; border-radius:15px; border-top: 5px solid #3498db; width:80%; max-width:350px; text-align:center; }
+        .login-box input { width:100%; padding:15px; margin:15px 0; border-radius:8px; border:none; font-size:16px; text-align:center; }
+
+        /* App Content */
+        #app-content { display: none; flex-direction: column; height: 100%; }
+
+        .menu-container { position: fixed; top: 15px; right: 15px; z-index: 2000; }
+        .hamburger { width: 35px; height: 30px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; }
         .hamburger div { width: 100%; height: 4px; background-color: #3498db; border-radius: 2px; }
         
         .menu-content {
-            display: none; position: absolute; right: 0; top: 35px; background: #1e1e1e; 
-            min-width: 220px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); border-radius: 8px; overflow: hidden;
+            display: none; position: absolute; right: 0; top: 40px; background: #1e1e1e; 
+            min-width: 180px; box-shadow: 0 8px 16px rgba(0,0,0,0.5); border-radius: 8px; overflow: hidden;
         }
         .menu-content button {
-            width: 100%; border: none; padding: 12px 15px; text-align: left; background: none; color: white;
-            font-size: 12px; cursor: pointer; border-bottom: 1px solid #333;
+            width: 100%; border: none; padding: 15px 16px; text-align: left; background: none; color: white;
+            font-size: 14px; cursor: pointer; border-bottom: 1px solid #333;
         }
         .menu-content.show { display: block; }
 
-        #scanner { 
-            width: 100%; padding: 12px; font-size: 18px; border-radius: 10px; border: 3px solid #3498db; 
-            outline: none; margin-bottom: 8px; flex-shrink: 0; text-align: center; background: #fff; color: #333;
-        }
-
         .total-container { 
-            background: #1e1e1e; border-radius: 12px; padding: 8px; margin-bottom: 8px; 
-            flex-shrink: 0; border-top: 4px solid #3498db; text-align: center;
+            background: #1e1e1e; border-radius: 12px; padding: 10px; margin-bottom: 10px; 
+            flex-shrink: 0; border-top: 5px solid #3498db; text-align: center;
         }
-        .total-numero { font-size: 45px; font-weight: bold; color: #2ecc71; line-height: 1; margin: 5px 0; }
-        .total-label { font-size: 12px; color: #bdc3c7; text-transform: uppercase; }
+        .total-numero { font-size: 50px; font-weight: bold; color: #2ecc71; line-height: 1; }
         
-        .ultimo-codigo-panel { 
-            background: #2c3e50; color: #ecf0f1; width: 100%; text-align: center; 
-            padding: 6px; border-radius: 8px; margin-bottom: 8px; flex-shrink: 0; font-size: 11px;
+        #scanner { 
+            width: 100%; padding: 15px; font-size: 18px; border-radius: 10px; border: 3px solid #3498db; 
+            outline: none; margin-bottom: 8px; text-align: center; background: #fff; color: #333;
         }
-        .ultimo-valor { font-family: monospace; font-size: 20px; font-weight: bold; color: #f1c40f; display: block; }
-        
-        /* TABLA */
+
         .excel-container { flex-grow: 1; overflow-y: auto; background: white; border-radius: 10px; border: 1px solid #ddd; }
-        table { width: 100%; border-collapse: collapse; color: #333; table-layout: fixed; }
-        thead { position: sticky; top: 0; z-index: 10; }
-        th { background: #2c3e50; color: white; padding: 10px 5px; font-size: 12px; text-transform: uppercase; }
-        td { padding: 10px 5px; border: 1px solid #eee; text-align: center; font-size: 14px; background-color: #ffffff; }
-        
-        td:first-child { background-color: #d4edda; font-weight: bold; width: 60px; } 
-        th:nth-child(1) { width: 60px; }
-        th:nth-child(3), td:nth-child(3) { width: 70px; }
-
-        /* MODALES */
-        .modal-pantalla {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 3000; padding: 15px; flex-direction: column;
-        }
-        .lista-items { flex-grow: 1; overflow-y: auto; background: #222; border-radius: 8px; padding: 8px; }
-        .card-grupo { background: #333; padding: 10px; margin-bottom: 8px; border-left: 4px solid #3498db; }
-        
-        .resumen-busqueda { background: #2ecc71; color: #000; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 10px; font-weight: bold; }
-
-        .btn-accion { padding: 10px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 11px; }
-        .btn-cerrar { background: #e74c3c; padding: 12px; width: 100%; margin-top: 8px; }
+        table { width: 100%; border-collapse: collapse; color: #333; }
+        th { background: #2c3e50; color: white; padding: 10px; font-size: 13px; position: sticky; top: 0; }
+        td { padding: 10px; border: 1px solid #eee; text-align: center; }
 
         #alerta-inferior { 
             display: none; position: fixed; bottom: 0; left: 0; width: 100%; 
-            background: #e74c3c; color: white; padding: 12px; text-align: center; z-index: 4000;
+            background: #e74c3c; color: white; padding: 15px; text-align: center; z-index: 1000;
         }
     </style>
 </head>
 <body>
 
-    <div class="menu-container">
-        <div class="hamburger" onclick="toggleMenu()">
-            <div></div><div></div><div></div>
-        </div>
-        <div id="menuContent" class="menu-content">
-            <button onclick="guardarGrupoActual()">💾 GUARDAR GRUPO ACTUAL</button>
-            <button onclick="abrirModalGrupos()">📂 VER GRUPOS GUARDADOS</button>
-            <button onclick="abrirBuscadorGeneral()">🔍 BUSCADOR GENERAL</button>
-            <hr style="border: 0; border-top: 1px solid #444; margin: 0;">
-            <button onclick="resetearTodo()" style="color: #e74c3c;">🗑️ BORRAR TODO</button>
+    <div id="login-screen">
+        <div class="login-box">
+            <h2 style="color:#3498db">PIEERS INVENTARIO</h2>
+            <input type="text" id="username" placeholder="Nombre de usuario" autocomplete="off">
+            <button onclick="login()" style="width:100%; padding:15px; background:#2ecc71; border:none; color:white; font-weight:bold; border-radius:8px;">ENTRAR</button>
         </div>
     </div>
 
-    <input id="scanner" inputmode="none" autofocus placeholder="ESCANEE AQUÍ" autocomplete="off">
+    <div id="app-content">
+        <div class="menu-container">
+            <div class="hamburger" onclick="toggleMenu()"><div></div><div></div><div></div></div>
+            <div id="menuContent" class="menu-content">
+                <button onclick="guardarLote()">💾 GUARDAR LOTE</button>
+                <button onclick="verGrupos()">📂 VER GRUPOS</button>
+                <button onclick="location.reload()">👤 CAMBIAR USUARIO</button>
+            </div>
+        </div>
 
-    <div class="total-container">
-        <div class="total-label">Total en Lote</div>
-        <div class="total-numero" id="total">0</div>
-    </div>
+        <div style="font-size:10px; color:#3498db; margin-bottom:5px;" id="user-display"></div>
+        
+        <div class="total-container">
+            <div style="font-size: 12px; font-weight: bold; color: #bdc3c7;">UNIDADES EN LOTE</div>
+            <div class="total-numero" id="total">0</div>
+        </div>
 
-    <div class="ultimo-codigo-panel">
-        ÚLTIMO: <span id="ultimo-valor" class="ultimo-valor">---</span>
-    </div>
+        <input id="scanner" inputmode="none" autofocus placeholder="ESCANEE AQUÍ">
 
-    <div class="excel-container">
-        <table id="mainTable">
-            <thead><tr><th>Item</th><th>Código</th><th>X</th></tr></thead>
-            <tbody id="tabla"></tbody>
-        </table>
-    </div>
-
-    <div id="modalGrupos" class="modal-pantalla">
-        <h2 style="color: #f1c40f; text-align: center;">GRUPOS GUARDADOS</h2>
-        <div id="listaGrupos" class="lista-items"></div>
-        <button class="btn-accion btn-cerrar" onclick="cerrarModal('modalGrupos')">VOLVER</button>
-    </div>
-
-    <div id="modalDetalle" class="modal-pantalla">
-        <h2 id="tituloDetalle" style="color: #3498db; text-align: center;"></h2>
-        <div id="resumenDetalle" class="resumen-busqueda" style="display:none;"></div>
-        <input id="input-buscar-lote" style="width:100%; padding:10px; margin-bottom:10px; text-align:center;" placeholder="BUSCAR EN ESTE LOTE">
-        <div class="excel-container" style="margin-bottom: 8px;">
+        <div class="excel-container">
             <table>
-                <thead><tr><th>Item</th><th>Código</th></tr></thead>
-                <tbody id="tablaDetalle"></tbody>
+                <thead><tr><th>Código</th><th>Cant.</th><th>X</th></tr></thead>
+                <tbody id="tabla"></tbody>
             </table>
         </div>
-        <button id="btnReanudar" class="btn-accion" style="background:#3498db; width:100%; padding:15px; margin-bottom:5px;">➕ REANUDAR LECTURA AQUÍ</button>
-        <button class="btn-accion btn-cerrar" onclick="cerrarDetalle()">VOLVER</button>
-    </div>
-
-    <div id="modalBuscadorGeneral" class="modal-pantalla">
-        <h2 style="color: #2ecc71; text-align: center;">BUSCADOR GENERAL</h2>
-        <div id="resumenGeneral" class="resumen-busqueda" style="display:none;"></div>
-        <input id="input-buscar-general" style="width:100%; padding:15px; text-align:center; margin-bottom:10px;" placeholder="ESCANEE PARA BUSCAR">
-        <div id="resultadosGeneral" class="lista-items"></div>
-        <button class="btn-accion btn-cerrar" onclick="cerrarModal('modalBuscadorGeneral')">CERRAR</button>
     </div>
 
     <div id="alerta-inferior">
         <div id="cod-erroneo"></div>
-        <button onclick="desbloquear()" style="background:#f1c40f; padding:8px; border:none; margin-top:5px; color:black; font-weight:bold;">CORREGIR</button>
+        <button onclick="desbloquear()" style="background:#f1c40f; padding:10px; border:none; margin-top:10px; font-weight:bold;">CORREGIR</button>
     </div>
 
     <script>
-        let historialActual = JSON.parse(localStorage.getItem("pieers_actual")) || [];
-        let gruposGuardados = JSON.parse(localStorage.getItem("pieers_grupos")) || [];
-        let bloqueado = false;
-        let modoModal = false;
-        let idxGrupoAbierto = null;
+        // CONFIGURACIÓN: Pon tu URL de Firebase aquí
+        const firebaseConfig = { databaseURL: "https://TU-PROYECTO.firebaseio.com" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        const inputScanner = document.getElementById("scanner");
+        let user = "";
+        let inventario = [];
+        let grupos = [];
+        let bloqueado = false;
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-        function toggleMenu() { document.getElementById("menuContent").classList.toggle("show"); }
-
-        function sonar(freq, dur) {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            osc.type = 'square';
-            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-            osc.start(); osc.stop(audioCtx.currentTime + dur);
+        function login() {
+            user = document.getElementById("username").value.trim().toLowerCase();
+            if(!user) return alert("Ingresa usuario");
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("app-content").style.display = "flex";
+            document.getElementById("user-display").innerText = "USUARIO: " + user.toUpperCase();
+            
+            // Cargar datos de la nube
+            db.ref('pieers/' + user).on('value', (snap) => {
+                const data = snap.val();
+                if(data) {
+                    inventario = data.actual || [];
+                    grupos = data.grupos || [];
+                    actualizarUI();
+                }
+            });
+            document.getElementById("scanner").focus();
         }
 
-        // RESTRICCIÓN DE 13 DÍGITOS Y ALERTA
+        function sync() {
+            db.ref('pieers/' + user).set({ actual: inventario, grupos: grupos });
+        }
+
+        const inputScanner = document.getElementById("scanner");
         inputScanner.addEventListener("input", () => {
-            if (bloqueado) return;
+            if(bloqueado) return;
             let cod = inputScanner.value.trim();
-            
-            if (cod.length === 13) {
-                registrar(cod);
+            if(cod.length === 13) {
+                inventario.push(cod);
+                sonar(800, 0.08);
+                sync();
                 inputScanner.value = "";
-            } else if (cod.length > 13) {
+            } else if(cod.length > 13) {
                 lanzarError(cod);
-                inputScanner.value = "";
             }
         });
 
-        function registrar(codigo) {
-            historialActual.push(codigo);
-            document.getElementById("ultimo-valor").innerText = codigo;
-            sonar(800, 0.08);
-            localStorage.setItem("pieers_actual", JSON.stringify(historialActual));
-            
-            const tbody = document.getElementById("tabla");
-            const row = document.createElement("tr");
-            const idx = historialActual.length - 1;
-            row.innerHTML = `<td>${idx + 1}</td><td>${codigo}</td><td><button onclick="eliminarFila(${idx})" style="background:red; color:white; border:none; padding:5px; border-radius:4px;">X</button></td>`;
-            
-            tbody.prepend(row);
-            if (tbody.children.length > 50) tbody.removeChild(tbody.lastChild);
-            
-            document.getElementById("total").innerText = historialActual.length;
-        }
-
-        function actualizarUICompleta() {
-            document.getElementById("total").innerText = historialActual.length;
-            const t = document.getElementById("tabla");
-            t.innerHTML = "";
-            const inicio = Math.max(0, historialActual.length - 50);
-            for (let i = historialActual.length - 1; i >= inicio; i--) {
-                t.innerHTML += `<tr><td>${i+1}</td><td>${historialActual[i]}</td><td><button onclick="eliminarFila(${i})" style="background:red; color:white; border:none; padding:5px; border-radius:4px;">X</button></td></tr>`;
-            }
-        }
-
-        function eliminarFila(i) {
-            historialActual.splice(i, 1);
-            localStorage.setItem("pieers_actual", JSON.stringify(historialActual));
-            actualizarUICompleta();
-        }
-
-        function guardarGrupoActual() {
-            if (historialActual.length === 0) return alert("Sin datos.");
-            let nom = prompt("Nombre lote:", "Lote " + (gruposGuardados.length + 1));
-            if (!nom) return;
-            gruposGuardados.push({ nombre: nom, datos: [...historialActual] });
-            localStorage.setItem("pieers_grupos", JSON.stringify(gruposGuardados));
-            historialActual = []; 
-            localStorage.removeItem("pieers_actual");
-            actualizarUICompleta(); 
-            toggleMenu();
-        }
-
-        function abrirModalGrupos() {
-            modoModal = true;
-            const lista = document.getElementById("listaGrupos");
-            lista.innerHTML = "";
-            gruposGuardados.forEach((g, i) => {
-                lista.innerHTML += `
-                    <div class="card-grupo">
-                        <div style="color:white; font-size: 13px; margin-bottom:5px;"><strong>${g.nombre}</strong> (${g.datos.length} uds)</div>
-                        <div style="display:flex; gap:5px;">
-                            <button class="btn-accion" style="background:#3498db; flex:1;" onclick="verLecturasGrupo(${i})">VER / REANUDAR</button>
-                            <button class="btn-accion" style="background:#2ecc71; flex:1;" onclick="exportarGrupo(${i})">TXT</button>
-                        </div>
-                    </div>`;
+        function actualizarUI() {
+            document.getElementById("total").innerText = inventario.length;
+            const tabla = document.getElementById("tabla");
+            tabla.innerHTML = "";
+            // Mostrar últimos 50 para velocidad
+            const vista = [...inventario].reverse().slice(0, 50);
+            vista.forEach((cod, i) => {
+                let row = `<tr><td>${cod}</td><td>1</td><td><button onclick="borrarUno(${inventario.length - 1 - i})" style="background:red; color:white; border:none; border-radius:4px;">X</button></td></tr>`;
+                tabla.innerHTML += row;
             });
-            document.getElementById("modalGrupos").style.display = "flex";
-            toggleMenu();
         }
 
-        function verLecturasGrupo(idx) {
-            idxGrupoAbierto = idx;
-            const g = gruposGuardados[idx];
-            document.getElementById("tituloDetalle").innerText = g.nombre;
-            renderizarTablaDetalle(g.datos);
-            document.getElementById("modalDetalle").style.display = "flex";
+        function borrarUno(idx) {
+            inventario.splice(idx, 1);
+            sync();
         }
 
-        document.getElementById("btnReanudar").onclick = () => {
-            const g = gruposGuardados[idxGrupoAbierto];
-            historialActual = [...g.datos]; 
-            localStorage.setItem("pieers_actual", JSON.stringify(historialActual));
-            gruposGuardados.splice(idxGrupoAbierto, 1);
-            localStorage.setItem("pieers_grupos", JSON.stringify(gruposGuardados));
-            actualizarUICompleta();
-            cerrarModal('modalDetalle');
-            cerrarModal('modalGrupos');
-        };
-
-        function renderizarTablaDetalle(datos, filtro = "") {
-            const t = document.getElementById("tablaDetalle");
-            const res = document.getElementById("resumenDetalle");
-            t.innerHTML = "";
-            let cont = 0;
-            datos.forEach((cod, i) => {
-                if (filtro === "" || cod === filtro) {
-                    t.innerHTML += `<tr><td>${i+1}</td><td>${cod}</td></tr>`;
-                    if(filtro !== "") cont++;
-                }
-            });
-            if (filtro !== "") {
-                res.innerText = `CANTIDAD: ${cont} UNIDADES`;
-                res.style.display = "block";
-            } else { res.style.display = "none"; }
+        function guardarLote() {
+            if(inventario.length === 0) return;
+            let nombre = prompt("Nombre del lote:");
+            if(!nombre) return;
+            grupos.push({ nombre: nombre, datos: inventario });
+            inventario = [];
+            sync();
         }
 
-        document.getElementById("input-buscar-lote").oninput = function() {
-            if(this.value.length === 13) {
-                renderizarTablaDetalle(gruposGuardados[idxGrupoAbierto].datos, this.value);
-                sonar(1000, 0.1); this.value = "";
-            } else if(this.value === "") { renderizarTablaDetalle(gruposGuardados[idxGrupoAbierto].datos); }
-        };
-
-        function exportarGrupo(idx) {
-            let g = gruposGuardados[idx];
-            let conteo = {};
-            g.datos.forEach(c => conteo[c] = (conteo[c] || 0) + 1);
-            let txt = "";
-            Object.entries(conteo).forEach(([c, q]) => txt += `${c}|${q}\n`);
-            const blob = new Blob([txt], { type: "text/plain" });
-            const a = document.createElement("a");
-            a.href = URL.createObjectURL(blob);
-            a.download = `${g.nombre}.txt`; a.click();
+        function sonar(f, d) {
+            const o = audioCtx.createOscillator();
+            const g = audioCtx.createGain();
+            o.connect(g); g.connect(audioCtx.destination);
+            o.frequency.setValueAtTime(f, audioCtx.currentTime);
+            g.gain.setValueAtTime(0.05, audioCtx.currentTime);
+            o.start(); o.stop(audioCtx.currentTime + d);
         }
-
-        function cerrarModal(id) { document.getElementById(id).style.display = "none"; modoModal = false; inputScanner.focus(); }
-        function cerrarDetalle() { document.getElementById("modalDetalle").style.display = "none"; }
-
-        function abrirBuscadorGeneral() {
-            modoModal = true;
-            document.getElementById("modalBuscadorGeneral").style.display = "flex";
-            document.getElementById("input-buscar-general").focus();
-            toggleMenu();
-        }
-
-        document.getElementById("input-buscar-general").oninput = function() {
-            if (this.value.length === 13) {
-                let cod = this.value;
-                let resDiv = document.getElementById("resultadosGeneral");
-                let resumen = document.getElementById("resumenGeneral");
-                resDiv.innerHTML = "";
-                let granTotal = 0;
-                gruposGuardados.forEach(g => {
-                    let items = [];
-                    g.datos.forEach((c, idx) => { if(c === cod) { items.push(idx + 1); granTotal++; } });
-                    if (items.length > 0) {
-                        resDiv.innerHTML += `<div class="card-grupo"><span style="color:white; font-size:12px;">${g.nombre}</span><br><b style="color:#f1c40f;">ITEMS: ${items.join(", ")}</b></div>`;
-                    }
-                });
-                resumen.innerText = "TOTAL ENCONTRADO: " + granTotal;
-                resumen.style.display = granTotal > 0 ? "block" : "none";
-                this.value = ""; sonar(1000, 0.1);
-            }
-        };
 
         function lanzarError(c) {
             bloqueado = true;
-            document.getElementById("cod-erroneo").innerText = "CÓDIGO INVÁLIDO: " + c;
+            document.getElementById("cod-erroneo").innerText = "ERROR: " + c;
             document.getElementById("alerta-inferior").style.display = "block";
             sonar(200, 0.5);
         }
@@ -344,10 +200,10 @@
             inputScanner.value = ""; inputScanner.focus();
         }
 
-        function resetearTodo() { if(confirm("¿BORRAR TODO?")) { localStorage.clear(); location.reload(); } }
-
-        actualizarUICompleta();
-        document.addEventListener("click", () => { if(!bloqueado && !modoModal) inputScanner.focus(); });
+        function toggleMenu() { document.getElementById("menuContent").classList.toggle("show"); }
+        document.addEventListener("click", (e) => {
+            if(!bloqueado && user && e.target.tagName !== 'BUTTON') inputScanner.focus();
+        });
     </script>
 </body>
 </html>
