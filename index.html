@@ -169,7 +169,6 @@
             osc.start(); osc.stop(audioCtx.currentTime + dur);
         }
 
-        // RESTRICCIÓN DE 13 DÍGITOS Y ALERTA
         inputScanner.addEventListener("input", () => {
             if (bloqueado) return;
             let cod = inputScanner.value.trim();
@@ -188,16 +187,7 @@
             document.getElementById("ultimo-valor").innerText = codigo;
             sonar(800, 0.08);
             localStorage.setItem("pieers_actual", JSON.stringify(historialActual));
-            
-            const tbody = document.getElementById("tabla");
-            const row = document.createElement("tr");
-            const idx = historialActual.length - 1;
-            row.innerHTML = `<td>${idx + 1}</td><td>${codigo}</td><td><button onclick="eliminarFila(${idx})" style="background:red; color:white; border:none; padding:5px; border-radius:4px;">X</button></td>`;
-            
-            tbody.prepend(row);
-            if (tbody.children.length > 50) tbody.removeChild(tbody.lastChild);
-            
-            document.getElementById("total").innerText = historialActual.length;
+            actualizarUICompleta();
         }
 
         function actualizarUICompleta() {
@@ -300,9 +290,6 @@
             a.href = URL.createObjectURL(blob);
             a.download = `${g.nombre}.txt`; a.click();
         }
-
-        function cerrarModal(id) { document.getElementById(id).style.display = "none"; modoModal = false; inputScanner.focus(); }
-        function cerrarDetalle() { document.getElementById("modalDetalle").style.display = "none"; }
 
         function abrirBuscadorGeneral() {
             modoModal = true;
