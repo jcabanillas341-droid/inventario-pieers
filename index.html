@@ -32,7 +32,7 @@
             width: 100%; padding: 15px; margin: 15px 0; border-radius: 8px; border: none; font-size: 18px; text-align: center;
         }
 
-        /* CONTENIDO PRINCIPAL (Oculto al inicio) */
+        /* CONTENIDO PRINCIPAL */
         #contenido-app { display: none; flex-direction: column; height: 100%; }
 
         /* CABECERA */
@@ -90,9 +90,7 @@
         }
         .lista-items { flex-grow: 1; overflow-y: auto; background: #222; border-radius: 8px; padding: 8px; }
         .card-grupo { background: #333; padding: 10px; margin-bottom: 8px; border-left: 4px solid #3498db; }
-        
         .resumen-busqueda { background: #2ecc71; color: #000; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 10px; font-weight: bold; }
-
         .btn-accion { padding: 10px; border-radius: 5px; border: none; font-weight: bold; cursor: pointer; color: white; font-size: 11px; }
         .btn-cerrar { background: #e74c3c; padding: 12px; width: 100%; margin-top: 8px; }
 
@@ -123,6 +121,7 @@
                 <button onclick="abrirModalGrupos()">📂 VER GRUPOS GUARDADOS</button>
                 <button onclick="abrirBuscadorGeneral()">🔍 BUSCADOR GENERAL</button>
                 <hr style="border: 0; border-top: 1px solid #444; margin: 0;">
+                <button onclick="resetearTodoUsuario()" style="color: #e74c3c;">🗑️ BORRAR TODO</button>
                 <button onclick="location.reload()" style="color: #3498db;">👤 CAMBIAR USUARIO</button>
             </div>
         </div>
@@ -217,7 +216,6 @@
             document.getElementById("contenido-app").style.display = "flex";
             document.getElementById("display-user").innerText = "Usuario: " + usuarioActual.toUpperCase();
 
-            // Sincronización en tiempo real con Firebase
             db.ref('usuarios/' + usuarioActual).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
@@ -240,7 +238,7 @@
             });
         }
 
-        // --- LÓGICA DE ESCANEO (PRECISIÓN 13 DÍGITOS) ---
+        // --- LÓGICA DE ESCANEO ---
         inputScanner.addEventListener("input", () => {
             if (bloqueado) return;
             let cod = inputScanner.value.trim();
@@ -395,6 +393,15 @@
             bloqueado = false;
             document.getElementById("alerta-inferior").style.display = "none";
             inputScanner.value = ""; inputScanner.focus();
+        }
+
+        function resetearTodoUsuario() { 
+            if(confirm("¿ESTÁS SEGURO? Se borrará todo tu inventario actual y guardado.")) { 
+                historialActual = [];
+                gruposGuardados = [];
+                sincronizarNube();
+                toggleMenu();
+            } 
         }
 
         function toggleMenu() { document.getElementById("menuContent").classList.toggle("show"); }
