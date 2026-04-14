@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pieers Inventario Pro - Precisión 13 Dígitos</title>
+    <title>Pieers Inventario Pro - Ultra Velocidad</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         * {
@@ -169,25 +169,57 @@
             osc.start(); osc.stop(audioCtx.currentTime + dur);
         }
 
-        inputScanner.addEventListener("input", () => {
+        // --- LÓGICA DE ALTA VELOCIDAD PARA BLUETOOTH ---
+        // Usamos keydown para detectar el fin de ráfaga (Enter) o los 13 dígitos en microsegundos
+        inputScanner.addEventListener("keydown", (e) => {
             if (bloqueado) return;
-            let cod = inputScanner.value.trim();
-            
+
+            // Si el escáner envía "Enter" al final del código
+            if (e.key === "Enter") {
+                e.preventDefault();
+                procesarLecturaInmediata(inputScanner.value);
+                return;
+            }
+
+            // Procesamiento ultra-rápido: revisamos el valor en el siguiente micro-tick del procesador
+            setTimeout(() => {
+                let cod = inputScanner.value.trim();
+                if (cod.length === 13) {
+                    registrar(cod);
+                    inputScanner.value = "";
+                } else if (cod.length > 13) {
+                    lanzarError(cod);
+                    inputScanner.value = "";
+                }
+            }, 0);
+        });
+
+        function procesarLecturaInmediata(cod) {
+            cod = cod.trim();
             if (cod.length === 13) {
                 registrar(cod);
-                inputScanner.value = "";
-            } else if (cod.length > 13) {
+            } else if (cod.length > 0) {
                 lanzarError(cod);
-                inputScanner.value = "";
             }
-        });
+            inputScanner.value = "";
+        }
+        // -----------------------------------------------
 
         function registrar(codigo) {
             historialActual.push(codigo);
             document.getElementById("ultimo-valor").innerText = codigo;
             sonar(800, 0.08);
             localStorage.setItem("pieers_actual", JSON.stringify(historialActual));
-            actualizarUICompleta();
+            
+            const tbody = document.getElementById("tabla");
+            const row = document.createElement("tr");
+            const idx = historialActual.length - 1;
+            row.innerHTML = `<td>${idx + 1}</td><td>${codigo}</td><td><button onclick="eliminarFila(${idx})" style="background:red; color:white; border:none; padding:5px; border-radius:4px;">X</button></td>`;
+            
+            tbody.prepend(row);
+            if (tbody.children.length > 50) tbody.removeChild(tbody.lastChild);
+            
+            document.getElementById("total").innerText = historialActual.length;
         }
 
         function actualizarUICompleta() {
@@ -290,6 +322,9 @@
             a.href = URL.createObjectURL(blob);
             a.download = `${g.nombre}.txt`; a.click();
         }
+
+        function cerrarModal(id) { document.getElementById(id).style.display = "none"; modoModal = false; inputScanner.focus(); }
+        function cerrarDetalle() { document.getElementById("modalDetalle").style.display = "none"; }
 
         function abrirBuscadorGeneral() {
             modoModal = true;
