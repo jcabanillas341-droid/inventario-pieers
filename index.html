@@ -79,7 +79,7 @@
             display: none; position: fixed; bottom: 0; left: 0; width: 100%; 
             background: #e74c3c; color: white; padding: 12px; text-align: center; z-index: 4000;
         }
-        
+
         .btn-borrar-grupo { 
             background: #c0392b; color: white; border: none; padding: 5px 10px; 
             border-radius: 4px; font-size: 10px; cursor: pointer;
@@ -174,7 +174,7 @@
             osc.start(); osc.stop(audioCtx.currentTime + dur);
         }
 
-        // LECTURA ULTRA RÁPIDA Y SENSIBILIDAD AJUSTADA
+        // LECTURA OPTIMIZADA PARA ESCÁNER BLUETOOTH
         inputScanner.addEventListener("input", () => {
             if (bloqueado) return;
             let cod = inputScanner.value.trim();
@@ -183,7 +183,6 @@
                 registrar(cod);
                 inputScanner.value = "";
             } else if (cod.length > 13) {
-                // Solo lanza error si supera los 13 dígitos para evitar falsos positivos por lentitud
                 lanzarError(cod);
                 inputScanner.value = "";
             }
@@ -226,16 +225,16 @@
             if (historialActual.length === 0) return alert("Sin datos.");
             let nom = prompt("Nombre lote:", "Lote " + (gruposGuardados.length + 1));
             if (!nom) return;
-            
+
             const ahora = new Date();
             const fechaHora = ahora.toLocaleDateString() + " " + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
             gruposGuardados.push({ 
                 nombre: nom, 
                 datos: [...historialActual],
-                fecha: fechaHora
+                fecha: fechaHora 
             });
-            
+
             localStorage.setItem("pieers_grupos", JSON.stringify(gruposGuardados));
             historialActual = []; 
             localStorage.removeItem("pieers_actual");
@@ -273,7 +272,7 @@
         }
 
         function eliminarGrupo(idx) {
-            if(confirm("¿Seguro que deseas eliminar este grupo permanentemente?")) {
+            if(confirm("¿Deseas eliminar este grupo?")) {
                 gruposGuardados.splice(idx, 1);
                 localStorage.setItem("pieers_grupos", JSON.stringify(gruposGuardados));
                 renderizarListaGrupos();
@@ -327,10 +326,9 @@
             let g = gruposGuardados[idx];
             let conteo = {};
             g.datos.forEach(c => conteo[c] = (conteo[c] || 0) + 1);
-            let txt = `LOTE: ${g.nombre} - FECHA: ${g.fecha}\n`;
-            txt += "----------------------------\n";
+            let txt = "";
             Object.entries(conteo).forEach(([c, q]) => txt += `${c}|${q}\n`);
-            const blob = new Blob([txt], { type: "text/plain" });
+            const blob = new Blob([txt.trim()], { type: "text/plain" });
             const a = document.createElement("a");
             a.href = URL.createObjectURL(blob);
             a.download = `${g.nombre}.txt`; a.click();
@@ -379,7 +377,7 @@
             inputScanner.value = ""; inputScanner.focus();
         }
 
-        function resetearTodo() { if(confirm("¿BORRAR TODO EL HISTORIAL DE LA APP? Esta acción no se puede deshacer.")) { localStorage.clear(); location.reload(); } }
+        function resetearTodo() { if(confirm("¿BORRAR TODO?")) { localStorage.clear(); location.reload(); } }
 
         actualizarUICompleta();
         document.addEventListener("click", () => { if(!bloqueado && !modoModal) inputScanner.focus(); });
