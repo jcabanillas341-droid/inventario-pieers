@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Pieers Inventario Pro - Ultra Velocidad</title>
+    <title>Pieers Inventario Pro - Precisión 13 Dígitos</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <style>
         * {
@@ -68,7 +68,7 @@
             background: rgba(0,0,0,0.95); z-index: 3000; padding: 15px; flex-direction: column;
         }
         .lista-items { flex-grow: 1; overflow-y: auto; background: #222; border-radius: 8px; padding: 8px; }
-        .card-grupo { background: #333; padding: 10px; margin-bottom: 8px; border-left: 4px solid #3498db; }
+        .card-grupo { background: #333; padding: 10px; margin-bottom: 8px; border-left: 4px solid #3498db; position: relative; }
         
         .resumen-busqueda { background: #2ecc71; color: #000; padding: 10px; border-radius: 5px; text-align: center; margin-bottom: 10px; font-weight: bold; }
 
@@ -78,6 +78,11 @@
         #alerta-inferior { 
             display: none; position: fixed; bottom: 0; left: 0; width: 100%; 
             background: #e74c3c; color: white; padding: 12px; text-align: center; z-index: 4000;
+        }
+        
+        .btn-borrar-grupo { 
+            background: #c0392b; color: white; border: none; padding: 5px 10px; 
+            border-radius: 4px; font-size: 10px; cursor: pointer;
         }
     </style>
 </head>
@@ -92,7 +97,7 @@
             <button onclick="abrirModalGrupos()">📂 VER GRUPOS GUARDADOS</button>
             <button onclick="abrirBuscadorGeneral()">🔍 BUSCADOR GENERAL</button>
             <hr style="border: 0; border-top: 1px solid #444; margin: 0;">
-            <button onclick="resetearTodo()" style="color: #e74c3c;">🗑️ BORRAR TODO</button>
+            <button onclick="resetearTodo()" style="color: #e74c3c;">🗑️ RESETEAR APP (LIMPIEZA TOTAL)</button>
         </div>
     </div>
 
@@ -169,41 +174,20 @@
             osc.start(); osc.stop(audioCtx.currentTime + dur);
         }
 
-        // --- LÓGICA DE ALTA VELOCIDAD PARA BLUETOOTH ---
-        // Usamos keydown para detectar el fin de ráfaga (Enter) o los 13 dígitos en microsegundos
-        inputScanner.addEventListener("keydown", (e) => {
+        // LECTURA ULTRA RÁPIDA Y SENSIBILIDAD AJUSTADA
+        inputScanner.addEventListener("input", () => {
             if (bloqueado) return;
-
-            // Si el escáner envía "Enter" al final del código
-            if (e.key === "Enter") {
-                e.preventDefault();
-                procesarLecturaInmediata(inputScanner.value);
-                return;
-            }
-
-            // Procesamiento ultra-rápido: revisamos el valor en el siguiente micro-tick del procesador
-            setTimeout(() => {
-                let cod = inputScanner.value.trim();
-                if (cod.length === 13) {
-                    registrar(cod);
-                    inputScanner.value = "";
-                } else if (cod.length > 13) {
-                    lanzarError(cod);
-                    inputScanner.value = "";
-                }
-            }, 0);
-        });
-
-        function procesarLecturaInmediata(cod) {
-            cod = cod.trim();
+            let cod = inputScanner.value.trim();
+            
             if (cod.length === 13) {
                 registrar(cod);
-            } else if (cod.length > 0) {
+                inputScanner.value = "";
+            } else if (cod.length > 13) {
+                // Solo lanza error si supera los 13 dígitos para evitar falsos positivos por lentitud
                 lanzarError(cod);
+                inputScanner.value = "";
             }
-            inputScanner.value = "";
-        }
-        // -----------------------------------------------
+        });
 
         function registrar(codigo) {
             historialActual.push(codigo);
@@ -242,7 +226,16 @@
             if (historialActual.length === 0) return alert("Sin datos.");
             let nom = prompt("Nombre lote:", "Lote " + (gruposGuardados.length + 1));
             if (!nom) return;
-            gruposGuardados.push({ nombre: nom, datos: [...historialActual] });
+            
+            const ahora = new Date();
+            const fechaHora = ahora.toLocaleDateString() + " " + ahora.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            gruposGuardados.push({ 
+                nombre: nom, 
+                datos: [...historialActual],
+                fecha: fechaHora
+            });
+            
             localStorage.setItem("pieers_grupos", JSON.stringify(gruposGuardados));
             historialActual = []; 
             localStorage.removeItem("pieers_actual");
@@ -252,20 +245,39 @@
 
         function abrirModalGrupos() {
             modoModal = true;
+            renderizarListaGrupos();
+            document.getElementById("modalGrupos").style.display = "flex";
+            toggleMenu();
+        }
+
+        function renderizarListaGrupos() {
             const lista = document.getElementById("listaGrupos");
             lista.innerHTML = "";
             gruposGuardados.forEach((g, i) => {
                 lista.innerHTML += `
                     <div class="card-grupo">
-                        <div style="color:white; font-size: 13px; margin-bottom:5px;"><strong>${g.nombre}</strong> (${g.datos.length} uds)</div>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                            <div style="color:white; font-size: 13px; margin-bottom:5px;">
+                                <strong style="color:#f1c40f;">${g.nombre}</strong><br>
+                                <small style="color:#bdc3c7; font-size:10px;">${g.fecha || ''}</small>
+                            </div>
+                            <button class="btn-borrar-grupo" onclick="eliminarGrupo(${i})">🗑️</button>
+                        </div>
+                        <div style="font-size:11px; color:#2ecc71; margin-bottom:5px;">${g.datos.length} UNIDADES</div>
                         <div style="display:flex; gap:5px;">
                             <button class="btn-accion" style="background:#3498db; flex:1;" onclick="verLecturasGrupo(${i})">VER / REANUDAR</button>
                             <button class="btn-accion" style="background:#2ecc71; flex:1;" onclick="exportarGrupo(${i})">TXT</button>
                         </div>
                     </div>`;
             });
-            document.getElementById("modalGrupos").style.display = "flex";
-            toggleMenu();
+        }
+
+        function eliminarGrupo(idx) {
+            if(confirm("¿Seguro que deseas eliminar este grupo permanentemente?")) {
+                gruposGuardados.splice(idx, 1);
+                localStorage.setItem("pieers_grupos", JSON.stringify(gruposGuardados));
+                renderizarListaGrupos();
+            }
         }
 
         function verLecturasGrupo(idx) {
@@ -315,7 +327,8 @@
             let g = gruposGuardados[idx];
             let conteo = {};
             g.datos.forEach(c => conteo[c] = (conteo[c] || 0) + 1);
-            let txt = "";
+            let txt = `LOTE: ${g.nombre} - FECHA: ${g.fecha}\n`;
+            txt += "----------------------------\n";
             Object.entries(conteo).forEach(([c, q]) => txt += `${c}|${q}\n`);
             const blob = new Blob([txt], { type: "text/plain" });
             const a = document.createElement("a");
@@ -344,7 +357,7 @@
                     let items = [];
                     g.datos.forEach((c, idx) => { if(c === cod) { items.push(idx + 1); granTotal++; } });
                     if (items.length > 0) {
-                        resDiv.innerHTML += `<div class="card-grupo"><span style="color:white; font-size:12px;">${g.nombre}</span><br><b style="color:#f1c40f;">ITEMS: ${items.join(", ")}</b></div>`;
+                        resDiv.innerHTML += `<div class="card-grupo"><span style="color:white; font-size:12px;">${g.nombre} (${g.fecha})</span><br><b style="color:#f1c40f;">ITEMS: ${items.join(", ")}</b></div>`;
                     }
                 });
                 resumen.innerText = "TOTAL ENCONTRADO: " + granTotal;
@@ -366,7 +379,7 @@
             inputScanner.value = ""; inputScanner.focus();
         }
 
-        function resetearTodo() { if(confirm("¿BORRAR TODO?")) { localStorage.clear(); location.reload(); } }
+        function resetearTodo() { if(confirm("¿BORRAR TODO EL HISTORIAL DE LA APP? Esta acción no se puede deshacer.")) { localStorage.clear(); location.reload(); } }
 
         actualizarUICompleta();
         document.addEventListener("click", () => { if(!bloqueado && !modoModal) inputScanner.focus(); });
