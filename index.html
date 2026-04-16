@@ -158,6 +158,7 @@
         let bloqueado = false;
         let modoModal = false;
         let idxGrupoAbierto = null;
+        let timerScanner = null;
 
         const inputScanner = document.getElementById("scanner");
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -174,18 +175,26 @@
             osc.start(); osc.stop(audioCtx.currentTime + dur);
         }
 
-        // LECTURA OPTIMIZADA PARA ESCÁNER BLUETOOTH
+        // LECTURA PRECISIÓN 13 DÍGITOS CON ALERTA DE ERROR
         inputScanner.addEventListener("input", () => {
             if (bloqueado) return;
-            let cod = inputScanner.value.trim();
             
-            if (cod.length === 13) {
-                registrar(cod);
-                inputScanner.value = "";
-            } else if (cod.length > 13) {
-                lanzarError(cod);
-                inputScanner.value = "";
-            }
+            clearTimeout(timerScanner);
+            
+            // Esperamos una fracción de segundo para asegurar que el escáner terminó de enviar la ráfaga
+            timerScanner = setTimeout(() => {
+                let cod = inputScanner.value.trim();
+                if (cod === "") return;
+
+                if (cod.length === 13) {
+                    registrar(cod);
+                    inputScanner.value = "";
+                } else {
+                    // SI NO TIENE EXACTAMENTE 13, LANZA ALERTA
+                    lanzarError(cod);
+                    inputScanner.value = "";
+                }
+            }, 30); 
         });
 
         function registrar(codigo) {
@@ -366,7 +375,7 @@
 
         function lanzarError(c) {
             bloqueado = true;
-            document.getElementById("cod-erroneo").innerText = "CÓDIGO INVÁLIDO: " + c;
+            document.getElementById("cod-erroneo").innerText = "ERROR: LECTURA DE " + c.length + " DÍGITOS (" + c + ")";
             document.getElementById("alerta-inferior").style.display = "block";
             sonar(200, 0.5);
         }
@@ -374,7 +383,8 @@
         function desbloquear() {
             bloqueado = false;
             document.getElementById("alerta-inferior").style.display = "none";
-            inputScanner.value = ""; inputScanner.focus();
+            inputScanner.value = ""; 
+            setTimeout(() => inputScanner.focus(), 100);
         }
 
         function resetearTodo() { if(confirm("¿BORRAR TODO?")) { localStorage.clear(); location.reload(); } }
