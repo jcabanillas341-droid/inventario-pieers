@@ -175,27 +175,25 @@
             osc.start(); osc.stop(audioCtx.currentTime + dur);
         }
 
-        // LÓGICA COMBINADA: SENSIBILIDAD BLUETOOTH + PRECISIÓN 13 DÍGITOS
+        // LECTURA DE ALTA VELOCIDAD (10ms)
         inputScanner.addEventListener("input", () => {
             if (bloqueado) return;
             
-            // Cada vez que entra un caracter, reiniciamos el reloj de espera
             clearTimeout(timerBluetooth);
             
+            // 10ms es el tiempo mínimo para capturar la ráfaga Bluetooth sin retrasos perceptibles
             timerBluetooth = setTimeout(() => {
                 let cod = inputScanner.value.trim();
                 if (cod === "") return;
 
-                // Solo procesamos cuando el Bluetooth ha dejado de enviar caracteres por 50ms
                 if (cod.length === 13) {
                     registrar(cod);
                     inputScanner.value = "";
                 } else {
-                    // Si terminó de enviar y no son 13, es error real
                     lanzarError(cod);
                     inputScanner.value = "";
                 }
-            }, 50); // Tiempo suficiente para ráfagas Bluetooth
+            }, 10); 
         });
 
         function registrar(codigo) {
@@ -385,7 +383,7 @@
             bloqueado = false;
             document.getElementById("alerta-inferior").style.display = "none";
             inputScanner.value = ""; 
-            setTimeout(() => inputScanner.focus(), 100);
+            setTimeout(() => inputScanner.focus(), 50);
         }
 
         function resetearTodo() { if(confirm("¿BORRAR TODO?")) { localStorage.clear(); location.reload(); } }
