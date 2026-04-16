@@ -158,7 +158,7 @@
         let bloqueado = false;
         let modoModal = false;
         let idxGrupoAbierto = null;
-        let timerScanner = null;
+        let timerBluetooth = null;
 
         const inputScanner = document.getElementById("scanner");
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -175,26 +175,27 @@
             osc.start(); osc.stop(audioCtx.currentTime + dur);
         }
 
-        // LECTURA PRECISIÓN 13 DÍGITOS CON ALERTA DE ERROR
+        // LÓGICA COMBINADA: SENSIBILIDAD BLUETOOTH + PRECISIÓN 13 DÍGITOS
         inputScanner.addEventListener("input", () => {
             if (bloqueado) return;
             
-            clearTimeout(timerScanner);
+            // Cada vez que entra un caracter, reiniciamos el reloj de espera
+            clearTimeout(timerBluetooth);
             
-            // Esperamos una fracción de segundo para asegurar que el escáner terminó de enviar la ráfaga
-            timerScanner = setTimeout(() => {
+            timerBluetooth = setTimeout(() => {
                 let cod = inputScanner.value.trim();
                 if (cod === "") return;
 
+                // Solo procesamos cuando el Bluetooth ha dejado de enviar caracteres por 50ms
                 if (cod.length === 13) {
                     registrar(cod);
                     inputScanner.value = "";
                 } else {
-                    // SI NO TIENE EXACTAMENTE 13, LANZA ALERTA
+                    // Si terminó de enviar y no son 13, es error real
                     lanzarError(cod);
                     inputScanner.value = "";
                 }
-            }, 30); 
+            }, 50); // Tiempo suficiente para ráfagas Bluetooth
         });
 
         function registrar(codigo) {
