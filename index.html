@@ -564,8 +564,15 @@ window.addEventListener('load', () => {
 // ── DESCARGA EXCEL COMPATIBLE CON WEBVIEW ANDROID (WebIntoApp) ──
 function descargarExcel(wb, nombre) {
     try {
-        // Base64 funciona en WebView; los Blob URL son bloqueados por Android WebView
-        const b64     = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
+        // Generar como array binario y convertir a Base64 manualmente
+        // (XLSX.write con type:'base64' puede producir archivos corruptos en WebView)
+        const wbout  = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const bytes  = new Uint8Array(wbout);
+        let binary   = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        const b64     = window.btoa(binary);
         const dataUri = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + b64;
 
         const a = document.createElement('a');
@@ -576,7 +583,7 @@ function descargarExcel(wb, nombre) {
         document.body.appendChild(a);
         a.click();
         setTimeout(() => { document.body.removeChild(a); }, 2000);
-        showToast('📊 Guardando Excel... revisa Descargas', '#1B5E20');
+        showToast('📊 Excel guardado — revisa Descargas', '#1B5E20');
     } catch(e) {
         showToast('❌ Error al generar Excel: ' + e.message, '#c62828');
     }
