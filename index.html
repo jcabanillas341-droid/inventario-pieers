@@ -561,30 +561,114 @@ window.addEventListener('load', () => {
     if (modo) modo.style.display = 'flex';
 });
 
-// ── DESCARGA EXCEL COMPATIBLE CON WEBVIEW ANDROID (WebIntoApp) ──
+// ── DESCARGA EXCEL — COMPATIBLE PC + ANDROID WEBVIEW (WebIntoApp) ──
 function descargarExcel(wb, nombre) {
     try {
-        // Generar como .xlsx con Blob — funciona en Android WebView, Chrome y WebIntoApp
-        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-        const blob  = new Blob([wbout], {
-            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        });
-        const nombreFinal = nombre.replace(/\.xls$/i, '.xlsx').replace(/(?<!\.xlsx)$/i, '');
-        // Asegurar extensión .xlsx
-        const fileNombre = nombreFinal.match(/\.xlsx$/i) ? nombreFinal : nombreFinal.replace(/\.xlsx?$/i,'') + '.xlsx';
+        // Limpiar nombre y asegurar extensión .xlsx
+        const fileNombre = nombre.replace(/\.xlsx?$/i, '') + '.xlsx';
 
-        const url = URL.createObjectURL(blob);
-        const a   = document.createElement('a');
-        a.style.display = 'none';
-        a.href     = url;
-        a.download = fileNombre;
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 3000);
-        showToast('📊 Excel descargado — revisa Descargas', '#1B5E20');
+        // Generar bytes del archivo xlsx
+        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+
+        // Convertir a Base64
+        const bytes = new Uint8Array(wbout);
+        let binary = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        const b64 = window.btoa(binary);
+        const mimeXlsx = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        const dataUri  = 'data:' + mimeXlsx + ';base64,' + b64;
+
+        const isAndroidWebView = /android/i.test(navigator.userAgent) &&
+            (/wv\)/.test(navigator.userAgent) || /WebIntoApp/i.test(navigator.userAgent) ||
+             !/chrome\/\d/i.test(navigator.userAgent) ||
+             (typeof Android !== 'undefined'));
+
+        if (isAndroidWebView) {
+            // ── ESTRATEGIA ANDROID WEBVIEW ──
+            // 1) Intentar JavascriptInterface de WebIntoApp si existe
+            if (typeof Android !== 'undefined' && typeof Android.downloadFile === 'function') {
+                Android.downloadFile(b64, fileNombre, mimeXlsx);
+                showToast('📊 Excel guardado — revisa Descargas', '#1B5E20');
+                return;
+            }
+            // 2) Intentar abrir data URI directamente — fuerza diálogo "Abrir con"
+            try {
+                const opened = window.open(dataUri, '_blank');
+                if (opened) { showToast('📊 Abre el archivo con Sheets o Excel', '#1B5E20'); return; }
+            } catch(e2) {}
+
+            // 3) Fallback: link con data URI (funciona en algunos WebViews modernos)
+            try {
+                const a = document.createElement('a');
+                a.href     = dataUri;
+                a.download = fileNombre;
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => document.body.removeChild(a), 2000);
+                showToast('📊 Excel generado — revisa Descargas', '#1B5E20');
+                return;
+            } catch(e3) {}
+
+            // 4) Último recurso: mostrar modal con instrucciones
+            mostrarModalExcelAndroid(dataUri, fileNombre);
+        } else {
+            // ── PC / CHROME / SAFARI ── Blob URL (más confiable fuera de WebView)
+            const blob = new Blob([wbout], { type: mimeXlsx });
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
+            a.style.display = 'none';
+            a.href     = url;
+            a.download = fileNombre;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 3000);
+            showToast('📊 Excel descargado — revisa Descargas', '#1B5E20');
+        }
     } catch(e) {
         showToast('❌ Error al generar Excel: ' + e.message, '#c62828');
     }
+}
+
+// Modal de ayuda cuando Android WebView bloquea la descarga
+function mostrarModalExcelAndroid(dataUri, nombre) {
+    // Reusar el modal de descarga si existe, o crear uno temporal
+    let modal = document.getElementById('modal-excel-android');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'modal-excel-android';
+        modal.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:9900;flex-direction:column;justify-content:center;align-items:center;padding:20px;';
+        modal.innerHTML = `
+            <div style="background:white;border-radius:14px;width:100%;max-width:400px;overflow:hidden;">
+                <div style="background:#1B5E20;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:white;letter-spacing:1px;">📊 DESCARGAR EXCEL</span>
+                    <button id="btn-close-excel-modal" style="background:none;border:none;color:white;font-size:22px;cursor:pointer;">✕</button>
+                </div>
+                <div style="padding:16px;">
+                    <p style="font-family:'Barlow',sans-serif;font-size:13px;color:#333;margin:0 0 14px;line-height:1.6;">
+                        Tu navegador no permite descargar directamente.<br>
+                        <strong>Toca el botón de abajo</strong> para abrir el archivo y luego guárdalo desde la app:
+                    </p>
+                    <a id="btn-abrir-excel"
+                       style="display:block;width:100%;padding:14px;background:#1B5E20;color:white;text-align:center;border-radius:10px;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:900;letter-spacing:1px;text-decoration:none;box-sizing:border-box;"
+                       target="_blank">
+                        📂 ABRIR ARCHIVO EXCEL
+                    </a>
+                    <p style="font-family:'Barlow',sans-serif;font-size:11px;color:#888;margin:10px 0 0;text-align:center;">
+                        Nombre del archivo: <strong id="excel-nombre-modal"></strong>
+                    </p>
+                </div>
+            </div>`;
+        document.body.appendChild(modal);
+        document.getElementById('btn-close-excel-modal').addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+    }
+    document.getElementById('btn-abrir-excel').href = dataUri;
+    document.getElementById('excel-nombre-modal').textContent = nombre;
+    modal.style.display = 'flex';
 }
 
 
