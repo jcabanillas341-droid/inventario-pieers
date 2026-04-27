@@ -561,6 +561,24 @@ window.addEventListener('load', () => {
     if (modo) modo.style.display = 'flex';
 });
 
+// ── DESCARGA EXCEL COMPATIBLE CON TODOS LOS NAVEGADORES Y MÓVILES ──
+function descargarExcel(wb, nombre) {
+    try {
+        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const blob  = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const url   = URL.createObjectURL(blob);
+        const a     = document.createElement('a');
+        a.style.display = 'none';
+        a.href     = url;
+        a.download = nombre;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 3000);
+    } catch(e) {
+        showToast('❌ Error al generar Excel: ' + e.message, '#c62828');
+    }
+}
+
 
 const MAX_FILAS_DOM = 60;
 const SAVE_DEBOUNCE = 1500;
@@ -1228,7 +1246,7 @@ function almExportarSnap(idx) {
     const ws2 = XLSX.utils.aoa_to_sheet(ws2Data); ws2['!cols']=[{wch:6},{wch:18},{wch:10},{wch:10},{wch:12}];
     XLSX.utils.book_append_sheet(wb,ws1,'STOCK');
     XLSX.utils.book_append_sheet(wb,ws2,'MOVIMIENTOS');
-    XLSX.writeFile(wb, snap.nombre.replace(/[^a-zA-Z0-9_\-]/g,'_')+'.xlsx');
+    descargarExcel(wb, snap.nombre.replace(/[^a-zA-Z0-9_\-]/g,'_')+'.xlsx');
     showToast('✅ Excel exportado','#111');
 }
 
@@ -1252,7 +1270,7 @@ function almExportar() {
     const ws2 = XLSX.utils.aoa_to_sheet(ws2Data); ws2['!cols']=[{wch:6},{wch:18},{wch:10},{wch:10},{wch:16}];
     XLSX.utils.book_append_sheet(wb,ws1,'STOCK ACTUAL');
     XLSX.utils.book_append_sheet(wb,ws2,'MOVIMIENTOS');
-    XLSX.writeFile(wb,'almacen_pieers_'+new Date().toISOString().slice(0,10)+'.xlsx');
+    descargarExcel(wb,'almacen_pieers_'+new Date().toISOString().slice(0,10)+'.xlsx');
     toggleMenu(); showToast('✅ Excel exportado','#111');
 }
 
@@ -1609,7 +1627,7 @@ function convertirStockDesdeFilas(filas) {
     const wb=XLSX.utils.book_new();
     const ws=XLSX.utils.aoa_to_sheet(wsData); ws['!cols']=[{wch:18},{wch:55},{wch:8}];
     XLSX.utils.book_append_sheet(wb,ws,'INVENTARIO PIEERS');
-    XLSX.writeFile(wb,'inventario_pieers_'+new Date().toISOString().slice(0,10)+'.xlsx');
+    descargarExcel(wb,'inventario_pieers_'+new Date().toISOString().slice(0,10)+'.xlsx');
     hideLoading(); toggleMenu(); beep(880,0.1);
     showToast(`✅ ${res.length.toLocaleString()} líneas → descargado`,'#111');
 }
@@ -1781,7 +1799,7 @@ function exportarExcel(idx) {
     const ws2=XLSX.utils.json_to_sheet(agrupad);   ws2['!cols']=[{wch:18},{wch:55},{wch:14}];
     XLSX.utils.book_append_sheet(wb,ws1,'CONCILIACION');
     XLSX.utils.book_append_sheet(wb,ws2,'LECTURAS_CONSOLIDADAS');
-    XLSX.writeFile(wb,`${lote.nombre}_CONCILIADO.xlsx`);
+    descargarExcel(wb,`${lote.nombre}_CONCILIADO.xlsx`);
 }
 
 // ── MODAL LOTES ──
