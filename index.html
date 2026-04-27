@@ -375,10 +375,6 @@
 
     <!-- Botones archivo COMPARATIVO -->
     <div id="comp-file-btns" style="display:none;flex-direction:column;gap:4px;margin:0 8px 2px;flex-shrink:0;">
-        <div style="display:flex;gap:6px;">
-            <button class="comp-file-btn" style="background:var(--negro);color:white;" onclick="document.getElementById('fileInput').click()">📥 CARGAR MAESTRO</button>
-            <button class="comp-file-btn" style="background:var(--negro-soft);color:#ccc;border:1px solid #444;" onclick="document.getElementById('compStockInput').click()">🔄 STOCK → MAESTRO</button>
-        </div>
         <button class="comp-file-btn" style="background:#0a1a0a;color:#4CAF50;border:2px solid #2E7D32;width:100%;letter-spacing:1px;" onclick="abrirAlmDesdeComp()">🏪 VER STOCK EN ALMACÉN</button>
     </div>
 
@@ -400,12 +396,7 @@
         </div>
     </div>
 
-    <!-- Footer comparativo -->
-    <div id="footer-comp" class="module-footer hidden" style="padding:2px 8px 6px;">
-        <button class="btn-modulo btn-guardar-mod" onclick="guardarLote()">💾 GUARDAR</button>
-        <button class="btn-modulo btn-reportes-mod" onclick="abrirModal('modalLotes')">📋 REPORTES</button>
-        <button class="btn-modulo btn-reset-mod" onclick="resetearModulo()">🔄 REINICIAR</button>
-    </div>
+
 
     <!-- OVERLAY ERROR -->
     <div id="overlay-error">
@@ -433,12 +424,6 @@
         <!-- Badge -->
         <div id="alm-estado-badge">Sin inventario — carga stock con los botones de abajo</div>
 
-        <!-- Carga -->
-        <div class="alm-load-row">
-            <button class="alm-load-btn" style="background:var(--negro);color:var(--blanco);" onclick="document.getElementById('almInput').click()">📥 CARGAR INV.</button>
-            <button class="alm-load-btn" style="background:var(--gris-bg);color:var(--rojo);border:2px solid var(--rojo);font-weight:900;" onclick="document.getElementById('almInputMas').click()">＋ AGREGAR MÁS</button>
-            <button class="alm-load-btn" style="background:var(--gris-bg);color:var(--negro);border:1px solid var(--gris-borde);" onclick="document.getElementById('almStockInput').click()">🔄 STOCK</button>
-        </div>
         <input type="file" id="almInputMas" accept=".xlsx,.xls,.csv" multiple style="display:none;">
 
         <!-- Filtro rápido -->
@@ -478,13 +463,7 @@
             </div>
         </div>
 
-        <!-- Footer almacén -->
-        <div class="alm-footer-row">
-            <button class="alm-footer-btn" style="background:var(--gris-bg);color:#E65100;border:1px solid #E65100;" onclick="almDeshacer()">↩️ DESHACER</button>
-            <button class="alm-footer-btn" style="background:var(--negro);color:white;" onclick="almGuardarYVerInformes()">💾 GUARDAR</button>
-            <button class="alm-footer-btn" style="background:var(--gris-bg);color:#F9A825;border:1px solid #F9A825;" onclick="abrirModalAlmInformes()">📋 INFORMES</button>
-            <button class="alm-footer-btn" style="background:var(--gris-bg);color:var(--rojo);border:1px solid var(--rojo);" onclick="resetearModulo()">🗑️ REINICIAR</button>
-        </div>
+
     </div>
 
 
@@ -697,7 +676,7 @@ function seleccionarModo(modo) {
         $s('app-principal').classList.remove('hidden');
         $s('vista-comp').classList.add('hidden');
         $s('vista-alm').classList.add('hidden');
-        $s('footer-comp').classList.add('hidden');
+        
 
         const compFileBtns = $('comp-file-btns');
         if (compFileBtns) compFileBtns.style.display = 'none';
@@ -718,7 +697,7 @@ function seleccionarModo(modo) {
             $s('menu-sec-comp').classList.remove('hidden');
             ['btn-carga','btn-stock','btn-comp-alm','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
             $s('vista-comp').classList.remove('hidden');
-            $s('footer-comp').classList.remove('hidden');
+            
             if (compFileBtns) compFileBtns.style.display = 'flex';
             const bEsp=$('blq-esp'); if(bEsp) bEsp.style.display='';
             const bAv=$('blq-avan'); if(bAv) bAv.style.display='';
@@ -1129,9 +1108,15 @@ function renderAlmInformes() {
         const row = document.createElement('div');
         row.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;';
 
+        // Botón REANUDAR
+        const btnRea = document.createElement('button');
+        btnRea.textContent = '▶ REANUDAR';
+        btnRea.style.cssText = 'flex:1;padding:11px;border:none;border-radius:8px;background:var(--negro);color:white;font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;';
+        btnRea.addEventListener('click', () => almReanudarSnap(i));
+
         // Botón DESCARGAR EXCEL
         const btnXls = document.createElement('button');
-        btnXls.textContent = '📊 DESCARGAR EXCEL';
+        btnXls.textContent = '📊 EXCEL';
         btnXls.style.cssText = 'flex:1;padding:11px;border:none;border-radius:8px;background:#1B5E20;color:white;font-family:Arial,sans-serif;font-size:13px;font-weight:700;cursor:pointer;';
         btnXls.addEventListener('click', () => almExportarSnap(i));
 
@@ -1146,6 +1131,7 @@ function renderAlmInformes() {
             showToast("Informe eliminado", "#E65100");
         });
 
+        row.appendChild(btnRea);
         row.appendChild(btnXls);
         row.appendChild(btnDel);
         card.appendChild(row);
