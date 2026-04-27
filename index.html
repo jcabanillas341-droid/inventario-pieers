@@ -327,10 +327,10 @@
     
 
     <input type="file" id="fileInput"      class="hidden" accept=".xlsx,.xls,.txt,.csv">
-    <input type="file" id="stockInput"     class="hidden" accept=".csv,.xlsx,.xls">
-    <input type="file" id="almInput"       class="hidden" accept=".csv,.xlsx,.xls">
-    <input type="file" id="almStockInput"  class="hidden" accept=".csv,.xlsx,.xls">
-    <input type="file" id="compStockInput" class="hidden" accept=".csv,.xlsx,.xls">
+    <input type="file" id="stockInput"     class="hidden" accept=".csv,.xlsx,.xls,.txt">
+    <input type="file" id="almInput"       class="hidden" accept=".csv,.xlsx,.xls,.txt">
+    <input type="file" id="almStockInput"  class="hidden" accept=".csv,.xlsx,.xls,.txt">
+    <input type="file" id="compStockInput" class="hidden" accept=".csv,.xlsx,.xls,.txt">
 
     <!-- SCANNER COMPARATIVO -->
     <input id="scanner" inputmode="none" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus placeholder="ESCANEE CÓDIGO">
@@ -564,25 +564,23 @@ window.addEventListener('load', () => {
 // ── DESCARGA EXCEL COMPATIBLE CON WEBVIEW ANDROID (WebIntoApp) ──
 function descargarExcel(wb, nombre) {
     try {
-        // Generar como .xls — Android reconoce este MIME type nativamente
-        // y lo abre directo con Excel, Google Sheets o WPS Office
-        const wbout = XLSX.write(wb, { bookType: 'xls', type: 'array' });
-        const bytes = new Uint8Array(wbout);
-        let binary  = '';
-        for (let i = 0; i < bytes.byteLength; i++) {
-            binary += String.fromCharCode(bytes[i]);
-        }
-        const b64        = window.btoa(binary);
-        const nombreFinal = nombre.replace(/\.xlsx?$/i, '') + '.xls';
-        const dataUri    = 'data:application/vnd.ms-excel;base64,' + b64;
+        // Generar como .xlsx con Blob — funciona en Android WebView, Chrome y WebIntoApp
+        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const blob  = new Blob([wbout], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        });
+        const nombreFinal = nombre.replace(/\.xls$/i, '.xlsx').replace(/(?<!\.xlsx)$/i, '');
+        // Asegurar extensión .xlsx
+        const fileNombre = nombreFinal.match(/\.xlsx$/i) ? nombreFinal : nombreFinal.replace(/\.xlsx?$/i,'') + '.xlsx';
 
-        const a = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        const a   = document.createElement('a');
         a.style.display = 'none';
-        a.href     = dataUri;
-        a.download = nombreFinal;
+        a.href     = url;
+        a.download = fileNombre;
         document.body.appendChild(a);
         a.click();
-        setTimeout(() => document.body.removeChild(a), 2000);
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 3000);
         showToast('📊 Excel descargado — revisa Descargas', '#1B5E20');
     } catch(e) {
         showToast('❌ Error al generar Excel: ' + e.message, '#c62828');
@@ -857,7 +855,7 @@ document.getElementById('fileInput').addEventListener('change', function(e) {
             }, 30);
         } else {
             setTimeout(() => {
-                const rows = evt.target.result.split('\n').map(l => { const p = l.split(/[;,|]/); return {_cod:(p[0]||'').trim(),_stock:parseInt(p[1])||0}; }).filter(r => r._cod.length >= 4);
+                const rows = evt.target.result.split('\n').map(l => { const p = l.split(/[;,|\/]/); return {_cod:(p[0]||'').trim().toUpperCase(),_stock:parseInt(p[1])||0}; }).filter(r => r._cod.length >= 4);
                 procesarFilasMaestro(rows, 0, true);
             }, 30);
         }
@@ -1297,6 +1295,22 @@ document.getElementById('almInput').addEventListener('change', function(e) {
                 if (ext==='xlsx'||ext==='xls') {
                     const wb=XLSX.read(new Uint8Array(evt.target.result),{type:'array'});
                     rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+                } else if (ext==='txt') {
+                    // Formato TXT: CODIGO/CANT  o  CODIGO|CANT|DESC  o  CODIGO;CANT
+                    rows = evt.target.result.split('\n')
+                        .map(l => l.trim()).filter(l => l.length >= 4)
+                        .map(l => {
+                            const p = l.split(/[\/|;,]/);
+                            const cod = (p[0]||'').trim().toUpperCase();
+                            const segundo = (p[1]||'').trim();
+                            const tercero = (p[2]||'').trim();
+                            // Detectar si segundo campo es número (cant) o descripción
+                            const esNum = /^\d+$/.test(segundo);
+                            const desc  = esNum ? tercero : segundo;
+                            const stock = parseInt(esNum ? segundo : tercero)||0;
+                            return {'CODIGO': cod, 'DESCRIPCION': desc, 'STOCK': stock};
+                        })
+                        .filter(r => r['CODIGO'].length >= 4);
                 } else {
                     const f2=parsearCSV(evt.target.result);
                     const h=f2[0]?f2[0].map(x=>x.trim().toUpperCase()):[];
