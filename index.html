@@ -108,7 +108,7 @@
         #overlay-error { display: none; position: fixed; inset: 0; background: rgba(183,28,28,0.97); z-index: 9999; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
 
         /* ── MODALES ── */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 4000; padding: 14px; flex-direction: column; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 5500; padding: 14px; flex-direction: column; }
         .modal-title { font-family: 'Barlow Condensed', sans-serif; font-weight: 900; font-size: 20px; color: var(--rojo); text-align: center; margin-bottom: 12px; letter-spacing: 1px; text-transform: uppercase; }
         .card-lote  { background: #1a1a1a; padding: 14px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--rojo); }
         .hidden     { display: none !important; }
@@ -307,7 +307,7 @@
             <button id="btn-stock"         class="hidden" onclick="document.getElementById('stockInput').click();toggleMenu()">🔄 Convertir Stock → Maestro</button>
             <button id="btn-comp-alm"      class="hidden" onclick="abrirAlmDesdeComp();toggleMenu()">🏪 Ver Stock en Almacén</button>
             <button id="btn-comp-guardar"  class="hidden" onclick="guardarLote();toggleMenu()">💾 Guardar Lote</button>
-            <button id="btn-comp-reportes" class="hidden" onclick="abrirModal('modalLotes');toggleMenu()">📋 Reportes guardados</button>
+            <button id="btn-comp-reportes" class="hidden" onclick="toggleMenu();abrirModal('modalLotes')">📋 Reportes guardados</button>
             <button id="btn-comp-reiniciar" class="hidden" onclick="resetearModulo();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Reiniciar comparativo</button>
             <div id="menu-sec-alm" class="menu-section hidden">🏪 Almacén</div>
             <button id="btn-alm-carga"     class="hidden" onclick="document.getElementById('almInput').click();toggleMenu()">📥 Cargar Inventario</button>
