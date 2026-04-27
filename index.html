@@ -731,18 +731,20 @@ const scannerEl = document.getElementById('scanner');
 let bufferBT = '', flushTimer = null;
 function flushBuffer() {
     clearTimeout(flushTimer);
-    const cod = bufferBT.trim(); bufferBT = ''; scannerEl.value = '';
+    // Limpiar caracteres invisibles que envía la lectora USB (\r, \n, espacios, tabs)
+    const cod = bufferBT.replace(/[\r\n\t\s]/g, '').trim();
+    bufferBT = ''; scannerEl.value = '';
     if (cod) procesarCodigo(cod);
 }
 scannerEl.addEventListener('keydown', function(e) {
     if (bloqueado) { e.preventDefault(); return; }
-    if (e.key === 'Enter') { e.preventDefault(); bufferBT = scannerEl.value.trim() || bufferBT.trim(); flushBuffer(); }
+    if (e.key === 'Enter') { e.preventDefault(); bufferBT = scannerEl.value || bufferBT; flushBuffer(); }
 });
 scannerEl.addEventListener('input', function() {
     if (bloqueado) { scannerEl.value=''; return; }
     bufferBT = scannerEl.value;
     clearTimeout(flushTimer);
-    flushTimer = setTimeout(() => { if (bufferBT.length >= 4) flushBuffer(); else { bufferBT=''; scannerEl.value=''; } }, 80);
+    flushTimer = setTimeout(() => { if (bufferBT.replace(/[\r\n\t\s]/g,'').length >= 13) flushBuffer(); else { bufferBT=''; scannerEl.value=''; } }, 150);
 });
 
 function procesarCodigo(cod) {
@@ -754,7 +756,7 @@ function procesarCodigo(cod) {
         schedSave('comp'); schedRender('comp', cod); beepOK();
         // Mostrar stock en almacén si existe
         mostrarPanelAlmComp(cod);
-    } else { mostrarError(cod, 'COMP: Se esperan 13 dígitos'); }
+    } else { mostrarError(cod, 'Se esperan 13 dígitos — recibidos: ' + cod.length); }
 }
 
 function mostrarPanelAlmComp(cod) {
@@ -1526,19 +1528,28 @@ function movSetInputMode(mode) {
 // Scanner del modal de movimiento
 const movScanEl = document.getElementById('mov-scanner');
 let movBufBT='', movFlushTimer=null;
+
+function movProcesarCod(cod) {
+    if (cod.length >= 4) { almRegistrarPorCodigo(cod,'',1); cerrarModalMovimiento(); }
+}
+
+movScanEl.addEventListener('input', function() {
+    // Captura vía input (USB HID y algunos BT)
+    movBufBT = movScanEl.value;
+    clearTimeout(movFlushTimer);
+    movFlushTimer = setTimeout(() => {
+        const cod = movBufBT.replace(/[\r\n\t\s]/g,'').trim().toUpperCase(); movBufBT=''; movScanEl.value='';
+        movProcesarCod(cod);
+    }, 150);
+});
+
 movScanEl.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') {
+        e.preventDefault();
         clearTimeout(movFlushTimer);
-        const cod = (movBufBT.trim()||movScanEl.value.trim()).toUpperCase();
+        const cod = (movBufBT||movScanEl.value).replace(/[\r\n\t\s]/g,'').trim().toUpperCase();
         movBufBT=''; movScanEl.value='';
-        if (cod.length >= 4) { almRegistrarPorCodigo(cod,'',1); cerrarModalMovimiento(); }
-    } else if (e.key.length===1) {
-        movBufBT += e.key;
-        clearTimeout(movFlushTimer);
-        movFlushTimer = setTimeout(() => {
-            const cod = movBufBT.trim().toUpperCase(); movBufBT=''; movScanEl.value='';
-            if (cod.length >= 4) { almRegistrarPorCodigo(cod,'',1); cerrarModalMovimiento(); }
-        }, 180);
+        movProcesarCod(cod);
     }
 });
 
