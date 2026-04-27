@@ -263,15 +263,15 @@
         </span>
     </button>
 
-    <!-- Botón instalar app -->
-    <button onclick="descargarApp()" style="width:100%;padding:13px 16px;border:1px solid #333;border-radius:12px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;background:transparent;margin-top:4px;">
-        <span style="font-size:24px;min-width:36px;text-align:center;">💾</span>
+    <!-- Botón descargar -->
+    <button onclick="descargarApp()" style="width:100%;padding:14px 16px;border:2px solid #2E7D32;border-radius:12px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;background:#0a1a0a;margin-top:4px;">
+        <span style="font-size:26px;min-width:36px;text-align:center;">📥</span>
         <span style="display:flex;flex-direction:column;">
-            <span style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;color:white;text-transform:uppercase;">GUARDAR ARCHIVO HTML</span>
-            <span style="font-size:11px;font-weight:400;margin-top:3px;color:#555;line-height:1.4;">Descarga la app para abrir sin internet</span>
+            <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:1px;color:#4CAF50;text-transform:uppercase;">DESCARGAR APP</span>
+            <span style="font-size:11px;font-weight:400;margin-top:2px;color:#555;line-height:1.4;">Guarda el archivo HTML en tu celular</span>
         </span>
     </button>
-    <div style="font-size:10px;color:#444;text-align:center;margin-top:8px;font-family:'Barlow',sans-serif;letter-spacing:1px;">PIEERS PRO · v17</div>
+    <div style="font-size:10px;color:#444;text-align:center;margin-top:8px;font-family:'Barlow',sans-serif;letter-spacing:1px;">PIEERS PRO · v20</div>
 </div>
 
 
@@ -296,7 +296,7 @@
             <button id="btn-alm-guardar"  onclick="almGuardarSnapshot()" class="hidden">💾 Guardar informe</button>
             <button id="btn-alm-exportar" onclick="almExportar()" class="hidden">📊 Exportar a Excel</button>
             <div class="menu-section">App</div>
-            <button onclick="descargarApp();toggleMenu();">💾 Guardar archivo HTML</button>
+            <button onclick="descargarApp();toggleMenu();">📥 Descargar app (HTML)</button>
             <button onclick="resetearApp();toggleMenu();" class="menu-btn-danger">⚠️ Borrar todo y reiniciar</button>
         </div>
     </div>
@@ -380,6 +380,7 @@
     <div id="footer-comp" class="module-footer hidden" style="padding:2px 8px 6px;">
         <button class="btn-modulo btn-guardar-mod" onclick="guardarLote()">💾 GUARDAR</button>
         <button class="btn-modulo btn-reportes-mod" onclick="abrirModal('modalLotes')">📋 REPORTES</button>
+        <button class="btn-modulo" onclick="descargarApp()" style="background:#0a1a0a;color:#4CAF50;border:1px solid #2E7D32;">📥</button>
         <button class="btn-modulo btn-reset-mod" onclick="resetearModulo()">🔄 REINICIAR</button>
     </div>
 
@@ -459,6 +460,7 @@
             <button class="alm-footer-btn" style="background:var(--gris-bg);color:#E65100;border:1px solid #E65100;" onclick="almDeshacer()">↩️ DESHACER</button>
             <button class="alm-footer-btn" style="background:var(--negro);color:white;" onclick="almGuardarYVerInformes()">💾 GUARDAR</button>
             <button class="alm-footer-btn" style="background:var(--gris-bg);color:#F9A825;border:1px solid #F9A825;" onclick="abrirModalAlmInformes()">📋 INFORMES</button>
+            <button class="alm-footer-btn" style="background:#0a1a0a;color:#4CAF50;border:1px solid #2E7D32;" onclick="descargarApp()">📥</button>
             <button class="alm-footer-btn" style="background:var(--gris-bg);color:var(--rojo);border:1px solid var(--rojo);" onclick="resetearModulo()">🗑️ REINICIAR</button>
         </div>
     </div>
@@ -552,6 +554,11 @@
 'use strict';
 // ── INICIO DIRECTO SIN LOGIN ──
 window.addEventListener('load', () => {
+    // En móvil mostrar instrucciones de instalación la primera vez
+    if (!localStorage.getItem('pieers_shown_install') && (/iphone|ipad|ipod|android/i.test(navigator.userAgent))) {
+        localStorage.setItem('pieers_shown_install','1');
+        setTimeout(() => mostrarModalDescarga(/iphone|ipad|ipod/i.test(navigator.userAgent) ? 'iOS' : 'Android'), 1500);
+    }
     const app = document.getElementById('app-principal');
     if (app) { app.classList.remove('hidden'); app.style.display = 'flex'; }
     const modo = document.getElementById('pantalla-modo');
@@ -1926,31 +1933,78 @@ function agregarAlConteoDesdeAlm(cod) {
 
 // ── DESCARGAR APP COMO ARCHIVO HTML ──
 function descargarApp() {
-    try {
-        // Obtener HTML completo de la página actual
-        const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const isIOS     = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isAndroid = /android/i.test(navigator.userAgent);
 
-        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
-            // Internet Explorer
-            window.navigator.msSaveOrOpenBlob(blob, 'PIEERS_PRO_v20.html');
-        } else {
-            const url = URL.createObjectURL(blob);
-            const a   = document.createElement('a');
-            a.style.display = 'none';
-            a.href     = url;
-            a.download = 'PIEERS_PRO_v20.html';
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }, 1000);
-        }
-        showToast('💾 Descargando PIEERS_PRO_v20.html...', '#1B5E20');
-    } catch(e) {
-        showToast('⚠️ Usa el menú del navegador → Guardar página como...', '#E65100');
+    if (isIOS) {
+        // iOS Safari no permite descargas de blob — mostrar instrucciones
+        mostrarModalDescarga('iOS');
+        return;
     }
+
+    try {
+        const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.style.display = 'none';
+        a.href     = url;
+        a.download = 'PIEERS_PRO_v20.html';
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 2000);
+        if (isAndroid) {
+            showToast('📥 Descargando... busca el archivo en Descargas', '#1B5E20');
+        } else {
+            showToast('📥 Descargando PIEERS_PRO_v20.html...', '#1B5E20');
+        }
+    } catch(e) {
+        mostrarModalDescarga(isAndroid ? 'Android' : 'PC');
+    }
+}
+
+function mostrarModalDescarga(plataforma) {
+    const modal = document.getElementById('modal-descarga');
+    const body  = document.getElementById('modal-descarga-body');
+    if (!modal || !body) return;
+
+    let html = '';
+    if (plataforma === 'iOS') {
+        html = `<div style="font-size:13px;line-height:1.8;font-family:'Barlow',sans-serif;color:var(--texto);">
+            <div style="font-size:28px;text-align:center;margin-bottom:12px;">📱</div>
+            <b>En iPhone/iPad:</b><br>
+            Para instalar PIEERS PRO como app:<br><br>
+            <div style="background:var(--gris-bg);border-radius:8px;padding:12px;margin-bottom:8px;">
+                1️⃣ Toca el botón <b>Compartir</b> (⬆️) abajo en Safari<br>
+                2️⃣ Toca <b>"Agregar a pantalla de inicio"</b><br>
+                3️⃣ Toca <b>"Agregar"</b> arriba a la derecha
+            </div>
+            La app queda en tu pantalla de inicio como ícono. ¡Sin descarga!
+        </div>`;
+    } else if (plataforma === 'Android') {
+        html = `<div style="font-size:13px;line-height:1.8;font-family:'Barlow',sans-serif;color:var(--texto);">
+            <div style="font-size:28px;text-align:center;margin-bottom:12px;">🤖</div>
+            <b>En Android — dos opciones:</b><br><br>
+            <div style="background:var(--gris-bg);border-radius:8px;padding:12px;margin-bottom:8px;">
+                <b>Opción 1 — Instalar como app:</b><br>
+                1️⃣ Toca los <b>3 puntos</b> (⋮) del navegador<br>
+                2️⃣ Toca <b>"Agregar a pantalla de inicio"</b>
+            </div>
+            <div style="background:var(--gris-bg);border-radius:8px;padding:12px;">
+                <b>Opción 2 — Guardar HTML:</b><br>
+                1️⃣ Toca los <b>3 puntos</b> (⋮) del navegador<br>
+                2️⃣ Toca <b>"Compartir"</b> → <b>"Guardar en archivos"</b>
+            </div>
+        </div>`;
+    } else {
+        html = `<div style="font-size:13px;line-height:1.8;font-family:'Barlow',sans-serif;color:var(--texto);">
+            <b>Guardar en PC:</b><br>
+            Presiona <b>Ctrl+S</b> (Windows) o <b>Cmd+S</b> (Mac)<br>
+            Selecciona "Página web, solo HTML"
+        </div>`;
+    }
+    body.innerHTML = html;
+    modal.style.display = 'flex';
 }
 
 window.addEventListener('beforeunload', ()=>{ clearTimeout(saveTimer); clearTimeout(almSaveTimer); if(modoActual==='comp') saveComp(); if(modoActual==='alm') saveAlm(); });
