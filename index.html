@@ -68,11 +68,11 @@
         .btn-menu { background: var(--rojo); color: white; border: none; padding: 7px 11px; border-radius: 6px; font-size: 12px; cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 1px; }
         .btn-cambio { background: #2a2a2a; color: #aaa; border: 1px solid #444; padding: 7px 10px; border-radius: 6px; font-size: 10px; cursor: pointer; }
 
-        .menu-dropdown { display: none; position: absolute; right: 10px; top: 52px; background: var(--negro-soft); z-index: 5000; border: 1px solid #333; border-radius: 10px; min-width: 260px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
-        .menu-section { padding: 6px 12px 4px; font-size: 9px; color: #666; letter-spacing: 1px; text-transform: uppercase; font-weight: 600; border-top: 1px solid #2a2a2a; }
+        .menu-dropdown { display: none; position: absolute; right: 10px; top: 52px; background: var(--negro-soft); z-index: 5000; border: 1px solid #333; border-radius: 10px; min-width: 280px; max-width: calc(100vw - 20px); overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.5); max-height: calc(100vh - 70px); overflow-y: auto; }
+        .menu-section { padding: 8px 14px 5px; font-size: 10px; color: #888; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; border-top: 1px solid #2a2a2a; }
         .menu-section:first-child { border-top: none; }
-        .menu-dropdown button { width: 100%; padding: 13px 14px; background: none; border: none; color: #ddd; text-align: left; border-bottom: 1px solid #2a2a2a; cursor: pointer; font-size: 12px; font-family: 'Barlow', sans-serif; display: flex; align-items: center; gap: 8px; }
-        .menu-dropdown button:hover { background: #2a2a2a; }
+        .menu-dropdown button { width: 100%; padding: 15px 16px; background: none; border: none; color: #ddd; text-align: left; border-bottom: 1px solid #2a2a2a; cursor: pointer; font-size: 14px; font-family: 'Barlow', sans-serif; display: flex; align-items: center; gap: 8px; min-height: 48px; }
+        .menu-dropdown button:active { background: #2a2a2a; }
         .menu-dropdown button:last-child { border-bottom: none; }
         .menu-btn-danger { color: var(--rojo-light) !important; }
 
@@ -239,6 +239,28 @@
 
         @keyframes rowNew { from { background: #FFEBEE; } to { background: transparent; } }
         .fila-nueva { animation: rowNew 1.8s ease forwards; }
+
+        /* ── ALMACÉN: barras y botones ── */
+        .alm-action-bar { display: flex; gap: 6px; flex-shrink: 0; padding: 4px 8px 2px; }
+        .alm-btn-buscar { flex: 1; padding: 12px 8px; background: var(--negro); color: white; border: none; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; }
+        .alm-btn-retiro { flex: 2; padding: 12px 8px; background: var(--rojo); color: white; border: none; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; }
+        .alm-btn-buscar:active, .alm-btn-retiro:active { filter: brightness(0.85); }
+        #alm-estado-badge { margin: 0 8px 4px; padding: 6px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 7px; font-size: 11px; color: #888; text-align: center; font-family: 'Barlow', sans-serif; flex-shrink: 0; }
+        .alm-load-row { display: flex; gap: 5px; flex-shrink: 0; padding: 0 8px 4px; }
+        .alm-load-btn { flex: 1; padding: 10px 4px; border: none; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 700; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.3px; text-align: center; min-height: 44px; }
+        .alm-load-btn:active { filter: brightness(0.85); }
+        .alm-footer-row { display: flex; gap: 5px; flex-shrink: 0; padding: 4px 8px 6px; }
+        .alm-footer-btn { flex: 1; padding: 11px 4px; border: none; border-radius: 8px; cursor: pointer; font-size: 10px; font-weight: 700; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.3px; text-align: center; min-height: 44px; }
+        .alm-footer-btn:active { filter: brightness(0.85); }
+
+        /* ── MEJORAS MÓVIL ── */
+        @media (max-width: 480px) {
+            .btn-modulo { font-size: 10px; padding: 11px 4px; min-height: 44px; }
+            .comp-file-btn { font-size: 10px; }
+            td { font-size: 11px; padding: 8px 3px; }
+            th { font-size: 8px; padding: 5px 3px; }
+            #scanner { font-size: 16px; }
+        }
     </style>
 </head>
 <body class="modo-comp">
@@ -263,14 +285,6 @@
         </span>
     </button>
 
-    <!-- Botón descargar -->
-    <button onclick="descargarApp()" style="width:100%;padding:14px 16px;border:2px solid #2E7D32;border-radius:12px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;background:#0a1a0a;margin-top:4px;">
-        <span style="font-size:26px;min-width:36px;text-align:center;">📥</span>
-        <span style="display:flex;flex-direction:column;">
-            <span style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;letter-spacing:1px;color:#4CAF50;text-transform:uppercase;">DESCARGAR APP</span>
-            <span style="font-size:11px;font-weight:400;margin-top:2px;color:#555;line-height:1.4;">Guarda el archivo HTML en tu celular</span>
-        </span>
-    </button>
     <div style="font-size:10px;color:#444;text-align:center;margin-top:8px;font-family:'Barlow',sans-serif;letter-spacing:1px;">PIEERS PRO · v20</div>
 </div>
 
@@ -288,15 +302,25 @@
             <button class="btn-menu"   onclick="toggleMenu()">☰ OPC.</button>
         </div>
         <div id="menuContent" class="menu-dropdown">
-            <div id="menu-sec-comp" class="menu-section hidden">Comparativo</div>
-            <button id="btn-carga"  class="hidden" onclick="document.getElementById('fileInput').click()">📥 Cargar Maestro</button>
-            <button id="btn-stock"  class="hidden" onclick="document.getElementById('stockInput').click()">🔄 Convertir Stock → PIEERS</button>
-            <div id="menu-sec-alm" class="menu-section hidden">Almacén</div>
-            <button id="btn-alm-deshacer" onclick="almDeshacer()" class="hidden">↩️ Deshacer movimiento</button>
-            <button id="btn-alm-guardar"  onclick="almGuardarSnapshot()" class="hidden">💾 Guardar informe</button>
-            <button id="btn-alm-exportar" onclick="almExportar()" class="hidden">📊 Exportar a Excel</button>
-            <div class="menu-section">App</div>
-            <button onclick="descargarApp();toggleMenu();">📥 Descargar app (HTML)</button>
+            <div id="menu-sec-comp" class="menu-section hidden">📋 Comparativo</div>
+            <button id="btn-carga"         class="hidden" onclick="document.getElementById('fileInput').click();toggleMenu()">📥 Cargar Maestro</button>
+            <button id="btn-stock"         class="hidden" onclick="document.getElementById('stockInput').click();toggleMenu()">🔄 Convertir Stock → Maestro</button>
+            <button id="btn-comp-alm"      class="hidden" onclick="abrirAlmDesdeComp();toggleMenu()">🏪 Ver Stock en Almacén</button>
+            <button id="btn-comp-guardar"  class="hidden" onclick="guardarLote();toggleMenu()">💾 Guardar Lote</button>
+            <button id="btn-comp-reportes" class="hidden" onclick="abrirModal('modalLotes');toggleMenu()">📋 Reportes guardados</button>
+            <button id="btn-comp-reiniciar" class="hidden" onclick="resetearModulo();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Reiniciar comparativo</button>
+            <div id="menu-sec-alm" class="menu-section hidden">🏪 Almacén</div>
+            <button id="btn-alm-carga"     class="hidden" onclick="document.getElementById('almInput').click();toggleMenu()">📥 Cargar Inventario</button>
+            <button id="btn-alm-mas"       class="hidden" onclick="document.getElementById('almInputMas').click();toggleMenu()">➕ Agregar más stock</button>
+            <button id="btn-alm-stock"     class="hidden" onclick="document.getElementById('almStockInput').click();toggleMenu()">🔄 Cargar Stock</button>
+            <button id="btn-alm-buscar"    class="hidden" onclick="abrirModalBusqueda();toggleMenu()">🔍 Buscar producto</button>
+            <button id="btn-alm-retiro"    class="hidden" onclick="abrirModalMovimiento();toggleMenu()">− Registrar Retiro</button>
+            <button id="btn-alm-deshacer"  class="hidden" onclick="almDeshacer();toggleMenu()">↩️ Deshacer movimiento</button>
+            <button id="btn-alm-guardar"   class="hidden" onclick="almGuardarSnapshot();toggleMenu()">💾 Guardar informe</button>
+            <button id="btn-alm-exportar"  class="hidden" onclick="almExportar();toggleMenu()">📊 Exportar a Excel</button>
+            <button id="btn-alm-informes"  class="hidden" onclick="abrirModalAlmInformes();toggleMenu()">📋 Ver Informes</button>
+            <button id="btn-alm-reiniciar" class="hidden" onclick="resetearModulo();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Reiniciar almacén</button>
+            <div class="menu-section">⚙️ App</div>
             <button onclick="resetearApp();toggleMenu();" class="menu-btn-danger">⚠️ Borrar todo y reiniciar</button>
         </div>
     </div>
@@ -380,7 +404,6 @@
     <div id="footer-comp" class="module-footer hidden" style="padding:2px 8px 6px;">
         <button class="btn-modulo btn-guardar-mod" onclick="guardarLote()">💾 GUARDAR</button>
         <button class="btn-modulo btn-reportes-mod" onclick="abrirModal('modalLotes')">📋 REPORTES</button>
-        <button class="btn-modulo" onclick="descargarApp()" style="background:#0a1a0a;color:#4CAF50;border:1px solid #2E7D32;">📥</button>
         <button class="btn-modulo btn-reset-mod" onclick="resetearModulo()">🔄 REINICIAR</button>
     </div>
 
@@ -460,7 +483,6 @@
             <button class="alm-footer-btn" style="background:var(--gris-bg);color:#E65100;border:1px solid #E65100;" onclick="almDeshacer()">↩️ DESHACER</button>
             <button class="alm-footer-btn" style="background:var(--negro);color:white;" onclick="almGuardarYVerInformes()">💾 GUARDAR</button>
             <button class="alm-footer-btn" style="background:var(--gris-bg);color:#F9A825;border:1px solid #F9A825;" onclick="abrirModalAlmInformes()">📋 INFORMES</button>
-            <button class="alm-footer-btn" style="background:#0a1a0a;color:#4CAF50;border:1px solid #2E7D32;" onclick="descargarApp()">📥</button>
             <button class="alm-footer-btn" style="background:var(--gris-bg);color:var(--rojo);border:1px solid var(--rojo);" onclick="resetearModulo()">🗑️ REINICIAR</button>
         </div>
     </div>
@@ -554,11 +576,6 @@
 'use strict';
 // ── INICIO DIRECTO SIN LOGIN ──
 window.addEventListener('load', () => {
-    // En móvil mostrar instrucciones de instalación la primera vez
-    if (!localStorage.getItem('pieers_shown_install') && (/iphone|ipad|ipod|android/i.test(navigator.userAgent))) {
-        localStorage.setItem('pieers_shown_install','1');
-        setTimeout(() => mostrarModalDescarga(/iphone|ipad|ipod/i.test(navigator.userAgent) ? 'iOS' : 'Android'), 1500);
-    }
     const app = document.getElementById('app-principal');
     if (app) { app.classList.remove('hidden'); app.style.display = 'flex'; }
     const modo = document.getElementById('pantalla-modo');
@@ -684,10 +701,10 @@ function seleccionarModo(modo) {
 
         const compFileBtns = $('comp-file-btns');
         if (compFileBtns) compFileBtns.style.display = 'none';
-        ['btn-carga','btn-stock'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
+        ['btn-carga','btn-stock','btn-comp-alm','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
         $s('menu-sec-alm').classList.add('hidden');
         $s('menu-sec-comp').classList.add('hidden');
-        ['btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
+        ['btn-alm-carga','btn-alm-mas','btn-alm-stock','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
         const bgl = $('btn-guardar-lote'); if(bgl) bgl.style.display = 'block';
 
         const scannerEl2 = $('scanner');
@@ -699,7 +716,7 @@ function seleccionarModo(modo) {
             document.body.className = 'modo-comp';
             $s('badge-txt').textContent = 'COMPARATIVO';
             $s('menu-sec-comp').classList.remove('hidden');
-            ['btn-carga','btn-stock'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
+            ['btn-carga','btn-stock','btn-comp-alm','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
             $s('vista-comp').classList.remove('hidden');
             $s('footer-comp').classList.remove('hidden');
             if (compFileBtns) compFileBtns.style.display = 'flex';
@@ -711,7 +728,7 @@ function seleccionarModo(modo) {
             document.body.className = 'modo-alm';
             $s('badge-txt').textContent = 'ALMACÉN';
             $s('menu-sec-alm').classList.remove('hidden');
-            ['btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
+            ['btn-alm-carga','btn-alm-mas','btn-alm-stock','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
             if(bgl) bgl.style.display = 'none';
             $s('vista-alm').classList.remove('hidden');
             loadStateAlm(); renderAlm();
