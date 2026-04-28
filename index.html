@@ -687,19 +687,21 @@ function mostrarPanelWA(nombre, resumen) {
     }
 
     panel.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:#4CAF50;letter-spacing:0.5px;">
-                ✅ DESCARGADO: <span style="color:#fff;">${nombre}</span>
-            </span>
-            <button onclick="cerrarPanelWA()" style="background:none;border:none;color:#666;font-size:18px;cursor:pointer;padding:0 0 0 8px;line-height:1;">✕</button>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+            <div style="flex:1;min-width:0;">
+                <div style="font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:#4CAF50;letter-spacing:0.5px;">✅ EXCEL LISTO</div>
+                <div style="font-size:10px;color:#888;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${nombre}</div>
+            </div>
+            <button onclick="cerrarPanelWA()" style="background:none;border:none;color:#555;font-size:18px;cursor:pointer;padding:0 0 0 4px;line-height:1;flex-shrink:0;">✕</button>
         </div>
         <button onclick="compartirExcelWA()" style="
             width:100%;padding:13px;border:none;border-radius:10px;
             background:#25D366;color:#fff;cursor:pointer;
             font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;
             letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:8px;">
-            💬 COMPARTIR POR WHATSAPP
-        </button>`;
+            💬 ENVIAR ARCHIVO POR WHATSAPP
+        </button>
+        <div style="font-size:10px;color:#444;text-align:center;font-family:'Barlow',sans-serif;">El archivo Excel se adjuntará directamente</div>`;
 
     panel.style.display = 'flex';
     // Auto-ocultar en 12 segundos si no se usa
@@ -718,26 +720,123 @@ async function compartirExcelWA() {
     const cache = _excelFileCache;
     if (!cache) { showToast('⚠️ Genera el Excel primero', '#E65100'); return; }
 
-    // Intentar Web Share API con archivo (Android nativo — abre WhatsApp directo)
-    if (navigator.canShare && navigator.canShare({ files: [cache.file] })) {
+    // Intento 1: Web Share API con archivo — sin canShare (más agresivo, funciona en más WebViews)
+    if (navigator.share) {
         try {
             await navigator.share({
                 files:  [cache.file],
                 title:  'PIEERS PRO — ' + cache.nombre,
-                text:   cache.resumen || ('Reporte de inventario: ' + cache.nombre)
+                text:   cache.resumen || ('Reporte: ' + cache.nombre)
             });
-            return; // Éxito — el usuario eligió WhatsApp en el selector nativo
+            return; // ✅ Éxito — selector nativo mostrado
         } catch(e) {
-            if (e.name === 'AbortError') return; // El usuario canceló, no es error
+            if (e.name === 'AbortError') return; // Usuario canceló — no es error
+            // Si falla por falta de soporte de archivos, continuar al Intento 2
         }
     }
 
-    // Fallback: si Web Share no puede compartir archivos, enviar resumen por texto
-    const texto = cache.resumen
-        ? `📊 *PIEERS PRO — ${cache.nombre}*\n\n${cache.resumen}\n\n_Generado con PIEERS PRO_`
-        : `📊 *PIEERS PRO*\nArchivo: ${cache.nombre}\n_Generado con PIEERS PRO_`;
-    const waUrl = 'https://wa.me/?text=' + encodeURIComponent(texto);
-    window.open(waUrl, '_blank');
+    // Intento 2: Re-descargar el archivo al dispositivo y mostrar guía paso a paso
+    // (Asegura que el archivo quede en la carpeta de Descargas antes de abrir WhatsApp)
+    try {
+        const wbout2 = XLSX.write(cache._wb || cache.file, { bookType: 'xlsx', type: 'array' });
+    } catch(_) {}
+
+    try {
+        const url2 = URL.createObjectURL(cache.file);
+        const a2   = document.createElement('a');
+        a2.href = url2; a2.download = cache.nombre;
+        a2.style.display = 'none';
+        document.body.appendChild(a2); a2.click();
+        setTimeout(() => { document.body.removeChild(a2); URL.revokeObjectURL(url2); }, 4000);
+    } catch(_) {}
+
+    // Mostrar modal guía con pasos claros para adjuntar en WhatsApp
+    mostrarGuiaCompartirWA(cache.nombre);
+}
+
+// ── MODAL GUÍA: CÓMO COMPARTIR EL EXCEL POR WHATSAPP ──
+function mostrarGuiaCompartirWA(nombre) {
+    let overlay = document.getElementById('_guia_wa_overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = '_guia_wa_overlay';
+        overlay.style.cssText = [
+            'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9950;',
+            'display:flex;justify-content:center;align-items:center;padding:16px;'
+        ].join('');
+        overlay.addEventListener('click', function(e){ if(e.target===overlay) cerrarGuiaWA(); });
+        document.body.appendChild(overlay);
+    }
+
+    overlay.innerHTML = `
+        <div style="
+            background:#161616;border:2px solid #25D366;border-radius:18px;
+            width:100%;max-width:370px;overflow:hidden;
+            box-shadow:0 8px 32px rgba(0,0,0,0.7);">
+
+            <!-- Cabecera -->
+            <div style="background:#0d0d0d;padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid #222;">
+                <span style="font-size:26px;">📤</span>
+                <div style="flex:1;">
+                    <div style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#25D366;letter-spacing:1px;">COMPARTIR POR WHATSAPP</div>
+                    <div style="font-size:10px;color:#555;margin-top:1px;font-family:'Barlow',sans-serif;">Archivo guardado en Descargas</div>
+                </div>
+                <button onclick="cerrarGuiaWA()" style="background:rgba(255,255,255,0.08);border:none;color:#888;font-size:18px;cursor:pointer;padding:4px 8px;border-radius:6px;line-height:1;">✕</button>
+            </div>
+
+            <!-- Nombre del archivo -->
+            <div style="margin:12px 16px 0;background:#0a1a0a;border:1px solid #1a3a1a;border-radius:8px;padding:10px 12px;display:flex;align-items:center;gap:10px;">
+                <span style="font-size:22px;flex-shrink:0;">📊</span>
+                <div>
+                    <div style="font-size:10px;color:#4CAF50;text-transform:uppercase;letter-spacing:1px;font-family:'Barlow',sans-serif;">Archivo listo</div>
+                    <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;color:#eee;font-weight:700;margin-top:1px;word-break:break-all;">${nombre}</div>
+                </div>
+            </div>
+
+            <!-- Pasos -->
+            <div style="padding:12px 16px;">
+                <div style="font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1px;font-family:'Barlow Condensed',sans-serif;margin-bottom:10px;">SIGUE ESTOS PASOS</div>
+
+                ${[
+                    ['💬','Abre <strong style="color:#25D366;">WhatsApp</strong> y elige el contacto o grupo'],
+                    ['📎','Toca el ícono de <strong style="color:#fff;">Adjuntar</strong> (clip o +)'],
+                    ['📁','Selecciona <strong style="color:#fff;">Documento</strong>'],
+                    ['🔍','Busca en <strong style="color:#fff;">Descargas</strong> el archivo:<br><span style="color:#25D366;font-family:\'Barlow Condensed\',sans-serif;font-weight:700;">${nombre}</span>'],
+                    ['✅','Toca el archivo y presiona <strong style="color:#fff;">Enviar</strong>']
+                ].map(([ico, txt], i) => `
+                    <div style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #1e1e1e;">
+                        <span style="font-size:18px;flex-shrink:0;min-width:28px;text-align:center;">${ico}</span>
+                        <div style="flex:1;">
+                            <span style="font-size:10px;color:#444;font-family:'Barlow Condensed',sans-serif;font-weight:700;margin-right:4px;">${i+1}.</span>
+                            <span style="font-size:12px;color:#ccc;line-height:1.5;font-family:'Barlow',sans-serif;">${txt.replace('${nombre}', nombre)}</span>
+                        </div>
+                    </div>`).join('')}
+            </div>
+
+            <!-- Botones -->
+            <div style="padding:12px 16px 16px;display:flex;flex-direction:column;gap:8px;">
+                <button onclick="window.open('whatsapp://','_blank');cerrarGuiaWA();" style="
+                    width:100%;padding:14px;border:none;border-radius:10px;
+                    background:#25D366;color:#fff;cursor:pointer;
+                    font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;
+                    letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    💬 ABRIR WHATSAPP AHORA
+                </button>
+                <button onclick="cerrarGuiaWA()" style="
+                    width:100%;padding:10px;border:1px solid #2a2a2a;border-radius:8px;
+                    background:none;color:#666;font-size:12px;cursor:pointer;
+                    font-family:'Barlow',sans-serif;">
+                    Cerrar
+                </button>
+            </div>
+        </div>`;
+
+    overlay.style.display = 'flex';
+}
+
+function cerrarGuiaWA() {
+    const m = document.getElementById('_guia_wa_overlay');
+    if (m) m.style.display = 'none';
 }
 
 
