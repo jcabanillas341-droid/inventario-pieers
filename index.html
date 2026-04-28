@@ -561,74 +561,71 @@ window.addEventListener('load', () => {
     if (modo) modo.style.display = 'flex';
 });
 
-// ── DESCARGA EXCEL — PC + ANDROID WEBVIEW (WebIntoApp) ──
+// ── DESCARGA EXCEL/CSV — PC: .xlsx | ANDROID: .csv (abre en Sheets/Excel) ──
 function descargarExcel(wb, nombre) {
     try {
-        const fileNombre = nombre.replace(/\.xlsx?$/i, '') + '.xlsx';
-        const mimeXlsx   = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-        const wbout      = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-        const isAndroid  = /android/i.test(navigator.userAgent);
+        const isAndroid = /android/i.test(navigator.userAgent);
+        const baseName  = nombre.replace(/\.xlsx?$/i, '');
 
         if (!isAndroid) {
-            // ── PC / SAFARI ── Blob URL directo
-            const blob = new Blob([wbout], { type: mimeXlsx });
-            const url  = URL.createObjectURL(blob);
-            const a    = document.createElement('a');
+            // ── PC: descarga .xlsx normal ──
+            const mimeXlsx = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+            const wbout    = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            const blob     = new Blob([wbout], { type: mimeXlsx });
+            const url      = URL.createObjectURL(blob);
+            const a        = document.createElement('a');
             a.style.display = 'none';
-            a.href = url; a.download = fileNombre;
+            a.href = url; a.download = baseName + '.xlsx';
             document.body.appendChild(a); a.click();
             setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 3000);
             showToast('📊 Excel descargado — revisa Descargas', '#1B5E20');
             return;
         }
 
-        // ── ANDROID / WEBINTOAPP ──
-        // Usamos Blob + URL.createObjectURL pero iniciado desde
-        // un gesto de usuario real (toque en botón del modal).
-        // Guardamos el blob en variable global para usarlo en el toque.
-        const blob = new Blob([wbout], { type: mimeXlsx });
-        _excelPendiente = { blob, fileNombre };
-        _mostrarModalDescargaExcel(fileNombre);
+        // ── ANDROID: convertir todas las hojas a CSV y descargar como .csv ──
+        // CSV es texto plano — WebIntoApp lo descarga sin mostrar Base64
+        // Google Sheets / WPS / Excel abren .csv perfectamente
+        const sheets = wb.SheetNames;
+        let csvTotal = '';
+        sheets.forEach((sheetName, idx) => {
+            if (idx > 0) csvTotal += '\n\n';
+            csvTotal += '=== ' + sheetName + ' ===\n';
+            csvTotal += XLSX.utils.sheet_to_csv(wb.Sheets[sheetName]);
+        });
+
+        const blob = new Blob(['\uFEFF' + csvTotal], { type: 'text/plain;charset=utf-8' });
+        _excelPendiente = { blob, fileNombre: baseName + '.csv', csvText: csvTotal };
+        _mostrarModalDescargaExcel(baseName + '.csv');
 
     } catch(e) {
-        showToast('❌ Error al generar Excel: ' + e.message, '#c62828');
+        showToast('❌ Error al generar archivo: ' + e.message, '#c62828');
     }
 }
 
-// Almacena temporalmente el blob hasta que el usuario toque el botón
+// Almacena temporalmente el blob
 let _excelPendiente = null;
 
-// Función llamada por el botón del modal — ES un gesto de usuario → no se bloquea
+// Llamada por el botón del modal (gesto de usuario real)
 function _confirmarDescargaExcel() {
     if (!_excelPendiente) return;
     const { blob, fileNombre } = _excelPendiente;
     _excelPendiente = null;
 
     try {
-        // Intento 1: Blob URL con <a download> — funciona en Chrome Android y WebViews modernos
         const url = URL.createObjectURL(blob);
         const a   = document.createElement('a');
         a.href = url; a.download = fileNombre;
         a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click();
+        document.body.appendChild(a); a.click();
         setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 4000);
         document.getElementById('_modal_xlsx_dl').style.display = 'none';
-        showToast('📊 Excel guardado — revisa Descargas', '#1B5E20');
+        showToast('📊 Archivo guardado — revisa Descargas', '#1B5E20');
     } catch(e) {
-        // Intento 2: window.location con blob URL
-        try {
-            const url2 = URL.createObjectURL(blob);
-            window.location.href = url2;
-            document.getElementById('_modal_xlsx_dl').style.display = 'none';
-            showToast('📊 Abriendo Excel...', '#1B5E20');
-        } catch(e2) {
-            showToast('❌ No se pudo descargar: ' + e2.message, '#c62828');
-        }
+        showToast('❌ Error: ' + e.message, '#c62828');
     }
 }
 
-// ── MODAL (se reconstruye cada vez para evitar caché) ──
+// ── MODAL ──
 function _mostrarModalDescargaExcel(fileNombre) {
     let modal = document.getElementById('_modal_xlsx_dl');
     if (!modal) {
@@ -640,21 +637,22 @@ function _mostrarModalDescargaExcel(fileNombre) {
     modal.innerHTML = `
         <div style="background:#fff;border-radius:16px;width:100%;max-width:360px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
             <div style="background:#1B5E20;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #4CAF50;">
-                <span style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;color:#fff;letter-spacing:1px;">📊 EXPORTAR EXCEL</span>
+                <span style="font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;color:#fff;letter-spacing:1px;">📊 EXPORTAR ARCHIVO</span>
                 <button onclick="document.getElementById('_modal_xlsx_dl').style.display='none';_excelPendiente=null;"
                     style="background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:20px;width:32px;height:32px;border-radius:8px;cursor:pointer;">✕</button>
             </div>
             <div style="padding:18px;">
-                <div style="background:#F1F8E9;border-radius:10px;padding:12px 14px;margin-bottom:16px;border-left:4px solid #4CAF50;">
-                    <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:#558B2F;letter-spacing:1px;margin-bottom:3px;">ARCHIVO LISTO</div>
+                <div style="background:#F1F8E9;border-radius:10px;padding:12px 14px;margin-bottom:14px;border-left:4px solid #4CAF50;">
+                    <div style="font-family:'Barlow Condensed',sans-serif;font-size:11px;color:#558B2F;letter-spacing:1px;margin-bottom:3px;">ARCHIVO LISTO ✓</div>
                     <div style="font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:900;color:#1B5E20;word-break:break-all;">${fileNombre}</div>
                 </div>
-                <p style="font-family:'Barlow',sans-serif;font-size:13px;color:#555;margin:0 0 16px;line-height:1.6;">
-                    Toca <strong>DESCARGAR</strong> para guardar el archivo en tu carpeta <strong>Descargas</strong>.
+                <p style="font-family:'Barlow',sans-serif;font-size:12px;color:#555;margin:0 0 16px;line-height:1.6;">
+                    Se descargará como <strong>CSV</strong> — abre directo en<br>
+                    📗 Google Sheets &nbsp;|&nbsp; 📘 WPS Office &nbsp;|&nbsp; 📗 Excel
                 </p>
                 <button onclick="_confirmarDescargaExcel()"
                     style="display:block;width:100%;padding:16px;background:#1B5E20;color:#fff;text-align:center;border-radius:12px;font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:900;letter-spacing:1px;border:none;cursor:pointer;margin-bottom:10px;">
-                    ⬇️ DESCARGAR EXCEL
+                    ⬇️ DESCARGAR CSV
                 </button>
                 <button onclick="document.getElementById('_modal_xlsx_dl').style.display='none';_excelPendiente=null;"
                     style="width:100%;padding:11px;background:none;border:1px solid #ddd;border-radius:10px;color:#999;font-family:'Barlow',sans-serif;font-size:13px;cursor:pointer;">
