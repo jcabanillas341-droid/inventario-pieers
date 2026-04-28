@@ -735,22 +735,8 @@ async function compartirExcelWA() {
         }
     }
 
-    // Intento 2: Re-descargar el archivo al dispositivo y mostrar guía paso a paso
-    // (Asegura que el archivo quede en la carpeta de Descargas antes de abrir WhatsApp)
-    try {
-        const wbout2 = XLSX.write(cache._wb || cache.file, { bookType: 'xlsx', type: 'array' });
-    } catch(_) {}
-
-    try {
-        const url2 = URL.createObjectURL(cache.file);
-        const a2   = document.createElement('a');
-        a2.href = url2; a2.download = cache.nombre;
-        a2.style.display = 'none';
-        document.body.appendChild(a2); a2.click();
-        setTimeout(() => { document.body.removeChild(a2); URL.revokeObjectURL(url2); }, 4000);
-    } catch(_) {}
-
-    // Mostrar modal guía con pasos claros para adjuntar en WhatsApp
+    // Intento 2: Mostrar guía paso a paso
+    // (el archivo ya fue descargado a Descargas cuando se generó el Excel)
     mostrarGuiaCompartirWA(cache.nombre);
 }
 
@@ -815,7 +801,7 @@ function mostrarGuiaCompartirWA(nombre) {
 
             <!-- Botones -->
             <div style="padding:12px 16px 16px;display:flex;flex-direction:column;gap:8px;">
-                <button onclick="window.open('whatsapp://','_blank');cerrarGuiaWA();" style="
+                <button onclick="abrirWhatsAppDesdeGuia()" style="
                     width:100%;padding:14px;border:none;border-radius:10px;
                     background:#25D366;color:#fff;cursor:pointer;
                     font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;
@@ -832,6 +818,18 @@ function mostrarGuiaCompartirWA(nombre) {
         </div>`;
 
     overlay.style.display = 'flex';
+}
+
+function abrirWhatsAppDesdeGuia() {
+    cerrarGuiaWA();
+    // Intentar primero el deep link nativo, si falla usar la URL web
+    try {
+        window.location.href = 'whatsapp://';
+        // Si el deep link falla en 800ms, abrir la web como respaldo
+        setTimeout(() => { window.open('https://wa.me/', '_blank'); }, 800);
+    } catch(e) {
+        window.open('https://wa.me/', '_blank');
+    }
 }
 
 function cerrarGuiaWA() {
