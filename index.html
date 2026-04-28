@@ -261,6 +261,71 @@
             th { font-size: 8px; padding: 5px 3px; }
             #scanner { font-size: 16px; }
         }
+
+        /* ── MODO CLARO (8) ── */
+        body.modo-claro { background: #F0F0F0; }
+        body.modo-claro #pantalla-modo { background: #ECECEC; }
+        body.modo-claro .logo-modo { color: #1A1A1A; }
+        body.modo-claro .logo-v, body.modo-claro .logo-sub { color: #555; }
+        body.modo-claro .menu-dropdown { background: #FFF; border-color: #DDD; box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+        body.modo-claro .menu-section { color: #999; border-top-color: #EEE; }
+        body.modo-claro .menu-dropdown button { color: #222; border-bottom-color: #EEE; }
+        body.modo-claro .menu-dropdown button:active { background: #F5F5F5; }
+        body.modo-claro .progress-box { background: #FFF; border-color: #DDD; }
+        body.modo-claro .bar-bg { background: #DEDEDE; }
+        body.modo-claro .stat-val { color: var(--rojo); }
+        body.modo-claro .stat-lab { color: #888; }
+        body.modo-claro .card-lote { background: #FFF; }
+        body.modo-claro #alm-estado-badge { background: #F5F5F5; border-color: #DDD; color: #333; }
+
+        /* ── BOTÓN MODO CLARO/OSCURO ── */
+        .btn-modo-luz { background: #2a2a2a; color: #ccc; border: 1px solid #444; padding: 7px 9px; border-radius: 6px; font-size: 14px; cursor: pointer; line-height: 1; }
+        body.modo-claro .btn-modo-luz { background: #DDD; color: #333; border-color: #bbb; }
+
+        /* ── PIN (9) ── */
+        #modal-pin { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.93); z-index:9800; justify-content:center; align-items:center; padding:20px; }
+        .pin-card { background:#1A1A1A; border-radius:16px; width:100%; max-width:290px; overflow:hidden; border-top:4px solid var(--rojo); }
+        .pin-header { background:var(--negro); padding:14px 16px; text-align:center; }
+        .pin-title  { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:900; color:white; letter-spacing:1px; text-transform:uppercase; }
+        .pin-body   { padding:16px; }
+        .pin-dots   { display:flex; justify-content:center; gap:12px; margin-bottom:18px; }
+        .pin-dot    { width:14px; height:14px; border-radius:50%; background:#333; border:2px solid #555; transition:background 0.1s; }
+        .pin-dot.on { background:var(--rojo); border-color:var(--rojo); }
+        .pin-grid   { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+        .pin-k      { padding:16px; border:none; border-radius:10px; background:#2a2a2a; color:#fff; font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:700; cursor:pointer; transition:background 0.1s; }
+        .pin-k:active { background:#444; }
+        .pin-k.dim  { background:#1a1a1a; color:#666; font-size:15px; }
+        .pin-err    { text-align:center; font-size:12px; color:var(--rojo-light); margin-top:10px; font-family:'Barlow',sans-serif; min-height:16px; }
+
+        /* ── BÚSQUEDA COMPARATIVO (5) ── */
+        #comp-search-wrap { display:none; padding:0 8px 4px; flex-shrink:0; }
+        #comp-search-inp  { width:100%; padding:8px 12px; border-radius:8px; border:2px solid var(--rojo); background:white; color:var(--negro); font-size:13px; font-family:'Barlow Condensed',sans-serif; font-weight:700; letter-spacing:1px; }
+        #comp-search-inp:focus { outline:none; }
+        #comp-search-inp::placeholder { color:#bbb; font-weight:400; letter-spacing:0; font-size:12px; }
+
+        /* ── RETIRO / INGRESO MODO TOGGLE (2) ── */
+        .mov-tipo-row { display:flex; gap:0; margin-bottom:12px; border-radius:8px; overflow:hidden; border:2px solid #DDD; }
+        .mov-tipo-btn { flex:1; padding:10px; border:none; background:#F5F5F5; color:#999; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px; transition:all 0.15s; }
+        .mov-tipo-btn.ret-on { background:var(--negro); color:#fff; }
+        .mov-tipo-btn.ing-on { background:var(--rojo); color:#fff; }
+
+        /* ── RESUMEN LOTE (7) ── */
+        #modal-resumen { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:7500; justify-content:center; align-items:center; padding:16px; }
+        .res-card   { background:#1A1A1A; border-radius:14px; width:100%; max-width:320px; overflow:hidden; border-top:4px solid var(--rojo); }
+        .res-head   { background:var(--negro); padding:12px 16px; text-align:center; }
+        .res-title  { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:900; color:white; letter-spacing:1px; text-transform:uppercase; }
+        .res-body   { padding:12px 16px; }
+        .res-row    { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #2a2a2a; }
+        .res-row:last-child { border-bottom:none; }
+        .res-lbl    { font-size:13px; color:#aaa; font-family:'Barlow',sans-serif; }
+        .res-val    { font-family:'Barlow Condensed',sans-serif; font-size:22px; font-weight:900; }
+        .res-foot   { display:flex; gap:8px; padding:12px 16px; border-top:1px solid #2a2a2a; }
+        .res-ok     { flex:1; padding:13px; background:var(--rojo); color:white; border:none; border-radius:8px; font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:700; cursor:pointer; letter-spacing:1px; }
+        .res-cancel { flex:1; padding:13px; background:#222; color:#888; border:1px solid #333; border-radius:8px; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
+
+        /* ── SKU ÚNICO SUB-LABEL (3) ── */
+        .stat-sku { font-size:9px; color:#666; text-align:center; letter-spacing:0.3px; margin-top:1px; }
+
     </style>
 </head>
 <body class="modo-comp">
@@ -297,7 +362,8 @@
             <span class="header-logo"><span class="logo-red">P</span>IEERS PRO</span>
             <span class="badge-modo" id="badge-txt">COMPARATIVO</span>
         </div>
-        <div style="display:flex;gap:6px;">
+        <div style="display:flex;gap:6px;align-items:center;">
+            <button class="btn-modo-luz" id="btn-luzoscura" onclick="toggleLuz()" title="Modo claro/oscuro">🌙</button>
             <button class="btn-cambio" onclick="volverSelector()">← INICIO</button>
             <button class="btn-menu"   onclick="toggleMenu()">☰ OPC.</button>
         </div>
@@ -321,6 +387,7 @@
             <button id="btn-alm-informes"  class="hidden" onclick="abrirModalAlmInformes();toggleMenu()">📋 Ver Informes</button>
             <button id="btn-alm-reiniciar" class="hidden" onclick="resetearModulo();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Reiniciar almacén</button>
             <div class="menu-section">⚙️ App</div>
+            <button onclick="abrirConfigPIN();toggleMenu()">🔐 Configurar PIN de seguridad</button>
             <button onclick="resetearApp();toggleMenu();" class="menu-btn-danger">⚠️ Borrar todo y reiniciar</button>
         </div>
     </div>
@@ -364,6 +431,7 @@
             <div style="flex:1;border-left:1px solid #2a2a2a;border-right:1px solid #2a2a2a;">
                 <span id="stat-cont" class="stat-val">0</span>
                 <span class="stat-lab">Conteo</span>
+                <span id="stat-skus" class="stat-sku">— SKU</span>
             </div>
             <div style="flex:1" id="blq-avan">
                 <span id="stat-avan" class="stat-val">0%</span>
@@ -376,6 +444,11 @@
     <!-- Botones archivo COMPARATIVO -->
     <div id="comp-file-btns" style="display:none;flex-direction:column;gap:4px;margin:0 8px 2px;flex-shrink:0;">
         <button class="comp-file-btn" style="background:#0a1a0a;color:#4CAF50;border:2px solid #2E7D32;width:100%;letter-spacing:1px;" onclick="abrirAlmDesdeComp()">🏪 VER STOCK EN ALMACÉN</button>
+    </div>
+
+    <!-- BÚSQUEDA COMPARATIVO (5) -->
+    <div id="comp-search-wrap">
+        <input id="comp-search-inp" type="text" placeholder="🔍 Buscar código o descripción en maestro..." oninput="renderComp(null,this.value.trim())" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     </div>
 
     <!-- PANEL COMPARATIVO -->
@@ -418,7 +491,8 @@
         <!-- Barra acciones -->
         <div class="alm-action-bar">
             <button class="alm-btn-buscar" onclick="abrirModalBusqueda()">🔍 BUSCAR</button>
-            <button class="alm-btn-retiro" id="tab-retiro" onclick="abrirModalMovimiento()">− REGISTRAR RETIRO</button>
+            <button class="alm-btn-retiro" onclick="abrirMovTipo('retiro')">− RETIRO</button>
+            <button class="alm-btn-retiro" onclick="abrirMovTipo('ingreso')" style="background:#1B5E20;border-color:#2E7D32;">+ INGRESO</button>
         </div>
 
         <!-- Badge -->
@@ -525,6 +599,11 @@
             <button class="mov-close" onclick="cerrarModalMovimiento()">✕</button>
         </div>
         <div class="mov-body">
+            <!-- Toggle RETIRO / INGRESO -->
+            <div class="mov-tipo-row">
+                <button class="mov-tipo-btn ret-on" id="movbtn-ret" onclick="movSetTipo('retiro')">− RETIRO</button>
+                <button class="mov-tipo-btn"        id="movbtn-ing" onclick="movSetTipo('ingreso')">+ INGRESO</button>
+            </div>
             <div class="mov-tabs">
                 <button class="mov-tab activo" id="mov-tab-lectora" onclick="movSetInputMode('lectora')">LECTORA (13)</button>
                 <button class="mov-tab"        id="mov-tab-manual"  onclick="movSetInputMode('manual')">MANUAL</button>
@@ -561,23 +640,21 @@ window.addEventListener('load', () => {
     if (modo) modo.style.display = 'flex';
 });
 
-// ── EXPORTAR EXCEL — Compatible PC + GoNative Android ──
+// ── EXPORTAR EXCEL — Compatible Median/WebView + PC ──
 function descargarExcel(wb, nombre) {
     try {
-        const baseName = nombre.replace(/\.xlsx?$/i, '');
+        const baseName   = nombre.replace(/\.xlsx?$/i, '');
         const fileNombre = baseName + '.xlsx';
-        const mimeXlsx = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        const mimeXlsx   = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
         const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-        const blob  = new Blob([wbout], { type: mimeXlsx });
-        const url   = URL.createObjectURL(blob);
+        const file  = new File([new Uint8Array(wbout)], fileNombre, { type: mimeXlsx });
+        const url   = URL.createObjectURL(file);
         const a     = document.createElement('a');
         a.style.display = 'none';
-        a.href     = url;
-        a.download = fileNombre;
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 4000);
-        showToast('📊 Excel descargado — revisa Descargas', '#1B5E20');
+        a.href = url; a.download = fileNombre;
+        document.body.appendChild(a); a.click();
+        setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 5000);
+        showToast('📊 ' + fileNombre + ' descargado', '#1B5E20');
     } catch(e) {
         showToast('❌ Error al generar Excel: ' + e.message, '#c62828');
     }
@@ -754,6 +831,7 @@ function seleccionarModo(modo) {
             $s('vista-comp').classList.remove('hidden');
             
             if (compFileBtns) compFileBtns.style.display = 'flex';
+            const csw=document.getElementById('comp-search-wrap'); if(csw) csw.style.display='';
             const bEsp=$('blq-esp'); if(bEsp) bEsp.style.display='';
             const bAv=$('blq-avan'); if(bAv) bAv.style.display='';
             if (scannerEl2) scannerEl2.placeholder = 'ESCANEE CÓDIGO (13 DÍGITOS)';
@@ -764,6 +842,7 @@ function seleccionarModo(modo) {
             $s('menu-sec-alm').classList.remove('hidden');
             ['btn-alm-carga','btn-alm-mas','btn-alm-stock','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
             if(bgl) bgl.style.display = 'none';
+            const csw2=document.getElementById('comp-search-wrap'); if(csw2) csw2.style.display='none';
             $s('vista-alm').classList.remove('hidden');
             loadStateAlm(); renderAlm();
         }
@@ -1036,8 +1115,10 @@ function renderAlm(filtro='') {
             tr.style.cursor = 'default';
             const color = mv.tipo === 'RETIRO' ? '#B71C1C' : '#1B5E20';
             const signo = mv.tipo === 'RETIRO' ? '−' : '+';
+            // Mejora 1: mostrar hora del movimiento
+            const hora  = mv.ts ? new Date(mv.ts).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}) : '--:--';
             tr.innerHTML = `
-                <td style="padding:3px 2px;color:#888;font-size:10px;">${almMovs.length - i}</td>
+                <td style="padding:3px 2px;color:#aaa;font-size:9px;text-align:center;line-height:1.2;">${hora}</td>
                 <td style="font-size:9px;text-align:left;padding:3px 2px;word-break:break-all;">${mv.cod}</td>
                 <td style="color:${color};font-size:13px;font-weight:900;text-align:center;">${signo}${mv.cant}</td>
                 <td style="font-weight:bold;font-size:11px;">${mv.stockPost}</td>
@@ -1585,6 +1666,7 @@ function cerrarModalMovimiento() {
     document.getElementById('mov-manual-cod').value = '';
     document.getElementById('mov-manual-desc').value = '';
     document.getElementById('mov-manual-cant').value = '1';
+    movSetTipo('retiro'); // Siempre volver a retiro al cerrar
 }
 
 function movSetInputMode(mode) {
@@ -1719,10 +1801,18 @@ function schedRender(m,cod=null) {
     requestAnimationFrame(()=>{ renderPending=false; if(m==='comp') renderComp(lastRenderCodComp); });
 }
 
-function renderComp(ultimoCod=null) {
-    const cont=historial.length;
+function renderComp(ultimoCod=null, filtro='') {
+    // Mejora 5: obtener filtro del input si no se pasa
+    if (!filtro) { const fi = document.getElementById('comp-search-inp'); if (fi) filtro = fi.value.trim(); }
+    const fUp = filtro.toUpperCase();
+
+    const cont = historial.length;
+    // Mejora 3: SKUs únicos
+    const skus = new Set(historial).size;
     document.getElementById('stat-esp').textContent  = totalEsp.toLocaleString();
     document.getElementById('stat-cont').textContent = cont.toLocaleString();
+    const skuEl = document.getElementById('stat-skus');
+    if (skuEl) skuEl.textContent = skus.toLocaleString() + ' SKU únicos';
     const p=totalEsp>0?Math.min(Math.round((cont/totalEsp)*100),100):0;
     document.getElementById('stat-avan').textContent = p+'%';
     document.getElementById('bar-fill').style.width  = p+'%';
@@ -1740,11 +1830,14 @@ function renderComp(ultimoCod=null) {
     });
     const tL=document.getElementById('t-lectura'); tL.innerHTML=''; tL.appendChild(frag1);
 
+    // Mejora 5: función de filtro
+    const pasa = (k) => !fUp || k.includes(fUp) || (descripcionMap.get(k)||'').toUpperCase().includes(fUp);
+
     const frag2=document.createDocumentFragment(); let count=0;
-    if (ultimoCod&&maestroMap.has(ultimoCod)) { frag2.appendChild(crearFilaComp(ultimoCod,maestroMap.get(ultimoCod),true)); count++; }
-    for (const [k,v] of maestroMap) { if(k===ultimoCod||count>=MAX_FILAS_DOM) continue; if(v.real>0&&v.real!==v.exp){frag2.appendChild(crearFilaComp(k,v));count++;} }
-    for (const [k,v] of maestroMap) { if(k===ultimoCod||count>=MAX_FILAS_DOM) continue; if(v.real>0&&v.real===v.exp){frag2.appendChild(crearFilaComp(k,v));count++;} }
-    for (const [k,v] of maestroMap) { if(k===ultimoCod||count>=MAX_FILAS_DOM) continue; if(v.real===0){frag2.appendChild(crearFilaComp(k,v));count++;} }
+    if (ultimoCod&&maestroMap.has(ultimoCod)&&pasa(ultimoCod)) { frag2.appendChild(crearFilaComp(ultimoCod,maestroMap.get(ultimoCod),true)); count++; }
+    for (const [k,v] of maestroMap) { if(k===ultimoCod||count>=MAX_FILAS_DOM||!pasa(k)) continue; if(v.real>0&&v.real!==v.exp){frag2.appendChild(crearFilaComp(k,v));count++;} }
+    for (const [k,v] of maestroMap) { if(k===ultimoCod||count>=MAX_FILAS_DOM||!pasa(k)) continue; if(v.real>0&&v.real===v.exp){frag2.appendChild(crearFilaComp(k,v));count++;} }
+    for (const [k,v] of maestroMap) { if(k===ultimoCod||count>=MAX_FILAS_DOM||!pasa(k)) continue; if(v.real===0){frag2.appendChild(crearFilaComp(k,v));count++;} }
     const tM=document.getElementById('t-maestro'); tM.innerHTML=''; tM.appendChild(frag2);
 }
 
@@ -1787,13 +1880,16 @@ function mostrarDesc(cod) {
 // ── GUARDAR LOTE ──
 function guardarLote() {
     if (!historial.length) { showToast('Nada que guardar','#c62828'); toggleMenu(); return; }
-    const def='COMPARATIVO_'+new Date().toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'2-digit'}).replace(/\//g,'-')+'_'+(lotes.length+1);
-    const n=prompt('Nombre del reporte:', def);
-    if (!n) return;
-    lotes.push({nombre:n, fecha:new Date().toLocaleString(), tipo:'comp', datosLectura:[...historial], maestroSnapshot:Object.fromEntries(maestroMap), descSnapshot:Object.fromEntries(descripcionMap)});
-    historial=[]; maestroMap.forEach(v=>v.real=0);
-    saveComp(); saveLotes(); renderComp(); toggleMenu();
-    showToast('✅ Guardado: '+n,'#111');
+    toggleMenu();
+    mostrarResumen(() => {
+        const def='COMPARATIVO_'+new Date().toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'2-digit'}).replace(/\//g,'-')+'_'+(lotes.length+1);
+        const n=prompt('Nombre del reporte:', def);
+        if (!n) return;
+        lotes.push({nombre:n, fecha:new Date().toLocaleString(), tipo:'comp', datosLectura:[...historial], maestroSnapshot:Object.fromEntries(maestroMap), descSnapshot:Object.fromEntries(descripcionMap)});
+        historial=[]; maestroMap.forEach(v=>v.real=0);
+        saveComp(); saveLotes(); renderComp();
+        showToast('✅ Guardado: '+n,'#111');
+    });
 }
 
 // ── RESETEAR ──
@@ -1823,7 +1919,7 @@ function resetearModulo() {
 }
 
 function resetearApp() {
-    mostrarConfirm('⚠️ Resetear TODO','Se eliminarán TODOS los datos. No se puede deshacer.', () => {
+    conPIN(() => mostrarConfirm('⚠️ Resetear TODO','Se eliminarán TODOS los datos. No se puede deshacer.', () => {
         // Borrar TODAS las claves de la app de localStorage
         ['p_maestro_v8','p_hist_v8','p_total_v8','p_desc_v8','p_lotes_v8',
          'p_alm_v1','p_alm_movs_v1','p_alm_snaps_v1'].forEach(k=>localStorage.removeItem(k));
@@ -1831,7 +1927,7 @@ function resetearApp() {
         almMap=new Map(); almMovs=[]; almSnapshots=[];
         toggleMenu(); showToast('✅ Todo reseteado','#111');
         setTimeout(()=>location.reload(),800);
-    });
+    }));
 }
 
 // ── EXPORTAR EXCEL COMPARATIVO ──
@@ -2092,8 +2188,211 @@ function mostrarModalDescarga(plataforma) {
     modal.style.display = 'flex';
 }
 
+
+// ══════════════════════════════════════════════════════════
+//  MEJORA 8 — MODO CLARO / OSCURO
+// ══════════════════════════════════════════════════════════
+function toggleLuz() {
+    const claro = document.body.classList.toggle('modo-claro');
+    const btn   = document.getElementById('btn-luzoscura');
+    if (btn) btn.textContent = claro ? '☀️' : '🌙';
+    try { localStorage.setItem('pieers_luz', claro ? '1' : '0'); } catch(e) {}
+}
+// Aplicar preferencia guardada al cargar
+(function initLuz() {
+    if (localStorage.getItem('pieers_luz') === '1') {
+        document.body.classList.add('modo-claro');
+        const btn = document.getElementById('btn-luzoscura');
+        if (btn) btn.textContent = '☀️';
+    }
+})();
+
+// ══════════════════════════════════════════════════════════
+//  MEJORA 9 — SISTEMA PIN DE SEGURIDAD
+// ══════════════════════════════════════════════════════════
+let _pinBuf  = '';
+let _pinCb   = null;
+let _pinNuevo = false;
+
+function abrirConfigPIN() {
+    const actual = localStorage.getItem('pieers_pin');
+    if (actual) {
+        // Verificar PIN actual antes de permitir cambio
+        abrirPIN('🔐 INGRESA PIN ACTUAL', () => {
+            setTimeout(() => abrirPINNuevo(), 200);
+        });
+    } else {
+        abrirPINNuevo();
+    }
+}
+
+function abrirPINNuevo() {
+    _pinNuevo = true;
+    abrirPIN('🔐 NUEVO PIN — 4 DÍGITOS', (pin) => {
+        localStorage.setItem('pieers_pin', pin);
+        showToast('✅ PIN configurado', '#1B5E20');
+    }, true);
+}
+
+function abrirPIN(titulo, cb, esNuevo=false) {
+    _pinBuf   = '';
+    _pinCb    = cb;
+    _pinNuevo = esNuevo;
+    document.getElementById('pin-tit').textContent = titulo;
+    document.getElementById('pin-err').textContent = '';
+    _pintActualizar();
+    document.getElementById('modal-pin').style.display = 'flex';
+}
+
+function cerrarPIN() {
+    document.getElementById('modal-pin').style.display = 'none';
+    _pinBuf = ''; _pinCb = null;
+}
+
+function pinKey(d) {
+    if (_pinBuf.length >= 4) return;
+    _pinBuf += d;
+    _pintActualizar();
+    if (_pinBuf.length === 4) setTimeout(_pinProcesar, 150);
+}
+
+function pinDel() {
+    _pinBuf = _pinBuf.slice(0, -1);
+    _pintActualizar();
+}
+
+function _pintActualizar() {
+    for (let i = 0; i < 4; i++) {
+        const d = document.getElementById('pd' + i);
+        if (d) d.className = 'pin-dot' + (i < _pinBuf.length ? ' on' : '');
+    }
+}
+
+function _pinProcesar() {
+    if (_pinNuevo) {
+        const cb = _pinCb; const pin = _pinBuf;
+        cerrarPIN(); if (cb) cb(pin);
+    } else {
+        const guardado = localStorage.getItem('pieers_pin');
+        if (_pinBuf === guardado) {
+            const cb = _pinCb; cerrarPIN(); if (cb) cb(_pinBuf);
+        } else {
+            document.getElementById('pin-err').textContent = '❌ PIN incorrecto. Inténtalo de nuevo.';
+            _pinBuf = ''; _pintActualizar();
+        }
+    }
+}
+
+// Ejecutar acción protegida por PIN
+function conPIN(accion) {
+    const guardado = localStorage.getItem('pieers_pin');
+    if (!guardado) { accion(); return; }
+    abrirPIN('🔐 CONFIRMAR ACCIÓN', () => accion());
+}
+
+// ══════════════════════════════════════════════════════════
+//  MEJORA 2 — RETIRO / INGRESO EN MODAL (movSetTipo)
+// ══════════════════════════════════════════════════════════
+function movSetTipo(tipo) {
+    almModo = tipo;
+    const header = document.getElementById('mov-header-bar');
+    const title  = document.getElementById('mov-modal-title');
+    const btnAp  = document.getElementById('mov-btn-aplicar');
+    const btnR   = document.getElementById('movbtn-ret');
+    const btnI   = document.getElementById('movbtn-ing');
+    if (tipo === 'retiro') {
+        if (header) header.className  = 'mov-header retiro';
+        if (title)  title.textContent = '− RETIRAR STOCK';
+        if (btnAp)  { btnAp.className = 'mov-btn-aplicar retiro';  btnAp.textContent = 'APLICAR RETIRO'; }
+        if (btnR)   btnR.className    = 'mov-tipo-btn ret-on';
+        if (btnI)   btnI.className    = 'mov-tipo-btn';
+    } else {
+        if (header) header.className  = 'mov-header ingreso';
+        if (title)  title.textContent = '+ INGRESAR STOCK';
+        if (btnAp)  { btnAp.className = 'mov-btn-aplicar ingreso'; btnAp.textContent = 'APLICAR INGRESO'; }
+        if (btnI)   btnI.className    = 'mov-tipo-btn ing-on';
+        if (btnR)   btnR.className    = 'mov-tipo-btn';
+    }
+}
+
+function abrirMovTipo(tipo) {
+    abrirModalMovimiento();
+    movSetTipo(tipo);
+}
+
+// ══════════════════════════════════════════════════════════
+//  MEJORA 7 — RESUMEN ANTES DE GUARDAR LOTE
+// ══════════════════════════════════════════════════════════
+function mostrarResumen(cbOk) {
+    let exactos = 0, faltantes = 0, sobrantes = 0, noMaestro = 0;
+    for (const [, v] of maestroMap) {
+        if (v.exp === 0 && v.real > 0)           noMaestro++;
+        else if (v.real === v.exp && v.real > 0)  exactos++;
+        else if (v.real < v.exp)                  faltantes++;
+        else if (v.real > v.exp && v.exp > 0)     sobrantes++;
+    }
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val.toLocaleString(); };
+    set('rv-exactos', exactos); set('rv-faltantes', faltantes);
+    set('rv-sobrantes', sobrantes); set('rv-noel', noMaestro);
+    set('rv-total', historial.length);
+    document.getElementById('res-btn-ok').onclick = () => { cerrarResumen(); cbOk(); };
+    document.getElementById('modal-resumen').style.display = 'flex';
+}
+
+function cerrarResumen() {
+    document.getElementById('modal-resumen').style.display = 'none';
+}
+
 window.addEventListener('beforeunload', ()=>{ clearTimeout(saveTimer); clearTimeout(almSaveTimer); if(modoActual==='comp') saveComp(); if(modoActual==='alm') saveAlm(); });
 </script>
+
+<!-- ══════ MODAL PIN (9) ══════ -->
+<div id="modal-pin">
+    <div class="pin-card">
+        <div class="pin-header"><div class="pin-title" id="pin-tit">🔐 PIN REQUERIDO</div></div>
+        <div class="pin-body">
+            <div class="pin-dots">
+                <div class="pin-dot" id="pd0"></div>
+                <div class="pin-dot" id="pd1"></div>
+                <div class="pin-dot" id="pd2"></div>
+                <div class="pin-dot" id="pd3"></div>
+            </div>
+            <div class="pin-grid">
+                <button class="pin-k" onclick="pinKey('1')">1</button>
+                <button class="pin-k" onclick="pinKey('2')">2</button>
+                <button class="pin-k" onclick="pinKey('3')">3</button>
+                <button class="pin-k" onclick="pinKey('4')">4</button>
+                <button class="pin-k" onclick="pinKey('5')">5</button>
+                <button class="pin-k" onclick="pinKey('6')">6</button>
+                <button class="pin-k" onclick="pinKey('7')">7</button>
+                <button class="pin-k" onclick="pinKey('8')">8</button>
+                <button class="pin-k" onclick="pinKey('9')">9</button>
+                <button class="pin-k dim" onclick="cerrarPIN()">✕</button>
+                <button class="pin-k" onclick="pinKey('0')">0</button>
+                <button class="pin-k dim" onclick="pinDel()">⌫</button>
+            </div>
+            <div class="pin-err" id="pin-err"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════ MODAL RESUMEN LOTE (7) ══════ -->
+<div id="modal-resumen">
+    <div class="res-card">
+        <div class="res-head"><div class="res-title">📊 RESUMEN DEL CONTEO</div></div>
+        <div class="res-body">
+            <div class="res-row"><span class="res-lbl">✅ Exactos</span>       <span class="res-val" id="rv-exactos"  style="color:#4CAF50;">0</span></div>
+            <div class="res-row"><span class="res-lbl">⚠️ Faltantes</span>     <span class="res-val" id="rv-faltantes" style="color:#E65100;">0</span></div>
+            <div class="res-row"><span class="res-lbl">📦 Sobrantes</span>     <span class="res-val" id="rv-sobrantes" style="color:#1565C0;">0</span></div>
+            <div class="res-row"><span class="res-lbl">❓ No en maestro</span> <span class="res-val" id="rv-noel"      style="color:#9C27B0;">0</span></div>
+            <div class="res-row"><span class="res-lbl">🔢 Total lecturas</span><span class="res-val" id="rv-total"     style="color:var(--rojo);">0</span></div>
+        </div>
+        <div class="res-foot">
+            <button class="res-ok"     id="res-btn-ok">💾 GUARDAR LOTE</button>
+            <button class="res-cancel" onclick="cerrarResumen()">Cancelar</button>
+        </div>
+    </div>
+</div>
 
 
 <!-- ══════ MINI MODAL ALMACÉN DESDE COMPARATIVO ══════ -->
