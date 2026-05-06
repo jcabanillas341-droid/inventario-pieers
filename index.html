@@ -197,20 +197,187 @@
         .pac-label { font-size: 9px; color: #4CAF50; text-transform: uppercase; letter-spacing: 1px; font-family: 'Barlow', sans-serif; }
 
         /* ── MINI MODAL ALMACÉN DESDE COMPARATIVO ── */
-        #modal-alm-desde-comp { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 6000; flex-direction: column; }
-        #modal-alm-desde-comp .madc-header { background: var(--negro); padding: 10px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 3px solid #2E7D32; flex-shrink: 0; }
-        #modal-alm-desde-comp .madc-title { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 900; color: white; letter-spacing: 1px; flex: 1; }
-        #modal-alm-desde-comp .madc-close { background: none; border: none; color: #aaa; font-size: 22px; cursor: pointer; }
-        .madc-search { margin: 8px 12px; display: flex; gap: 6px; flex-shrink: 0; }
-        .madc-search input { flex: 1; padding: 9px 12px; border-radius: 8px; border: 2px solid var(--gris-borde); background: var(--gris-bg); font-size: 14px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 1px; color: var(--texto); }
-        .madc-results { flex: 1; overflow-y: auto; padding: 0 12px 12px; }
-        .madc-item { background: var(--gris-bg); border-radius: 8px; padding: 10px 12px; margin-bottom: 5px; border-left: 4px solid #2E7D32; display: flex; align-items: center; gap: 10px; }
-        .madc-item-info { flex: 1; }
-        .madc-item-cod { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; color: #888; letter-spacing: 1px; }
-        .madc-item-desc { font-size: 12px; color: var(--texto); line-height: 1.3; margin-top: 1px; }
-        .madc-item-stock { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 900; color: #2E7D32; flex-shrink: 0; min-width: 40px; text-align: right; }
-        .madc-item-stock.cero { color: #B71C1C; }
-        .madc-item-stock.bajo { color: #E65100; }
+#modal-alm-desde-comp {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.92); z-index: 6000;
+    flex-direction: column;
+}
+#modal-alm-desde-comp .madc-header {
+    background: var(--negro); padding: 10px 14px;
+    display: flex; align-items: center; gap: 10px;
+    border-bottom: 3px solid #2E7D32; flex-shrink: 0;
+}
+#modal-alm-desde-comp .madc-title {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 15px;
+    font-weight: 900; color: white; letter-spacing: 1px; flex: 1;
+}
+#modal-alm-desde-comp .madc-close {
+    background: none; border: none; color: #aaa; font-size: 22px; cursor: pointer;
+}
+.madc-tabs {
+    display: flex; gap: 0; flex-shrink: 0;
+    background: #0a0a0a; border-bottom: 1px solid #1a1a1a;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.madc-tab {
+    flex: 1; padding: 9px 6px; border: none;
+    background: transparent; color: #666;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 11px;
+    font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent;
+    transition: all 0.15s; min-width: 70px;
+}
+.madc-tab:active { background: #1a1a1a; }
+.madc-tab.activo { color: #4CAF50; border-bottom-color: #4CAF50; background: #0a1a0a; }
+.madc-tab.tab-faltantes.activo { color: #FF9800; border-bottom-color: #FF9800; background: #1a0f00; }
+.madc-tab.tab-sobrantes.activo { color: #EF5350; border-bottom-color: #EF5350; background: #1a0000; }
+.madc-tab.tab-sincontar.activo { color: #AB47BC; border-bottom-color: #AB47BC; background: #100a1a; }
+.madc-tab .tab-count {
+    display: inline-block; background: rgba(255,255,255,0.1);
+    padding: 1px 5px; border-radius: 10px; font-size: 10px; margin-left: 3px;
+}
+.madc-select-bar {
+    display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+    padding: 6px 12px; background: #0f1f0f; border-bottom: 1px solid #1a2a1a;
+}
+.madc-chk-all { width: 20px; height: 20px; cursor: pointer; flex-shrink: 0; accent-color: #4CAF50; }
+.madc-sel-info { flex: 1; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; color: #888; letter-spacing: 0.5px; }
+.madc-sel-info span { color: #4CAF50; font-size: 15px; font-weight: 900; }
+.madc-btn-agregar-todos {
+    padding: 8px 14px; border: none; border-radius: 8px;
+    background: #1B5E20; color: white;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 12px;
+    font-weight: 900; letter-spacing: 1px; cursor: pointer;
+    transition: filter 0.15s; white-space: nowrap;
+}
+.madc-btn-agregar-todos:disabled { background: #1a1a1a; color: #444; cursor: not-allowed; }
+.madc-btn-agregar-todos:not(:disabled):active { filter: brightness(0.85); }
+.madc-search { margin: 6px 12px; display: flex; gap: 6px; flex-shrink: 0; }
+.madc-search input {
+    flex: 1; padding: 9px 12px; border-radius: 8px;
+    border: 2px solid var(--gris-borde); background: var(--gris-bg);
+    font-size: 14px; font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700; letter-spacing: 1px; color: var(--texto);
+}
+.madc-results { flex: 1; overflow-y: auto; padding: 0 12px 80px; }
+.madc-item {
+    background: var(--gris-bg); border-radius: 8px; padding: 10px 12px;
+    margin-bottom: 5px; border-left: 4px solid #2E7D32;
+    display: flex; align-items: flex-start; gap: 10px; cursor: pointer;
+}
+.madc-item.faltante-item { border-left-color: #FF9800; background: #fffbf2; }
+.madc-item.sobrante-item { border-left-color: #D32F2F; background: #fff5f5; }
+.madc-item.sincontar-item { border-left-color: #9C27B0; background: #fdf5ff; }
+.madc-item.seleccionado { outline: 2px solid #4CAF50; }
+.madc-item-check { width: 22px; height: 22px; flex-shrink: 0; cursor: pointer; accent-color: #4CAF50; margin-top: 2px; }
+.madc-item-info { flex: 1; }
+.madc-item-cod { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; color: #888; letter-spacing: 1px; }
+.madc-item-desc { font-size: 12px; color: var(--texto); line-height: 1.3; margin-top: 1px; }
+.madc-item-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+.madc-tag { font-family: 'Barlow Condensed', sans-serif; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.madc-tag.en-conteo { background: #E8F5E9; color: #1B5E20; }
+.madc-tag.faltante   { background: #FFF3E0; color: #E65100; }
+.madc-tag.sobrante   { background: #FFEBEE; color: #B71C1C; }
+.madc-tag.sincontar  { background: #F3E5F5; color: #7B1FA2; }
+.madc-item-right { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; gap: 4px; }
+.madc-item-stock { font-family: 'Barlow Condensed', sans-serif; font-size: 26px; font-weight: 900; color: #2E7D32; }
+.madc-item-stock.cero { color: #B71C1C; }
+.madc-item-stock.bajo { color: #E65100; }
+.madc-item-stock-label { font-size: 9px; color: #888; }
+.madc-bulk-float {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: #0a1a0a; border-top: 2px solid #1B5E20;
+    padding: 10px 14px; display: flex; align-items: center; gap: 10px; z-index: 10;
+}
+.madc-bulk-float .bulk-count { font-family: 'Barlow Condensed', sans-serif; font-size: 13px; color: #aaa; flex: 1; }
+.madc-bulk-float .bulk-count strong { color: #4CAF50; font-size: 20px; }
+.madc-btn-bulk-add {
+    padding: 12px 20px; border: none; border-radius: 10px;
+    background: #1B5E20; color: white;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 14px;
+    font-weight: 900; letter-spacing: 1px; cursor: pointer; transition: filter 0.15s;
+}
+.madc-btn-bulk-add:disabled { background: #2a2a2a; color: #555; cursor: not-allowed; }
+.madc-btn-bulk-add:not(:disabled):active { filter: brightness(1.2); }
+
+/* ── NUEVA TARJETA COMPARATIVO-STOCK ── */
+.madc-item-cols {
+    display: flex; gap: 6px; margin-top: 5px; flex-wrap: wrap;
+}
+.madc-col-pill {
+    display: flex; flex-direction: column; align-items: center;
+    background: rgba(0,0,0,0.06); border-radius: 6px; padding: 3px 8px; min-width: 44px;
+}
+.madc-col-val { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 900; }
+.madc-col-lab { font-size: 8px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+.madc-col-pill.alm  { background: #0a1a0a; }
+.madc-col-pill.alm .madc-col-val  { color: #4CAF50; }
+.madc-col-pill.esp  { background: #111; }
+.madc-col-pill.esp .madc-col-val  { color: #aaa; }
+.madc-col-pill.real { background: #111; }
+.madc-col-pill.real.ok  .madc-col-val { color: #4CAF50; }
+.madc-col-pill.real.falta .madc-col-val { color: #FF9800; }
+.madc-col-pill.real.sobra .madc-col-val { color: #EF5350; }
+.madc-col-pill.sin-alm { background: #1a1a1a; }
+.madc-col-pill.sin-alm .madc-col-val { color: #555; }
+.madc-item-qty-row {
+    display: flex; align-items: center; gap: 6px; margin-top: 6px;
+}
+.madc-qty-inp {
+    width: 52px; padding: 5px 6px; border-radius: 6px;
+    border: 2px solid #2E7D32; background: #0a1a0a;
+    color: #4CAF50; font-family: 'Barlow Condensed', sans-serif;
+    font-size: 16px; font-weight: 900; text-align: center;
+}
+.madc-qty-inp:focus { outline: none; border-color: #81C784; }
+.madc-btn-add-one {
+    flex: 1; padding: 6px 10px; border: none; border-radius: 6px;
+    background: #1B5E20; color: white;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 11px;
+    font-weight: 900; letter-spacing: 0.5px; cursor: pointer; transition: filter 0.15s;
+    white-space: nowrap;
+}
+.madc-btn-add-one:active { filter: brightness(1.3); }
+.madc-btn-add-one.sin-stock { background: #333; color: #888; }
+.madc-diff-badge {
+    font-family: 'Barlow Condensed', sans-serif; font-size: 11px;
+    font-weight: 900; padding: 2px 7px; border-radius: 4px; letter-spacing: 0.3px;
+}
+.madc-diff-badge.falta { background: #FFF3E0; color: #E65100; }
+.madc-diff-badge.sobra { background: #FFEBEE; color: #B71C1C; }
+.madc-diff-badge.ok    { background: #E8F5E9; color: #1B5E20; }
+.madc-diff-badge.sc    { background: #F3E5F5; color: #7B1FA2; }
+
+/* Sub-modal confirmación agregar stock */
+#modal-add-stock-confirm {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.85); z-index: 7000;
+    justify-content: center; align-items: center; padding: 20px;
+}
+.asc-card {
+    background: #1A1A1A; border-radius: 14px; width: 100%; max-width: 340px;
+    overflow: hidden; border-top: 4px solid #2E7D32;
+}
+.asc-head {
+    background: #0a1a0a; padding: 12px 16px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 2px solid #1B5E20;
+}
+.asc-title { font-family: 'Barlow Condensed', sans-serif; font-size: 15px; font-weight: 900; color: white; letter-spacing: 1px; }
+.asc-body { padding: 14px 16px; }
+.asc-info { font-size: 12px; color: #aaa; font-family: 'Barlow', sans-serif; line-height: 1.5; margin-bottom: 12px; }
+.asc-info strong { color: #4CAF50; }
+.asc-list { max-height: 180px; overflow-y: auto; margin-bottom: 12px; }
+.asc-list-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #2a2a2a; }
+.asc-list-item:last-child { border-bottom: none; }
+.asc-item-cod { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; color: #ccc; flex: 1; }
+.asc-item-qty { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 900; color: #4CAF50; margin-left: 8px; }
+.asc-total { background: #0a1a0a; padding: 10px 12px; border-radius: 8px; text-align: center; margin-bottom: 12px; }
+.asc-total-num { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 900; color: #4CAF50; }
+.asc-total-lab { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+.asc-btns { display: flex; gap: 8px; }
+.asc-btn-ok { flex: 1; padding: 13px; border: none; border-radius: 8px; background: #1B5E20; color: white; font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: 1px; }
+.asc-btn-cancel { flex: 1; padding: 13px; border: 1px solid #333; border-radius: 8px; background: #222; color: #888; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
 
         /* ── COMP: botones archivo ── */
         #comp-file-btns { display: none; gap: 6px; flex-shrink: 0; padding: 2px 0; }
@@ -371,7 +538,7 @@
             <div id="menu-sec-comp" class="menu-section hidden">📋 Comparativo</div>
             <button id="btn-carga"         class="hidden" onclick="document.getElementById('fileInput').click();toggleMenu()">📥 Cargar Maestro</button>
             <button id="btn-stock"         class="hidden" onclick="document.getElementById('stockInput').click();toggleMenu()">🔄 Convertir Stock → Maestro</button>
-            <button id="btn-comp-alm"      class="hidden" onclick="abrirAlmDesdeComp();toggleMenu()">🏪 Ver Stock en Almacén</button>
+            <button id="btn-comp-alm"      class="hidden" onclick="abrirAlmDesdeComp();toggleMenu()">📋 Comparativo + Stock Almacén</button>
             <button id="btn-comp-guardar"  class="hidden" onclick="guardarLote();toggleMenu()">💾 Guardar Lote</button>
             <button id="btn-comp-reportes" class="hidden" onclick="toggleMenu();abrirModal('modalLotes')">📋 Reportes guardados</button>
             <button id="btn-comp-reiniciar" class="hidden" onclick="resetearModulo();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Reiniciar comparativo</button>
@@ -443,7 +610,7 @@
 
     <!-- Botones archivo COMPARATIVO -->
     <div id="comp-file-btns" style="display:none;flex-direction:column;gap:4px;margin:0 8px 2px;flex-shrink:0;">
-        <button class="comp-file-btn" style="background:#0a1a0a;color:#4CAF50;border:2px solid #2E7D32;width:100%;letter-spacing:1px;" onclick="abrirAlmDesdeComp()">🏪 VER STOCK EN ALMACÉN</button>
+        <button class="comp-file-btn" style="background:#0a1a0a;color:#4CAF50;border:2px solid #2E7D32;width:100%;letter-spacing:1px;" onclick="abrirAlmDesdeComp()">📋 COMPARATIVO + STOCK ALMACÉN</button>
     </div>
 
     <!-- BÚSQUEDA COMPARATIVO (5) -->
@@ -2075,26 +2242,120 @@ document.addEventListener('click', (e) => {
 });
 
 // ══════════════════════════════════════════════════════
-//  CONSULTAR ALMACÉN DESDE COMPARATIVO
+//  CONSULTAR ALMACÉN DESDE COMPARATIVO — v2 MEJORADO
 // ══════════════════════════════════════════════════════
+// ══ ESTADO MODAL MULTI-CÓDIGO ══
+let madcFiltroActual = 'todos';
+let madcSeleccionados = new Set();
+let madcEntriesVis   = [];
+
+// Construye la lista unificada: maestro + sobrantes de historial
+function _madcBuildEntries() {
+    const entries = [];
+    // 1. Todos los códigos del maestro
+    for (const [cod, v] of maestroMap) {
+        const almData = almMap.get(cod);
+        entries.push({
+            cod,
+            desc: descripcionMap.get(cod) || (almData && almData.desc) || '(sin descripción)',
+            maestroExp: v.exp,
+            conteoReal: v.real,
+            almStock:   almData ? almData.stock : -1,
+            enAlmacen:  !!almData
+        });
+    }
+    // 2. Sobrantes: en historial pero NO en maestro
+    const sobrantesSet = new Set(historial.filter(c => !maestroMap.has(c)));
+    sobrantesSet.forEach(cod => {
+        const almData = almMap.get(cod);
+        const real = historial.filter(c => c === cod).length;
+        entries.push({
+            cod,
+            desc: descripcionMap.get(cod) || (almData && almData.desc) || '(sin descripción)',
+            maestroExp: 0,
+            conteoReal: real,
+            almStock:   almData ? almData.stock : -1,
+            enAlmacen:  !!almData
+        });
+    });
+    return entries;
+}
+
+function _madcCatEntry(e) {
+    if (e.maestroExp === 0 && e.conteoReal > 0) return 'sobrantes'; // fuera de maestro
+    if (e.conteoReal < e.maestroExp) return 'faltantes';
+    if (e.conteoReal > e.maestroExp) return 'sobrantes';
+    if (e.conteoReal === 0 && e.maestroExp > 0) return 'sincontar';
+    return 'exacto';
+}
+
 function abrirAlmDesdeComp() {
     const modal = document.getElementById('modal-alm-desde-comp');
     if (!modal) return;
-    if (!almMap || !almMap.size) {
-        showToast('⚠️ Sin inventario en Almacén. Carga primero el módulo Almacén.', '#E65100');
+    if (!maestroMap || !maestroMap.size) {
+        showToast('⚠️ Sin Maestro cargado. Carga primero el archivo Maestro.', '#E65100');
         return;
     }
-    document.getElementById('madc-badge').textContent = almMap.size.toLocaleString() + ' cód.';
-    document.getElementById('madc-input').value = '';
+    madcSeleccionados.clear();
+    madcFiltroActual = 'todos';
+    madcEntriesVis   = [];
+    const inp = document.getElementById('madc-input');
+    if (inp) inp.value = '';
+    _madcActivarTab('todos');
+    _madcActualizarContadores();
     modal.style.display = 'flex';
     buscarEnAlmComp('');
-    setTimeout(() => document.getElementById('madc-input').focus(), 100);
+    _madcActualizarBulkBar();
+    setTimeout(() => { if (inp) inp.focus(); }, 100);
 }
 
 function cerrarAlmDesdeComp() {
     const modal = document.getElementById('modal-alm-desde-comp');
     if (modal) modal.style.display = 'none';
+    madcSeleccionados.clear();
     focusScanner();
+}
+
+function _madcActualizarContadores() {
+    const all = _madcBuildEntries();
+    let cFalt=0, cSobr=0, cSin=0, conAlm=0;
+    all.forEach(e => {
+        const cat = _madcCatEntry(e);
+        if (cat === 'faltantes') cFalt++;
+        else if (cat === 'sobrantes') cSobr++;
+        else if (cat === 'sincontar') cSin++;
+        if (e.enAlmacen) conAlm++;
+    });
+    const s = (id,n)=>{ const el=document.getElementById(id); if(el) el.textContent=n; };
+    s('madc-cnt-todos', all.length);
+    s('madc-cnt-faltantes', cFalt);
+    s('madc-cnt-sobrantes', cSobr);
+    s('madc-cnt-sincontar', cSin);
+    s('madc-badge', all.length.toLocaleString() + ' cód.');
+    // Resumen bar
+    s('madc-res-maestro', maestroMap.size.toLocaleString());
+    s('madc-res-conteo',  historial.length.toLocaleString());
+    const dif = maestroMap.size - new Set(historial.filter(c=>maestroMap.has(c))).size;
+    s('madc-res-dif', dif > 0 ? '+'+dif : dif);
+    s('madc-res-con-alm', conAlm.toLocaleString());
+}
+
+function _madcActivarTab(tipo) {
+    ['todos','faltantes','sobrantes','sincontar'].forEach(t => {
+        const btn = document.getElementById('madc-tab-' + t);
+        if (btn) btn.classList.toggle('activo', t === tipo);
+    });
+    madcFiltroActual = tipo;
+}
+
+function filtrarMadc(tipo) {
+    _madcActivarTab(tipo);
+    madcSeleccionados.clear();
+    const inp = document.getElementById('madc-input');
+    buscarEnAlmComp(inp ? inp.value : '');
+    _madcActualizarBulkBar();
+    const chkAll = document.getElementById('madc-chk-all');
+    if (chkAll) { chkAll.checked = false; chkAll.indeterminate = false; }
 }
 
 function buscarEnAlmComp(q) {
@@ -2102,81 +2363,241 @@ function buscarEnAlmComp(q) {
     if (!cont) return;
     const query = (q || '').trim().toUpperCase();
 
-    let entries = [...almMap.entries()];
-    if (query) {
-        entries = entries.filter(([k, v]) =>
-            k.includes(query) || (v.desc || '').toUpperCase().includes(query)
-        );
+    let entries = _madcBuildEntries();
+
+    // Filtrar por tab
+    if (madcFiltroActual !== 'todos') {
+        entries = entries.filter(e => _madcCatEntry(e) === madcFiltroActual);
     }
-    entries.sort((a, b) => b[1].stock - a[1].stock);
+    // Filtrar por búsqueda
+    if (query) {
+        entries = entries.filter(e => e.cod.includes(query) || e.desc.toUpperCase().includes(query));
+    }
+    // Ordenar: faltantes primero, luego sobrantes, luego sincontar, luego exactos
+    const catPrio = { faltantes:0, sobrantes:1, sincontar:2, exacto:3 };
+    entries.sort((a, b) => {
+        const pa = catPrio[_madcCatEntry(a)] ?? 4;
+        const pb = catPrio[_madcCatEntry(b)] ?? 4;
+        if (pa !== pb) return pa - pb;
+        const da = Math.abs(a.maestroExp - a.conteoReal);
+        const db = Math.abs(b.maestroExp - b.conteoReal);
+        return db - da;
+    });
+
+    madcEntriesVis = entries;
 
     if (!entries.length) {
-        cont.innerHTML = `<p style="color:#888;text-align:center;margin-top:20px;font-family:'Barlow',sans-serif;font-size:13px;">Sin resultados para "${query}"</p>`;
-        return;
+        cont.innerHTML = `<p style="color:#888;text-align:center;margin-top:20px;font-family:'Barlow',sans-serif;font-size:13px;">Sin resultados${query?' para "'+query+'"':''}</p>`;
+        _madcActualizarBulkBar(); return;
     }
 
     cont.innerHTML = '';
     const frag = document.createDocumentFragment();
-    entries.slice(0, 80).forEach(([cod, v]) => {
+
+    entries.slice(0, 100).forEach(e => {
+        const cat = _madcCatEntry(e);
+        const selec = madcSeleccionados.has(e.cod);
+        const diff  = e.conteoReal - e.maestroExp;
+
+        let itemCls = 'madc-item';
+        if (cat === 'faltantes') itemCls += ' faltante-item';
+        else if (cat === 'sobrantes') itemCls += ' sobrante-item';
+        else if (cat === 'sincontar') itemCls += ' sincontar-item';
+        if (selec) itemCls += ' seleccionado';
+
+        // Badge de diferencia
+        let diffBadge = '';
+        if (cat === 'faltantes') diffBadge = `<span class="madc-diff-badge falta">⚠️ FALTA ${e.maestroExp - e.conteoReal}</span>`;
+        else if (cat === 'sobrantes') diffBadge = `<span class="madc-diff-badge sobra">📦 SOBRA ${e.conteoReal - e.maestroExp}</span>`;
+        else if (cat === 'sincontar') diffBadge = `<span class="madc-diff-badge sc">❓ SIN SCAN</span>`;
+        else diffBadge = `<span class="madc-diff-badge ok">✓ OK</span>`;
+
+        // Almacén badge
+        let almBadge = '';
+        if (!e.enAlmacen) {
+            almBadge = `<span class="madc-tag" style="background:#1a1a1a;color:#555;">🚫 Sin almacén</span>`;
+        } else if (e.almStock === 0) {
+            almBadge = `<span class="madc-tag" style="background:#1a0000;color:#EF5350;">📦 Stock 0</span>`;
+        } else {
+            almBadge = `<span class="madc-tag" style="background:#0a1a0a;color:#4CAF50;">🏪 ${e.almStock} en almacén</span>`;
+        }
+
+        // Columnas ESP / REAL / ALM
+        const realCls = cat==='faltantes'?'falta':cat==='sobrantes'?'sobra':'ok';
+        const colsHTML = `
+            <div class="madc-item-cols">
+                <div class="madc-col-pill esp"><span class="madc-col-val">${e.maestroExp}</span><span class="madc-col-lab">ESP</span></div>
+                <div class="madc-col-pill real ${realCls}"><span class="madc-col-val">${e.conteoReal}</span><span class="madc-col-lab">REAL</span></div>
+                <div class="madc-col-pill ${e.enAlmacen && e.almStock>0?'alm':'sin-alm'}"><span class="madc-col-val">${e.enAlmacen?e.almStock:'—'}</span><span class="madc-col-lab">ALMACÉN</span></div>
+            </div>`;
+
+        // Fila de cantidad + botón agregar
+        const hasStock = e.enAlmacen && e.almStock > 0;
+        const defaultQty = hasStock ? e.almStock : 1;
+        const qtyRowHTML = `
+            <div class="madc-item-qty-row">
+                <input type="number" class="madc-qty-inp" id="qty-${e.cod.replace(/[^a-z0-9]/gi,'_')}" value="${defaultQty}" min="1" max="${hasStock?e.almStock:999}" title="Cantidad a ingresar al conteo" onclick="event.stopPropagation()">
+                <button class="madc-btn-add-one${hasStock?'':' sin-stock'}" onclick="event.stopPropagation();madcAgregarUno('${e.cod}',document.getElementById('qty-${e.cod.replace(/[^a-z0-9]/gi,'_')}').value)"
+                    title="${hasStock?'Agregar esta cantidad al conteo':'Sin stock en almacén — igual puedes ingresar manualmente'}">
+                    ${hasStock?'📦 AGREGAR STOCK AL CONTEO':'➕ INGRESAR MANUAL'}
+                </button>
+            </div>`;
+
         const div = document.createElement('div');
-        div.className = 'madc-item';
-        div.style.flexDirection = 'column';
-        div.style.gap = '8px';
-        const enMaestro = maestroMap.has(cod);
-        if (enMaestro) div.style.borderLeftColor = '#F9A825';
-
-        const stockClass = v.stock === 0 ? 'cero' : v.stock <= 2 ? 'bajo' : '';
-        const conteoActual = maestroMap.get(cod);
-        const conteoTxt = conteoActual ? `<span style="font-size:9px;color:#F9A825;font-family:Barlow,sans-serif;letter-spacing:1px;">✓ EN CONTEO: ${conteoActual.real} uds.</span>` : '';
-
+        div.className = itemCls;
+        div.dataset.cod = e.cod;
         div.innerHTML = `
-            <div style="display:flex;align-items:center;gap:10px;">
-                <div class="madc-item-info">
-                    ${conteoTxt}
-                    <div class="madc-item-desc">${v.desc || '(sin descripción)'}</div>
-                    <div class="madc-item-cod">${cod}</div>
+            <input type="checkbox" class="madc-item-check" ${selec?'checked':''} onchange="madcToggleCheck('${e.cod}',this.checked)" onclick="event.stopPropagation()">
+            <div class="madc-item-info" style="flex:1;">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:6px;">
+                    <div>
+                        <div class="madc-item-desc">${e.desc}</div>
+                        <div class="madc-item-cod">${e.cod}</div>
+                        <div class="madc-item-tags" style="margin-top:3px;">${diffBadge} ${almBadge}</div>
+                    </div>
                 </div>
-                <div style="text-align:right;flex-shrink:0;">
-                    <div class="madc-item-stock ${stockClass}">${v.stock}</div>
-                    <div style="font-size:9px;color:#888;">en almacén</div>
-                </div>
-            </div>
-            <button onclick="agregarAlConteoDesdeAlm('${cod}')"
-                style="width:100%;padding:10px;border:none;border-radius:8px;background:${enMaestro?'#1a2a0a':'#0a1a0a'};color:${enMaestro?'#8BC34A':'#4CAF50'};font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:1px;cursor:pointer;border:1px solid ${enMaestro?'#558B2F':'#2E7D32'};">
-                + AGREGAR AL CONTEO (sin afectar stock)
-            </button>`;
+                ${colsHTML}
+                ${qtyRowHTML}
+            </div>`;
+        div.addEventListener('click', function(ev) {
+            if (ev.target.classList.contains('madc-item-check') ||
+                ev.target.classList.contains('madc-qty-inp') ||
+                ev.target.classList.contains('madc-btn-add-one')) return;
+            const chk = div.querySelector('.madc-item-check');
+            const newVal = !chk.checked; chk.checked = newVal;
+            madcToggleCheck(e.cod, newVal);
+        });
         frag.appendChild(div);
     });
-    cont.appendChild(frag);
 
-    if (entries.length > 80) {
+    cont.appendChild(frag);
+    if (entries.length > 100) {
         const p = document.createElement('p');
         p.style.cssText = 'color:#888;text-align:center;font-size:11px;padding:8px;';
-        p.textContent = `... y ${entries.length - 80} más. Refina la búsqueda.`;
+        p.textContent = `... y ${entries.length-100} más. Refina la búsqueda.`;
         cont.appendChild(p);
     }
+    _madcActualizarBulkBar();
 }
 
-// Agregar código de almacén al conteo comparativo SIN tocar el stock
+function madcToggleCheck(cod, checked) {
+    if (checked) madcSeleccionados.add(cod);
+    else madcSeleccionados.delete(cod);
+    document.querySelectorAll('#madc-results .madc-item').forEach(div => {
+        if (div.dataset.cod === cod) div.classList.toggle('seleccionado', checked);
+    });
+    _madcActualizarBulkBar();
+    const chkAll = document.getElementById('madc-chk-all');
+    if (chkAll && madcEntriesVis.length > 0) {
+        const vis = madcEntriesVis.slice(0,100).map(e=>e.cod);
+        const todos = vis.every(c=>madcSeleccionados.has(c));
+        const alguno = vis.some(c=>madcSeleccionados.has(c));
+        chkAll.checked = todos; chkAll.indeterminate = alguno && !todos;
+    }
+}
+
+function madcToggleAll(checked) {
+    const vis = madcEntriesVis.slice(0,100).map(e=>e.cod);
+    vis.forEach(cod => { if(checked) madcSeleccionados.add(cod); else madcSeleccionados.delete(cod); });
+    document.querySelectorAll('#madc-results .madc-item-check').forEach(chk => chk.checked = checked);
+    document.querySelectorAll('#madc-results .madc-item').forEach(div => div.classList.toggle('seleccionado', checked));
+    _madcActualizarBulkBar();
+}
+
+function _madcActualizarBulkBar() {
+    const n = madcSeleccionados.size;
+    const s = (id,v)=>{ const el=document.getElementById(id); if(el){ if(typeof v==='boolean') el.disabled=v; else el.textContent=v; } };
+    s('madc-sel-count', n); s('madc-float-count', n);
+    s('madc-btn-bulk', n===0); s('madc-float-btn', n===0);
+}
+
+// ── AGREGAR UN CÓDIGO CON CANTIDAD PERSONALIZADA ──
+function madcAgregarUno(cod, cantRaw) {
+    const cantidad = Math.max(1, parseInt(cantRaw) || 1);
+    _madcEjecutarIngreso([{ cod, cantidad }]);
+}
+
+// ── AGREGAR SELECCIONADOS (usa el stock almacén como cantidad default) ──
+function madcAgregarSeleccionados() {
+    if (!madcSeleccionados.size) { showToast('⚠️ Selecciona al menos un código','#E65100'); return; }
+
+    // Construir mapa de entradas visibles para lookup rápido
+    const entryMap = {};
+    madcEntriesVis.forEach(e => { entryMap[e.cod] = e; });
+
+    const items = [];
+    madcSeleccionados.forEach(cod => {
+        const e = entryMap[cod];
+        let cantidad = 1;
+        // Intentar leer el input de cantidad si está visible
+        const qtyEl = document.getElementById('qty-' + cod.replace(/[^a-z0-9]/gi,'_'));
+        if (qtyEl) {
+            cantidad = Math.max(1, parseInt(qtyEl.value) || 1);
+        } else if (e && e.enAlmacen && e.almStock > 0) {
+            cantidad = e.almStock;
+        }
+        items.push({ cod, cantidad, desc: e ? e.desc : '' });
+    });
+
+    _madcMostrarConfirmIngreso(items);
+}
+
+// ── MODAL DE CONFIRMACIÓN DE INGRESO ──
+function _madcMostrarConfirmIngreso(items) {
+    const modal = document.getElementById('modal-add-stock-confirm');
+    if (!modal) { _madcEjecutarIngreso(items); return; }
+
+    const lista = document.getElementById('asc-list');
+    const totalEl = document.getElementById('asc-total-num');
+    const btnOk   = document.getElementById('asc-btn-ok');
+    if (!lista || !totalEl || !btnOk) { _madcEjecutarIngreso(items); return; }
+
+    lista.innerHTML = '';
+    let totalUds = 0;
+    items.forEach(it => {
+        totalUds += it.cantidad;
+        const row = document.createElement('div');
+        row.className = 'asc-list-item';
+        row.innerHTML = `<span class="asc-item-cod">${it.desc || it.cod}<br><small style="color:#555;font-size:10px;">${it.cod}</small></span>
+            <span class="asc-item-qty">+${it.cantidad} ud.</span>`;
+        lista.appendChild(row);
+    });
+    totalEl.textContent = totalUds.toLocaleString();
+    btnOk.onclick = () => {
+        document.getElementById('modal-add-stock-confirm').style.display = 'none';
+        _madcEjecutarIngreso(items);
+    };
+    modal.style.display = 'flex';
+}
+
+// ── EJECUTAR EL INGRESO AL CONTEO ──
+function _madcEjecutarIngreso(items) {
+    let totalUds = 0;
+    items.forEach(({ cod, cantidad }) => {
+        const cant = Math.max(1, parseInt(cantidad) || 1);
+        for (let i = 0; i < cant; i++) historial.push(cod);
+        if (maestroMap.has(cod)) maestroMap.get(cod).real += cant;
+        else maestroMap.set(cod, { exp: 0, real: cant });
+        totalUds += cant;
+    });
+    schedSave('comp');
+    schedRender('comp', items[items.length-1]?.cod);
+    beepOK();
+    const codigos = items.length;
+    showToast(`✅ ${codigos} código(s) · ${totalUds} unidad(es) ingresadas al conteo`, '#1B5E20');
+    madcSeleccionados.clear();
+    _madcActualizarContadores();
+    const chkAll = document.getElementById('madc-chk-all');
+    if (chkAll) { chkAll.checked=false; chkAll.indeterminate=false; }
+    buscarEnAlmComp(document.getElementById('madc-input')?.value||'');
+}
+
 function agregarAlConteoDesdeAlm(cod) {
     if (!cod) return;
-    // Solo agrega al historial/maestro del comparativo, no modifica almMap
-    historial.push(cod);
-    if (maestroMap.has(cod)) {
-        maestroMap.get(cod).real++;
-    } else {
-        maestroMap.set(cod, { exp: 0, real: 1 });
-    }
-    schedSave('comp');
-    schedRender('comp', cod);
-    beepOK();
-    showToast(`✅ ${cod} agregado al conteo`, '#1B5E20');
-    // Refrescar la lista para mostrar el nuevo conteo
-    const input = document.getElementById('madc-input');
-    buscarEnAlmComp(input ? input.value : '');
+    const almData = almMap.get(cod);
+    const cantidad = (almData && almData.stock > 0) ? almData.stock : 1;
+    _madcMostrarConfirmIngreso([{ cod, cantidad, desc: descripcionMap.get(cod)||'' }]);
 }
-
-
 // ── DESCARGAR APP COMO ARCHIVO HTML ──
 function descargarApp() {
     const isIOS     = /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -2460,19 +2881,76 @@ window.addEventListener('beforeunload', ()=>{ clearTimeout(saveTimer); clearTime
 </div>
 
 
-<!-- ══════ MINI MODAL ALMACÉN DESDE COMPARATIVO ══════ -->
-<div id="modal-alm-desde-comp">
+<!-- ══════ MODAL STOCK EN ALMACÉN — COMPARATIVO MEJORADO ══════ -->
+<div id="modal-alm-desde-comp" style="position:relative;">
     <div class="madc-header">
-        <span style="font-size:20px;">🏪</span>
-        <span class="madc-title">STOCK EN ALMACÉN</span>
+        <span style="font-size:20px;">📋</span>
+        <span class="madc-title">COMPARATIVO + ALMACÉN</span>
         <div id="madc-badge" style="background:#1B5E20;color:white;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;margin-right:6px;">0 cód.</div>
         <button class="madc-close" onclick="cerrarAlmDesdeComp()">✕</button>
     </div>
-    <div class="madc-search">
-        <input type="text" id="madc-input" placeholder="Buscar código o nombre..." oninput="buscarEnAlmComp(this.value)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <!-- Resumen rápido -->
+    <div id="madc-resumen-bar" style="display:flex;gap:0;background:#0a0a0a;padding:6px 10px;border-bottom:1px solid #1a1a1a;flex-shrink:0;font-family:'Barlow Condensed',sans-serif;font-size:11px;gap:8px;flex-wrap:wrap;">
+        <span style="color:#aaa;">Maestro: <strong id="madc-res-maestro" style="color:#fff;">0</strong></span>
+        <span style="color:#aaa;">Conteo: <strong id="madc-res-conteo" style="color:#4CAF50;">0</strong></span>
+        <span style="color:#aaa;">Diferencia: <strong id="madc-res-dif" style="color:#FF9800;">0</strong></span>
+        <span style="color:#aaa;">Con stock almacén: <strong id="madc-res-con-alm" style="color:#2196F3;">0</strong></span>
     </div>
+    <!-- Tabs de filtro -->
+    <div class="madc-tabs">
+        <button class="madc-tab activo" id="madc-tab-todos" onclick="filtrarMadc('todos')">
+            TODOS <span class="tab-count" id="madc-cnt-todos">0</span>
+        </button>
+        <button class="madc-tab tab-faltantes" id="madc-tab-faltantes" onclick="filtrarMadc('faltantes')">
+            ⚠️ FALTAN <span class="tab-count" id="madc-cnt-faltantes">0</span>
+        </button>
+        <button class="madc-tab tab-sobrantes" id="madc-tab-sobrantes" onclick="filtrarMadc('sobrantes')">
+            📦 SOBRAN <span class="tab-count" id="madc-cnt-sobrantes">0</span>
+        </button>
+        <button class="madc-tab tab-sincontar" id="madc-tab-sincontar" onclick="filtrarMadc('sincontar')">
+            ❓ SIN SCAN <span class="tab-count" id="madc-cnt-sincontar">0</span>
+        </button>
+    </div>
+    <!-- Barra selección múltiple -->
+    <div class="madc-select-bar">
+        <input type="checkbox" class="madc-chk-all" id="madc-chk-all" onchange="madcToggleAll(this.checked)" title="Seleccionar todos">
+        <div class="madc-sel-info"><span id="madc-sel-count">0</span> seleccionados</div>
+        <button class="madc-btn-agregar-todos" id="madc-btn-bulk" onclick="madcAgregarSeleccionados()" disabled>📦 AGREGAR STOCK</button>
+    </div>
+    <!-- Buscador -->
+    <div class="madc-search">
+        <input type="text" id="madc-input" placeholder="🔍 Buscar código o nombre..." oninput="buscarEnAlmComp(this.value)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+    <!-- Resultados -->
     <div class="madc-results" id="madc-results">
-        <p style="color:#888;text-align:center;margin-top:30px;font-family:'Barlow',sans-serif;font-size:13px;">Escribe para buscar o deja vacío para ver todos</p>
+        <p style="color:#888;text-align:center;margin-top:30px;font-family:'Barlow',sans-serif;font-size:13px;">Cargando códigos del comparativo...</p>
+    </div>
+    <!-- Barra flotante inferior -->
+    <div class="madc-bulk-float">
+        <div class="bulk-count"><strong id="madc-float-count">0</strong> códigos · ingresará el stock total al conteo</div>
+        <button class="madc-btn-bulk-add" id="madc-float-btn" onclick="madcAgregarSeleccionados()" disabled>✅ AGREGAR TODO</button>
+    </div>
+</div>
+
+<!-- ══════ SUB-MODAL: CONFIRMAR AGREGAR STOCK AL CONTEO ══════ -->
+<div id="modal-add-stock-confirm">
+    <div class="asc-card">
+        <div class="asc-head">
+            <span class="asc-title">📦 CONFIRMAR INGRESO AL CONTEO</span>
+            <button onclick="document.getElementById('modal-add-stock-confirm').style.display='none'" style="background:none;border:none;color:#aaa;font-size:20px;cursor:pointer;">✕</button>
+        </div>
+        <div class="asc-body">
+            <div class="asc-info" id="asc-info-txt">Se agregarán las siguientes cantidades al conteo:</div>
+            <div class="asc-list" id="asc-list"></div>
+            <div class="asc-total">
+                <div class="asc-total-num" id="asc-total-num">0</div>
+                <div class="asc-total-lab">unidades totales a ingresar</div>
+            </div>
+            <div class="asc-btns">
+                <button class="asc-btn-ok" id="asc-btn-ok">✅ CONFIRMAR INGRESO</button>
+                <button class="asc-btn-cancel" onclick="document.getElementById('modal-add-stock-confirm').style.display='none'">Cancelar</button>
+            </div>
+        </div>
     </div>
 </div>
 
