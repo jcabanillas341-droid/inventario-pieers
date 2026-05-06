@@ -252,6 +252,16 @@
 }
 .madc-btn-agregar-todos:disabled { background: #1a1a1a; color: #444; cursor: not-allowed; }
 .madc-btn-agregar-todos:not(:disabled):active { filter: brightness(0.85); }
+/* Botón seleccionar solo los que tienen stock en almacén */
+.madc-btn-sel-alm {
+    padding: 8px 14px; border: none; border-radius: 8px;
+    background: #0d47a1; color: white;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 12px;
+    font-weight: 900; letter-spacing: 0.5px; cursor: pointer;
+    transition: filter 0.15s; white-space: nowrap; width: 100%;
+    margin-top: 5px;
+}
+.madc-btn-sel-alm:active { filter: brightness(1.2); }
 .madc-search { margin: 6px 12px; display: flex; gap: 6px; flex-shrink: 0; }
 .madc-search input {
     flex: 1; padding: 9px 12px; border-radius: 8px;
@@ -2504,6 +2514,38 @@ function madcToggleAll(checked) {
     _madcActualizarBulkBar();
 }
 
+// ── SELECCIONAR SOLO LOS QUE TIENEN STOCK EN ALMACÉN (del tab activo) ──
+function madcSeleccionarConAlmacen() {
+    madcSeleccionados.clear();
+    const conAlm = madcEntriesVis.slice(0,100).filter(e => e.enAlmacen && e.almStock > 0).map(e => e.cod);
+    conAlm.forEach(cod => madcSeleccionados.add(cod));
+
+    // Actualizar checkboxes y estilos en el DOM
+    document.querySelectorAll('#madc-results .madc-item').forEach(div => {
+        const tieneAlm = madcSeleccionados.has(div.dataset.cod);
+        div.classList.toggle('seleccionado', tieneAlm);
+        const chk = div.querySelector('.madc-item-check');
+        if (chk) chk.checked = tieneAlm;
+    });
+
+    // Actualizar checkbox "seleccionar todos"
+    const chkAll = document.getElementById('madc-chk-all');
+    if (chkAll && madcEntriesVis.length > 0) {
+        const vis = madcEntriesVis.slice(0,100).map(e=>e.cod);
+        const todos  = vis.every(c => madcSeleccionados.has(c));
+        const alguno = vis.some(c  => madcSeleccionados.has(c));
+        chkAll.checked = todos; chkAll.indeterminate = alguno && !todos;
+    }
+
+    _madcActualizarBulkBar();
+
+    if (conAlm.length === 0) {
+        showToast('⚠️ Ningún código de esta vista tiene stock en almacén', '#E65100');
+    } else {
+        showToast(`✅ ${conAlm.length} código(s) con stock en almacén seleccionados`, '#0d47a1');
+    }
+}
+
 function _madcActualizarBulkBar() {
     const n = madcSeleccionados.size;
     const s = (id,v)=>{ const el=document.getElementById(id); if(el){ if(typeof v==='boolean') el.disabled=v; else el.textContent=v; } };
@@ -2912,10 +2954,15 @@ window.addEventListener('beforeunload', ()=>{ clearTimeout(saveTimer); clearTime
         </button>
     </div>
     <!-- Barra selección múltiple -->
-    <div class="madc-select-bar">
-        <input type="checkbox" class="madc-chk-all" id="madc-chk-all" onchange="madcToggleAll(this.checked)" title="Seleccionar todos">
-        <div class="madc-sel-info"><span id="madc-sel-count">0</span> seleccionados</div>
-        <button class="madc-btn-agregar-todos" id="madc-btn-bulk" onclick="madcAgregarSeleccionados()" disabled>📦 AGREGAR STOCK</button>
+    <div class="madc-select-bar" style="flex-direction:column;align-items:stretch;gap:5px;padding:7px 12px;">
+        <div style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" class="madc-chk-all" id="madc-chk-all" onchange="madcToggleAll(this.checked)" title="Seleccionar todos">
+            <div class="madc-sel-info" style="flex:1;"><span id="madc-sel-count">0</span> seleccionados</div>
+            <button class="madc-btn-agregar-todos" id="madc-btn-bulk" onclick="madcAgregarSeleccionados()" disabled>📦 AGREGAR STOCK</button>
+        </div>
+        <button class="madc-btn-sel-alm" onclick="madcSeleccionarConAlmacen()">
+            🏪 SELECCIONAR TODOS LOS QUE HAY EN ALMACÉN
+        </button>
     </div>
     <!-- Buscador -->
     <div class="madc-search">
