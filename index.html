@@ -503,6 +503,43 @@
         /* ── SKU ÚNICO SUB-LABEL (3) ── */
         .stat-sku { font-size:9px; color:#666; text-align:center; letter-spacing:0.3px; margin-top:1px; }
 
+        /* ── MODAL DETALLE LOTE GUARDADO (8) ── */
+        #modal-detalle-lote { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:8000; flex-direction:column; overflow:hidden; }
+        .dl-header { display:flex; align-items:center; gap:10px; padding:12px 14px; background:#111; border-bottom:2px solid var(--rojo); flex-shrink:0; }
+        .dl-title  { font-family:'Barlow Condensed',sans-serif; font-size:16px; font-weight:900; color:white; letter-spacing:1px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .dl-close  { background:none; border:none; color:#aaa; font-size:22px; cursor:pointer; padding:0 4px; flex-shrink:0; }
+        .dl-resumen { display:flex; gap:6px; padding:8px 12px; background:#0a0a0a; border-bottom:1px solid #1a1a1a; flex-shrink:0; flex-wrap:wrap; }
+        .dl-res-pill { display:flex; flex-direction:column; align-items:center; padding:5px 12px; border-radius:8px; min-width:50px; }
+        .dl-res-num  { font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:900; }
+        .dl-res-lab  { font-size:9px; color:#888; text-transform:uppercase; letter-spacing:0.5px; }
+        .dl-tabs { display:flex; background:#0d0d0d; border-bottom:1px solid #1a1a1a; flex-shrink:0; overflow-x:auto; }
+        .dl-tab  { flex:1; min-width:60px; padding:9px 4px; background:none; border:none; border-bottom:3px solid transparent; color:#666; font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.3px; cursor:pointer; white-space:nowrap; }
+        .dl-tab.activo { color:white; border-bottom-color:var(--rojo); }
+        .dl-search { padding:7px 10px; background:#111; flex-shrink:0; }
+        .dl-search input { width:100%; padding:7px 12px; border-radius:8px; border:1px solid #2a2a2a; background:#1a1a1a; color:white; font-size:13px; font-family:'Barlow',sans-serif; box-sizing:border-box; }
+        .dl-search input:focus { outline:none; border-color:var(--rojo); }
+        .dl-list { flex:1; overflow-y:auto; padding:8px 10px; }
+        .dl-item { display:flex; align-items:flex-start; gap:10px; padding:10px 12px; background:#1a1a1a; border-radius:10px; margin-bottom:7px; border-left:4px solid #333; }
+        .dl-item.ok       { border-left-color:#2E7D32; }
+        .dl-item.falta    { border-left-color:#E65100; }
+        .dl-item.sobra    { border-left-color:#1565C0; }
+        .dl-item.nomaestro{ border-left-color:#7B1FA2; }
+        .dl-item-body { flex:1; min-width:0; }
+        .dl-item-desc { font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .dl-item-cod  { font-size:10px; color:#666; font-family:'Barlow',sans-serif; margin-top:1px; }
+        .dl-item-cols { display:flex; gap:5px; margin-top:5px; flex-wrap:wrap; }
+        .dl-pill { display:flex; flex-direction:column; align-items:center; padding:3px 8px; border-radius:5px; background:#222; min-width:38px; }
+        .dl-pill-val { font-family:'Barlow Condensed',sans-serif; font-size:14px; font-weight:900; }
+        .dl-pill-lab { font-size:8px; color:#777; text-transform:uppercase; }
+        .dl-badge { font-family:'Barlow Condensed',sans-serif; font-size:10px; font-weight:900; padding:2px 7px; border-radius:4px; white-space:nowrap; align-self:center; flex-shrink:0; }
+        .dl-badge.ok    { background:#E8F5E9; color:#1B5E20; }
+        .dl-badge.falta { background:#FFF3E0; color:#E65100; }
+        .dl-badge.sobra { background:#E3F2FD; color:#1565C0; }
+        .dl-badge.nm    { background:#F3E5F5; color:#7B1FA2; }
+        .dl-footer { padding:10px 12px; background:#111; border-top:1px solid #1a1a1a; display:flex; gap:8px; flex-shrink:0; }
+        .dl-btn-excel { flex:1; padding:13px; border:none; border-radius:8px; background:var(--rojo); color:white; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; cursor:pointer; letter-spacing:1px; }
+        .dl-btn-close { flex:1; padding:13px; border:1px solid #333; border-radius:8px; background:#222; color:#aaa; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
+
     </style>
 </head>
 <body class="modo-comp">
@@ -2124,6 +2161,8 @@ function guardarLote() {
         historial=[]; maestroMap.forEach(v=>v.real=0);
         saveComp(); saveLotes(); renderComp();
         showToast('✅ Guardado: '+n,'#111');
+        // Abrir detalle del lote recién guardado
+        verDetalleLote(lotes.length - 1);
     });
 }
 
@@ -2202,12 +2241,145 @@ function renderLotes() {
     lotes.forEach((l,i)=>{
         const div=document.createElement('div'); div.className='card-lote';
         div.innerHTML=`<strong style="color:var(--rojo);font-family:'Barlow Condensed',sans-serif;font-size:14px;">${l.nombre}</strong><br><small style="color:#666;">${l.fecha} | ${l.datosLectura.length.toLocaleString()} unid.</small><br><br>
+        <button onclick="verDetalleLote(${i})"  style="${btnS('#0d47a1','white')}">👁 VER</button>
         <button onclick="reanudarLote(${i})" style="${btnS('#1A1A1A','white')}">▶ REANUDAR</button>
         <button onclick="exportarExcel(${i})" style="${btnS('#D32F2F','white')}">📊 EXCEL</button>
         <button onclick="exportarTxt(${i})"   style="${btnS('#444','#ccc')}">📄 TXT</button>
         <button onclick="eliminarLote(${i})"  style="${btnS('#B71C1C','white')}">🗑️</button>`;
         d.appendChild(div);
     });
+}
+
+// ══════════════════════════════════════════════════════
+//  DETALLE COMPLETO DE LOTE GUARDADO
+// ══════════════════════════════════════════════════════
+let dlIdxActual = -1;
+let dlFiltroActual = 'todos';
+let dlEntriesCache = [];
+
+function verDetalleLote(idx) {
+    dlIdxActual = idx;
+    dlFiltroActual = 'todos';
+    const inp = document.getElementById('dl-input');
+    if (inp) inp.value = '';
+    _dlActivarTab('todos');
+    _dlCargarDatos();
+    document.getElementById('modal-detalle-lote').style.display = 'flex';
+    // Si venimos desde modalLotes, cerrarlo
+    const ml = document.getElementById('modalLotes');
+    if (ml) ml.style.display = 'none';
+    // Botón excel
+    const btnExcel = document.getElementById('dl-btn-excel');
+    if (btnExcel) btnExcel.onclick = () => exportarExcel(idx);
+}
+
+function cerrarDetalleLote() {
+    document.getElementById('modal-detalle-lote').style.display = 'none';
+    dlIdxActual = -1; dlEntriesCache = [];
+    focusScanner();
+}
+
+function _dlCargarDatos() {
+    if (dlIdxActual < 0 || dlIdxActual >= lotes.length) return;
+    const lote = lotes[dlIdxActual];
+    // Nombre
+    const el = document.getElementById('dl-nombre');
+    if (el) el.textContent = lote.nombre;
+    // Construir entradas
+    const cA = {};
+    lote.datosLectura.forEach(c => { cA[c] = (cA[c]||0)+1; });
+    const entries = [];
+    // Maestro
+    Object.entries(lote.maestroSnapshot).forEach(([cod,v]) => {
+        const real = cA[cod] || 0;
+        const diff = real - v.exp;
+        const cat  = real === v.exp && real > 0 ? 'ok' : real < v.exp ? 'falta' : real > v.exp && v.exp > 0 ? 'sobra' : real === 0 ? 'falta' : 'ok';
+        const desc = (lote.descSnapshot && lote.descSnapshot[cod]) || '';
+        entries.push({ cod, desc, exp: v.exp, real, diff, cat });
+    });
+    // Sin maestro
+    Object.entries(cA).forEach(([cod,real]) => {
+        if (!lote.maestroSnapshot.hasOwnProperty(cod)) {
+            const desc = (lote.descSnapshot && lote.descSnapshot[cod]) || '';
+            entries.push({ cod, desc, exp: 0, real, diff: real, cat: 'nomaestro' });
+        }
+    });
+    dlEntriesCache = entries;
+    // Contadores
+    let cOk=0, cFalta=0, cSobra=0, cNm=0, totalLec=lote.datosLectura.length;
+    entries.forEach(e => {
+        if (e.cat==='ok') cOk++;
+        else if (e.cat==='falta') cFalta++;
+        else if (e.cat==='sobra') cSobra++;
+        else if (e.cat==='nomaestro') cNm++;
+    });
+    const s=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v.toLocaleString();};
+    s('dl-r-ok',cOk); s('dl-r-falta',cFalta); s('dl-r-sobra',cSobra); s('dl-r-nm',cNm); s('dl-r-total',totalLec);
+    s('dl-c-todos',entries.length); s('dl-c-falta',cFalta); s('dl-c-sobra',cSobra); s('dl-c-ok',cOk); s('dl-c-nm',cNm);
+    dlRender();
+}
+
+function _dlActivarTab(tipo) {
+    ['todos','falta','sobra','ok','nomaestro'].forEach(t => {
+        const btn = document.getElementById('dl-tab-'+t);
+        if (btn) btn.classList.toggle('activo', t===tipo);
+    });
+    dlFiltroActual = tipo;
+}
+
+function dlFiltrar(tipo) {
+    _dlActivarTab(tipo);
+    const inp = document.getElementById('dl-input');
+    if (inp) inp.value = '';
+    dlRender();
+}
+
+function dlRender() {
+    const cont = document.getElementById('dl-list');
+    if (!cont || !dlEntriesCache.length) return;
+    const q = (document.getElementById('dl-input')?.value || '').trim().toUpperCase();
+    let entries = dlEntriesCache;
+    if (dlFiltroActual !== 'todos') entries = entries.filter(e => e.cat === dlFiltroActual);
+    if (q) entries = entries.filter(e => e.cod.includes(q) || e.desc.toUpperCase().includes(q));
+    // Orden: falta → sobra → nomaestro → ok
+    const prio = {falta:0, sobra:1, nomaestro:2, ok:3};
+    entries = [...entries].sort((a,b) => {
+        const pa=prio[a.cat]??4, pb=prio[b.cat]??4;
+        if (pa!==pb) return pa-pb;
+        return Math.abs(b.diff) - Math.abs(a.diff);
+    });
+    if (!entries.length) {
+        cont.innerHTML = `<p style="color:#888;text-align:center;margin-top:30px;font-family:'Barlow',sans-serif;font-size:13px;">Sin resultados${q?' para "'+q+'"':''}</p>`;
+        return;
+    }
+    cont.innerHTML = '';
+    const frag = document.createDocumentFragment();
+    entries.slice(0,200).forEach(e => {
+        const div = document.createElement('div');
+        div.className = 'dl-item ' + e.cat;
+        const catLabel = {ok:'✅ OK', falta:`⚠️ FALTA ${e.exp - e.real}`, sobra:`📦 SOBRA ${e.real - e.exp}`, nomaestro:'❓ SIN MAESTRO'}[e.cat] || '';
+        const catBadge = {ok:'ok', falta:'falta', sobra:'sobra', nomaestro:'nm'}[e.cat] || '';
+        const realColor = e.cat==='ok'?'#4CAF50':e.cat==='falta'?'#E65100':e.cat==='sobra'?'#42A5F5':'#CE93D8';
+        div.innerHTML = `
+            <div class="dl-item-body">
+                <div class="dl-item-desc" title="${e.desc||e.cod}">${e.desc||'(sin descripción)'}</div>
+                <div class="dl-item-cod">${e.cod}</div>
+                <div class="dl-item-cols">
+                    <div class="dl-pill"><span class="dl-pill-val" style="color:#aaa;">${e.exp}</span><span class="dl-pill-lab">ESP</span></div>
+                    <div class="dl-pill"><span class="dl-pill-val" style="color:${realColor};">${e.real}</span><span class="dl-pill-lab">REAL</span></div>
+                    <div class="dl-pill"><span class="dl-pill-val" style="color:${e.diff===0?'#4CAF50':e.diff<0?'#E65100':'#42A5F5'};">${e.diff>0?'+'+e.diff:e.diff}</span><span class="dl-pill-lab">DIFER.</span></div>
+                </div>
+            </div>
+            <span class="dl-badge ${catBadge}">${catLabel}</span>`;
+        frag.appendChild(div);
+    });
+    cont.appendChild(frag);
+    if (entries.length > 200) {
+        const p = document.createElement('p');
+        p.style.cssText = 'color:#888;text-align:center;font-size:11px;padding:8px;';
+        p.textContent = `... y ${entries.length-200} más. Usa el buscador para filtrar.`;
+        cont.appendChild(p);
+    }
 }
 
 function reanudarLote(idx) {
@@ -2975,6 +3147,57 @@ window.addEventListener('beforeunload', ()=>{ clearTimeout(saveTimer); clearTime
     <div class="madc-bulk-float">
         <div class="bulk-count"><strong id="madc-float-count">0</strong> códigos · ingresará el stock total al conteo</div>
         <button class="madc-btn-bulk-add" id="madc-float-btn" onclick="madcAgregarSeleccionados()" disabled>✅ AGREGAR TODO</button>
+    </div>
+</div>
+
+<!-- ══════ MODAL DETALLE LOTE GUARDADO (8) ══════ -->
+<div id="modal-detalle-lote">
+    <div class="dl-header">
+        <span style="font-size:20px;">📋</span>
+        <span class="dl-title" id="dl-nombre">DETALLE DEL LOTE</span>
+        <button class="dl-close" onclick="cerrarDetalleLote()">✕</button>
+    </div>
+    <!-- Resumen top -->
+    <div class="dl-resumen">
+        <div class="dl-res-pill" style="background:#0a1a0a;">
+            <span class="dl-res-num" style="color:#4CAF50;" id="dl-r-ok">0</span>
+            <span class="dl-res-lab">✅ Exactos</span>
+        </div>
+        <div class="dl-res-pill" style="background:#1a0800;">
+            <span class="dl-res-num" style="color:#E65100;" id="dl-r-falta">0</span>
+            <span class="dl-res-lab">⚠️ Faltan</span>
+        </div>
+        <div class="dl-res-pill" style="background:#00071a;">
+            <span class="dl-res-num" style="color:#42A5F5;" id="dl-r-sobra">0</span>
+            <span class="dl-res-lab">📦 Sobran</span>
+        </div>
+        <div class="dl-res-pill" style="background:#0d000d;">
+            <span class="dl-res-num" style="color:#CE93D8;" id="dl-r-nm">0</span>
+            <span class="dl-res-lab">❓ S/Maestro</span>
+        </div>
+        <div class="dl-res-pill" style="background:#1a1a1a;">
+            <span class="dl-res-num" style="color:var(--rojo);" id="dl-r-total">0</span>
+            <span class="dl-res-lab">🔢 Lecturas</span>
+        </div>
+    </div>
+    <!-- Tabs -->
+    <div class="dl-tabs">
+        <button class="dl-tab activo" id="dl-tab-todos"     onclick="dlFiltrar('todos')">TODOS <span id="dl-c-todos">0</span></button>
+        <button class="dl-tab"        id="dl-tab-falta"     onclick="dlFiltrar('falta')">⚠️ FALTAN <span id="dl-c-falta">0</span></button>
+        <button class="dl-tab"        id="dl-tab-sobra"     onclick="dlFiltrar('sobra')">📦 SOBRAN <span id="dl-c-sobra">0</span></button>
+        <button class="dl-tab"        id="dl-tab-ok"        onclick="dlFiltrar('ok')">✅ EXACTOS <span id="dl-c-ok">0</span></button>
+        <button class="dl-tab"        id="dl-tab-nomaestro" onclick="dlFiltrar('nomaestro')">❓ S/MAES <span id="dl-c-nm">0</span></button>
+    </div>
+    <!-- Buscador -->
+    <div class="dl-search">
+        <input type="text" id="dl-input" placeholder="🔍 Buscar código o descripción..." oninput="dlRender()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+    <!-- Lista -->
+    <div class="dl-list" id="dl-list"></div>
+    <!-- Footer -->
+    <div class="dl-footer">
+        <button class="dl-btn-excel" id="dl-btn-excel">📊 EXPORTAR EXCEL</button>
+        <button class="dl-btn-close" onclick="cerrarDetalleLote()">✕ CERRAR</button>
     </div>
 </div>
 
