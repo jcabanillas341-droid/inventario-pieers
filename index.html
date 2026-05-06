@@ -2517,33 +2517,32 @@ function madcToggleAll(checked) {
 // ── SELECCIONAR SOLO LOS QUE TIENEN STOCK EN ALMACÉN (del tab activo) ──
 function madcSeleccionarConAlmacen() {
     madcSeleccionados.clear();
-    const conAlm = madcEntriesVis.slice(0,100).filter(e => e.enAlmacen && e.almStock > 0).map(e => e.cod);
-    conAlm.forEach(cod => madcSeleccionados.add(cod));
 
-    // Actualizar checkboxes y estilos en el DOM
-    document.querySelectorAll('#madc-results .madc-item').forEach(div => {
-        const tieneAlm = madcSeleccionados.has(div.dataset.cod);
-        div.classList.toggle('seleccionado', tieneAlm);
-        const chk = div.querySelector('.madc-item-check');
-        if (chk) chk.checked = tieneAlm;
-    });
-
-    // Actualizar checkbox "seleccionar todos"
-    const chkAll = document.getElementById('madc-chk-all');
-    if (chkAll && madcEntriesVis.length > 0) {
-        const vis = madcEntriesVis.slice(0,100).map(e=>e.cod);
-        const todos  = vis.every(c => madcSeleccionados.has(c));
-        const alguno = vis.some(c  => madcSeleccionados.has(c));
-        chkAll.checked = todos; chkAll.indeterminate = alguno && !todos;
+    // Recorrer TODOS los códigos del maestro — sin filtro de tab ni de búsqueda
+    for (const [cod] of maestroMap) {
+        const almData = almMap.get(cod);
+        if (almData && almData.stock > 0) {
+            madcSeleccionados.add(cod);
+        }
     }
 
-    _madcActualizarBulkBar();
+    const n = madcSeleccionados.size;
 
-    if (conAlm.length === 0) {
-        showToast('⚠️ Ningún código de esta vista tiene stock en almacén', '#E65100');
-    } else {
-        showToast(`✅ ${conAlm.length} código(s) con stock en almacén seleccionados`, '#0d47a1');
+    if (n === 0) {
+        showToast('⚠️ Ningún código del maestro tiene stock en almacén. Verifica que el módulo Almacén esté cargado.', '#E65100');
+        return;
     }
+
+    // Cambiar al tab TODOS y limpiar búsqueda para mostrar todos los seleccionados
+    _madcActivarTab('todos');
+    const inp = document.getElementById('madc-input');
+    if (inp) inp.value = '';
+
+    // Reconstruir la vista — como madcSeleccionados ya está lleno,
+    // buscarEnAlmComp renderiza cada item con su checkbox marcado
+    buscarEnAlmComp('');
+
+    showToast(`🏪 ${n} código(s) del maestro con stock en almacén — seleccionados`, '#0d47a1');
 }
 
 function _madcActualizarBulkBar() {
