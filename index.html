@@ -666,81 +666,6 @@
             background: #006600; color: white;
             font-size: 20px; font-weight: bold;
         }
-        /* ══════ MODAL CARGAR DESDE PC ══════ */
-        #modal-pc {
-            display: none; position: fixed; inset: 0; z-index: 9000;
-            background: rgba(0,0,0,.7); align-items: flex-end;
-            justify-content: center;
-        }
-        #modal-pc.visible { display: flex; }
-        .pc-sheet {
-            background: #1a2a3a; border-radius: 16px 16px 0 0;
-            width: 100%; max-width: 600px; max-height: 88dvh;
-            display: flex; flex-direction: column;
-            animation: slideUp .25s ease;
-        }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .pc-header {
-            padding: 14px 16px 10px; border-bottom: 1px solid #2a4a6a;
-            display: flex; align-items: center; gap: 10px; flex-shrink: 0;
-        }
-        .pc-title { font-size: 16px; font-weight: bold; color: #88ccff; flex: 1; }
-        .pc-close { background: none; border: none; color: #88ccff; font-size: 22px; cursor: pointer; padding: 0 4px; }
-        .pc-ip-row {
-            padding: 10px 16px; border-bottom: 1px solid #2a4a6a;
-            display: flex; gap: 8px; align-items: center; flex-shrink: 0;
-        }
-        #pc-ip-input {
-            flex: 1; background: #0d1a28; border: 2px solid #2a5a8a;
-            color: #88ccff; padding: 8px 12px; font-size: 15px;
-            font-family: 'Courier New', monospace; border-radius: 6px;
-            outline: none;
-        }
-        #pc-ip-input::placeholder { color: #446688; }
-        .pc-btn-conectar {
-            background: linear-gradient(135deg, #1a5a9a, #0d3a6a);
-            color: white; border: none; padding: 8px 14px;
-            font-size: 13px; font-weight: bold; border-radius: 6px;
-            cursor: pointer; white-space: nowrap;
-        }
-        .pc-btn-conectar:active { filter: brightness(.85); }
-        .pc-search-row {
-            padding: 8px 16px; border-bottom: 1px solid #2a4a6a; flex-shrink: 0;
-        }
-        #pc-search-input {
-            width: 100%; background: #0d1a28; border: 2px solid #2a5a8a;
-            color: #cce8ff; padding: 8px 12px; font-size: 14px;
-            border-radius: 6px; outline: none;
-        }
-        #pc-search-input::placeholder { color: #446688; }
-        .pc-status {
-            padding: 6px 16px; font-size: 11px; font-weight: bold;
-            color: #6699bb; flex-shrink: 0; min-height: 24px;
-        }
-        .pc-file-list {
-            flex: 1; overflow-y: auto; padding: 6px 10px 16px;
-            -webkit-overflow-scrolling: touch;
-        }
-        .pc-file-item {
-            display: flex; align-items: center; gap: 10px;
-            padding: 11px 12px; margin-bottom: 5px;
-            background: #0d2a40; border: 1px solid #1a4060;
-            border-radius: 8px; cursor: pointer;
-            transition: background .15s;
-        }
-        .pc-file-item:active { background: #1a4a6a; }
-        .pc-file-icon { font-size: 24px; flex-shrink: 0; }
-        .pc-file-info { flex: 1; min-width: 0; }
-        .pc-file-name {
-            font-size: 14px; font-weight: bold; color: #cce8ff;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-        .pc-file-meta { font-size: 11px; color: #4a7a9a; margin-top: 2px; }
-        .pc-file-arrow { color: #4a7a9a; font-size: 18px; flex-shrink: 0; }
-        .pc-empty {
-            text-align: center; padding: 40px 20px;
-            color: #446688; font-size: 14px; line-height: 2;
-        }
     </style>
 </head>
 <body class="modo-comp">
@@ -793,15 +718,19 @@
         <div id="menuContent" class="menu-dropdown">
             <div id="menu-sec-comp" class="menu-section hidden">📋 Comparativo</div>
             <button id="btn-carga"         class="hidden" onclick="document.getElementById('fileInput').click();toggleMenu()">📥 Cargar Maestro</button>
+            <button id="btn-drive-maestro" class="hidden" onclick="driveAbrirModal('maestro')" style="color:#4FC3F7!important">☁️ Maestro desde Drive</button>
             <button id="btn-stock"         class="hidden" onclick="document.getElementById('stockInput').click();toggleMenu()">🔄 Convertir Stock → Maestro</button>
+            <button id="btn-drive-stock"   class="hidden" onclick="driveAbrirModal('stock')" style="color:#4FC3F7!important">☁️ Stock → Maestro desde Drive</button>
             <button id="btn-comp-alm"      class="hidden" onclick="abrirAlmDesdeComp();toggleMenu()">📋 Comparativo + Stock Almacén</button>
             <button id="btn-comp-guardar"  class="hidden" onclick="guardarLote();toggleMenu()">💾 Guardar Lote</button>
             <button id="btn-comp-reportes" class="hidden" onclick="toggleMenu();abrirModal('modalLotes')">📋 Reportes guardados</button>
             <button id="btn-comp-reiniciar" class="hidden" onclick="resetearModulo();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Reiniciar comparativo</button>
             <div id="menu-sec-alm" class="menu-section hidden">🏪 Almacén</div>
             <button id="btn-alm-carga"     class="hidden" onclick="document.getElementById('almInput').click();toggleMenu()">📥 Cargar Inventario</button>
+            <button id="btn-drive-almacen" class="hidden" onclick="driveAbrirModal('almacen')" style="color:#4FC3F7!important">☁️ Inventario desde Drive</button>
             <button id="btn-alm-mas"       class="hidden" onclick="document.getElementById('almInputMas').click();toggleMenu()">➕ Agregar más stock</button>
             <button id="btn-alm-stock"     class="hidden" onclick="document.getElementById('almStockInput').click();toggleMenu()">🔄 Cargar Stock</button>
+            <button id="btn-drive-almstock" class="hidden" onclick="driveAbrirModal('almstock')" style="color:#4FC3F7!important">☁️ Stock desde Drive</button>
             <button id="btn-alm-buscar"    class="hidden" onclick="abrirModalBusqueda();toggleMenu()">🔍 Buscar producto</button>
             <button id="btn-alm-retiro"    class="hidden" onclick="abrirModalMovimiento();toggleMenu()">− Registrar Retiro</button>
             <button id="btn-alm-deshacer"  class="hidden" onclick="almDeshacer();toggleMenu()">↩️ Deshacer movimiento</button>
@@ -811,7 +740,7 @@
             <button id="btn-alm-reiniciar" class="hidden" onclick="resetearModulo();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Reiniciar almacén</button>
             <div id="menu-sec-stock" class="menu-section hidden">📦 Consultar Stock</div>
             <button id="btn-stock-cargar" class="hidden" onclick="document.getElementById('cs-file-input').click();toggleMenu()">📂 Cargar / Actualizar Base</button>
-            <button id="btn-stock-pc"     class="hidden" onclick="pcAbrir('stock');toggleMenu()">🖥️ Cargar desde PC</button>
+            <button id="btn-drive-cs"    class="hidden" onclick="driveAbrirModal('cs')" style="color:#4FC3F7!important">☁️ Base Stock desde Drive</button>
             <button id="btn-stock-buscar" class="hidden" onclick="csBuscar();toggleMenu()">🔍 Buscar Artículo</button>
             <button id="btn-stock-borrar" class="hidden" onclick="csBorrarDB();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Borrar base guardada</button>
             <div class="menu-section">⚙️ App</div>
@@ -985,8 +914,7 @@
             </div>
             <div class="cs-ctrl-row">
                 <button class="cs-btn cs-btn-buscar" onclick="csBuscar()">🔍 Buscar</button>
-                <button class="cs-btn cs-btn-upload" onclick="document.getElementById('cs-file-input').click()">📂 Archivo</button>
-                <button class="cs-btn" onclick="pcAbrir('stock')" style="background:linear-gradient(180deg,#d0e8ff,#90b8e0);color:#001a44;">🖥️ PC</button>
+                <button class="cs-btn cs-btn-upload" onclick="document.getElementById('cs-file-input').click()">📂 Cargar Base</button>
                 <input type="file" id="cs-file-input" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*" onchange="csLoadFile(event)" style="display:none">
                 <span id="cs-db-badge" class="empty">SIN BASE</span>
             </div>
@@ -996,29 +924,6 @@
             <div class="cs-no-data">📦 Cargue su base de datos<br>luego escanee o ingrese un artículo</div>
         </div>
     </div><!-- fin vista-stock -->
-
-    <!-- ══════ MODAL CARGAR DESDE PC ══════ -->
-    <div id="modal-pc">
-        <div class="pc-sheet">
-            <div class="pc-header">
-                <span style="font-size:22px">🖥️</span>
-                <span class="pc-title">Cargar archivo desde PC</span>
-                <button class="pc-close" onclick="pcCerrar()">✕</button>
-            </div>
-            <div class="pc-ip-row">
-                <input type="text" id="pc-ip-input" class="cs-inp" placeholder="IP de tu PC  ej: 192.168.1.10"
-                       inputmode="decimal" onkeydown="if(event.key==='Enter')pcConectar()">
-                <button class="pc-btn-conectar" onclick="pcConectar()">🔌 Conectar</button>
-            </div>
-            <div class="pc-search-row">
-                <input type="text" id="pc-search-input" placeholder="🔍 Buscar archivo..." oninput="pcBuscar(this.value)">
-            </div>
-            <div class="pc-status" id="pc-status">Ingresa la IP de tu PC y presiona Conectar.</div>
-            <div class="pc-file-list" id="pc-file-list">
-                <div class="pc-empty">🖥️ Conecta con tu PC<br>para ver tus archivos CSV y Excel</div>
-            </div>
-        </div>
-    </div>
 
 
 
@@ -1339,12 +1244,12 @@ function seleccionarModo(modo) {
 
         const compFileBtns = $('comp-file-btns');
         if (compFileBtns) compFileBtns.style.display = 'none';
-        ['btn-carga','btn-stock','btn-comp-alm','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
+        ['btn-carga','btn-stock','btn-drive-maestro','btn-drive-stock','btn-comp-alm','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
         $s('menu-sec-alm').classList.add('hidden');
         $s('menu-sec-comp').classList.add('hidden');
-        ['btn-alm-carga','btn-alm-mas','btn-alm-stock','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
+        ['btn-alm-carga','btn-alm-mas','btn-alm-stock','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar','btn-drive-almacen','btn-drive-almstock'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
         const secStock=$('menu-sec-stock'); if(secStock) secStock.classList.add('hidden');
-        ['btn-stock-cargar','btn-stock-pc','btn-stock-buscar','btn-stock-borrar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
+        ['btn-stock-cargar','btn-stock-buscar','btn-stock-borrar','btn-drive-cs'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
         const bgl = $('btn-guardar-lote'); if(bgl) bgl.style.display = 'block';
 
         const scannerEl2 = $('scanner');
@@ -1357,7 +1262,7 @@ function seleccionarModo(modo) {
             document.body.className = 'modo-comp';
             $s('badge-txt').textContent = 'COMPARATIVO';
             $s('menu-sec-comp').classList.remove('hidden');
-            ['btn-carga','btn-stock','btn-comp-alm','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
+            ['btn-carga','btn-stock','btn-drive-maestro','btn-drive-stock','btn-comp-alm','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
             $s('vista-comp').classList.remove('hidden');
             
             if (compFileBtns) compFileBtns.style.display = 'flex';
@@ -1370,7 +1275,7 @@ function seleccionarModo(modo) {
             document.body.className = 'modo-stock';
             $s('badge-txt').textContent = 'STOCK';
             const secSt=$('menu-sec-stock'); if(secSt) secSt.classList.remove('hidden');
-            ['btn-stock-cargar','btn-stock-pc','btn-stock-buscar','btn-stock-borrar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
+            ['btn-stock-cargar','btn-stock-buscar','btn-stock-borrar','btn-drive-cs'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
             const vs=$('vista-stock'); if(vs) vs.style.display='flex';
             const csw3=document.getElementById('comp-search-wrap'); if(csw3) csw3.style.display='none';
             csInit();
@@ -1380,7 +1285,7 @@ function seleccionarModo(modo) {
             document.body.className = 'modo-alm';
             $s('badge-txt').textContent = 'ALMACÉN';
             $s('menu-sec-alm').classList.remove('hidden');
-            ['btn-alm-carga','btn-alm-mas','btn-alm-stock','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
+            ['btn-alm-carga','btn-alm-mas','btn-alm-stock','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar','btn-drive-almacen','btn-drive-almstock'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
             if(bgl) bgl.style.display = 'none';
             const csw2=document.getElementById('comp-search-wrap'); if(csw2) csw2.style.display='none';
             $s('vista-alm').classList.remove('hidden');
@@ -3547,118 +3452,169 @@ function csRenderTable(data, outer) {
     outer.innerHTML = h;
 }
 
-// ══════════════════════════════════════════════════════════
-//  MÓDULO CARGAR DESDE PC
-// ══════════════════════════════════════════════════════════
-const PC_IP_KEY      = 'pieers_pc_ip';
-const PC_PUERTO      = 8765;
-let   pcModoDestino  = 'stock';
-let   pcBuscarTimer  = null;
+// ══════════════════════════════════════════════════════
+//  INTEGRACIÓN GOOGLE DRIVE
+// ══════════════════════════════════════════════════════
+var driveCurrentTipo = null;
 
-function pcAbrir(destino) {
-    pcModoDestino = destino || 'stock';
-    const modal = document.getElementById('modal-pc');
-    if (!modal) return;
-    modal.classList.add('visible');
-    const ipGuardada = localStorage.getItem(PC_IP_KEY) || '';
-    const ipInput = document.getElementById('pc-ip-input');
-    if (ipInput) ipInput.value = ipGuardada;
-    document.getElementById('pc-search-input').value = '';
-    if (ipGuardada) pcConectar();
+function driveExtraerID(url) {
+    var m;
+    m = url.match(/\/d\/([a-zA-Z0-9_-]{25,})/);
+    if (m) return { id: m[1], isSheets: url.indexOf('spreadsheets') !== -1 };
+    m = url.match(/[?&]id=([a-zA-Z0-9_-]{25,})/);
+    if (m) return { id: m[1], isSheets: false };
+    return null;
 }
 
-function pcCerrar() {
-    const modal = document.getElementById('modal-pc');
-    if (modal) modal.classList.remove('visible');
+function driveAbrirModal(tipo) {
+    driveCurrentTipo = tipo;
+    var labels = {
+        maestro:  '📋 Comparativo — Cargar Maestro',
+        stock:    '🔄 Comparativo — Stock → Maestro',
+        almacen:  '🏪 Almacén — Cargar Inventario',
+        almstock: '🏪 Almacén — Cargar Stock',
+        cs:       '📦 Consultar Stock — Cargar Base'
+    };
+    document.getElementById('drive-modal-tipo').textContent = labels[tipo] || tipo;
+    var saved = localStorage.getItem('drive_link_' + tipo);
+    var input = document.getElementById('drive-link-input');
+    if (saved) { input.value = saved; document.getElementById('drive-recordar').checked = true; }
+    else { input.value = ''; document.getElementById('drive-recordar').checked = false; }
+    document.getElementById('modal-drive').style.display = 'flex';
+    toggleMenu();
+    setTimeout(function(){ input.focus(); }, 150);
 }
 
-function pcSetStatus(msg, color) {
-    const el = document.getElementById('pc-status');
-    if (el) { el.textContent = msg; el.style.color = color || '#6699bb'; }
+function closeDriveModal() {
+    document.getElementById('modal-drive').style.display = 'none';
+    driveCurrentTipo = null;
 }
 
-function pcConectar() {
-    const ipInput = document.getElementById('pc-ip-input');
-    const ip = (ipInput?.value || '').trim().replace(/\/+$/, '');
-    if (!ip) { pcSetStatus('⚠ Ingresa la IP de tu PC.', '#ffaa44'); return; }
-    localStorage.setItem(PC_IP_KEY, ip);
-    pcSetStatus('Conectando a ' + ip + ' ...', '#88aacc');
-    pcCargarLista(ip, '');
-}
-
-function pcBuscar(val) {
-    clearTimeout(pcBuscarTimer);
-    pcBuscarTimer = setTimeout(() => {
-        const ip = (document.getElementById('pc-ip-input')?.value || '').trim();
-        if (ip) pcCargarLista(ip, val);
-    }, 400);
-}
-
-function pcCargarLista(ip, busqueda) {
-    const url = `http://${ip}:${PC_PUERTO}/archivos?buscar=${encodeURIComponent(busqueda)}`;
-    fetch(url, { signal: AbortSignal.timeout(5000) })
-        .then(r => { if (!r.ok) throw new Error('Error ' + r.status); return r.json(); })
-        .then(data => {
-            pcSetStatus(data.length > 0 ? `✅ ${data.length} archivos encontrados` : '📭 No se encontraron archivos', data.length > 0 ? '#44cc66' : '#ffaa44');
-            pcRenderLista(ip, data);
+function driveDescargar() {
+    var url = document.getElementById('drive-link-input').value.trim();
+    if (!url) { showToast('⚠️ Pega el enlace de Google Drive','#E65100'); return; }
+    var parsed = driveExtraerID(url);
+    if (!parsed) { showToast('❌ Enlace de Drive no reconocido','#c62828'); return; }
+    if (document.getElementById('drive-recordar').checked) {
+        localStorage.setItem('drive_link_' + driveCurrentTipo, url);
+    } else {
+        localStorage.removeItem('drive_link_' + driveCurrentTipo);
+    }
+    var tipo = driveCurrentTipo;
+    closeDriveModal();
+    showLoading('Descargando desde Drive...');
+    var dlUrl = parsed.isSheets
+        ? 'https://docs.google.com/spreadsheets/d/' + parsed.id + '/export?format=xlsx'
+        : 'https://drive.google.com/uc?export=download&id=' + parsed.id;
+    var proxyUrl = 'https://corsproxy.io/?url=' + encodeURIComponent(dlUrl);
+    fetch(proxyUrl)
+        .then(function(resp){
+            if (!resp.ok) throw new Error('Sin acceso (código ' + resp.status + '). Verifica que el enlace sea público.');
+            return resp.arrayBuffer();
         })
-        .catch(() => {
-            pcSetStatus('❌ Sin conexión. ¿Está corriendo servidor_pieers.py en la PC?', '#ff6644');
-            document.getElementById('pc-file-list').innerHTML =
-                `<div class="pc-empty">❌ No se pudo conectar<br><br>
-                Asegúrate de:<br>
-                1. Abrir <b>servidor_pieers.py</b> en tu PC<br>
-                2. Celular y PC en la <b>misma WiFi</b><br>
-                3. IP correcta arriba</div>`;
+        .then(function(ab){
+            if (!ab || ab.byteLength < 100) throw new Error('El archivo está vacío o es inválido.');
+            hideLoading();
+            driveProcesar(ab, tipo);
+        })
+        .catch(function(err){
+            hideLoading();
+            showToast('❌ ' + err.message, '#c62828');
         });
 }
 
-function pcRenderLista(ip, archivos) {
-    const list = document.getElementById('pc-file-list');
-    if (!list) return;
-    if (!archivos.length) {
-        list.innerHTML = '<div class="pc-empty">📭 Sin archivos CSV o Excel<br>en esa carpeta</div>';
-        return;
-    }
-    const iconos = { csv:'📄', xlsx:'📊', xls:'📊', txt:'📝' };
-    list.innerHTML = archivos.map(f => `
-        <div class="pc-file-item" onclick="pcDescargar('${ip}','${f.ruta.replace(/'/g,"\\'")}','${f.nombre.replace(/'/g,"\\'")}','${f.ext}')">
-            <span class="pc-file-icon">${iconos[f.ext]||'📄'}</span>
-            <div class="pc-file-info">
-                <div class="pc-file-name">${f.nombre}</div>
-                <div class="pc-file-meta">${f.tam} · ${f.ruta.includes('/')?f.ruta.substring(0,f.ruta.lastIndexOf('/')):'Documentos'}</div>
-            </div>
-            <span class="pc-file-arrow">›</span>
-        </div>`).join('');
+function driveProcesar(ab, tipo) {
+    showLoading('Procesando archivo...');
+    setTimeout(function(){
+        try {
+            var wb = XLSX.read(new Uint8Array(ab), {type:'array', dense:true});
+            if (tipo === 'maestro') {
+                maestroMap.clear(); totalEsp = 0;
+                procesarFilasMaestro(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:''}), 0);
+            } else if (tipo === 'stock') {
+                var rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:'', header:1});
+                convertirStockDesdeFilas(rows);
+            } else if (tipo === 'almacen') {
+                var rows2 = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:''});
+                var nuevos = [];
+                rows2.forEach(function(row){
+                    var cod=String(row['CODIGO 13 DIGITOS']||row['CÓDIGO ÚNICO']||row['CODIGO']||row['COD']||Object.values(row)[0]||'').trim().toUpperCase();
+                    var desc=String(row['DESCRIPCION']||row['DESCRIPCIÓN']||row['DESC']||Object.values(row)[1]||'').trim();
+                    var stock=parseInt(row['TOTAL']||row['STOCK']||row['CANTIDAD']||Object.values(row)[2]||0)||0;
+                    if (cod&&cod.length>=4&&cod!=='CODIGO 13 DIGITOS') nuevos.push({cod:cod,desc:desc,stock:stock});
+                });
+                if (!nuevos.length) { hideLoading(); showToast('⚠️ Sin productos válidos','#E65100'); return; }
+                hideLoading();
+                if (almMap.size > 0) {
+                    mostrarConfirmDoble('¿Cómo cargar?',
+                        'Ya tienes ' + almMap.size.toLocaleString() + ' productos.\n\n• AGREGAR: suma los nuevos.\n• REEMPLAZAR: borra todo.',
+                        '➕ AGREGAR',    function(){ aplicarCargaAlm(nuevos, 'merge'); },
+                        '🗑️ REEMPLAZAR', function(){ aplicarCargaAlm(nuevos, 'replace'); }
+                    );
+                } else { aplicarCargaAlm(nuevos, 'replace'); }
+            } else if (tipo === 'almstock') {
+                var filas2 = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:'', header:1});
+                var res2 = convertirStockAResultados(filas2);
+                if (!res2.length) { hideLoading(); showToast('⚠️ Sin productos','#E65100'); return; }
+                var nuevos2 = res2.map(function(r){ return {cod:r.codigoUnico.toUpperCase(), desc:r.descripcion, stock:r.cantidad}; });
+                hideLoading();
+                if (almMap.size > 0) {
+                    mostrarConfirmDoble('¿Cómo cargar stock?',
+                        'Ya tienes ' + almMap.size.toLocaleString() + ' productos.\n\n• AGREGAR: suma.\n• REEMPLAZAR: borra todo.',
+                        '➕ AGREGAR',    function(){ aplicarCargaAlm(nuevos2, 'merge'); },
+                        '🗑️ REEMPLAZAR', function(){ aplicarCargaAlm(nuevos2, 'replace'); }
+                    );
+                } else { aplicarCargaAlm(nuevos2, 'replace'); }
+            } else if (tipo === 'cs') {
+                var csv = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+                csStockDB = csParseStockCSV(csv);
+                var cnt = Object.keys(csStockDB).length;
+                csSetBadge(cnt); csSetStatus('Base cargada desde Drive — ' + cnt + ' artículos.');
+                csSaveDB('Drive', cnt); hideLoading();
+                showToast('✅ ' + cnt.toLocaleString() + ' artículos cargados','#111');
+            }
+        } catch(err) {
+            hideLoading();
+            showToast('❌ Error: ' + err.message, '#c62828');
+        }
+    }, 30);
 }
-
-function pcDescargar(ip, ruta, nombre, ext) {
-    const url = `http://${ip}:${PC_PUERTO}/descargar?ruta=${encodeURIComponent(ruta)}`;
-    pcSetStatus('⬇️ Descargando ' + nombre + ' ...', '#88aacc');
-    fetch(url, { signal: AbortSignal.timeout(30000) })
-        .then(r => { if (!r.ok) throw new Error('Error '+r.status); return r.arrayBuffer(); })
-        .then(buffer => {
-            const isCsv = ext === 'csv' || ext === 'txt';
-            let csv;
-            if (isCsv) { csv = new TextDecoder('latin1').decode(buffer); }
-            else { const wb = XLSX.read(buffer,{type:'array'}); csv = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]); }
-            csStockDB = csParseStockCSV(csv);
-            const cnt = Object.keys(csStockDB).length;
-            csSetBadge(cnt);
-            csSetStatus('✅ ' + nombre + ' — ' + cnt + ' artículos cargados.');
-            csSaveDB(nombre, cnt);
-            pcCerrar();
-            showToast('✅ ' + nombre + ' cargado desde PC', '#1B5E20');
-        })
-        .catch(err => pcSetStatus('❌ Error: ' + err.message, '#ff6644'));
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('modal-pc')?.addEventListener('click', function(e) {
-        if (e.target === this) pcCerrar();
-    });
-});
 </script>
+
+<!-- ══════ MODAL GOOGLE DRIVE ══════ -->
+<div id="modal-drive" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:9800;align-items:center;justify-content:center;padding:16px;">
+    <div style="background:#1a1a1a;border-radius:16px;padding:22px;width:100%;max-width:420px;border:1px solid #333;box-shadow:0 12px 40px rgba(0,0,0,0.6);">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+            <span style="font-size:24px;">☁️</span>
+            <span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;color:white;letter-spacing:1px;">CARGAR DESDE GOOGLE DRIVE</span>
+        </div>
+        <div id="drive-modal-tipo" style="font-size:11px;color:#4FC3F7;margin-bottom:14px;letter-spacing:0.5px;font-family:'Barlow Condensed',sans-serif;font-weight:700;"></div>
+        <div style="background:#111;border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;color:#aaa;line-height:1.8;">
+            <b style="color:#eee;">¿Cómo obtener el enlace?</b><br>
+            1. Abre Google Drive en tu PC<br>
+            2. Clic derecho en el archivo → <b style="color:#4FC3F7">Compartir</b><br>
+            3. Cambia acceso a <b style="color:#4FC3F7">"Cualquiera con el enlace"</b><br>
+            4. Copia el enlace y pégalo abajo 👇
+        </div>
+        <textarea id="drive-link-input" placeholder="https://drive.google.com/file/d/..."
+            style="width:100%;padding:11px;border-radius:10px;border:2px solid #444;background:#111;color:white;font-size:13px;height:70px;resize:none;margin-bottom:12px;font-family:'Barlow',sans-serif;outline:none;"
+            onfocus="this.style.borderColor='#4FC3F7'" onblur="this.style.borderColor='#444'"></textarea>
+        <label style="display:flex;align-items:center;gap:10px;color:#bbb;font-size:13px;margin-bottom:18px;cursor:pointer;user-select:none;">
+            <input type="checkbox" id="drive-recordar" style="width:17px;height:17px;cursor:pointer;accent-color:#4FC3F7;">
+            Recordar este enlace para próximas veces
+        </label>
+        <div style="display:flex;gap:10px;">
+            <button onclick="closeDriveModal()"
+                style="flex:1;padding:13px;border:1px solid #444;background:#2a2a2a;color:#aaa;border-radius:10px;font-size:14px;cursor:pointer;font-family:'Barlow',sans-serif;">
+                Cancelar
+            </button>
+            <button onclick="driveDescargar()"
+                style="flex:2;padding:13px;border:none;background:linear-gradient(135deg,#1976D2,#1565C0);color:white;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;">
+                ⬇️ CARGAR ARCHIVO
+            </button>
+        </div>
+    </div>
+</div>
 
 <!-- ══════ MODAL PIN (9) ══════ -->
 <div id="modal-pin">
