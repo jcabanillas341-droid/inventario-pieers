@@ -3453,9 +3453,15 @@ function csRenderTable(data, outer) {
 }
 
 // ══════════════════════════════════════════════════════
-//  INTEGRACIÓN GOOGLE DRIVE
+//  INTEGRACIÓN NUBE (Google Drive + OneDrive)
 // ══════════════════════════════════════════════════════
 var driveCurrentTipo = null;
+
+function driveDetectarTipo(url) {
+    if (url.indexOf('1drv.ms') !== -1 || url.indexOf('onedrive.live.com') !== -1 || url.indexOf('sharepoint.com') !== -1) return 'onedrive';
+    if (url.indexOf('drive.google.com') !== -1 || url.indexOf('docs.google.com') !== -1) return 'gdrive';
+    return null;
+}
 
 function driveExtraerID(url) {
     var m;
@@ -3464,6 +3470,12 @@ function driveExtraerID(url) {
     m = url.match(/[?&]id=([a-zA-Z0-9_-]{25,})/);
     if (m) return { id: m[1], isSheets: false };
     return null;
+}
+
+function driveOneDriveDownloadUrl(shareUrl) {
+    // Codifica la URL share en base64url y arma la URL de descarga de OneDrive API
+    var encoded = btoa(shareUrl).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+    return 'https://api.onedrive.com/v1.0/shares/u!' + encoded + '/root/content';
 }
 
 function driveAbrirModal(tipo) {
@@ -3492,9 +3504,9 @@ function closeDriveModal() {
 
 function driveDescargar() {
     var url = document.getElementById('drive-link-input').value.trim();
-    if (!url) { showToast('⚠️ Pega el enlace de Google Drive','#E65100'); return; }
-    var parsed = driveExtraerID(url);
-    if (!parsed) { showToast('❌ Enlace de Drive no reconocido','#c62828'); return; }
+    if (!url) { showToast('⚠️ Pega el enlace del archivo','#E65100'); return; }
+    var nube = driveDetectarTipo(url);
+    if (!nube) { showToast('❌ Enlace no reconocido. Usa Google Drive u OneDrive.','#c62828'); return; }
     if (document.getElementById('drive-recordar').checked) {
         localStorage.setItem('drive_link_' + driveCurrentTipo, url);
     } else {
@@ -3502,25 +3514,47 @@ function driveDescargar() {
     }
     var tipo = driveCurrentTipo;
     closeDriveModal();
-    showLoading('Descargando desde Drive...');
-    var dlUrl = parsed.isSheets
-        ? 'https://docs.google.com/spreadsheets/d/' + parsed.id + '/export?format=xlsx'
-        : 'https://drive.google.com/uc?export=download&id=' + parsed.id;
-    var proxyUrl = 'https://corsproxy.io/?url=' + encodeURIComponent(dlUrl);
-    fetch(proxyUrl)
-        .then(function(resp){
-            if (!resp.ok) throw new Error('Sin acceso (código ' + resp.status + '). Verifica que el enlace sea público.');
-            return resp.arrayBuffer();
-        })
-        .then(function(ab){
-            if (!ab || ab.byteLength < 100) throw new Error('El archivo está vacío o es inválido.');
-            hideLoading();
-            driveProcesar(ab, tipo);
-        })
-        .catch(function(err){
-            hideLoading();
-            showToast('❌ ' + err.message, '#c62828');
-        });
+    showLoading('Descargando archivo...');
+    var dlUrl;
+    if (nube === 'onedrive') {
+        dlUrl = driveOneDriveDownloadUrl(url);
+        // OneDrive API devuelve redirect, necesitamos seguirlo
+        fetch(dlUrl, {redirect: 'follow'})
+            .then(function(resp){
+                if (!resp.ok) throw new Error('Sin acceso (código ' + resp.status + '). Verifica que el enlace sea público.');
+                return resp.arrayBuffer();
+            })
+            .then(function(ab){
+                if (!ab || ab.byteLength < 100) throw new Error('El archivo está vacío o es inválido.');
+                hideLoading();
+                driveProcesar(ab, tipo);
+            })
+            .catch(function(err){
+                hideLoading();
+                showToast('❌ ' + err.message, '#c62828');
+            });
+    } else {
+        var parsed = driveExtraerID(url);
+        if (!parsed) { hideLoading(); showToast('❌ No se pudo extraer el ID de Google Drive','#c62828'); return; }
+        dlUrl = parsed.isSheets
+            ? 'https://docs.google.com/spreadsheets/d/' + parsed.id + '/export?format=xlsx'
+            : 'https://drive.google.com/uc?export=download&id=' + parsed.id;
+        var proxyUrl = 'https://corsproxy.io/?url=' + encodeURIComponent(dlUrl);
+        fetch(proxyUrl)
+            .then(function(resp){
+                if (!resp.ok) throw new Error('Sin acceso (código ' + resp.status + '). Verifica que el enlace sea público.');
+                return resp.arrayBuffer();
+            })
+            .then(function(ab){
+                if (!ab || ab.byteLength < 100) throw new Error('El archivo está vacío o es inválido.');
+                hideLoading();
+                driveProcesar(ab, tipo);
+            })
+            .catch(function(err){
+                hideLoading();
+                showToast('❌ ' + err.message, '#c62828');
+            });
+    }
 }
 
 function driveProcesar(ab, tipo) {
@@ -3581,22 +3615,22 @@ function driveProcesar(ab, tipo) {
 }
 </script>
 
-<!-- ══════ MODAL GOOGLE DRIVE ══════ -->
+<!-- ══════ MODAL NUBE (Google Drive + OneDrive) ══════ -->
 <div id="modal-drive" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.82);z-index:9800;align-items:center;justify-content:center;padding:16px;">
     <div style="background:#1a1a1a;border-radius:16px;padding:22px;width:100%;max-width:420px;border:1px solid #333;box-shadow:0 12px 40px rgba(0,0,0,0.6);">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
             <span style="font-size:24px;">☁️</span>
-            <span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;color:white;letter-spacing:1px;">CARGAR DESDE GOOGLE DRIVE</span>
+            <span style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;color:white;letter-spacing:1px;">CARGAR DESDE LA NUBE</span>
         </div>
         <div id="drive-modal-tipo" style="font-size:11px;color:#4FC3F7;margin-bottom:14px;letter-spacing:0.5px;font-family:'Barlow Condensed',sans-serif;font-weight:700;"></div>
         <div style="background:#111;border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;color:#aaa;line-height:1.8;">
+            <b style="color:#eee;">Compatible con:</b>
+            <span style="color:#4FC3F7;font-weight:700;"> Google Drive</span> y <span style="color:#4FC3F7;font-weight:700;">OneDrive</span><br><br>
             <b style="color:#eee;">¿Cómo obtener el enlace?</b><br>
-            1. Abre Google Drive en tu PC<br>
-            2. Clic derecho en el archivo → <b style="color:#4FC3F7">Compartir</b><br>
-            3. Cambia acceso a <b style="color:#4FC3F7">"Cualquiera con el enlace"</b><br>
-            4. Copia el enlace y pégalo abajo 👇
+            <b style="color:#ccc;">OneDrive:</b> clic derecho → <b style="color:#4FC3F7">Compartir</b> → <b style="color:#4FC3F7">Copiar vínculo</b> (acceso público)<br>
+            <b style="color:#ccc;">Google Drive:</b> clic derecho → <b style="color:#4FC3F7">Compartir</b> → <b style="color:#4FC3F7">"Cualquiera con el enlace"</b> → Copiar
         </div>
-        <textarea id="drive-link-input" placeholder="https://drive.google.com/file/d/..."
+        <textarea id="drive-link-input" placeholder="https://1drv.ms/... ó https://drive.google.com/..."
             style="width:100%;padding:11px;border-radius:10px;border:2px solid #444;background:#111;color:white;font-size:13px;height:70px;resize:none;margin-bottom:12px;font-family:'Barlow',sans-serif;outline:none;"
             onfocus="this.style.borderColor='#4FC3F7'" onblur="this.style.borderColor='#444'"></textarea>
         <label style="display:flex;align-items:center;gap:10px;color:#bbb;font-size:13px;margin-bottom:18px;cursor:pointer;user-select:none;">
