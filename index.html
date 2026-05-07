@@ -540,6 +540,132 @@
         .dl-btn-excel { flex:1; padding:13px; border:none; border-radius:8px; background:var(--rojo); color:white; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:900; cursor:pointer; letter-spacing:1px; }
         .dl-btn-close { flex:1; padding:13px; border:1px solid #333; border-radius:8px; background:#222; color:#aaa; font-family:'Barlow Condensed',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
 
+
+        /* ══════ MÓDULO CONSULTAR STOCK ══════ */
+        .btn-stock-mod { background: linear-gradient(135deg, #1a3a6a, #0a1a40); color: white; border: 2px solid #2a5a9a; }
+        .btn-stock-mod:hover { border-color: #4a8aca; filter: brightness(1.1); }
+
+        #vista-stock {
+            display: none; flex-direction: column; flex: 1; overflow: hidden;
+            background: #b8cfe0; font-family: 'Segoe UI', sans-serif;
+        }
+        #vista-stock .cs-top-panel {
+            background: linear-gradient(180deg, #b8d0e8, #9ab8d4);
+            border-bottom: 2px solid #7a9ab8;
+            padding: 8px 10px; flex-shrink: 0;
+        }
+        #vista-stock .cs-ctrl-row {
+            display: flex; gap: 8px; align-items: center; margin-bottom: 7px;
+        }
+        #vista-stock .cs-ctrl-row:last-child { margin-bottom: 0; }
+        #vista-stock .cs-field-label {
+            font-size: 12px; font-weight: bold; color: #002244;
+            white-space: nowrap; min-width: 58px;
+        }
+        #vista-stock input[type="text"].cs-inp {
+            border: 2px inset #7a9ab8; background: white;
+            padding: 6px 8px; font-size: 15px;
+            font-family: 'Courier New', monospace; font-weight: bold;
+            color: #000080; outline: none; border-radius: 0;
+            flex: 1; min-width: 0; height: 38px; -webkit-appearance: none;
+        }
+        #cs-inp-articulo { background: #ffffc0 !important; max-width: 105px; flex: none !important; }
+        #cs-inp-descripcion { background: #eef4f8 !important; color: #334 !important; font-family: 'Segoe UI', sans-serif !important; font-size: 13px !important; font-weight: normal !important; }
+        #vista-stock .cs-btn {
+            border: 2px outset #aaa; padding: 0 13px; font-size: 13px;
+            font-weight: bold; cursor: pointer; white-space: nowrap;
+            height: 38px; display: flex; align-items: center; gap: 4px;
+            border-radius: 2px; flex-shrink: 0;
+        }
+        #vista-stock .cs-btn-buscar { background: linear-gradient(180deg, #d8eaff, #a8c8e8); color: #002255; }
+        #vista-stock .cs-btn-upload { background: linear-gradient(180deg, #d8f0d8, #a0c8a0); color: #003300; }
+        #vista-stock .cs-btn:active { border-style: inset; }
+        #cs-db-badge { font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 10px; white-space: nowrap; }
+        #cs-db-badge.ok    { background: #005500; color: #aaffaa; }
+        #cs-db-badge.empty { background: #880000; color: #ffcccc; }
+        #cs-status-bar {
+            background: #7aaac8; border-bottom: 1px solid #5a8aaa;
+            padding: 3px 10px; font-size: 11px; font-weight: bold;
+            color: #001133; flex-shrink: 0; min-height: 20px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        #cs-table-outer {
+            flex: 1; overflow: auto; background: #f0f4f8;
+            -webkit-overflow-scrolling: touch;
+        }
+        #cs-table-outer .cs-no-data {
+            text-align: center; padding: 60px 20px;
+            color: #557788; font-size: 16px; line-height: 2.2;
+        }
+        #cs-table-outer table { border-collapse: collapse; font-size: 14px; }
+        .cs-th-color {
+            position: sticky; left: 0; z-index: 10;
+            background: #2b4a6a; color: #c8e0f8;
+            font-size: 12px; font-weight: bold;
+            padding: 7px 12px; border: 1px solid #1a3050;
+            text-align: left; white-space: nowrap; min-width: 130px;
+        }
+        .cs-th-size {
+            background: #2b4a6a; color: #e0f0ff;
+            font-size: 14px; font-weight: bold; text-align: center;
+            padding: 7px 7px; border: 1px solid #1a3050; min-width: 42px;
+        }
+        .cs-th-total {
+            background: #1a4020; color: #99ffaa;
+            font-size: 13px; font-weight: bold; text-align: center;
+            padding: 7px 10px; border: 1px solid #0a2010; white-space: nowrap;
+        }
+        .cs-th-tp-label {
+            position: sticky; left: 0; z-index: 10;
+            background: #9ab8d0; color: #cc2200;
+            font-size: 10px; font-weight: bold;
+            padding: 3px 12px; border: 1px solid #7a9ab8; text-align: left;
+        }
+        .cs-th-tp {
+            background: #c0d8ee; color: #003366;
+            font-size: 10px; font-weight: bold;
+            text-align: center; padding: 3px 4px; border: 1px solid #9ab8d0;
+        }
+        .cs-th-tp-tot { background: #c0d8ee; padding: 3px 4px; border: 1px solid #9ab8d0; }
+        .cs-td-color {
+            position: sticky; left: 0; z-index: 5;
+            background: #eaf2fc; color: #0a2244;
+            font-weight: bold; font-size: 15px;
+            padding: 10px 12px; border: 1px solid #c0d4e8;
+            text-align: left; white-space: nowrap;
+        }
+        .cs-td-pos {
+            background: #fff; color: #001a66;
+            font-size: 17px; font-weight: bold;
+            text-align: center; padding: 10px 5px; border: 1px solid #d4e4f4;
+        }
+        .cs-td-zero {
+            background: #f8f8f8; color: #ccc;
+            font-size: 14px; text-align: center;
+            padding: 10px 5px; border: 1px solid #ebebeb;
+        }
+        .cs-td-total {
+            background: #e0f4e0; color: #004400;
+            font-weight: bold; font-size: 17px;
+            text-align: center; padding: 10px 10px; border: 1px solid #a8d8a8;
+        }
+        #cs-table-outer tbody tr:nth-child(odd)  .cs-td-color { background: #e2eefc; }
+        #cs-table-outer tbody tr:nth-child(even) .cs-td-color { background: #f0f7ff; }
+        #cs-table-outer tbody tr:nth-child(odd)  .cs-td-pos   { background: #fafcff; }
+        #cs-table-outer tbody tr:nth-child(even) .cs-td-pos   { background: #ffffff; }
+        .cs-tr-grand .cs-td-color {
+            background: #1a3a5a; color: #88ccff;
+            font-size: 12px; text-align: right;
+        }
+        .cs-tr-grand .cs-td-sum {
+            background: #cce0ff; color: #001155;
+            font-size: 16px; font-weight: bold;
+            text-align: center; padding: 10px 5px; border: 1px solid #99bbdd;
+        }
+        .cs-tr-grand .cs-td-total {
+            background: #006600; color: white;
+            font-size: 20px; font-weight: bold;
+        }
     </style>
 </head>
 <body class="modo-comp">
@@ -561,6 +687,14 @@
         <span class="txt">
             <span class="tit">GESTIÓN DE ALMACÉN</span>
             <span class="desc">Carga tu inventario, busca prendas y registra retiros. Guarda informes y consulta reportes.</span>
+        </span>
+    </button>
+
+    <button class="btn-modo btn-stock-mod" onclick="seleccionarModo('stock')">
+        <span class="ico">📦</span>
+        <span class="txt">
+            <span class="tit">CONSULTAR STOCK</span>
+            <span class="desc">Busca artículos por código de barras o código de 7 dígitos. Visualiza stock por color y talla.</span>
         </span>
     </button>
 
@@ -600,6 +734,10 @@
             <button id="btn-alm-exportar"  class="hidden" onclick="almExportar();toggleMenu()">📊 Exportar a Excel</button>
             <button id="btn-alm-informes"  class="hidden" onclick="abrirModalAlmInformes();toggleMenu()">📋 Ver Informes</button>
             <button id="btn-alm-reiniciar" class="hidden" onclick="resetearModulo();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Reiniciar almacén</button>
+            <div id="menu-sec-stock" class="menu-section hidden">📦 Consultar Stock</div>
+            <button id="btn-stock-cargar" class="hidden" onclick="document.getElementById('cs-file-input').click();toggleMenu()">📂 Cargar / Actualizar Base</button>
+            <button id="btn-stock-buscar" class="hidden" onclick="csBuscar();toggleMenu()">🔍 Buscar Artículo</button>
+            <button id="btn-stock-borrar" class="hidden" onclick="csBorrarDB();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Borrar base guardada</button>
             <div class="menu-section">⚙️ App</div>
             <button onclick="abrirConfigPIN();toggleMenu()">🔐 Configurar PIN de seguridad</button>
             <button onclick="resetearApp();toggleMenu();" class="menu-btn-danger">⚠️ Borrar todo y reiniciar</button>
@@ -607,11 +745,11 @@
     </div>
     
 
-    <input type="file" id="fileInput"      class="hidden" accept=".xlsx,.xls,.txt,.csv">
-    <input type="file" id="stockInput"     class="hidden" accept=".csv,.xlsx,.xls,.txt">
-    <input type="file" id="almInput"       class="hidden" accept=".csv,.xlsx,.xls,.txt">
-    <input type="file" id="almStockInput"  class="hidden" accept=".csv,.xlsx,.xls,.txt">
-    <input type="file" id="compStockInput" class="hidden" accept=".csv,.xlsx,.xls,.txt">
+    <input type="file" id="fileInput"      class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
+    <input type="file" id="stockInput"     class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
+    <input type="file" id="almInput"       class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
+    <input type="file" id="almStockInput"  class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
+    <input type="file" id="compStockInput" class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
 
     <!-- SCANNER COMPARATIVO -->
     <input id="scanner" inputmode="none" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus placeholder="ESCANEE CÓDIGO">
@@ -712,7 +850,7 @@
         <!-- Badge -->
         <div id="alm-estado-badge">Sin inventario — carga stock con los botones de abajo</div>
 
-        <input type="file" id="almInputMas" accept=".xlsx,.xls,.csv" multiple style="display:none;">
+        <input type="file" id="almInputMas" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*" multiple style="display:none;">
 
         <!-- Filtro rápido -->
         <div style="display:flex;gap:5px;flex-shrink:0;">
@@ -753,6 +891,34 @@
 
 
     </div>
+
+    <!-- ══════ PANEL CONSULTAR STOCK ══════ -->
+    <div id="vista-stock" style="display:none;flex-direction:column;flex:1;overflow:hidden;background:#b8cfe0;">
+        <div class="cs-top-panel">
+            <div class="cs-ctrl-row">
+                <span class="cs-field-label">CODBAR:</span>
+                <input type="text" id="cs-inp-codbar" class="cs-inp" placeholder="Escanear / 13 dígitos" maxlength="20"
+                       oninput="csOnBarcodeInput(this.value)" onkeydown="if(event.key==='Enter')csBuscar()">
+            </div>
+            <div class="cs-ctrl-row">
+                <span class="cs-field-label">Artículo:</span>
+                <input type="text" id="cs-inp-articulo" class="cs-inp" placeholder="7 cód." maxlength="10"
+                       oninput="this.value=this.value.toUpperCase()"
+                       onkeydown="if(event.key==='Enter')csBuscar()">
+                <input type="text" id="cs-inp-descripcion" class="cs-inp" readonly placeholder="Descripción del artículo">
+            </div>
+            <div class="cs-ctrl-row">
+                <button class="cs-btn cs-btn-buscar" onclick="csBuscar()">🔍 Buscar</button>
+                <button class="cs-btn cs-btn-upload" onclick="document.getElementById('cs-file-input').click()">📂 Cargar Base</button>
+                <input type="file" id="cs-file-input" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*" onchange="csLoadFile(event)" style="display:none">
+                <span id="cs-db-badge" class="empty">SIN BASE</span>
+            </div>
+        </div>
+        <div id="cs-status-bar">Cargue una base de datos para comenzar.</div>
+        <div id="cs-table-outer">
+            <div class="cs-no-data">📦 Cargue su base de datos<br>luego escanee o ingrese un artículo</div>
+        </div>
+    </div><!-- fin vista-stock -->
 
 
 
@@ -1069,7 +1235,7 @@ function seleccionarModo(modo) {
         $s('app-principal').classList.remove('hidden');
         $s('vista-comp').classList.add('hidden');
         $s('vista-alm').classList.add('hidden');
-        
+        const vistaStock = $('vista-stock'); if(vistaStock) vistaStock.style.display = 'none';
 
         const compFileBtns = $('comp-file-btns');
         if (compFileBtns) compFileBtns.style.display = 'none';
@@ -1077,12 +1243,15 @@ function seleccionarModo(modo) {
         $s('menu-sec-alm').classList.add('hidden');
         $s('menu-sec-comp').classList.add('hidden');
         ['btn-alm-carga','btn-alm-mas','btn-alm-stock','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
+        const secStock=$('menu-sec-stock'); if(secStock) secStock.classList.add('hidden');
+        ['btn-stock-cargar','btn-stock-buscar','btn-stock-borrar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
         const bgl = $('btn-guardar-lote'); if(bgl) bgl.style.display = 'block';
 
         const scannerEl2 = $('scanner');
-        if (scannerEl2) scannerEl2.style.display = modo === 'alm' ? 'none' : '';
+        if (scannerEl2) scannerEl2.style.display = (modo === 'alm' || modo === 'stock') ? 'none' : '';
         const panelDesc = $('panel-desc'); if(panelDesc) panelDesc.style.display = 'none';
-        const pbox = document.querySelector('.progress-box'); if(pbox) pbox.style.display = modo === 'alm' ? 'none' : '';
+        const pbox = document.querySelector('.progress-box'); if(pbox) pbox.style.display = (modo === 'alm' || modo === 'stock') ? 'none' : '';
+        const panelAlmComp=$('panel-alm-comp'); if(panelAlmComp) panelAlmComp.classList.remove('visible');
 
         if (modo === 'comp') {
             document.body.className = 'modo-comp';
@@ -1097,6 +1266,16 @@ function seleccionarModo(modo) {
             const bAv=$('blq-avan'); if(bAv) bAv.style.display='';
             if (scannerEl2) scannerEl2.placeholder = 'ESCANEE CÓDIGO (13 DÍGITOS)';
             loadStateComp(); renderComp(); focusScanner();
+        } else if (modo === 'stock') {
+            document.body.className = 'modo-stock';
+            $s('badge-txt').textContent = 'STOCK';
+            const secSt=$('menu-sec-stock'); if(secSt) secSt.classList.remove('hidden');
+            ['btn-stock-cargar','btn-stock-buscar','btn-stock-borrar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
+            const vs=$('vista-stock'); if(vs) vs.style.display='flex';
+            const csw3=document.getElementById('comp-search-wrap'); if(csw3) csw3.style.display='none';
+            csInit();
+            // Enfocar campo de código de barras
+            setTimeout(() => { const ci=document.getElementById('cs-inp-codbar'); if(ci) ci.focus(); }, 200);
         } else {
             document.body.className = 'modo-alm';
             $s('badge-txt').textContent = 'ALMACÉN';
@@ -3043,6 +3222,230 @@ function cerrarResumen() {
 }
 
 window.addEventListener('beforeunload', ()=>{ clearTimeout(saveTimer); clearTimeout(almSaveTimer); if(modoActual==='comp') saveComp(); if(modoActual==='alm') saveAlm(); });
+
+// ══════════════════════════════════════════════════════════
+//  MÓDULO CONSULTAR STOCK  —  con persistencia localStorage
+// ══════════════════════════════════════════════════════════
+let csStockDB = {};
+const CS_STORAGE_KEY = 'pieers_cs_db';
+
+/* ── Helpers UI ── */
+function csSetStatus(msg) {
+    const el = document.getElementById('cs-status-bar');
+    if (el) el.textContent = msg;
+}
+function csSetBadge(cnt) {
+    const badge = document.getElementById('cs-db-badge');
+    if (!badge) return;
+    badge.textContent = cnt > 0 ? cnt + ' art.' : 'SIN BASE';
+    badge.className   = cnt > 0 ? 'ok' : 'empty';
+}
+
+/* ── Persistencia ── */
+function csSaveDB(fileName, cnt) {
+    try {
+        const payload = JSON.stringify({
+            db:   csStockDB,
+            name: fileName,
+            cnt:  cnt,
+            date: new Date().toLocaleString('es-PE')
+        });
+        localStorage.setItem(CS_STORAGE_KEY, payload);
+        showToast('💾 Base guardada: ' + cnt + ' artículos', '#1B5E20');
+    } catch(e) {
+        // Quota superada — avisar pero seguir funcionando en memoria
+        showToast('⚠️ Base cargada en memoria (muy grande para guardar)', '#E65100');
+    }
+}
+
+function csLoadSaved() {
+    try {
+        const raw = localStorage.getItem(CS_STORAGE_KEY);
+        if (!raw) return false;
+        const payload = JSON.parse(raw);
+        if (!payload.db || !Object.keys(payload.db).length) return false;
+        csStockDB = payload.db;
+        csSetBadge(payload.cnt || Object.keys(csStockDB).length);
+        csSetStatus('✅ Base guardada restaurada: ' + payload.name +
+                    ' (' + (payload.cnt || Object.keys(csStockDB).length) + ' art.) — ' +
+                    (payload.date || ''));
+        return true;
+    } catch(e) {
+        return false;
+    }
+}
+
+function csBorrarDB() {
+    mostrarConfirm(
+        '🗑️ BORRAR BASE',
+        '¿Eliminar la base de stock guardada? Tendrás que volver a cargar el archivo.',
+        () => {
+            localStorage.removeItem(CS_STORAGE_KEY);
+            csStockDB = {};
+            csSetBadge(0);
+            csSetStatus('Base eliminada. Cargue un nuevo archivo.');
+            const outer = document.getElementById('cs-table-outer');
+            if (outer) outer.innerHTML = '<div class="cs-no-data">📦 Cargue su base de datos<br>luego escanee o ingrese un artículo</div>';
+            const d = document.getElementById('cs-inp-descripcion'); if(d) d.value = '';
+            showToast('🗑️ Base borrada', '#c62828');
+        }
+    );
+}
+
+/* ── Init (llamado al entrar al módulo) ── */
+function csInit() {
+    // Si ya hay datos en memoria no hace falta recargar
+    if (Object.keys(csStockDB).length) {
+        csSetBadge(Object.keys(csStockDB).length);
+        return;
+    }
+    // Intentar restaurar desde localStorage
+    if (!csLoadSaved()) {
+        csSetBadge(0);
+        csSetStatus('Cargue una base de datos para comenzar.');
+    }
+}
+
+/* ── Parseo CSV ── */
+function csParseCSVLine(line) {
+    const r = []; let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (c === '"') { inQ = !inQ; }
+        else if (c === ',' && !inQ) { r.push(cur.trim()); cur = ''; }
+        else cur += c;
+    }
+    r.push(cur.trim());
+    return r;
+}
+
+function csParseStockCSV(text) {
+    const db = {};
+    const lines = text.split(/\r?\n/).filter(l => l.trim().length > 10);
+    for (const line of lines) {
+        const cols = csParseCSVLine(line);
+        const li = cols.indexOf('LINEA');
+        if (li < 0 || cols.length < li + 32) continue;
+        const article   = cols[li + 1];
+        const desc      = cols[li + 2];
+        const sizes     = cols.slice(li + 3, li + 15);
+        const colorCode = cols[li + 16];
+        const colorName = cols[li + 17];
+        const stocks    = cols.slice(li + 18, li + 30).map(v => parseInt(v) || 0);
+        const total     = parseInt(cols[li + 30]) || 0;
+        if (!article || article === 'MODELO' || !colorName) continue;
+        if (!db[article]) db[article] = { desc: desc.replace(/\s+/g,' ').trim(), sizes, colors: [] };
+        db[article].colors.push({ code: colorCode, name: colorName, stocks, total });
+    }
+    return db;
+}
+
+/* ── Carga de archivo ── */
+function csLoadFile(e) {
+    const file = e.target.files[0]; if (!file) return;
+    csSetStatus('Cargando: ' + file.name + ' ...');
+    const reader = new FileReader();
+    const isCsv = file.name.toLowerCase().endsWith('.csv');
+    reader.onload = ev => {
+        try {
+            let csv;
+            if (isCsv) { csv = ev.target.result; }
+            else {
+                const wb = XLSX.read(ev.target.result, { type: 'array' });
+                csv = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+            }
+            csStockDB = csParseStockCSV(csv);
+            const cnt = Object.keys(csStockDB).length;
+            csSetBadge(cnt);
+            csSetStatus('Base cargada: ' + file.name + ' — ' + cnt + ' artículos.');
+            csSaveDB(file.name, cnt);          // ← guardar automáticamente
+        } catch(err) { csSetStatus('❌ Error: ' + err.message); }
+    };
+    if (isCsv) reader.readAsText(file, 'latin1');
+    else reader.readAsArrayBuffer(file);
+    e.target.value = '';
+}
+
+/* ── Búsqueda ── */
+function csFindInBarcode(bc) {
+    for (const art of Object.keys(csStockDB)) { if (bc.includes(art)) return art; }
+    for (let s = 0; s <= bc.length - 7; s++) {
+        const sub = bc.substring(s, s + 7);
+        if (csStockDB[sub]) return sub;
+    }
+    return null;
+}
+
+function csOnBarcodeInput(val) {
+    val = val.trim();
+    if (val.length >= 7) {
+        const found = csFindInBarcode(val);
+        if (found) {
+            const artEl = document.getElementById('cs-inp-articulo');
+            if (artEl) artEl.value = found;
+            if (val.length >= 13) setTimeout(csBuscar, 80);
+        }
+    }
+}
+
+function csBuscar() {
+    let art = (document.getElementById('cs-inp-articulo')?.value || '').trim().toUpperCase();
+    const bc = (document.getElementById('cs-inp-codbar')?.value || '').trim();
+    if (!art && bc) art = csFindInBarcode(bc) || bc.toUpperCase();
+    if (!art) { csSetStatus('⚠ Ingrese un artículo o escanee.'); return; }
+    if (!Object.keys(csStockDB).length) { csSetStatus('⚠ Cargue primero la base de datos.'); return; }
+    const artEl = document.getElementById('cs-inp-articulo');
+    if (artEl) artEl.value = art;
+    const keys = Object.keys(csStockDB).filter(k => k === art || k.startsWith(art) || k.includes(art));
+    const descEl = document.getElementById('cs-inp-descripcion');
+    const outer  = document.getElementById('cs-table-outer');
+    if (!keys.length) {
+        if (descEl) descEl.value = 'NO ENCONTRADO';
+        csSetStatus('⚠ "' + art + '" no encontrado.');
+        if (outer) outer.innerHTML = '<div class="cs-no-data">❌ Artículo no encontrado.</div>';
+        return;
+    }
+    const key  = keys[0];
+    const data = csStockDB[key];
+    if (descEl) descEl.value = data.desc;
+    const tot = data.colors.reduce((a, c) => a + c.total, 0);
+    csSetStatus(key + ' | ' + data.desc + ' | ' + data.colors.length + ' colores | TOTAL: ' + tot);
+    csRenderTable(data, outer);
+}
+
+/* ── Render tabla ── */
+function csRenderTable(data, outer) {
+    if (!outer) return;
+    const sizes  = data.sizes;
+    const colors = data.colors;
+    const nS = sizes.length;
+    const tp = s => { const n = parseInt(s); return (!isNaN(n) && n > 20) ? 'TG' : 'TP'; };
+    const colSums = new Array(nS).fill(0);
+    let grand = 0;
+    colors.forEach(c => { c.stocks.forEach((s,i) => colSums[i] += s); grand += c.total; });
+
+    let h = '<table><thead>';
+    h += '<tr><th class="cs-th-color">COLOR</th>';
+    sizes.forEach(s => h += `<th class="cs-th-size">${s}</th>`);
+    h += '<th class="cs-th-total">TOTAL</th></tr>';
+    h += '<tr><th class="cs-th-tp-label">TALLEROS ⇒</th>';
+    sizes.forEach(s => h += `<th class="cs-th-tp">${tp(s)}</th>`);
+    h += '<th class="cs-th-tp-tot"></th></tr>';
+    h += '</thead><tbody>';
+
+    colors.forEach(c => {
+        h += '<tr><td class="cs-td-color">' + c.name + '</td>';
+        c.stocks.forEach(s => h += s > 0 ? `<td class="cs-td-pos">${s}</td>` : `<td class="cs-td-zero">·</td>`);
+        h += `<td class="cs-td-total">${c.total}</td></tr>`;
+    });
+
+    h += '<tr class="cs-tr-grand"><td class="cs-td-color">' + colors.length + ' color(es) ⇒</td>';
+    colSums.forEach(v => h += `<td class="cs-td-sum">${v > 0 ? v : '·'}</td>`);
+    h += `<td class="cs-td-total">${grand}</td></tr>`;
+    h += '</tbody></table>';
+
+    outer.innerHTML = h;
+}
 </script>
 
 <!-- ══════ MODAL PIN (9) ══════ -->
