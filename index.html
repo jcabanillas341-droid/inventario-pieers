@@ -666,6 +666,81 @@
             background: #006600; color: white;
             font-size: 20px; font-weight: bold;
         }
+        /* ══════ MODAL CARGAR DESDE PC ══════ */
+        #modal-pc {
+            display: none; position: fixed; inset: 0; z-index: 9000;
+            background: rgba(0,0,0,.7); align-items: flex-end;
+            justify-content: center;
+        }
+        #modal-pc.visible { display: flex; }
+        .pc-sheet {
+            background: #1a2a3a; border-radius: 16px 16px 0 0;
+            width: 100%; max-width: 600px; max-height: 88dvh;
+            display: flex; flex-direction: column;
+            animation: slideUp .25s ease;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .pc-header {
+            padding: 14px 16px 10px; border-bottom: 1px solid #2a4a6a;
+            display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+        }
+        .pc-title { font-size: 16px; font-weight: bold; color: #88ccff; flex: 1; }
+        .pc-close { background: none; border: none; color: #88ccff; font-size: 22px; cursor: pointer; padding: 0 4px; }
+        .pc-ip-row {
+            padding: 10px 16px; border-bottom: 1px solid #2a4a6a;
+            display: flex; gap: 8px; align-items: center; flex-shrink: 0;
+        }
+        #pc-ip-input {
+            flex: 1; background: #0d1a28; border: 2px solid #2a5a8a;
+            color: #88ccff; padding: 8px 12px; font-size: 15px;
+            font-family: 'Courier New', monospace; border-radius: 6px;
+            outline: none;
+        }
+        #pc-ip-input::placeholder { color: #446688; }
+        .pc-btn-conectar {
+            background: linear-gradient(135deg, #1a5a9a, #0d3a6a);
+            color: white; border: none; padding: 8px 14px;
+            font-size: 13px; font-weight: bold; border-radius: 6px;
+            cursor: pointer; white-space: nowrap;
+        }
+        .pc-btn-conectar:active { filter: brightness(.85); }
+        .pc-search-row {
+            padding: 8px 16px; border-bottom: 1px solid #2a4a6a; flex-shrink: 0;
+        }
+        #pc-search-input {
+            width: 100%; background: #0d1a28; border: 2px solid #2a5a8a;
+            color: #cce8ff; padding: 8px 12px; font-size: 14px;
+            border-radius: 6px; outline: none;
+        }
+        #pc-search-input::placeholder { color: #446688; }
+        .pc-status {
+            padding: 6px 16px; font-size: 11px; font-weight: bold;
+            color: #6699bb; flex-shrink: 0; min-height: 24px;
+        }
+        .pc-file-list {
+            flex: 1; overflow-y: auto; padding: 6px 10px 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .pc-file-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 11px 12px; margin-bottom: 5px;
+            background: #0d2a40; border: 1px solid #1a4060;
+            border-radius: 8px; cursor: pointer;
+            transition: background .15s;
+        }
+        .pc-file-item:active { background: #1a4a6a; }
+        .pc-file-icon { font-size: 24px; flex-shrink: 0; }
+        .pc-file-info { flex: 1; min-width: 0; }
+        .pc-file-name {
+            font-size: 14px; font-weight: bold; color: #cce8ff;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .pc-file-meta { font-size: 11px; color: #4a7a9a; margin-top: 2px; }
+        .pc-file-arrow { color: #4a7a9a; font-size: 18px; flex-shrink: 0; }
+        .pc-empty {
+            text-align: center; padding: 40px 20px;
+            color: #446688; font-size: 14px; line-height: 2;
+        }
     </style>
 </head>
 <body class="modo-comp">
@@ -736,6 +811,7 @@
             <button id="btn-alm-reiniciar" class="hidden" onclick="resetearModulo();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Reiniciar almacén</button>
             <div id="menu-sec-stock" class="menu-section hidden">📦 Consultar Stock</div>
             <button id="btn-stock-cargar" class="hidden" onclick="document.getElementById('cs-file-input').click();toggleMenu()">📂 Cargar / Actualizar Base</button>
+            <button id="btn-stock-pc"     class="hidden" onclick="pcAbrir('stock');toggleMenu()">🖥️ Cargar desde PC</button>
             <button id="btn-stock-buscar" class="hidden" onclick="csBuscar();toggleMenu()">🔍 Buscar Artículo</button>
             <button id="btn-stock-borrar" class="hidden" onclick="csBorrarDB();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Borrar base guardada</button>
             <div class="menu-section">⚙️ App</div>
@@ -909,7 +985,8 @@
             </div>
             <div class="cs-ctrl-row">
                 <button class="cs-btn cs-btn-buscar" onclick="csBuscar()">🔍 Buscar</button>
-                <button class="cs-btn cs-btn-upload" onclick="document.getElementById('cs-file-input').click()">📂 Cargar Base</button>
+                <button class="cs-btn cs-btn-upload" onclick="document.getElementById('cs-file-input').click()">📂 Archivo</button>
+                <button class="cs-btn" onclick="pcAbrir('stock')" style="background:linear-gradient(180deg,#d0e8ff,#90b8e0);color:#001a44;">🖥️ PC</button>
                 <input type="file" id="cs-file-input" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*" onchange="csLoadFile(event)" style="display:none">
                 <span id="cs-db-badge" class="empty">SIN BASE</span>
             </div>
@@ -919,6 +996,29 @@
             <div class="cs-no-data">📦 Cargue su base de datos<br>luego escanee o ingrese un artículo</div>
         </div>
     </div><!-- fin vista-stock -->
+
+    <!-- ══════ MODAL CARGAR DESDE PC ══════ -->
+    <div id="modal-pc">
+        <div class="pc-sheet">
+            <div class="pc-header">
+                <span style="font-size:22px">🖥️</span>
+                <span class="pc-title">Cargar archivo desde PC</span>
+                <button class="pc-close" onclick="pcCerrar()">✕</button>
+            </div>
+            <div class="pc-ip-row">
+                <input type="text" id="pc-ip-input" class="cs-inp" placeholder="IP de tu PC  ej: 192.168.1.10"
+                       inputmode="decimal" onkeydown="if(event.key==='Enter')pcConectar()">
+                <button class="pc-btn-conectar" onclick="pcConectar()">🔌 Conectar</button>
+            </div>
+            <div class="pc-search-row">
+                <input type="text" id="pc-search-input" placeholder="🔍 Buscar archivo..." oninput="pcBuscar(this.value)">
+            </div>
+            <div class="pc-status" id="pc-status">Ingresa la IP de tu PC y presiona Conectar.</div>
+            <div class="pc-file-list" id="pc-file-list">
+                <div class="pc-empty">🖥️ Conecta con tu PC<br>para ver tus archivos CSV y Excel</div>
+            </div>
+        </div>
+    </div>
 
 
 
@@ -1244,7 +1344,7 @@ function seleccionarModo(modo) {
         $s('menu-sec-comp').classList.add('hidden');
         ['btn-alm-carga','btn-alm-mas','btn-alm-stock','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
         const secStock=$('menu-sec-stock'); if(secStock) secStock.classList.add('hidden');
-        ['btn-stock-cargar','btn-stock-buscar','btn-stock-borrar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
+        ['btn-stock-cargar','btn-stock-pc','btn-stock-buscar','btn-stock-borrar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
         const bgl = $('btn-guardar-lote'); if(bgl) bgl.style.display = 'block';
 
         const scannerEl2 = $('scanner');
@@ -1270,7 +1370,7 @@ function seleccionarModo(modo) {
             document.body.className = 'modo-stock';
             $s('badge-txt').textContent = 'STOCK';
             const secSt=$('menu-sec-stock'); if(secSt) secSt.classList.remove('hidden');
-            ['btn-stock-cargar','btn-stock-buscar','btn-stock-borrar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
+            ['btn-stock-cargar','btn-stock-pc','btn-stock-buscar','btn-stock-borrar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
             const vs=$('vista-stock'); if(vs) vs.style.display='flex';
             const csw3=document.getElementById('comp-search-wrap'); if(csw3) csw3.style.display='none';
             csInit();
@@ -3446,6 +3546,118 @@ function csRenderTable(data, outer) {
 
     outer.innerHTML = h;
 }
+
+// ══════════════════════════════════════════════════════════
+//  MÓDULO CARGAR DESDE PC
+// ══════════════════════════════════════════════════════════
+const PC_IP_KEY      = 'pieers_pc_ip';
+const PC_PUERTO      = 8765;
+let   pcModoDestino  = 'stock';
+let   pcBuscarTimer  = null;
+
+function pcAbrir(destino) {
+    pcModoDestino = destino || 'stock';
+    const modal = document.getElementById('modal-pc');
+    if (!modal) return;
+    modal.classList.add('visible');
+    const ipGuardada = localStorage.getItem(PC_IP_KEY) || '';
+    const ipInput = document.getElementById('pc-ip-input');
+    if (ipInput) ipInput.value = ipGuardada;
+    document.getElementById('pc-search-input').value = '';
+    if (ipGuardada) pcConectar();
+}
+
+function pcCerrar() {
+    const modal = document.getElementById('modal-pc');
+    if (modal) modal.classList.remove('visible');
+}
+
+function pcSetStatus(msg, color) {
+    const el = document.getElementById('pc-status');
+    if (el) { el.textContent = msg; el.style.color = color || '#6699bb'; }
+}
+
+function pcConectar() {
+    const ipInput = document.getElementById('pc-ip-input');
+    const ip = (ipInput?.value || '').trim().replace(/\/+$/, '');
+    if (!ip) { pcSetStatus('⚠ Ingresa la IP de tu PC.', '#ffaa44'); return; }
+    localStorage.setItem(PC_IP_KEY, ip);
+    pcSetStatus('Conectando a ' + ip + ' ...', '#88aacc');
+    pcCargarLista(ip, '');
+}
+
+function pcBuscar(val) {
+    clearTimeout(pcBuscarTimer);
+    pcBuscarTimer = setTimeout(() => {
+        const ip = (document.getElementById('pc-ip-input')?.value || '').trim();
+        if (ip) pcCargarLista(ip, val);
+    }, 400);
+}
+
+function pcCargarLista(ip, busqueda) {
+    const url = `http://${ip}:${PC_PUERTO}/archivos?buscar=${encodeURIComponent(busqueda)}`;
+    fetch(url, { signal: AbortSignal.timeout(5000) })
+        .then(r => { if (!r.ok) throw new Error('Error ' + r.status); return r.json(); })
+        .then(data => {
+            pcSetStatus(data.length > 0 ? `✅ ${data.length} archivos encontrados` : '📭 No se encontraron archivos', data.length > 0 ? '#44cc66' : '#ffaa44');
+            pcRenderLista(ip, data);
+        })
+        .catch(() => {
+            pcSetStatus('❌ Sin conexión. ¿Está corriendo servidor_pieers.py en la PC?', '#ff6644');
+            document.getElementById('pc-file-list').innerHTML =
+                `<div class="pc-empty">❌ No se pudo conectar<br><br>
+                Asegúrate de:<br>
+                1. Abrir <b>servidor_pieers.py</b> en tu PC<br>
+                2. Celular y PC en la <b>misma WiFi</b><br>
+                3. IP correcta arriba</div>`;
+        });
+}
+
+function pcRenderLista(ip, archivos) {
+    const list = document.getElementById('pc-file-list');
+    if (!list) return;
+    if (!archivos.length) {
+        list.innerHTML = '<div class="pc-empty">📭 Sin archivos CSV o Excel<br>en esa carpeta</div>';
+        return;
+    }
+    const iconos = { csv:'📄', xlsx:'📊', xls:'📊', txt:'📝' };
+    list.innerHTML = archivos.map(f => `
+        <div class="pc-file-item" onclick="pcDescargar('${ip}','${f.ruta.replace(/'/g,"\\'")}','${f.nombre.replace(/'/g,"\\'")}','${f.ext}')">
+            <span class="pc-file-icon">${iconos[f.ext]||'📄'}</span>
+            <div class="pc-file-info">
+                <div class="pc-file-name">${f.nombre}</div>
+                <div class="pc-file-meta">${f.tam} · ${f.ruta.includes('/')?f.ruta.substring(0,f.ruta.lastIndexOf('/')):'Documentos'}</div>
+            </div>
+            <span class="pc-file-arrow">›</span>
+        </div>`).join('');
+}
+
+function pcDescargar(ip, ruta, nombre, ext) {
+    const url = `http://${ip}:${PC_PUERTO}/descargar?ruta=${encodeURIComponent(ruta)}`;
+    pcSetStatus('⬇️ Descargando ' + nombre + ' ...', '#88aacc');
+    fetch(url, { signal: AbortSignal.timeout(30000) })
+        .then(r => { if (!r.ok) throw new Error('Error '+r.status); return r.arrayBuffer(); })
+        .then(buffer => {
+            const isCsv = ext === 'csv' || ext === 'txt';
+            let csv;
+            if (isCsv) { csv = new TextDecoder('latin1').decode(buffer); }
+            else { const wb = XLSX.read(buffer,{type:'array'}); csv = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]); }
+            csStockDB = csParseStockCSV(csv);
+            const cnt = Object.keys(csStockDB).length;
+            csSetBadge(cnt);
+            csSetStatus('✅ ' + nombre + ' — ' + cnt + ' artículos cargados.');
+            csSaveDB(nombre, cnt);
+            pcCerrar();
+            showToast('✅ ' + nombre + ' cargado desde PC', '#1B5E20');
+        })
+        .catch(err => pcSetStatus('❌ Error: ' + err.message, '#ff6644'));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('modal-pc')?.addEventListener('click', function(e) {
+        if (e.target === this) pcCerrar();
+    });
+});
 </script>
 
 <!-- ══════ MODAL PIN (9) ══════ -->
