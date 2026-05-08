@@ -3455,7 +3455,7 @@ function csRenderTable(data, outer) {
 // ══════════════════════════════════════════════════════
 //  INTEGRACIÓN GOOGLE DRIVE VÍA APPS SCRIPT (PROXY)
 // ══════════════════════════════════════════════════════
-var GAS_URL = 'https://script.google.com/macros/s/AKfycbzpQSHxbhUASiNplOLEVGDDsf8zstg-QcSJQI_1607pqqJydWesqr_XW4oMMmRQjoWy/exec';
+var GAS_URL = 'https://pieers-proxy.jcabanillas341.workers.dev';
 var driveCurrentTipo = null;
 var drivePass = null;
 
@@ -3463,48 +3463,26 @@ function gasRequest(params, callback) {
     var qs = Object.keys(params).map(function(k){
         return k + '=' + encodeURIComponent(params[k]);
     }).join('&');
-    var targetUrl = GAS_URL + '?' + qs;
-    // Proxy 1: allorigins
-    var proxy1 = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(targetUrl);
-    // Proxy 2: corsproxy.io (fallback)
-    var proxy2 = 'https://corsproxy.io/?' + encodeURIComponent(targetUrl);
-
-    function tryUrl(url, fallback) {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.timeout = 15000;
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState !== 4) return;
-            if (xhr.status === 200 && xhr.responseText) {
-                try {
-                    var data = JSON.parse(xhr.responseText);
-                    callback(null, data);
-                } catch(e) {
-                    if (fallback) { fallback(); }
-                    else { callback(new Error('Respuesta inválida del servidor')); }
-                }
-            } else {
-                if (fallback) { fallback(); }
-                else { callback(new Error('Error de conexión (código ' + xhr.status + ')')); }
+    var url = GAS_URL + '?' + qs;
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.timeout = 15000;
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState !== 4) return;
+        if (xhr.status === 200 && xhr.responseText) {
+            try {
+                var data = JSON.parse(xhr.responseText);
+                callback(null, data);
+            } catch(e) {
+                callback(new Error('Respuesta inválida del servidor'));
             }
-        };
-        xhr.ontimeout = function() {
-            if (fallback) { fallback(); }
-            else { callback(new Error('Tiempo de espera agotado. Verifica tu internet.')); }
-        };
-        xhr.onerror = function() {
-            if (fallback) { fallback(); }
-            else { callback(new Error('Sin conexión a internet.')); }
-        };
-        xhr.send();
-    }
-
-    // Intenta proxy1, si falla intenta proxy2, si falla directo
-    tryUrl(proxy1, function(){
-        tryUrl(proxy2, function(){
-            tryUrl(targetUrl, null);
-        });
-    });
+        } else {
+            callback(new Error('Error de conexión (código ' + xhr.status + ')'));
+        }
+    };
+    xhr.ontimeout = function() { callback(new Error('Tiempo de espera agotado.')); };
+    xhr.onerror  = function() { callback(new Error('Sin conexión a internet.')); };
+    xhr.send();
 }
 
 function driveAbrirModal(tipo) {
