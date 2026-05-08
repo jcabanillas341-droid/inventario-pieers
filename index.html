@@ -3453,11 +3453,42 @@ function csRenderTable(data, outer) {
 }
 
 // ══════════════════════════════════════════════════════
-//  INTEGRACIÓN GOOGLE DRIVE VÍA APPS SCRIPT
+//  INTEGRACIÓN GOOGLE DRIVE VÍA APPS SCRIPT (JSONP)
 // ══════════════════════════════════════════════════════
 var GAS_URL = 'https://script.google.com/macros/s/AKfycbyyduQj_F2xw8eTVL53x3gAs3L21FLfPKqwOuA0xJBh45hiiUBV-4X8MKjrbQOp5I7c/exec';
 var driveCurrentTipo = null;
 var drivePass = null;
+
+// JSONP: funciona en WebView sin problemas de CORS
+function gasRequest(params, callback) {
+    var cbName = 'gas_' + Date.now() + '_' + Math.floor(Math.random()*9999);
+    var qs = Object.keys(params).map(function(k){
+        return k + '=' + encodeURIComponent(params[k]);
+    }).join('&');
+    var url = GAS_URL + '?' + qs + '&callback=' + cbName;
+    var script = document.createElement('script');
+    var timer = setTimeout(function(){
+        if (window[cbName]) {
+            delete window[cbName];
+            if (script.parentNode) script.parentNode.removeChild(script);
+            callback(new Error('Tiempo de espera agotado. Verifica tu conexión.'));
+        }
+    }, 20000);
+    window[cbName] = function(data){
+        clearTimeout(timer);
+        delete window[cbName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+        callback(null, data);
+    };
+    script.onerror = function(){
+        clearTimeout(timer);
+        delete window[cbName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+        callback(new Error('Error de conexión con Google Drive.'));
+    };
+    script.src = url;
+    document.body.appendChild(script);
+}
 
 function driveAbrirModal(tipo) {
     driveCurrentTipo = tipo;
@@ -3470,7 +3501,6 @@ function driveAbrirModal(tipo) {
     };
     document.getElementById('drive-modal-tipo').textContent = labels[tipo] || tipo;
     toggleMenu();
-    // Si ya tiene contraseña guardada, ir directo a la lista
     var savedPass = localStorage.getItem('pieers_drive_pass');
     if (savedPass) {
         drivePass = savedPass;
@@ -3503,43 +3533,43 @@ function driveMostrarLista() {
     document.getElementById('modal-drive').style.display = 'flex';
     document.getElementById('drive-vista-login').style.display = 'none';
     document.getElementById('drive-vista-lista').style.display = 'block';
-    document.getElementById('drive-lista-archivos').innerHTML = '<div style="text-align:center;padding:20px;color:#aaa;font-size:13px;">⏳ Cargando archivos...</div>';
-    fetch(GAS_URL + '?action=list&pass=' + encodeURIComponent(drivePass))
-        .then(function(r){ return r.json(); })
-        .then(function(data){
-            if (!data.ok) {
-                if (data.error && data.error.indexOf('ontraseña') !== -1) {
-                    localStorage.removeItem('pieers_drive_pass');
-                    drivePass = null;
-                    document.getElementById('drive-vista-login').style.display = 'block';
-                    document.getElementById('drive-vista-lista').style.display = 'none';
-                    document.getElementById('drive-pass-input').value = '';
-                    showToast('❌ Contraseña incorrecta','#c62828');
-                    return;
-                }
-                throw new Error(data.error || 'Error desconocido');
-            }
-            var files = data.files;
-            if (!files || !files.length) {
-                document.getElementById('drive-lista-archivos').innerHTML = '<div style="text-align:center;padding:20px;color:#aaa;font-size:13px;">📂 La carpeta está vacía.<br>Sube archivos Excel desde tu PC.</div>';
+    document.getElementById('drive-lista-archivos').innerHTML = '<div style="text-align:center;padding:24px;color:#aaa;font-size:13px;">⏳ Cargando archivos...</div>';
+    gasRequest({action:'list', pass: drivePass}, function(err, data){
+        if (err) {
+            document.getElementById('drive-lista-archivos').innerHTML = '<div style="text-align:center;padding:20px;color:#e57373;font-size:13px;">❌ ' + err.message + '</div>';
+            return;
+        }
+        if (!data.ok) {
+            if (data.error && data.error.indexOf('ontraseña') !== -1) {
+                localStorage.removeItem('pieers_drive_pass');
+                drivePass = null;
+                document.getElementById('drive-vista-login').style.display = 'block';
+                document.getElementById('drive-vista-lista').style.display = 'none';
+                document.getElementById('drive-pass-input').value = '';
+                showToast('❌ Contraseña incorrecta','#c62828');
                 return;
             }
-            var html = '';
-            files.forEach(function(f){
-                var kb = f.size ? (f.size/1024).toFixed(0) + ' KB' : '';
-                var ext = f.name.split('.').pop().toLowerCase();
-                var ico = (ext==='xlsx'||ext==='xls') ? '📊' : (ext==='csv' ? '📄' : '📁');
-                html += '<div onclick="driveSeleccionarArchivo(\'' + f.id + '\',\'' + f.name.replace(/'/g,"\\'") + '\')" style="display:flex;align-items:center;gap:12px;padding:13px 12px;border-radius:10px;background:#111;margin-bottom:8px;cursor:pointer;border:1px solid #2a2a2a;transition:background 0.15s;" onmousedown="this.style.background=\'#1e2a3a\'" onmouseup="this.style.background=\'#111\'">';
-                html += '<span style="font-size:22px;">' + ico + '</span>';
-                html += '<div style="flex:1;min-width:0;"><div style="color:#fff;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + f.name + '</div>';
-                if (kb) html += '<div style="color:#666;font-size:11px;margin-top:2px;">' + kb + '</div>';
-                html += '</div><span style="color:#4FC3F7;font-size:18px;">›</span></div>';
-            });
-            document.getElementById('drive-lista-archivos').innerHTML = html;
-        })
-        .catch(function(err){
-            document.getElementById('drive-lista-archivos').innerHTML = '<div style="text-align:center;padding:20px;color:#e57373;font-size:13px;">❌ ' + err.message + '</div>';
+            document.getElementById('drive-lista-archivos').innerHTML = '<div style="text-align:center;padding:20px;color:#e57373;font-size:13px;">❌ ' + (data.error||'Error') + '</div>';
+            return;
+        }
+        var files = data.files;
+        if (!files || !files.length) {
+            document.getElementById('drive-lista-archivos').innerHTML = '<div style="text-align:center;padding:24px;color:#aaa;font-size:13px;">📂 Carpeta vacía.<br>Sube archivos Excel desde tu PC a la carpeta<br><b style="color:#4FC3F7;">PIEERS BASES</b> en Google Drive.</div>';
+            return;
+        }
+        var html = '';
+        files.forEach(function(f){
+            var kb = f.size ? (f.size > 1048576 ? (f.size/1048576).toFixed(1)+' MB' : (f.size/1024).toFixed(0)+' KB') : '';
+            var ext = f.name.split('.').pop().toLowerCase();
+            var ico = (ext==='xlsx'||ext==='xls') ? '📊' : (ext==='csv' ? '📄' : '📁');
+            html += '<div onclick="driveSeleccionarArchivo(\'' + f.id + '\',\'' + f.name.replace(/'/g,"\\'") + '\')" style="display:flex;align-items:center;gap:12px;padding:13px 12px;border-radius:10px;background:#111;margin-bottom:8px;cursor:pointer;border:1px solid #222;active:background:#1e2a3a;">';
+            html += '<span style="font-size:22px;">' + ico + '</span>';
+            html += '<div style="flex:1;min-width:0;"><div style="color:#fff;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + f.name + '</div>';
+            if (kb) html += '<div style="color:#555;font-size:11px;margin-top:2px;">' + kb + '</div>';
+            html += '</div><span style="color:#4FC3F7;font-size:20px;font-weight:bold;">›</span></div>';
         });
+        document.getElementById('drive-lista-archivos').innerHTML = html;
+    });
 }
 
 function driveCerrarSesion() {
@@ -3553,23 +3583,22 @@ function driveSeleccionarArchivo(fileId, fileName) {
     var tipo = driveCurrentTipo;
     closeDriveModal();
     showLoading('Descargando ' + fileName + '...');
-    fetch(GAS_URL + '?action=get&pass=' + encodeURIComponent(drivePass) + '&id=' + fileId)
-        .then(function(r){ return r.json(); })
-        .then(function(data){
-            if (!data.ok) throw new Error(data.error || 'Error al descargar');
-            // Convertir base64 a ArrayBuffer
+    gasRequest({action:'get', pass: drivePass, id: fileId}, function(err, data){
+        if (err) { hideLoading(); showToast('❌ ' + err.message, '#c62828'); return; }
+        if (!data.ok) { hideLoading(); showToast('❌ ' + (data.error||'Error'), '#c62828'); return; }
+        try {
             var b64 = data.data;
             var bin = atob(b64);
             var ab = new ArrayBuffer(bin.length);
             var view = new Uint8Array(ab);
-            for (var i=0;i<bin.length;i++) view[i] = bin.charCodeAt(i);
+            for (var i = 0; i < bin.length; i++) view[i] = bin.charCodeAt(i);
             hideLoading();
             driveProcesar(ab, tipo);
-        })
-        .catch(function(err){
+        } catch(e) {
             hideLoading();
-            showToast('❌ ' + err.message, '#c62828');
-        });
+            showToast('❌ Error al procesar: ' + e.message, '#c62828');
+        }
+    });
 }
 
 function driveProcesar(ab, tipo) {
