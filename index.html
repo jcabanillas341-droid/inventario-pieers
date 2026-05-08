@@ -3453,41 +3453,58 @@ function csRenderTable(data, outer) {
 }
 
 // ══════════════════════════════════════════════════════
-//  INTEGRACIÓN GOOGLE DRIVE VÍA APPS SCRIPT (JSONP)
+//  INTEGRACIÓN GOOGLE DRIVE VÍA APPS SCRIPT (PROXY)
 // ══════════════════════════════════════════════════════
 var GAS_URL = 'https://script.google.com/macros/s/AKfycbzpQSHxbhUASiNplOLEVGDDsf8zstg-QcSJQI_1607pqqJydWesqr_XW4oMMmRQjoWy/exec';
 var driveCurrentTipo = null;
 var drivePass = null;
 
-// JSONP: funciona en WebView sin problemas de CORS
 function gasRequest(params, callback) {
-    var cbName = 'gas_' + Date.now() + '_' + Math.floor(Math.random()*9999);
     var qs = Object.keys(params).map(function(k){
         return k + '=' + encodeURIComponent(params[k]);
     }).join('&');
-    var url = GAS_URL + '?' + qs + '&callback=' + cbName;
-    var script = document.createElement('script');
-    var timer = setTimeout(function(){
-        if (window[cbName]) {
-            delete window[cbName];
-            if (script.parentNode) script.parentNode.removeChild(script);
-            callback(new Error('Tiempo de espera agotado. Verifica tu conexión.'));
-        }
-    }, 20000);
-    window[cbName] = function(data){
-        clearTimeout(timer);
-        delete window[cbName];
-        if (script.parentNode) script.parentNode.removeChild(script);
-        callback(null, data);
-    };
-    script.onerror = function(){
-        clearTimeout(timer);
-        delete window[cbName];
-        if (script.parentNode) script.parentNode.removeChild(script);
-        callback(new Error('Error de conexión con Google Drive.'));
-    };
-    script.src = url;
-    document.body.appendChild(script);
+    var targetUrl = GAS_URL + '?' + qs;
+    // Proxy 1: allorigins
+    var proxy1 = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(targetUrl);
+    // Proxy 2: corsproxy.io (fallback)
+    var proxy2 = 'https://corsproxy.io/?' + encodeURIComponent(targetUrl);
+
+    function tryUrl(url, fallback) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.timeout = 15000;
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState !== 4) return;
+            if (xhr.status === 200 && xhr.responseText) {
+                try {
+                    var data = JSON.parse(xhr.responseText);
+                    callback(null, data);
+                } catch(e) {
+                    if (fallback) { fallback(); }
+                    else { callback(new Error('Respuesta inválida del servidor')); }
+                }
+            } else {
+                if (fallback) { fallback(); }
+                else { callback(new Error('Error de conexión (código ' + xhr.status + ')')); }
+            }
+        };
+        xhr.ontimeout = function() {
+            if (fallback) { fallback(); }
+            else { callback(new Error('Tiempo de espera agotado. Verifica tu internet.')); }
+        };
+        xhr.onerror = function() {
+            if (fallback) { fallback(); }
+            else { callback(new Error('Sin conexión a internet.')); }
+        };
+        xhr.send();
+    }
+
+    // Intenta proxy1, si falla intenta proxy2, si falla directo
+    tryUrl(proxy1, function(){
+        tryUrl(proxy2, function(){
+            tryUrl(targetUrl, null);
+        });
+    });
 }
 
 function driveAbrirModal(tipo) {
