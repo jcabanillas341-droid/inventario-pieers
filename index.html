@@ -40,39 +40,55 @@
 
         /* ── SELECTOR DE MODO ── */
         #pantalla-modo {
-            position: fixed; inset: 0; background: var(--negro); z-index: 9000;
+            position: fixed; inset: 0; background: #EFEFEF; z-index: 9000;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            gap: 14px; padding: 24px;
+            gap: 12px; padding: 24px;
         }
-        .logo-modo { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 900; color: var(--blanco); letter-spacing: 3px; text-align: center; text-transform: uppercase; margin-bottom: 4px; }
+        .logo-icono {
+            width: 64px; height: 64px; background: var(--rojo); border-radius: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Barlow Condensed', sans-serif; font-size: 36px; font-weight: 900;
+            color: white; box-shadow: 0 4px 16px rgba(211,47,47,0.35); margin-bottom: 4px;
+        }
+        .logo-modo {
+            font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 900;
+            color: #111; letter-spacing: 2px; text-align: center; text-transform: uppercase; margin-bottom: 0;
+        }
         .logo-acento { color: var(--rojo); }
-        .logo-sub { font-size: 12px; color: #666; text-align: center; margin-bottom: 8px; letter-spacing: 1px; }
-        .logo-v { font-size: 10px; color: #444; text-align: center; margin-top: -8px; }
+        .logo-sub {
+            font-size: 11px; color: var(--rojo); text-align: center; letter-spacing: 2px;
+            display: flex; align-items: center; gap: 8px; margin-bottom: 4px;
+        }
+        .logo-sub::before, .logo-sub::after {
+            content: ''; display: block; height: 1px; width: 30px; background: var(--rojo); opacity: 0.5;
+        }
+        .logo-selector { font-size: 11px; color: #555; text-align: center; letter-spacing: 2px; margin-bottom: 2px; text-transform: uppercase; }
+        .logo-v { font-size: 10px; color: #aaa; text-align: center; margin-top: -4px; }
 
-        .btn-modo { width: 100%; padding: 18px 16px; border: none; border-radius: 12px; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 14px; transition: transform 0.1s, filter 0.1s; }
+        .btn-modo { width: 100%; padding: 16px 16px; border: none; border-radius: 14px; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 14px; transition: transform 0.1s, filter 0.1s; box-shadow: 0 2px 10px rgba(0,0,0,0.12); }
         .btn-modo:active { transform: scale(0.97); }
-        .btn-modo .ico { font-size: 30px; min-width: 36px; text-align: center; }
+        .btn-modo .ico { font-size: 28px; min-width: 36px; text-align: center; }
         .btn-modo .txt { display: flex; flex-direction: column; }
-        .btn-modo .tit { font-family: 'Barlow Condensed', sans-serif; font-size: 17px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+        .btn-modo .tit { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
         .btn-modo .desc { font-size: 11px; font-weight: 400; margin-top: 3px; opacity: 0.85; line-height: 1.4; }
-        .btn-comp { background: #1a1a1a; color: white; border: 2px solid #333; }
-        .btn-comp:hover { border-color: var(--rojo); }
-        .btn-alm  { background: var(--rojo); color: white; border: 2px solid var(--rojo-dark); }
+        .btn-comp { background: #1e1e1e; color: white; border: none; }
+        .btn-comp:hover { filter: brightness(1.15); }
+        .btn-alm  { background: var(--rojo); color: white; border: none; }
         .btn-alm:hover { filter: brightness(1.1); }
 
         /* ── CABECERA ── */
-        .header-app { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: var(--negro); border-bottom: 3px solid var(--rojo); flex-shrink: 0; position: relative; }
-        .header-logo { font-family: 'Barlow Condensed', sans-serif; font-size: 17px; font-weight: 900; color: var(--blanco); letter-spacing: 1px; }
+        .header-app { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: var(--blanco); border-bottom: 1px solid #E5E5E5; flex-shrink: 0; position: relative; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+        .header-logo { font-family: 'Barlow Condensed', sans-serif; font-size: 17px; font-weight: 900; color: var(--negro); letter-spacing: 1px; }
         .logo-red { color: var(--rojo); }
         .badge-modo { font-size: 9px; padding: 2px 8px; border-radius: 10px; color: white; background: var(--rojo); margin-left: 6px; letter-spacing: 0.5px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; }
-        .btn-menu { background: var(--rojo); color: white; border: none; padding: 7px 11px; border-radius: 6px; font-size: 12px; cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 1px; }
-        .btn-cambio { background: #2a2a2a; color: #aaa; border: 1px solid #444; padding: 7px 10px; border-radius: 6px; font-size: 10px; cursor: pointer; }
+        .btn-menu { background: var(--rojo); color: white; border: none; padding: 7px 11px; border-radius: 8px; font-size: 12px; cursor: pointer; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 1px; }
+        .btn-cambio { background: #F5F5F5; color: #555; border: 1px solid #DDD; padding: 7px 10px; border-radius: 8px; font-size: 10px; cursor: pointer; }
 
-        .menu-dropdown { display: none; position: absolute; right: 10px; top: 52px; background: var(--negro-soft); z-index: 5000; border: 1px solid #333; border-radius: 10px; min-width: 280px; max-width: calc(100vw - 20px); overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.5); max-height: calc(100vh - 70px); overflow-y: auto; }
-        .menu-section { padding: 8px 14px 5px; font-size: 10px; color: #888; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; border-top: 1px solid #2a2a2a; }
+        .menu-dropdown { display: none; position: absolute; right: 10px; top: 52px; background: var(--blanco); z-index: 5000; border: 1px solid #E5E5E5; border-radius: 12px; min-width: 280px; max-width: calc(100vw - 20px); overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.12); max-height: calc(100vh - 70px); overflow-y: auto; }
+        .menu-section { padding: 8px 14px 5px; font-size: 10px; color: #aaa; letter-spacing: 1px; text-transform: uppercase; font-weight: 700; border-top: 1px solid #F0F0F0; }
         .menu-section:first-child { border-top: none; }
-        .menu-dropdown button { width: 100%; padding: 15px 16px; background: none; border: none; color: #ddd; text-align: left; border-bottom: 1px solid #2a2a2a; cursor: pointer; font-size: 14px; font-family: 'Barlow', sans-serif; display: flex; align-items: center; gap: 8px; min-height: 48px; }
-        .menu-dropdown button:active { background: #2a2a2a; }
+        .menu-dropdown button { width: 100%; padding: 15px 16px; background: none; border: none; color: #333; text-align: left; border-bottom: 1px solid #F5F5F5; cursor: pointer; font-size: 14px; font-family: 'Barlow', sans-serif; display: flex; align-items: center; gap: 8px; min-height: 48px; }
+        .menu-dropdown button:active { background: #F8F8F8; }
         .menu-dropdown button:last-child { border-bottom: none; }
         .menu-btn-danger { color: var(--rojo-light) !important; }
 
@@ -80,15 +96,15 @@
         #scanner { width: 96%; margin: 6px auto; display: block; padding: 11px 10px; font-size: 18px; border-radius: 10px; border: 3px solid var(--rojo); text-align: center; background: var(--blanco); color: var(--negro); flex-shrink: 0; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; letter-spacing: 2px; }
 
         /* ── PROGRESO ── */
-        .progress-box { background: var(--negro-soft); padding: 8px 10px; margin: 0 8px 6px; border-radius: 10px; border: 1px solid #2a2a2a; flex-shrink: 0; }
+        .progress-box { background: var(--blanco); padding: 8px 10px; margin: 0 8px 6px; border-radius: 12px; border: 1px solid #EEEEEE; flex-shrink: 0; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
         .stats-grid   { display: flex; justify-content: space-between; margin-bottom: 5px; }
-        .stat-val     { display: block; font-size: 22px; color: var(--rojo-light); text-align: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; }
-        .stat-lab     { font-size: 8px; color: #666; text-transform: uppercase; text-align: center; letter-spacing: 0.5px; }
-        .bar-bg       { background: #2a2a2a; height: 8px; border-radius: 4px; overflow: hidden; }
+        .stat-val     { display: block; font-size: 22px; color: var(--rojo); text-align: center; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; }
+        .stat-lab     { font-size: 8px; color: #aaa; text-transform: uppercase; text-align: center; letter-spacing: 0.5px; }
+        .bar-bg       { background: #EBEBEB; height: 6px; border-radius: 4px; overflow: hidden; }
         #bar-fill     { background: linear-gradient(90deg, var(--rojo-dark), var(--rojo-light)); height: 100%; width: 0%; transition: width 0.3s; }
 
         /* ── TOAST ── */
-        #toast { display: none; position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: var(--negro); color: white; padding: 10px 20px; border-radius: 20px; font-size: 12px; z-index: 8000; white-space: nowrap; max-width: 90%; overflow: hidden; text-overflow: ellipsis; font-family: 'Barlow', sans-serif; font-weight: 600; box-shadow: 0 4px 16px rgba(0,0,0,0.3); border-left: 4px solid var(--rojo); }
+        #toast { display: none; position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%); background: #1A1A1A; color: white; padding: 10px 20px; border-radius: 20px; font-size: 12px; z-index: 8000; white-space: nowrap; max-width: 90%; overflow: hidden; text-overflow: ellipsis; font-family: 'Barlow', sans-serif; font-weight: 600; box-shadow: 0 4px 16px rgba(0,0,0,0.2); border-left: 4px solid var(--rojo); }
 
         /* ── PANELES ── */
         .split-view { display: flex; flex: 1; gap: 6px; overflow: hidden; padding: 0 8px 8px; min-height: 0; }
@@ -422,7 +438,7 @@
         .alm-btn-buscar { flex: 1; padding: 12px 8px; background: var(--negro); color: white; border: none; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; }
         .alm-btn-retiro { flex: 2; padding: 12px 8px; background: var(--rojo); color: white; border: none; border-radius: 8px; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; }
         .alm-btn-buscar:active, .alm-btn-retiro:active { filter: brightness(0.85); }
-        #alm-estado-badge { margin: 0 8px 4px; padding: 6px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 7px; font-size: 11px; color: #888; text-align: center; font-family: 'Barlow', sans-serif; flex-shrink: 0; }
+        #alm-estado-badge { margin: 0 8px 4px; padding: 6px 12px; background: #F8F8F8; border: 1px solid #EBEBEB; border-radius: 10px; font-size: 11px; color: #888; text-align: center; font-family: 'Barlow', sans-serif; flex-shrink: 0; }
         .alm-load-row { display: flex; gap: 5px; flex-shrink: 0; padding: 0 8px 4px; }
         .alm-load-btn { flex: 1; padding: 10px 4px; border: none; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 700; font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.3px; text-align: center; min-height: 44px; }
         .alm-load-btn:active { filter: brightness(0.85); }
@@ -456,7 +472,7 @@
         body.modo-claro #alm-estado-badge { background: #F5F5F5; border-color: #DDD; color: #333; }
 
         /* ── BOTÓN MODO CLARO/OSCURO ── */
-        .btn-modo-luz { background: #2a2a2a; color: #ccc; border: 1px solid #444; padding: 7px 9px; border-radius: 6px; font-size: 14px; cursor: pointer; line-height: 1; }
+        .btn-modo-luz { background: #F0F0F0; color: #555; border: 1px solid #DDD; padding: 7px 9px; border-radius: 8px; font-size: 14px; cursor: pointer; line-height: 1; }
         body.modo-claro .btn-modo-luz { background: #DDD; color: #333; border-color: #bbb; }
 
         /* ── PIN (9) ── */
@@ -542,7 +558,7 @@
 
 
         /* ══════ MÓDULO CONSULTAR STOCK ══════ */
-        .btn-stock-mod { background: linear-gradient(135deg, #1a3a6a, #0a1a40); color: white; border: 2px solid #2a5a9a; }
+        .btn-stock-mod { background: linear-gradient(135deg, #1a3a6a, #0d2550); color: white; border: none; box-shadow: 0 2px 10px rgba(13,37,80,0.25); }
         .btn-stock-mod:hover { border-color: #4a8aca; filter: brightness(1.1); }
 
         #vista-stock {
@@ -672,9 +688,11 @@
 
 <!-- ══════ SELECTOR ══════ -->
 <div id="pantalla-modo">
-    <div class="logo-modo">⬡ <span class="logo-acento">PIEERS</span> AUDITOR PRO</div>
-    <div class="logo-sub">SELECCIONA EL MODO DE TRABAJO</div>
-    <div class="logo-v">v7.0</div>
+    <div class="logo-icono">P</div>
+    <div class="logo-modo"><span class="logo-acento">PIEERS</span> PRO</div>
+    <div class="logo-sub">AUDITORÍA &amp; INVENTARIO</div>
+    <div class="logo-selector">SELECCIONA EL MODO DE TRABAJO</div>
+    <div class="logo-v">v20</div>
     <button class="btn-modo btn-comp" onclick="seleccionarModo('comp')">
         <span class="ico">📋</span>
         <span class="txt">
@@ -698,7 +716,7 @@
         </span>
     </button>
 
-    <div style="font-size:10px;color:#444;text-align:center;margin-top:8px;font-family:'Barlow',sans-serif;letter-spacing:1px;">PIEERS PRO · v20</div>
+    <div style="font-size:10px;color:#bbb;text-align:center;margin-top:4px;font-family:'Barlow',sans-serif;letter-spacing:1px;">PIEERS PRO · v20</div>
 </div>
 
 
