@@ -900,7 +900,6 @@
                 <div class="scroll">
                     <table>
                         <thead><tr>
-                            <th style="width:20px;">#</th>
                             <th>CÓDIGO</th>
                             <th style="width:36px;">MOV</th>
                             <th style="width:28px;">STK</th>
@@ -1233,11 +1232,12 @@ function beepError() { beep(220, 0.45, 'sawtooth'); }
 
 // ── TOAST ──
 let toastTimer = null;
-function showToast(msg, color='#111') {
+function showToast(msg, color='#111', dur=2800) {
     const t = document.getElementById('toast');
     t.textContent = msg; t.style.background = color; t.style.display = 'block';
+    t.style.whiteSpace = 'pre-line'; t.style.maxWidth = '85%'; t.style.textAlign = 'center';
     clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.style.display='none', 2800);
+    toastTimer = setTimeout(() => t.style.display='none', dur);
 }
 
 // ── LOADING ──
@@ -1575,19 +1575,22 @@ function renderAlm(filtro='') {
         almMovs.slice(-30).reverse().forEach((mv, i) => {
             const realIdx = almMovs.length - 1 - i;
             const tr = document.createElement('tr');
-            tr.style.cursor = 'default';
+            tr.style.cursor = 'pointer';
             const color = mv.tipo === 'RETIRO' ? '#B71C1C' : '#1B5E20';
             const signo = mv.tipo === 'RETIRO' ? '−' : '+';
-            // Mejora 1: mostrar hora del movimiento
-            const hora  = mv.ts ? new Date(mv.ts).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}) : '--:--';
+            const desc = almMap.has(mv.cod) ? almMap.get(mv.cod).desc : (mv.desc || '');
             tr.innerHTML = `
-                <td style="padding:3px 2px;color:#aaa;font-size:9px;text-align:center;line-height:1.2;">${hora}</td>
                 <td style="font-size:9px;text-align:left;padding:3px 2px;word-break:break-all;">${mv.cod}</td>
                 <td style="color:${color};font-size:13px;font-weight:900;text-align:center;">${signo}${mv.cant}</td>
                 <td style="font-weight:bold;font-size:11px;">${mv.stockPost}</td>
                 <td style="padding:2px;">
-                    <button onclick="almEliminarMov(${realIdx})" style="background:none;border:none;color:#666;cursor:pointer;font-size:13px;padding:2px 4px;" title="Eliminar este movimiento">🗑</button>
+                    <button onclick="event.stopPropagation();almEliminarMov(${realIdx})" style="background:none;border:none;color:#666;cursor:pointer;font-size:13px;padding:2px 4px;" title="Eliminar este movimiento">🗑</button>
                 </td>`;
+            tr.onclick = () => {
+                const tipo = mv.tipo === 'RETIRO' ? '📤 RETIRO' : '📥 INGRESO';
+                const descTxt = desc || '(sin descripción)';
+                showToast(`${tipo} · ${mv.cod}\n${descTxt}`, color, 3500);
+            };
             fragM.appendChild(tr);
         });
         tmov.appendChild(fragM);
