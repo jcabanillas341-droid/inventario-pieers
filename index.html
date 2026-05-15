@@ -735,32 +735,24 @@
         </div>
         <div id="menuContent" class="menu-dropdown">
             <div id="menu-sec-comp" class="menu-section hidden">📋 Comparativo</div>
-            <button id="btn-carga"         class="hidden" onclick="document.getElementById('fileInput').click();toggleMenu()">📥 Cargar Maestro</button>
-            <button id="btn-drive-maestro" class="hidden" onclick="driveAbrirModal('maestro')" style="color:#4FC3F7!important">☁️ Maestro desde Drive</button>
-            <button id="btn-stock"         class="hidden" onclick="document.getElementById('stockInput').click();toggleMenu()">🔄 Convertir Stock → Maestro</button>
-            <button id="btn-drive-stock"   class="hidden" onclick="driveAbrirModal('stock')" style="color:#4FC3F7!important">☁️ Stock → Maestro desde Drive</button>
+            <button id="btn-carga-comp"    class="hidden" onclick="abrirSubCarga('comp');toggleMenu()">📂 CARGAR MAESTRO</button>
             <button id="btn-comp-alm"      class="hidden" onclick="abrirAlmDesdeComp();toggleMenu()">📋 Comparativo + Stock Almacén</button>
             <button id="btn-comp-guardar"  class="hidden" onclick="guardarLote();toggleMenu()">💾 Guardar Lote</button>
             <button id="btn-comp-reportes" class="hidden" onclick="toggleMenu();abrirModal('modalLotes')">📋 Reportes guardados</button>
             <button id="btn-comp-reiniciar" class="hidden" onclick="resetearModulo();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Reiniciar comparativo</button>
             <div id="menu-sec-alm" class="menu-section hidden">🏪 Almacén</div>
-            <button id="btn-alm-carga"     class="hidden" onclick="document.getElementById('almInput').click();toggleMenu()">📥 Cargar Inventario</button>
-            <button id="btn-drive-almacen" class="hidden" onclick="driveAbrirModal('almacen')" style="color:#4FC3F7!important">☁️ Inventario desde Drive</button>
-            <button id="btn-alm-mas"       class="hidden" onclick="document.getElementById('almInputMas').click();toggleMenu()">➕ Agregar más stock</button>
-            <button id="btn-alm-stock"     class="hidden" onclick="document.getElementById('almStockInput').click();toggleMenu()">🔄 Cargar Stock</button>
-            <button id="btn-drive-almstock" class="hidden" onclick="driveAbrirModal('almstock')" style="color:#4FC3F7!important">☁️ Stock desde Drive</button>
+            <button id="btn-carga-alm"     class="hidden" onclick="abrirSubCarga('alm');toggleMenu()">📂 CARGAR INVENTARIO</button>
             <button id="btn-alm-buscar"    class="hidden" onclick="abrirModalBusqueda();toggleMenu()">🔍 Buscar producto</button>
-            <button id="btn-alm-retiro"    class="hidden" onclick="abrirModalMovimiento();toggleMenu()">− Registrar Retiro</button>
+            <button id="btn-alm-retiro"    class="hidden" onclick="abrirMovTipo('retiro');toggleMenu()">− Registrar Retiro</button>
             <button id="btn-alm-deshacer"  class="hidden" onclick="almDeshacer();toggleMenu()">↩️ Deshacer movimiento</button>
             <button id="btn-alm-guardar"   class="hidden" onclick="almGuardarSnapshot();toggleMenu()">💾 Guardar informe</button>
             <button id="btn-alm-exportar"  class="hidden" onclick="almExportar();toggleMenu()">📊 Exportar a Excel</button>
             <button id="btn-alm-informes"  class="hidden" onclick="abrirModalAlmInformes();toggleMenu()">📋 Ver Informes</button>
             <button id="btn-alm-reiniciar" class="hidden" onclick="resetearModulo();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Reiniciar almacén</button>
             <div id="menu-sec-stock" class="menu-section hidden">📦 Consultar Stock</div>
-            <button id="btn-stock-cargar" class="hidden" onclick="document.getElementById('cs-file-input').click();toggleMenu()">📂 Cargar / Actualizar Base</button>
-            <button id="btn-drive-cs"    class="hidden" onclick="driveAbrirModal('cs')" style="color:#4FC3F7!important">☁️ Base Stock desde Drive</button>
-            <button id="btn-stock-buscar" class="hidden" onclick="csBuscar();toggleMenu()">🔍 Buscar Artículo</button>
-            <button id="btn-stock-borrar" class="hidden" onclick="csBorrarDB();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Borrar base guardada</button>
+            <button id="btn-carga-cs"      class="hidden" onclick="abrirSubCarga('cs');toggleMenu()">📂 CARGAR BASE</button>
+            <button id="btn-stock-buscar"  class="hidden" onclick="csBuscar();toggleMenu()">🔍 Buscar Artículo</button>
+            <button id="btn-stock-borrar"  class="hidden" onclick="csBorrarDB();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Borrar base guardada</button>
             <div class="menu-section">⚙️ App</div>
             <button onclick="abrirConfigPIN();toggleMenu()">🔐 Configurar PIN de seguridad</button>
             <button onclick="resetearApp();toggleMenu();" class="menu-btn-danger">⚠️ Borrar todo y reiniciar</button>
@@ -769,7 +761,7 @@
     
 
     <input type="file" id="fileInput"      class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
-    <input type="file" id="stockInput"     class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
+    <input type="file" id="guiaInput"      class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
     <input type="file" id="almInput"       class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
     <input type="file" id="almStockInput"  class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
     <input type="file" id="compStockInput" class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
@@ -1262,12 +1254,12 @@ function seleccionarModo(modo) {
 
         const compFileBtns = $('comp-file-btns');
         if (compFileBtns) compFileBtns.style.display = 'none';
-        ['btn-carga','btn-stock','btn-drive-maestro','btn-drive-stock','btn-comp-alm','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
+        ['btn-carga-comp','btn-comp-alm','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
         $s('menu-sec-alm').classList.add('hidden');
         $s('menu-sec-comp').classList.add('hidden');
-        ['btn-alm-carga','btn-alm-mas','btn-alm-stock','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar','btn-drive-almacen','btn-drive-almstock'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
+        ['btn-carga-alm','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
         const secStock=$('menu-sec-stock'); if(secStock) secStock.classList.add('hidden');
-        ['btn-stock-cargar','btn-stock-buscar','btn-stock-borrar','btn-drive-cs'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
+        ['btn-carga-cs','btn-stock-buscar','btn-stock-borrar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
         const bgl = $('btn-guardar-lote'); if(bgl) bgl.style.display = 'block';
 
         const scannerEl2 = $('scanner');
@@ -1280,7 +1272,7 @@ function seleccionarModo(modo) {
             document.body.className = 'modo-comp';
             $s('badge-txt').textContent = 'COMPARATIVO';
             $s('menu-sec-comp').classList.remove('hidden');
-            ['btn-carga','btn-stock','btn-drive-maestro','btn-drive-stock','btn-comp-alm','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
+            ['btn-carga-comp','btn-comp-alm','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
             $s('vista-comp').classList.remove('hidden');
             
             if (compFileBtns) compFileBtns.style.display = 'flex';
@@ -1293,7 +1285,7 @@ function seleccionarModo(modo) {
             document.body.className = 'modo-stock';
             $s('badge-txt').textContent = 'STOCK';
             const secSt=$('menu-sec-stock'); if(secSt) secSt.classList.remove('hidden');
-            ['btn-stock-cargar','btn-stock-buscar','btn-stock-borrar','btn-drive-cs'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
+            ['btn-carga-cs','btn-stock-buscar','btn-stock-borrar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
             const vs=$('vista-stock'); if(vs) vs.style.display='flex';
             const csw3=document.getElementById('comp-search-wrap'); if(csw3) csw3.style.display='none';
             csInit();
@@ -1303,7 +1295,7 @@ function seleccionarModo(modo) {
             document.body.className = 'modo-alm';
             $s('badge-txt').textContent = 'ALMACÉN';
             $s('menu-sec-alm').classList.remove('hidden');
-            ['btn-alm-carga','btn-alm-mas','btn-alm-stock','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar','btn-drive-almacen','btn-drive-almstock'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
+            ['btn-carga-alm','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
             if(bgl) bgl.style.display = 'none';
             const csw2=document.getElementById('comp-search-wrap'); if(csw2) csw2.style.display='none';
             $s('vista-alm').classList.remove('hidden');
@@ -1435,48 +1427,195 @@ document.getElementById('fileInput').addEventListener('change', function(e) {
     e.target.value = '';
 });
 
-document.getElementById('stockInput').addEventListener('change', function(e) {
-    const f = e.target.files[0]; if (!f) return;
-    const ext = f.name.split('.').pop().toLowerCase();
-    const reader = new FileReader();
-    showLoading('Leyendo stock...');
-    reader.onload = function(evt) {
-        setTimeout(() => {
-            try {
-                let rows;
-                if (ext === 'xlsx' || ext === 'xls') { const wb = XLSX.read(new Uint8Array(evt.target.result),{type:'array',dense:true}); rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:'',header:1}); convertirStockDesdeFilas(rows); }
-                else { convertirStockDesdeFilas(parsearCSV(evt.target.result)); }
-            } catch(err) { hideLoading(); showToast('❌ '+err.message,'#c62828'); }
-        }, 30);
-    };
-    if (ext === 'xlsx' || ext === 'xls') reader.readAsArrayBuffer(f); else reader.readAsText(f);
-    e.target.value = '';
-});
+// ── SUB-MODAL DE CARGA ──
+function cerrarSubCarga() { document.getElementById('modal-subcarga').style.display = 'none'; }
 
-document.getElementById('compStockInput').addEventListener('change', function(e) {
+function abrirSubCarga(modulo) {
+    const configs = {
+        comp: {
+            titulo: '☁️ CARGAR MAESTRO DESDE DRIVE',
+            desc: '¿Qué tipo de archivo quieres cargar?',
+            opciones: [
+                { ico:'📊', titulo:'Excel/CSV estándar',
+                  desc:'Archivo con columnas: CODIGO, DESCRIPCION, TOTAL',
+                  color:'#1565C0', accion:`driveAbrirModal('maestro');cerrarSubCarga()` },
+                { ico:'📄', titulo:'GUIA de movimientos / Stock WAMA',
+                  desc:'Archivo GUIA.xlsx de traslado o CSV de Detalle de Stock WAMA — se convierte automáticamente',
+                  color:'#2E7D32', accion:`driveAbrirModal('guia-comp');cerrarSubCarga()` },
+            ]
+        },
+        alm: {
+            titulo: '☁️ CARGAR INVENTARIO DESDE DRIVE',
+            desc: '¿Qué tipo de archivo quieres cargar?',
+            opciones: [
+                { ico:'📊', titulo:'Inventario estándar',
+                  desc:'Archivo Excel/CSV con CODIGO, DESCRIPCION, STOCK',
+                  color:'#1565C0', accion:`driveAbrirModal('almacen');cerrarSubCarga()` },
+                { ico:'📄', titulo:'GUIA de movimientos / Stock WAMA',
+                  desc:'Archivo GUIA.xlsx de traslado o CSV de Detalle de Stock WAMA — se convierte automáticamente',
+                  color:'#2E7D32', accion:`driveAbrirModal('guia-alm');cerrarSubCarga()` },
+            ]
+        },
+        cs: {
+            titulo: '☁️ CARGAR BASE DESDE DRIVE',
+            desc: '¿Qué tipo de archivo quieres cargar?',
+            opciones: [
+                { ico:'📊', titulo:'Base estándar Excel/CSV',
+                  desc:'Archivo de inventario con código, descripción y stock',
+                  color:'#1565C0', accion:`driveAbrirModal('cs');cerrarSubCarga()` },
+                { ico:'📄', titulo:'GUIA de movimientos / Stock WAMA',
+                  desc:'Archivo GUIA.xlsx o CSV de Detalle de Stock WAMA — se convierte automáticamente',
+                  color:'#2E7D32', accion:`driveAbrirModal('guia-cs');cerrarSubCarga()` },
+            ]
+        }
+    };
+
+    const cfg = configs[modulo];
+    document.getElementById('subcarga-titulo').textContent = cfg.titulo;
+    document.getElementById('subcarga-desc').textContent = cfg.desc;
+
+    const cont = document.getElementById('subcarga-opciones');
+    cont.innerHTML = cfg.opciones.map(op => `
+        <button onclick="${op.accion}" style="display:flex;align-items:center;gap:14px;padding:16px;border:none;border-radius:12px;background:#F8F8F8;cursor:pointer;text-align:left;width:100%;border-left:4px solid ${op.color};margin-bottom:0;">
+            <span style="font-size:28px;min-width:36px;text-align:center;">${op.ico}</span>
+            <div style="flex:1;">
+                <div style="font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:800;color:#111;letter-spacing:0.5px;">${op.titulo}</div>
+                <div style="font-size:11px;color:#888;margin-top:3px;line-height:1.4;">${op.desc}</div>
+            </div>
+            <span style="color:#CCC;font-size:20px;">›</span>
+        </button>`).join('');
+
+    document.getElementById('modal-subcarga').style.display = 'flex';
+}
+
+// ── GUIA/STOCK → CARGA AUTOMÁTICA ──
+let _guiaModulo = 'comp';
+function abrirGuia(modulo) {
+    _guiaModulo = modulo;
+    const inp = document.getElementById('guiaInput');
+    inp.value = '';
+    inp.click();
+}
+
+function _convertirGuiaXLSX(wb) {
+    // Parser para archivos GUIA de movimientos (WAMA)
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const data = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+    const TALLA_COLS = {21:'02',25:'04',29:'06',32:'08',35:'10',38:'12',41:'14',44:'16',48:'18'};
+    const res = [];
+    let curCode = null, curDesc = null;
+    for (const row of data) {
+        const c0 = String(row[0]||'').trim();
+        const c5 = String(row[5]||'').trim();
+        const c8 = String(row[8]||'').trim();
+        const c11= String(row[11]||'').trim();
+        if (c0 && !['CÓDIGO','TOTAL:','TOTAL ITEMS'].includes(c0) && c5) { curCode=c0; curDesc=c5; continue; }
+        if (!c8 || !curCode || ['CÓDIGO','TOTAL:','TOTAL ITEMS'].includes(c0)) continue;
+        for (const [ci, talla] of Object.entries(TALLA_COLS)) {
+            const qty = parseInt(row[parseInt(ci)]) || 0;
+            if (qty > 0) res.push({codigo:'P'+curCode+c8+talla, descripcion:curDesc+' '+c11+' T/'+talla, cantidad:qty});
+        }
+    }
+    return res;
+}
+
+function _convertirStockCSV(filas) {
+    // Parser para archivos CSV de Detalle de Stock (WAMA)
+    // Usa indexOf('LINEA') para encontrar las columnas correctas dinámicamente
+    const res = [];
+    for (const fila of filas) {
+        if (!fila || fila.length < 30) continue;
+        const li = fila.indexOf('LINEA');
+        if (li < 0 || fila.length < li + 30) continue;
+        const modelo   = String(fila[li+1]||'').trim();
+        const lineaDesc= String(fila[li+2]||'').trim();
+        const tallas   = fila.slice(li+3, li+15).map(v => String(v||'').trim());
+        const colorCod = String(fila[li+16]||'').trim();
+        const colorNom = String(fila[li+17]||'').trim();
+        const cants    = fila.slice(li+18, li+30).map(v => parseInt(v)||0);
+        if (!modelo || modelo==='MODELO' || !colorCod || !colorNom) continue;
+        if (/^(Total|TOTAL|DETALLE|STOCK|Fech|Usuario|Página)/.test(modelo)) continue;
+        for (let t = 0; t < tallas.length; t++) {
+            if (!tallas[t] || tallas[t]==='--' || cants[t] <= 0) continue;
+            const tallaStr = tallas[t].length === 1
+                ? tallas[t] + ' '
+                : tallas[t].substring(0, 2);
+            const barcode = 'P' + modelo + colorCod + tallaStr;
+            const desc = lineaDesc + ' ' + colorNom + ' T/' + tallas[t];
+            res.push({ codigo: barcode, descripcion: desc, cantidad: cants[t] });
+        }
+    }
+    return res;
+}
+
+function _cargarResultadosEnModulo(res, modulo) {
+    if (!res.length) { hideLoading(); showToast('⚠️ Sin productos válidos en el archivo','#E65100'); return; }
+    if (modulo === 'comp') {
+        maestroMap.clear(); totalEsp = 0;
+        res.forEach(r => { const c=r.codigo.toUpperCase(); maestroMap.set(c,{exp:r.cantidad,real:0}); if(r.descripcion) descripcionMap.set(c,r.descripcion); totalEsp+=r.cantidad; });
+        if (historial.length > 0) syncConteo();
+        localStorage.setItem('p_total_v8', totalEsp);
+        saveComp(); hideLoading(); beep(880,0.1);
+        showToast(`✅ Maestro: ${res.length.toLocaleString()} productos cargados`,'#111');
+        renderComp(); focusScanner();
+    } else if (modulo === 'alm') {
+        const nuevos = res.map(r => ({ cod: r.codigo.toUpperCase(), desc: r.descripcion, stock: r.cantidad }));
+        if (!nuevos.length) { hideLoading(); showToast('⚠️ Sin productos válidos en el archivo','#E65100'); return; }
+        hideLoading();
+        if (almMap.size > 0) {
+            mostrarConfirmDoble('¿Cómo cargar?',
+                'Ya tienes ' + almMap.size.toLocaleString() + ' productos.\n\n• REEMPLAZAR: borra el actual.\n• AGREGAR: suma al existente.',
+                '🗑️ REEMPLAZAR', () => aplicarCargaAlm(nuevos, 'replace'),
+                '➕ AGREGAR',    () => aplicarCargaAlm(nuevos, 'merge')
+            );
+        } else {
+            aplicarCargaAlm(nuevos, 'replace');
+        }
+    } else if (modulo === 'cs') {
+        // Para Consultar Stock se construye csStockDB desde los resultados
+        csStockDB = {};
+        res.forEach(r => {
+            const cod = r.codigo.toUpperCase();
+            // Extraer modelo (sin P al inicio, 7 chars), color (3), talla (2)
+            const modelo = cod.length===13 ? cod.substring(1,8) : cod;
+            const color = cod.length===13 ? cod.substring(8,11) : '';
+            const talla = cod.length===13 ? cod.substring(11) : '';
+            if (!csStockDB[modelo]) csStockDB[modelo] = {desc: r.descripcion.split(' ').slice(0,-2).join(' '), sizes: [], colors: []};
+            let colorEntry = csStockDB[modelo].colors.find(c=>c.code===color);
+            if (!colorEntry) { colorEntry={code:color, name:color, stocks:{}, total:0}; csStockDB[modelo].colors.push(colorEntry); }
+            colorEntry.stocks[talla] = r.cantidad;
+            colorEntry.total = (colorEntry.total||0) + r.cantidad;
+            if (!csStockDB[modelo].sizes.includes(talla)) csStockDB[modelo].sizes.push(talla);
+        });
+        const cnt = Object.keys(csStockDB).length;
+        csSaveDB('GUIA_WAMA', cnt);
+        csSetBadge(cnt); hideLoading(); beep(880,0.1);
+        csSetStatus('✅ Base cargada: '+cnt+' artículos.');
+        showToast(`✅ Consultar Stock: ${cnt} artículos`,'#111');
+    }
+}
+
+document.getElementById('guiaInput').addEventListener('change', function(e) {
     const f = e.target.files[0]; if (!f) return;
     const ext = f.name.split('.').pop().toLowerCase();
+    const isXlsx = ext==='xlsx'||ext==='xls';
+    showLoading('Convirtiendo archivo...');
     const reader = new FileReader();
-    showLoading('Convirtiendo stock...');
     reader.onload = function(evt) {
         setTimeout(() => {
             try {
-                let filas;
-                if (ext === 'xlsx' || ext === 'xls') { const wb = XLSX.read(new Uint8Array(evt.target.result),{type:'array',dense:true}); filas = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:'',header:1}); }
-                else { filas = parsearCSV(evt.target.result); }
-                const res = convertirStockAResultados(filas);
-                if (!res.length) { hideLoading(); showToast('⚠️ Sin productos válidos','#E65100'); return; }
-                maestroMap.clear(); totalEsp = 0;
-                res.forEach(r => { const c=r.codigoUnico.toUpperCase(); maestroMap.set(c,{exp:r.cantidad,real:0}); if(r.descripcion) descripcionMap.set(c,r.descripcion); totalEsp+=r.cantidad; });
-                if (historial.length > 0) syncConteo();
-                localStorage.setItem('p_total_v8', totalEsp);
-                saveComp(); hideLoading(); toggleMenu(); beep(880,0.1);
-                showToast(`✅ ${res.length.toLocaleString()} productos cargados`,'#111');
-                renderComp(); focusScanner();
+                let res;
+                if (isXlsx) {
+                    const wb = XLSX.read(new Uint8Array(evt.target.result),{type:'array'});
+                    res = _convertirGuiaXLSX(wb);
+                } else {
+                    res = _convertirStockCSV(parsearCSV(evt.target.result));
+                }
+                _cargarResultadosEnModulo(res, _guiaModulo);
             } catch(err) { hideLoading(); showToast('❌ '+err.message,'#c62828'); }
         }, 30);
     };
-    if (ext === 'xlsx' || ext === 'xls') reader.readAsArrayBuffer(f); else reader.readAsText(f);
+    if (isXlsx) reader.readAsArrayBuffer(f); else reader.readAsText(f,'latin1');
     e.target.value = '';
 });
 
@@ -3514,14 +3653,19 @@ function gasRequest(params, callback) {
 function driveAbrirModal(tipo) {
     driveCurrentTipo = tipo;
     var labels = {
-        maestro:  '📋 Comparativo — Cargar Maestro',
-        stock:    '🔄 Comparativo — Stock → Maestro',
-        almacen:  '🏪 Almacén — Cargar Inventario',
-        almstock: '🏪 Almacén — Cargar Stock',
-        cs:       '📦 Consultar Stock — Cargar Base'
+        maestro:    '📋 Comparativo — Cargar Maestro',
+        stock:      '🔄 Comparativo — Stock → Maestro',
+        almacen:    '🏪 Almacén — Cargar Inventario',
+        almstock:   '🏪 Almacén — Cargar Stock',
+        cs:         '📦 Consultar Stock — Cargar Base',
+        'guia-comp':'📄 GUIA/Stock WAMA → Maestro',
+        'guia-alm': '📄 GUIA/Stock WAMA → Almacén',
+        'guia-cs':  '📄 GUIA/Stock WAMA → Consultar'
     };
     document.getElementById('drive-modal-tipo').textContent = labels[tipo] || tipo;
-    toggleMenu();
+    // Cerrar menú solo si está abierto
+    const menuEl = document.getElementById('menuContent');
+    if (menuEl && menuEl.style.display === 'block') menuEl.style.display = 'none';
     var savedPass = localStorage.getItem('pieers_drive_pass');
     if (savedPass) {
         drivePass = savedPass;
@@ -3671,6 +3815,18 @@ function driveProcesar(ab, tipo) {
                 csSetBadge(cnt); csSetStatus('Base cargada desde Drive — ' + cnt + ' artículos.');
                 csSaveDB('Drive', cnt); hideLoading();
                 showToast('✅ ' + cnt.toLocaleString() + ' artículos cargados','#111');
+            } else if (tipo === 'guia-comp' || tipo === 'guia-alm' || tipo === 'guia-cs') {
+                var modulo = tipo.replace('guia-','');
+                var res = [];
+                // Intentar primero como GUIA.xlsx (formato de movimientos)
+                try { res = _convertirGuiaXLSX(wb); } catch(e2) { res = []; }
+                // Si no produjo resultados, intentar como CSV de Detalle de Stock
+                if (!res.length) {
+                    var csvTxt = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+                    var filasCsv = parsearCSV(csvTxt);
+                    res = _convertirStockCSV(filasCsv);
+                }
+                _cargarResultadosEnModulo(res, modulo);
             }
         } catch(err) {
             hideLoading();
@@ -3681,6 +3837,17 @@ function driveProcesar(ab, tipo) {
 </script>
 
 <!-- ══════ MODAL GOOGLE DRIVE (Apps Script) ══════ -->
+<div id="modal-subcarga" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9850;align-items:flex-end;justify-content:center;padding:0;">
+  <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 16px 32px;box-shadow:0 -8px 32px rgba(0,0,0,0.2);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+      <div style="font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:900;color:#111;letter-spacing:1px;" id="subcarga-titulo">📂 CARGAR</div>
+      <button onclick="cerrarSubCarga()" style="background:#F0F0F0;border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#555;">✕</button>
+    </div>
+    <div id="subcarga-desc" style="font-size:11px;color:#aaa;margin-bottom:16px;letter-spacing:0.5px;"></div>
+    <div id="subcarga-opciones" style="display:flex;flex-direction:column;gap:10px;"></div>
+  </div>
+</div>
+
 <div id="modal-drive" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9800;align-items:center;justify-content:center;padding:14px;">
   <div style="background:#1a1a1a;border-radius:18px;width:100%;max-width:420px;border:1px solid #2a2a2a;box-shadow:0 16px 48px rgba(0,0,0,0.7);overflow:hidden;">
 
