@@ -3843,26 +3843,39 @@ function csRenderTable(data, outer) {
     const colors = data.colors;
     const nS = sizes.length;
     const tp = s => { const n = parseInt(s); return (!isNaN(n) && n > 20) ? 'TG' : 'TP'; };
+
+    // Stocks puede ser array [] o objeto {talla: qty} según cómo fue cargado
+    const getStk = (c, idx) => {
+        if (Array.isArray(c.stocks)) return c.stocks[idx] || 0;
+        return c.stocks[sizes[idx]] || 0;
+    };
+
     const colSums = new Array(nS).fill(0);
     let grand = 0;
-    colors.forEach(c => { c.stocks.forEach((s,i) => colSums[i] += s); grand += c.total; });
+    colors.forEach(c => {
+        for (let i = 0; i < nS; i++) colSums[i] += getStk(c, i);
+        grand += c.total;
+    });
 
     let h = '<table><thead>';
     h += '<tr><th class="cs-th-color">COLOR</th>';
     sizes.forEach(s => h += `<th class="cs-th-size">${s}</th>`);
     h += '<th class="cs-th-total">TOTAL</th></tr>';
-    h += '<tr><th class="cs-th-tp-label">TALLEROS ⇒</th>';
+    h += '<tr><th class="cs-th-tp-label">TALLEROS &#x21D2;</th>';
     sizes.forEach(s => h += `<th class="cs-th-tp">${tp(s)}</th>`);
     h += '<th class="cs-th-tp-tot"></th></tr>';
     h += '</thead><tbody>';
 
     colors.forEach(c => {
         h += '<tr><td class="cs-td-color">' + c.name + '</td>';
-        c.stocks.forEach(s => h += s > 0 ? `<td class="cs-td-pos">${s}</td>` : `<td class="cs-td-zero">·</td>`);
+        for (let i = 0; i < nS; i++) {
+            const s = getStk(c, i);
+            h += s > 0 ? `<td class="cs-td-pos">${s}</td>` : `<td class="cs-td-zero">·</td>`;
+        }
         h += `<td class="cs-td-total">${c.total}</td></tr>`;
     });
 
-    h += '<tr class="cs-tr-grand"><td class="cs-td-color">' + colors.length + ' color(es) ⇒</td>';
+    h += '<tr class="cs-tr-grand"><td class="cs-td-color">' + colors.length + ' color(es) &#x21D2;</td>';
     colSums.forEach(v => h += `<td class="cs-td-sum">${v > 0 ? v : '·'}</td>`);
     h += `<td class="cs-td-total">${grand}</td></tr>`;
     h += '</tbody></table>';
