@@ -1703,9 +1703,14 @@ document.getElementById('guiaInput').addEventListener('change', function(e) {
                 let res;
                 if (isXlsx) {
                     const wb = XLSX.read(new Uint8Array(evt.target.result),{type:'array'});
-                    res = _convertirGuiaXLSX(wb);
+                    // Detectar si es stock CSV disfrazado de xlsx o GUIA real
+                    const csvTxt = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+                    const esStock = csvTxt.indexOf(',LINEA,') >= 0 || csvTxt.indexOf('"LINEA"') >= 0;
+                    res = esStock ? _convertirStockCSV(parsearCSV(csvTxt)) : _convertirGuiaXLSX(wb);
+                    if (!res.length) res = esStock ? _convertirGuiaXLSX(wb) : _convertirStockCSV(parsearCSV(csvTxt));
                 } else {
-                    res = _convertirStockCSV(parsearCSV(evt.target.result));
+                    var lineasLocal = evt.target.result.split(/\r?\n/).map(function(l){ return csParseCSVLine(l); });
+                    res = _convertirStockCSV(lineasLocal);
                 }
                 _cargarResultadosEnModulo(res, _guiaModulo);
             } catch(err) { hideLoading(); showToast('❌ '+err.message,'#c62828'); }
@@ -3489,7 +3494,28 @@ window.addEventListener('beforeunload', ()=>{ clearTimeout(saveTimer); clearTime
 // ══════════════════════════════════════════════════════════
 let csStockDB = {};
 let csPreciosDB = {};
-const CS_STORAGE_KEY = 'pieers_cs_db';
+const CS_STORAGE_KEY  = 'pieers_cs_db';
+const CS_PRECIOS_KEY  = 'pieers_cs_precios';
+
+function csSavePreciosLocal() {
+    try {
+        localStorage.setItem(CS_PRECIOS_KEY, JSON.stringify({
+            db:   csPreciosDB,
+            date: new Date().toLocaleString('es-PE')
+        }));
+    } catch(e) { /* quota: sigue en memoria */ }
+}
+
+function csLoadPreciosLocal() {
+    try {
+        const raw = localStorage.getItem(CS_PRECIOS_KEY);
+        if (!raw) return false;
+        const payload = JSON.parse(raw);
+        if (!payload.db || !Object.keys(payload.db).length) return false;
+        csPreciosDB = payload.db;
+        return true;
+    } catch(e) { return false; }
+}
 
 // ── PARSER EXCEL DE PRECIOS (Memorandum WAMA) ──
 function csParsePreciosXLSX(wb) {
@@ -3601,6 +3627,7 @@ function csLoadPrecios(event) {
             try {
                 const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
                 const cnt=csParsePreciosXLSX(wb);
+                csSavePreciosLocal();
                 hideLoading();
                 showToast('💰 Precios cargados: '+cnt+' artículos','#E65100');
                 csSetStatus('💰 Precios listos: '+cnt+' artículos con precio.');
@@ -3680,6 +3707,23 @@ function csLoadSaved() {
         if (!raw) return false;
         const payload = JSON.parse(raw);
         if (!payload.db || !Object.keys(payload.db).length) return false;
+
+        // Detectar datos viejos con nombres abreviados (3 chars = código, no nombre)
+        const db = payload.db;
+        const firstKey = Object.keys(db)[0];
+        const firstColors = db[firstKey]?.colors || [];
+        const tieneAbrev = firstColors.length > 0 &&
+            firstColors.every(c => String(c.name || '').length <= 3);
+
+        if (tieneAbrev) {
+            // Datos viejos — borrar y pedir recarga
+            localStorage.removeItem(CS_STORAGE_KEY);
+            csSetBadge(0);
+            csSetStatus('⚠️ Base desactualizada eliminada. Por favor recarga desde Drive (☰ → 📂 CARGAR BASE).');
+            showToast('⚠️ Base antigua eliminada — recarga desde Drive', '#E65100', 5000);
+            return false;
+        }
+
         csStockDB = payload.db;
         csSetBadge(payload.cnt || Object.keys(csStockDB).length);
         csSetStatus('✅ Base guardada restaurada: ' + payload.name +
@@ -3719,6 +3763,12 @@ function csInit() {
     if (!csLoadSaved()) {
         csSetBadge(0);
         csSetStatus('Cargue una base de datos para comenzar.');
+    }
+    // Restaurar precios guardados
+    if (csLoadPreciosLocal()) {
+        const nP = Object.keys(csPreciosDB).length;
+        csSetStatus((document.getElementById('cs-status-bar')?.textContent || '') +
+                    (nP ? ' · 💰 Precios: ' + nP + ' art.' : ''));
     }
 }
 
@@ -3804,7 +3854,14 @@ function csOnBarcodeInput(val) {
         if (found) {
             const artEl = document.getElementById('cs-inp-articulo');
             if (artEl) artEl.value = found;
-            if (val.length >= 13) setTimeout(csBuscar, 80);
+            if (val.length >= 13) {
+                setTimeout(() => {
+                    csBuscar();
+                    // Limpiar el campo para siguiente lectura
+                    const inp = document.getElementById('cs-inp-codbar');
+                    if (inp) { inp.value = ''; inp.focus(); }
+                }, 80);
+            }
         }
     }
 }
@@ -4084,21 +4141,32 @@ function driveProcesar(ab, tipo) {
                 showToast('✅ ' + cnt.toLocaleString() + ' artículos cargados','#111');
             } else if (tipo === 'precios') {
                 var cantP = csParsePreciosXLSX(wb);
+                csSavePreciosLocal();
                 hideLoading();
                 showToast('✅ Precios cargados: ' + cantP + ' artículos','#E65100');
                 csSetStatus('💰 Precios cargados desde Drive: ' + cantP + ' artículos.');
             } else if (tipo === 'guia-comp' || tipo === 'guia-alm' || tipo === 'guia-cs') {
                 var modulo = tipo.replace('guia-','');
                 var res = [];
-                // Intentar primero como GUIA.xlsx (formato de movimientos)
-                try { res = _convertirGuiaXLSX(wb); } catch(e2) { res = []; }
-                // Si no produjo resultados, intentar como CSV de Detalle de Stock
-                if (!res.length) {
-                    var csvTxt = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
-                    var filasCsv = parsearCSV(csvTxt);
-                    res = _convertirStockCSV(filasCsv);
+                // Detectar formato: si tiene columna 'LINEA' es CSV de Stock WAMA
+                var csvTxt = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+                var esStockCSV = csvTxt.indexOf(',LINEA,') >= 0 || csvTxt.indexOf('"LINEA"') >= 0;
+                if (esStockCSV && modulo === 'cs') {
+                    // Para Consultar Stock: usar csParseStockCSV directamente (más fiable)
+                    csStockDB = csParseStockCSV(csvTxt);
+                    var cnt2 = Object.keys(csStockDB).length;
+                    csSetBadge(cnt2); csSaveDB('Drive', cnt2); hideLoading();
+                    showToast('\u2705 ' + cnt2.toLocaleString() + ' artículos cargados','#111');
+                } else if (esStockCSV) {
+                    // Para Comparativo/Almacén: convertir usando CSV bien parseado
+                    var lineasProp = csvTxt.split(/\r?\n/).map(function(l){ return csParseCSVLine(l); });
+                    res = _convertirStockCSV(lineasProp);
+                    _cargarResultadosEnModulo(res, modulo);
+                } else {
+                    try { res = _convertirGuiaXLSX(wb); } catch(e2) { res = []; }
+                    if (!res.length) { var lineasP2 = csvTxt.split(/\r?\n/).map(function(l){ return csParseCSVLine(l); }); res = _convertirStockCSV(lineasP2); }
+                    _cargarResultadosEnModulo(res, modulo);
                 }
-                _cargarResultadosEnModulo(res, modulo);
             }
         } catch(err) {
             hideLoading();
