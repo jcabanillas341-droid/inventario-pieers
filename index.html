@@ -1621,7 +1621,9 @@ function _convertirStockCSV(filas) {
     const res = [];
     for (const fila of filas) {
         if (!fila || fila.length < 30) continue;
-        const li = fila.indexOf('LINEA');
+        // ESTADO puede ser 'LINEA' (regular) o 'OFERTA' (bajar oferta) - ambos tienen la misma estructura
+        let li = fila.indexOf('LINEA');
+        if (li < 0) li = fila.indexOf('OFERTA');
         if (li < 0 || fila.length < li + 30) continue;
         const modelo   = String(fila[li+1]||'').trim();
         const lineaDesc= String(fila[li+2]||'').trim();
@@ -3790,7 +3792,9 @@ function csParseStockCSV(text) {
     const lines = text.split(/\r?\n/).filter(l => l.trim().length > 10);
     for (const line of lines) {
         const cols = csParseCSVLine(line);
-        const li = cols.indexOf('LINEA');
+        // ESTADO puede ser 'LINEA' (regular) o 'OFERTA' (bajar oferta)
+        let li = cols.indexOf('LINEA');
+        if (li < 0) li = cols.indexOf('OFERTA');
         if (li < 0 || cols.length < li + 32) continue;
         const article   = cols[li + 1];
         const desc      = cols[li + 2];
@@ -3871,19 +3875,37 @@ function csBuscar() {
     const bc = (document.getElementById('cs-inp-codbar')?.value || '').trim();
     if (!art && bc) art = csFindInBarcode(bc) || bc.toUpperCase();
     if (!art) { csSetStatus('⚠ Ingrese un artículo o escanee.'); return; }
-    if (!Object.keys(csStockDB).length) { csSetStatus('⚠ Cargue primero la base de datos.'); return; }
-    const artEl = document.getElementById('cs-inp-articulo');
-    if (artEl) artEl.value = art;
-    const keys = Object.keys(csStockDB).filter(k => k === art || k.startsWith(art) || k.includes(art));
+
+    const artEl  = document.getElementById('cs-inp-articulo');
     const descEl = document.getElementById('cs-inp-descripcion');
     const outer  = document.getElementById('cs-table-outer');
+    if (artEl) artEl.value = art;
+
+    const keys = Object.keys(csStockDB).filter(k => k === art || k.startsWith(art) || k.includes(art));
+
     if (!keys.length) {
-        if (descEl) descEl.value = 'NO ENCONTRADO';
-        csSetStatus('⚠ "' + art + '" no encontrado.');
-        if (outer) outer.innerHTML = '<div class="cs-no-data">❌ Artículo no encontrado.</div>';
-        const pp=document.getElementById('cs-price-panel'); if(pp) pp.style.display='none';
+        // No está en stock — buscar en precios (puede ser artículo de OFERTA)
+        const codBusq = art.length === 13 ? art.substring(1, 8) : art;
+        const precioData = csPreciosDB[codBusq] || csPreciosDB[art];
+        if (precioData) {
+            if (descEl) descEl.value = '⚠ Sin stock en base cargada';
+            csSetStatus('💰 "' + art + '" no está en el stock cargado — puede ser artículo de OFERTA.');
+            if (outer) outer.innerHTML =
+                '<div class="cs-no-data" style="font-size:13px;color:#E65100;padding:20px 16px;">' +
+                '📦 Sin stock en la base cargada.<br>' +
+                '<span style="font-size:11px;color:#888;margin-top:6px;display:block;">' +
+                'Puede ser un artículo de BAJAR OFERTA.<br>' +
+                'Recarga el stock desde Drive para incluirlo.</span></div>';
+            csRenderPrecios(codBusq);
+        } else {
+            if (descEl) descEl.value = 'NO ENCONTRADO';
+            csSetStatus('⚠ "' + art + '" no encontrado.');
+            if (outer) outer.innerHTML = '<div class="cs-no-data">❌ Artículo no encontrado.</div>';
+            const pp = document.getElementById('cs-price-panel'); if(pp) pp.style.display = 'none';
+        }
         return;
     }
+
     const key  = keys[0];
     const data = csStockDB[key];
     if (descEl) descEl.value = data.desc;
@@ -3892,6 +3914,7 @@ function csBuscar() {
     csRenderTable(data, outer);
     csRenderPrecios(key);
 }
+
 
 /* ── Render tabla ── */
 function csRenderTable(data, outer) {
