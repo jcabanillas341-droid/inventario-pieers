@@ -3559,7 +3559,7 @@ function csParsePreciosXLSX(wb) {
     csPreciosDB = {};
     const LOCAL = 'CAJAMARCA';
 
-    const esCodigo = v => { const s=String(v||'').trim(); return s.length===7&&/^[A-Z0-9]+$/i.test(s); };
+    const esCodigo = v => { const s=String(v||'').trim(); return s.length===7&&/^[A-Z0-9]+$/i.test(s)&&/\d/.test(s); }; // código WAMA siempre tiene al menos un dígito
 
     function ensureCod(v) {
         const c = String(v||'').trim().toUpperCase();
