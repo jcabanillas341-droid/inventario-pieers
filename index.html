@@ -638,18 +638,18 @@
             box-shadow: 0 3px 10px rgba(0,0,0,0.18); min-width: 0;
         }
         .cs-price-label {
-            font-size: 9px; font-weight: 800; color: rgba(0,0,0,0.6);
+            font-size: 9px; font-weight: 800; color: #111;
             text-align: center; letter-spacing: 0.5px; line-height: 1.2; margin-bottom: 3px;
             font-family: 'Barlow Condensed', sans-serif; text-transform: uppercase;
         }
         .cs-price-val {
             font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 900;
-            color: rgba(0,0,0,0.88); letter-spacing: -0.5px; line-height: 1;
+            color: #000; letter-spacing: -0.5px; line-height: 1;
         }
         .cs-price-pct {
             font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 800;
-            color: rgba(0,0,0,0.6); margin-top: 4px; letter-spacing: 0.2px;
-            background: rgba(0,0,0,0.12); border-radius: 8px; padding: 2px 7px;
+            color: #111; margin-top: 4px; letter-spacing: 0.2px;
+            background: rgba(0,0,0,0.15); border-radius: 8px; padding: 2px 7px;
             white-space: nowrap;
         }
         .cs-promo-row {
@@ -1088,27 +1088,27 @@
                     <div class="cs-price-pct" id="cs-pct-etiqueta">Precio base</div>
                 </div>
                 <div class="cs-price-box" style="background:#FF6D00;flex:1;">
-                    <div class="cs-price-label" style="color:rgba(255,255,255,0.85);">UNITARIO</div>
-                    <div class="cs-price-val" id="cs-p-menor" style="color:white;">0.00</div>
-                    <div class="cs-price-pct" id="cs-pct-menor" style="background:rgba(0,0,0,0.2);color:white;">—</div>
+                    <div class="cs-price-label">UNITARIO</div>
+                    <div class="cs-price-val" id="cs-p-menor">0.00</div>
+                    <div class="cs-price-pct" id="cs-pct-menor">—</div>
                 </div>
                 <div class="cs-price-box" style="background:#00B8D4;flex:1;">
-                    <div class="cs-price-label" style="color:rgba(0,0,0,0.7);">COMBO</div>
+                    <div class="cs-price-label">COMBO</div>
                     <div class="cs-price-val" id="cs-p-mayor">0.00</div>
                     <div class="cs-price-pct" id="cs-pct-mayor">—</div>
                 </div>
             </div>
-            <!-- Fila 2: Oferta + Mayor (más grandes) -->
-            <div style="display:flex;gap:6px;margin-bottom:8px;">
-                <div class="cs-price-box" style="background:#00C853;flex:1;">
-                    <div class="cs-price-label" style="color:rgba(0,0,0,0.65);">OFERTA</div>
-                    <div class="cs-price-val" id="cs-p-oferta" style="font-size:22px;">0.00</div>
+            <!-- Fila 2: Oferta (grande) + Mayor (pequeño, secundario) -->
+            <div style="display:flex;gap:6px;align-items:stretch;margin-bottom:8px;">
+                <div class="cs-price-box" style="background:#00C853;flex:2;">
+                    <div class="cs-price-label">OFERTA</div>
+                    <div class="cs-price-val" id="cs-p-oferta" style="font-size:26px;">0.00</div>
                     <div class="cs-price-pct" id="cs-pct-oferta">—</div>
                 </div>
-                <div class="cs-price-box" style="background:#1A237E;flex:1;">
-                    <div class="cs-price-label" style="color:rgba(255,255,255,0.75);">x MAYOR</div>
-                    <div class="cs-price-val" id="cs-p-mayor-val" style="color:white;font-size:22px;">0.00</div>
-                    <div class="cs-price-pct" id="cs-pct-mayor-val" style="color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.12);">—</div>
+                <div style="flex:1;background:#E8EAF6;border-radius:10px;padding:7px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #C5CAE9;">
+                    <div style="font-size:8px;font-weight:800;color:#555;font-family:'Barlow Condensed',sans-serif;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px;">x MAYOR</div>
+                    <div id="cs-p-mayor-val" style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:900;color:#1A237E;line-height:1;">0.00</div>
+                    <div id="cs-pct-mayor-val" style="font-size:8px;color:#666;margin-top:3px;font-family:'Inter',sans-serif;font-weight:700;">—</div>
                 </div>
             </div>
             <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
