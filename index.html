@@ -633,23 +633,23 @@
 
         /* ── PRECIOS CS ── */
         .cs-price-box {
-            flex: 1; border-radius: 8px; padding: 5px 4px 4px;
+            flex: 1; border-radius: 8px; padding: 5px 2px 4px;
             display: flex; flex-direction: column; align-items: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15); min-width: 0;
         }
         .cs-price-label {
-            font-size: 8px; font-weight: 800; color: rgba(0,0,0,0.65);
-            text-align: center; letter-spacing: 0.3px; line-height: 1.2; margin-bottom: 2px;
+            font-size: 7px; font-weight: 800; color: rgba(0,0,0,0.65);
+            text-align: center; letter-spacing: 0.2px; line-height: 1.2; margin-bottom: 2px;
             font-family: 'Inter', sans-serif; text-transform: uppercase;
         }
         .cs-price-val {
-            font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 900;
+            font-family: 'Barlow Condensed', sans-serif; font-size: 17px; font-weight: 900;
             color: rgba(0,0,0,0.85); letter-spacing: -0.5px; line-height: 1;
         }
         .cs-price-pct {
-            font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 800;
-            color: rgba(0,0,0,0.55); margin-top: 2px; letter-spacing: 0.3px;
-            background: rgba(0,0,0,0.10); border-radius: 6px; padding: 1px 5px;
+            font-family: 'Inter', sans-serif; font-size: 8px; font-weight: 800;
+            color: rgba(0,0,0,0.55); margin-top: 2px; letter-spacing: 0.2px;
+            background: rgba(0,0,0,0.10); border-radius: 6px; padding: 1px 4px;
         }
         .cs-promo-row {
             background: white; border-radius: 8px; padding: 7px 10px;
@@ -782,35 +782,51 @@
 
 <!-- ══════ SELECTOR ══════ -->
 <div id="pantalla-modo">
-    <div class="logo-icono">P</div>
-    <div class="logo-modo"><span class="logo-acento">PIEERS</span> PRO</div>
-    <div class="logo-sub">AUDITORÍA &amp; INVENTARIO</div>
-    <div class="logo-selector">SELECCIONA EL MODO DE TRABAJO</div>
-    <div class="logo-v">v20</div>
-    <button class="btn-modo btn-comp" onclick="seleccionarModo('comp')">
-        <span class="ico">📋</span>
-        <span class="txt">
-            <span class="tit">AUDITORÍA / COMPARATIVO</span>
-            <span class="desc">Compara el inventario esperado con el físico escaneado. Detecta faltantes y sobrantes.</span>
-        </span>
-    </button>
-    <button class="btn-modo btn-alm" onclick="seleccionarModo('alm')">
-        <span class="ico">🏪</span>
-        <span class="txt">
-            <span class="tit">GESTIÓN DE ALMACÉN</span>
-            <span class="desc">Carga tu inventario, busca prendas y registra retiros. Guarda informes y consulta reportes.</span>
-        </span>
-    </button>
-
-    <button class="btn-modo btn-stock-mod" onclick="seleccionarModo('stock')">
-        <span class="ico">📦</span>
-        <span class="txt">
-            <span class="tit">CONSULTAR STOCK</span>
-            <span class="desc">Busca artículos por código de barras o código de 7 dígitos. Visualiza stock por color y talla.</span>
-        </span>
-    </button>
-
-    <div style="font-size:10px;color:#bbb;text-align:center;margin-top:4px;font-family:'Barlow',sans-serif;letter-spacing:1px;">PIEERS PRO · v20</div>
+    <!-- Fondo decorativo -->
+    <div style="position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;">
+        <div style="position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:var(--rojo);opacity:0.06;"></div>
+        <div style="position:absolute;bottom:-80px;left:-40px;width:260px;height:260px;border-radius:50%;background:var(--rojo);opacity:0.04;"></div>
+    </div>
+    <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
+        <!-- Logo -->
+        <div class="logo-icono">P</div>
+        <div style="text-align:center;margin-bottom:2px;">
+            <div class="logo-modo"><span class="logo-acento">PIEERS</span> PRO</div>
+            <div class="logo-sub">AUDITORÍA &amp; INVENTARIO</div>
+        </div>
+        <!-- Selector label -->
+        <div style="display:flex;align-items:center;gap:10px;width:100%;max-width:360px;margin:2px 0;">
+            <div style="flex:1;height:1px;background:rgba(0,0,0,0.08);"></div>
+            <span class="logo-selector">SELECCIONA EL MODO</span>
+            <div style="flex:1;height:1px;background:rgba(0,0,0,0.08);"></div>
+        </div>
+        <!-- Botones de modo -->
+        <button class="btn-modo btn-comp" onclick="seleccionarModo('comp')" style="width:100%;max-width:360px;">
+            <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">📋</div>
+            <span class="txt">
+                <span class="tit">AUDITORÍA / COMPARATIVO</span>
+                <span class="desc">Compara inventario esperado vs físico escaneado. Detecta faltantes y sobrantes.</span>
+            </span>
+            <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
+        </button>
+        <button class="btn-modo btn-alm" onclick="seleccionarModo('alm')" style="width:100%;max-width:360px;">
+            <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">🏪</div>
+            <span class="txt">
+                <span class="tit">GESTIÓN DE ALMACÉN</span>
+                <span class="desc">Carga inventario, busca prendas y registra retiros. Genera informes y reportes.</span>
+            </span>
+            <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
+        </button>
+        <button class="btn-modo btn-stock-mod" onclick="seleccionarModo('stock')" style="width:100%;max-width:360px;">
+            <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">📦</div>
+            <span class="txt">
+                <span class="tit">CONSULTAR STOCK</span>
+                <span class="desc">Escanea o ingresa código. Ve stock por color/talla y precios con descuentos.</span>
+            </span>
+            <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
+        </button>
+        <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
+    </div>
 </div>
 
 
@@ -858,7 +874,6 @@
     <input type="file" id="guiaInput"      class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
     <input type="file" id="almInput"       class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
     <input type="file" id="almStockInput"  class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
-    <input type="file" id="compStockInput" class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
 
     <!-- SCANNER COMPARATIVO -->
     <input id="scanner" inputmode="none" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus placeholder="ESCANEE CÓDIGO">
@@ -1002,6 +1017,18 @@
 
     <!-- ══════ PANEL CONSULTAR STOCK ══════ -->
     <div id="vista-stock" style="display:none;flex-direction:column;flex:1;overflow:hidden;background:#b8cfe0;">
+        <!-- ── SELECTOR MODO CONSULTA ── -->
+        <div id="cs-modo-selector">
+            <button class="cs-modo-btn activo" id="cs-modo-ambos" onclick="csSetModo('ambos')">
+                <span class="cs-modo-ico">📦💰</span>STOCK + PRECIOS
+            </button>
+            <button class="cs-modo-btn" id="cs-modo-stock" onclick="csSetModo('stock')">
+                <span class="cs-modo-ico">📦</span>SOLO STOCK
+            </button>
+            <button class="cs-modo-btn" id="cs-modo-precios" onclick="csSetModo('precios')">
+                <span class="cs-modo-ico">💰</span>SOLO PRECIOS
+            </button>
+        </div>
         <div class="cs-top-panel">
             <div class="cs-ctrl-row">
                 <span class="cs-field-label">CODBAR:</span>
@@ -1019,17 +1046,40 @@
                 <button class="cs-btn cs-btn-buscar" onclick="csBuscar()">🔍 Buscar</button>
                 <button class="cs-btn cs-btn-upload" onclick="document.getElementById('cs-file-input').click()">📂 Cargar Base</button>
                 <input type="file" id="cs-file-input" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*" onchange="csLoadFile(event)" style="display:none">
+                <input type="file" id="cs-mayorprecios-input" accept=".xlsx,.xls" onchange="csLoadPreciosMayor(event)" style="display:none">
                 <input type="file" id="cs-precio-input" accept=".xlsx,.xls,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onchange="csLoadPrecios(event)" style="display:none">
                 <span id="cs-db-badge" class="empty">SIN BASE</span>
             </div>
         </div>
         <div id="cs-status-bar">Cargue una base de datos para comenzar.</div>
 
-        <!-- ── PANEL DE PRECIOS ── -->
-        <div id="cs-price-panel" style="display:none; flex-shrink:0; padding:6px 8px 2px;">
-            <!-- Promos activas -->
-            <div id="cs-promo-activa" style="display:none; margin-bottom:6px;"></div>
-            <div style="display:flex; gap:5px; margin-bottom:5px;">
+        <!-- ── TABS STOCK / PRECIOS ── -->
+        <div id="cs-tabs" style="display:none;flex-shrink:0;display:none;flex-direction:row;border-bottom:2px solid #DDD;background:#fff;">
+            <button id="cs-tab-stock" class="cs-tab cs-tab-active" onclick="csCambiarTab('stock')">
+                📦 STOCK
+            </button>
+            <button id="cs-tab-precios" class="cs-tab" onclick="csCambiarTab('precios')">
+                💰 PRECIOS &amp; PROMOS
+            </button>
+        </div>
+
+        <!-- ── PANEL STOCK ── -->
+        <div id="cs-panel-stock" style="display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0;">
+            <!-- Búsqueda por nombre -->
+            <div id="cs-name-search-wrap" style="display:none;padding:4px 8px 2px;flex-shrink:0;">
+                <input id="cs-name-search" type="text" placeholder="🔍  Buscar por nombre de artículo..."
+                    style="width:100%;padding:8px 12px;border-radius:10px;border:1.5px solid #DDD;font-size:13px;font-family:'Inter',sans-serif;background:#FAFAFA;outline:none;"
+                    oninput="csBuscarPorNombre(this.value)">
+            </div>
+            <div id="cs-table-outer">
+                <div class="cs-no-data">📦 Cargue su base de datos<br>luego escanee o ingrese un artículo</div>
+            </div>
+        </div>
+
+        <!-- ── PANEL PRECIOS PROMO ── -->
+        <div id="cs-price-panel" style="display:none;flex-direction:column;flex:1;overflow-y:auto;padding:8px;min-height:0;">
+            <div id="cs-promo-activa" style="display:none;margin-bottom:8px;"></div>
+            <div style="display:flex;gap:5px;margin-bottom:8px;">
                 <div class="cs-price-box" style="background:#FFD600;">
                     <div class="cs-price-label">Precio Etiqueta</div>
                     <div class="cs-price-val" id="cs-p-etiqueta">0.00</div>
@@ -1050,12 +1100,13 @@
                     <div class="cs-price-val" id="cs-p-oferta">0.00</div>
                     <div class="cs-price-pct" id="cs-pct-oferta">—</div>
                 </div>
+                <div class="cs-price-box" style="background:#1A237E;">
+                    <div class="cs-price-label" style="color:rgba(255,255,255,0.7);">Precio Mayor</div>
+                    <div class="cs-price-val" id="cs-p-mayor-val" style="color:white;">0.00</div>
+                    <div class="cs-price-pct" id="cs-pct-mayor-val" style="color:rgba(255,255,255,0.55);">—</div>
+                </div>
             </div>
-            <div id="cs-promos-list" style="display:flex; flex-direction:column; gap:3px;"></div>
-        </div>
-
-        <div id="cs-table-outer">
-            <div class="cs-no-data">📦 Cargue su base de datos<br>luego escanee o ingrese un artículo</div>
+            <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
         </div>
     </div><!-- fin vista-stock -->
 
@@ -1064,7 +1115,7 @@
 
 </div><!-- fin app-principal -->
 <!-- LOADING -->
-    <div id="loading-overlay"><div class="spinner"></div><div id="loading-txt">Cargando...</div></div>
+    <div id="loading-overlay"><div class="spinner"></div><div id="loading-txt">Cargando...</div><div id="progress-bar-wrap" style="display:none"><div id="progress-bar-fill"></div></div><div id="progress-pct"></div></div>
 
     <!-- TOAST -->
     <div id="toast"></div>
@@ -1358,7 +1409,16 @@ function showToast(msg, color='#111', dur=2800) {
 }
 
 // ── LOADING ──
-function showLoading(msg) { document.getElementById('loading-txt').textContent = msg; document.getElementById('loading-overlay').style.display = 'flex'; }
+function showLoading(msg, withProgress) {
+    document.getElementById('loading-txt').textContent = msg;
+    document.getElementById('loading-overlay').style.display = 'flex';
+    const bar = document.getElementById('progress-bar-wrap');
+    const fill = document.getElementById('progress-bar-fill');
+    const pctEl = document.getElementById('progress-pct');
+    if (bar)  bar.style.display  = withProgress ? 'block' : 'none';
+    if (fill) fill.style.width   = '0%';
+    if (pctEl)pctEl.textContent  = withProgress ? '0%' : '';
+}
 function hideLoading()     { document.getElementById('loading-overlay').style.display = 'none'; }
 
 // ── SELECTOR MODO ──
@@ -1416,6 +1476,9 @@ function seleccionarModo(modo) {
             csInit();
             // Enfocar campo de código de barras
             setTimeout(() => { const ci=document.getElementById('cs-inp-codbar'); if(ci) ci.focus(); }, 200);
+            // Mostrar búsqueda por nombre si hay base
+            const nw = document.getElementById('cs-name-search-wrap');
+            if (nw) nw.style.display = Object.keys(csStockDB).length > 0 ? 'block' : 'none';
         } else {
             document.body.className = 'modo-alm';
             $s('badge-txt').textContent = 'ALMACÉN';
@@ -1531,7 +1594,7 @@ document.getElementById('fileInput').addEventListener('change', function(e) {
     const f = e.target.files[0]; if (!f) return;
     const ext = f.name.split('.').pop().toLowerCase();
     const reader = new FileReader();
-    showLoading('Leyendo archivo...');
+    showLoading('Leyendo archivo...', true);
     reader.onload = function(evt) {
         maestroMap.clear(); totalEsp = 0;
         if (ext === 'xlsx' || ext === 'xls') {
@@ -1597,6 +1660,12 @@ function abrirSubCarga(modulo) {
                 { ico:'☁️', titulo:'Desde Drive — Precios Memorandum',
                   desc:'Carga el Memorandum de precios WAMA directo desde Google Drive',
                   color:'#BF360C', accion:`driveAbrirModal('precios');cerrarSubCarga()` },
+                { ico:'📊', titulo:'Cargar Precios por Mayor / Etiqueta',
+                  desc:'Excel con P.Etiqueta, P.Mayor, P.Lista y P.Oferta de todos los productos PIEERS',
+                  color:'#1A237E', accion:`document.getElementById('cs-mayorprecios-input').click();cerrarSubCarga()` },
+                { ico:'☁️', titulo:'Desde Drive — Precios por Mayor',
+                  desc:'Carga el Excel de precios por mayor directo desde Google Drive',
+                  color:'#283593', accion:`driveAbrirModal('preciosMayor');cerrarSubCarga()` },
             ]
         }
     };
@@ -1617,6 +1686,143 @@ function abrirSubCarga(modulo) {
         </button>`).join('');
 
     document.getElementById('modal-subcarga').style.display = 'flex';
+}
+
+
+
+// ── SELECTOR MODO CONSULTA (Stock / Precios / Ambos) ─────────────────
+let csModoActual = 'ambos'; // 'ambos' | 'stock' | 'precios'
+
+function csSetModo(modo) {
+    csModoActual = modo;
+    ['ambos','stock','precios'].forEach(m => {
+        const btn = document.getElementById('cs-modo-' + m);
+        if (btn) btn.classList.toggle('activo', m === modo);
+    });
+    // Si ya hay resultado, re-aplicar modo sin buscar de nuevo
+    csAplicarModo();
+}
+
+function csAplicarModo() {
+    const panelStock = document.getElementById('cs-panel-stock');
+    const panelPrec  = document.getElementById('cs-price-panel');
+    const tabs       = document.getElementById('cs-tabs');
+
+    // Los tabs no se usan más — siempre ocultos
+    if (tabs) tabs.style.display = 'none';
+
+    if (csModoActual === 'ambos') {
+        // Ver precios ARRIBA y stock ABAJO al mismo tiempo
+        if (panelPrec)  panelPrec.style.display  = 'flex';
+        if (panelStock) panelStock.style.display = 'flex';
+    } else if (csModoActual === 'stock') {
+        if (panelStock) panelStock.style.display = 'flex';
+        if (panelPrec)  panelPrec.style.display  = 'none';
+    } else { // solo precios
+        if (panelStock) panelStock.style.display = 'none';
+        if (panelPrec)  panelPrec.style.display  = 'flex';
+    }
+}
+
+// ── MEJORA 6: Tabs Stock / Precios ──────────────────────────────────
+function csCambiarTab(tab) {
+    const tabStock   = document.getElementById('cs-tab-stock');
+    const tabPrecios = document.getElementById('cs-tab-precios');
+    const panelStock = document.getElementById('cs-panel-stock');
+    const panelPrec  = document.getElementById('cs-price-panel');
+    if (tab === 'stock') {
+        // Indicar si hay precios disponibles
+        const tabP = document.getElementById('cs-tab-precios');
+        if (tabP) tabP.textContent = '💰 PRECIOS' + (csPreciosDB && Object.keys(csPreciosDB).length > 0 ? ' ●' : '');
+        tabStock.classList.add('cs-tab-active');
+        tabPrecios.classList.remove('cs-tab-active');
+        panelStock.style.display = 'flex';
+        panelPrec.style.display  = 'none';
+    } else {
+        tabPrecios.classList.add('cs-tab-active');
+        tabStock.classList.remove('cs-tab-active');
+        panelStock.style.display = 'none';
+        panelPrec.style.display  = 'flex';
+    }
+}
+function csMostrarTabs(conPrecios) {
+    // Aplicar según el modo seleccionado por el usuario
+    csAplicarModo();
+}
+function csOcultarTabs() {
+    const tabs = document.getElementById('cs-tabs');
+    if (tabs) tabs.style.display = 'none';
+    const panelStock = document.getElementById('cs-panel-stock');
+    const panelPrec  = document.getElementById('cs-price-panel');
+    // En modo precios: mostrar panel precios vacío; en otros: stock
+    if (panelStock) panelStock.style.display = csModoActual === 'precios' ? 'none' : 'flex';
+    if (panelPrec)  panelPrec.style.display  = 'none';
+}
+
+// ── MEJORA 1: Búsqueda por nombre en Consultar Stock ─────────────────
+function csBuscarPorNombre(texto) {
+    const outer = document.getElementById('cs-table-outer');
+    if (!outer) return;
+    if (!texto || texto.length < 2) {
+        outer.innerHTML = '<div class="cs-no-data">Escribe al menos 2 letras para buscar por nombre</div>';
+        return;
+    }
+    const q = texto.toUpperCase().trim();
+    const resultados = Object.entries(csStockDB)
+        .filter(([cod, data]) => data.desc && data.desc.toUpperCase().includes(q))
+        .slice(0, 40); // máximo 40 resultados
+
+    if (!resultados.length) {
+        outer.innerHTML = '<div class="cs-no-data">❌ No se encontraron artículos con ese nombre</div>';
+        return;
+    }
+
+    let html = '';
+    resultados.forEach(([cod, data]) => {
+        const total = data.colors ? data.colors.reduce((a,c)=>a+c.total,0) : 0;
+        const descHL = data.desc.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'gi'),
+                       m => '<strong style="color:var(--rojo)">' + m + '</strong>');
+        html += '<div class="cs-name-result" onclick="csSeleccionarDeNombre(\'' + cod + '\')">'
+            + '<span class="cs-name-result-cod">' + cod + '</span>'
+            + '<span class="cs-name-result-desc">' + descHL + '</span>'
+            + '<span class="cs-name-result-stock">' + total + ' un.</span>'
+            + '</div>';
+    });
+    if (resultados.length === 40) html += '<div style="text-align:center;padding:8px;font-size:11px;color:#aaa;">Mostrando primeros 40 resultados</div>';
+    outer.innerHTML = html;
+}
+
+function csSeleccionarDeNombre(cod) {
+    // Ocultar búsqueda por nombre y buscar el código
+    const nameSearch = document.getElementById('cs-name-search');
+    const nameWrap   = document.getElementById('cs-name-search-wrap');
+    if (nameSearch) nameSearch.value = '';
+    if (nameWrap)   nameWrap.style.display = 'none';
+    const artEl = document.getElementById('cs-inp-articulo');
+    if (artEl) artEl.value = cod;
+    csBuscar();
+}
+
+// ── MEJORA 8: Barra de progreso real ─────────────────────────────────
+function showProgress(msg, pct) {
+    const overlay = document.getElementById('loading-overlay');
+    const txt     = document.getElementById('loading-txt');
+    const bar     = document.getElementById('progress-bar-wrap');
+    const fill    = document.getElementById('progress-bar-fill');
+    const pctEl   = document.getElementById('progress-pct');
+    if (overlay) overlay.style.display = 'flex';
+    if (txt)     txt.textContent = msg;
+    if (bar)     bar.style.display = pct !== null ? 'block' : 'none';
+    if (fill)    fill.style.width = (pct||0) + '%';
+    if (pctEl)   pctEl.textContent = pct !== null ? Math.round(pct) + '%' : '';
+}
+function updateProgress(msg, pct) {
+    const txt  = document.getElementById('loading-txt');
+    const fill = document.getElementById('progress-bar-fill');
+    const pctEl= document.getElementById('progress-pct');
+    if (txt)  txt.textContent = msg;
+    if (fill) fill.style.width = pct + '%';
+    if (pctEl)pctEl.textContent = Math.round(pct) + '%';
 }
 
 // ── GUIA/STOCK → CARGA AUTOMÁTICA ──
@@ -3564,20 +3770,25 @@ function csParsePreciosXLSX(wb) {
     function ensureCod(v) {
         const c = String(v||'').trim().toUpperCase();
         if (!esCodigo(c)) return null;
-        if (!csPreciosDB[c]) csPreciosDB[c]={etiqueta:0,menor:0,mayor:0,oferta:0,promos:[],cambio:false};
+        if (!csPreciosDB[c]) csPreciosDB[c]={etiqueta:0,menor:0,mayor:0,oferta:0,promos:[],cambio:false,menorEsTienda:false,mayorEsTienda:false,ofertaEsTienda:false};
         return c;
     }
 
-    function reg(cod, tipo, etiq, menor, mayor, oferta, nombre) {
+        // tiendas=true → precio de tienda específica tiene prioridad sobre general
+    function reg(cod, tipo, etiq, menor, mayor, oferta, nombre, tiendas) {
         if (!cod) return;
-        if (etiq  > csPreciosDB[cod].etiqueta) csPreciosDB[cod].etiqueta = etiq;
-        if (menor > 0 && (!csPreciosDB[cod].menor || menor < csPreciosDB[cod].menor)) csPreciosDB[cod].menor = menor;
-        if (mayor > 0 && (!csPreciosDB[cod].mayor || mayor < csPreciosDB[cod].mayor)) csPreciosDB[cod].mayor = mayor;
-        if (oferta > 0 && (!csPreciosDB[cod].oferta || oferta < csPreciosDB[cod].oferta)) csPreciosDB[cod].oferta = oferta;
+        if (etiq > csPreciosDB[cod].etiqueta) csPreciosDB[cod].etiqueta = etiq;
+        // Tienda: siempre reemplaza precio general previo
+        if (menor > 0 && (tiendas || !csPreciosDB[cod].menorEsTienda && menor < (csPreciosDB[cod].menor||Infinity)))
+            { csPreciosDB[cod].menor = menor; if(tiendas) csPreciosDB[cod].menorEsTienda = true; }
+        if (mayor > 0 && (tiendas || !csPreciosDB[cod].mayorEsTienda && mayor < (csPreciosDB[cod].mayor||Infinity)))
+            { csPreciosDB[cod].mayor = mayor; if(tiendas) csPreciosDB[cod].mayorEsTienda = true; }
+        if (oferta > 0 && (tiendas || !csPreciosDB[cod].ofertaEsTienda && oferta < (csPreciosDB[cod].oferta||Infinity)))
+            { csPreciosDB[cod].oferta = oferta; if(tiendas) csPreciosDB[cod].ofertaEsTienda = true; }
         if (nombre && nombre.length > 2) {
             const pFinal = oferta||menor||mayor||0;
-            const key = nombre+'|'+pFinal.toFixed(2);
-            if (!csPreciosDB[cod].promos.some(p=>p.nombre+'|'+p.precio.toFixed(2)===key))
+            const key = nombre+'|'+(pFinal>0?pFinal.toFixed(2):'0');
+            if (!csPreciosDB[cod].promos.some(p=>(p.nombre+'|'+p.precio.toFixed(2))===key))
                 csPreciosDB[cod].promos.push({nombre, precio:pFinal, tipo});
         }
     }
@@ -3591,6 +3802,11 @@ function csParsePreciosXLSX(wb) {
         if (shU.includes('OFERTA'))                                baseTipo = 'oferta';
         else if (shU.includes('EJEC'))                             baseTipo = 'ejecutivo';
         else if (shU.includes('COMBO'))                            baseTipo = 'combo';
+        // Hojas de tienda tienen prioridad sobre hojas generales
+        const esTienda = shU.includes('TDA') || shU.includes('TIENDA') ||
+                         sheetName.includes('tiendas') || sheetName.includes('Tda') ||
+                         shU.includes('OFERTA') || shU.includes('EJEC') ||
+                         (shU.includes('COMBO') && sheetName.toLowerCase().includes('tda'));
 
         rows.forEach(r => {
             if (!r||r.length<5) return;
@@ -3638,33 +3854,38 @@ function csParsePreciosXLSX(wb) {
             // Precio etiqueta = mayor valor
             const etiq = vals[0];
 
-            // Asignar según tipo:
-            // oferta    → oferta = menor precio
-            // combo     → mayor = menor precio; menor = segundo precio (si hay 3+)
-            // ejecutivo → mayor = menor precio
-            // promo     → menor = menor precio
+            // Asignar seg\u00FAn tipo
             let pMenor=0, pMayor=0, pOferta=0;
-            const pMin = vals[vals.length-1]; // precio más bajo
-            const pSeg = vals.length>=3 ? vals[1] : 0; // segundo precio
+            const pMin = vals[vals.length-1];
+            const pSeg = vals.length>=3 ? vals[1] : 0;
 
             if(tipo==='oferta'){
                 pOferta = pMin;
             } else if(tipo==='combo'){
                 pMayor = pMin;
-                pMenor = pSeg || pMin; // precio individual = segundo si hay 3 distintos
+                pMenor = pSeg || pMin;
             } else if(tipo==='ejecutivo'){
                 pMayor = pMin;
                 pMenor = pSeg || 0;
-            } else { // promo
+            } else {
                 pMenor = pMin;
             }
 
-            // Detectar cambio de precio: si la fila tiene 'SI'
-            if (r.some(c => String(c||'').trim().toUpperCase() === 'SI'))
-                csPreciosDB[cod].cambio = true;
+            // Si nombre dice "X% DSCTO ADIC", calcular: PRECIO_PROP x (1 - X/100)
+            // igual que WAMA cuando col PREC_ADC = 0 o #N/D
+            if (nombre) {
+                const mPct = nombre.match(/(\d+(?:\.\d+)?)\s*%\s*(?:DSCTO|DESC|DESCUENTO)/i);
+                if (mPct) {
+                    const pct = parseFloat(mPct[1]) / 100;
+                    const base = pMenor || pMin;
+                    if (base > 0) {
+                        const calc = parseFloat((base * (1 - pct)).toFixed(3));
+                        if (calc > 0 && calc < base) pMayor = calc;
+                    }
+                }
+            }
 
-            reg(cod, tipo, etiq, pMenor, pMayor, pOferta, nombre);
-        });
+            reg(cod, tipo, etiq, pMenor, pMayor, pOferta, nombre, esTienda);        });
     });
 
     return Object.keys(csPreciosDB).length;
@@ -3694,22 +3915,48 @@ function csRenderPrecios(modelCode) {
     const panel=document.getElementById('cs-price-panel'); if(!panel) return;
     const cod=String(modelCode||'').toUpperCase();
     const p=csPreciosDB[cod];
-    if(!p){panel.style.display='none'; return;}
+    // Si no hay datos en memorandum pero sí en PRECIOS_POR_MAYOR, mostrar igualmente
+    if(!p) {
+        const mFallback = csPreciosMayorDB[cod];
+        if (mFallback) {
+            panel.style.display='block';
+            // Llenar solo con datos del PRECIOS_POR_MAYOR
+            document.getElementById('cs-p-etiqueta').textContent=mFallback.etiqueta>0?mFallback.etiqueta.toFixed(4):'0.0000';
+            document.getElementById('cs-pct-etiqueta').textContent='Precio base';
+            ['menor','mayor','oferta'].forEach(k=>{
+                const el=document.getElementById('cs-p-'+k);
+                const pe=document.getElementById('cs-pct-'+k);
+                if(el) el.textContent='0.0000';
+                if(pe) pe.textContent='—';
+            });
+            const promoDiv=document.getElementById('cs-promo-activa');
+            if(promoDiv) promoDiv.style.display='none';
+            const lista=document.getElementById('cs-promos-list');
+            if(lista) lista.innerHTML='';
+        } else {
+            panel.style.display='none';
+        }
+        return;
+    }
     panel.style.display='block';
     const fmt=v=>v>0?v.toFixed(4):'0.0000';
     const pct=(precio,etiq)=>{
         if(!precio||!etiq||precio>=etiq) return '\u2014';
         return '-'+((etiq-precio)/etiq*100).toFixed(0)+'% dto.';
     };
-    const etiq=p.etiqueta;
+    // Etiqueta: SIEMPRE desde PRECIOS_POR_MAYOR si está disponible
+    const mDB = csPreciosMayorDB[cod];
+    const etiq = (mDB && mDB.etiqueta > 0) ? mDB.etiqueta : p.etiqueta;
     document.getElementById('cs-p-etiqueta').textContent=fmt(etiq);
     document.getElementById('cs-pct-etiqueta').textContent='Precio base';
     document.getElementById('cs-p-menor').textContent=fmt(p.menor);
     document.getElementById('cs-pct-menor').textContent=pct(p.menor,etiq);
     document.getElementById('cs-p-mayor').textContent=fmt(p.mayor);
     document.getElementById('cs-pct-mayor').textContent=pct(p.mayor,etiq);
-    document.getElementById('cs-p-oferta').textContent=fmt(p.oferta);
-    document.getElementById('cs-pct-oferta').textContent=pct(p.oferta,etiq);
+    // Oferta: desde memorandum o desde PRECIOS_POR_MAYOR si tipo=OF
+    const ofertaFinal = p.oferta > 0 ? p.oferta : (mDB && mDB.tipo==='OF' ? mDB.oferta : 0);
+    document.getElementById('cs-p-oferta').textContent=fmt(ofertaFinal);
+    document.getElementById('cs-pct-oferta').textContent=pct(ofertaFinal,etiq);
 
     // ── Promos activas (encima de los precios) ──
     const promoDiv = document.getElementById('cs-promo-activa');
@@ -3743,6 +3990,104 @@ function csRenderPrecios(modelCode) {
     lista.innerHTML = p.cambio
         ? '<div id="cs-cambio-banner">\uD83D\uDD14 <strong>CAMBIO DE PRECIO</strong> \u2014 Precio actualizado en este memorandum</div>'
         : '';
+}
+
+
+// ── PRECIOS POR MAYOR (PRECIOS_POR_MAYOR.xlsx) ───────────────────────
+let csPreciosMayorDB = {};
+const CS_MAYOR_KEY = 'pieers_cs_mayor';
+
+function csParsePreciosMayorXLSX(wb) {
+    csPreciosMayorDB = {};
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {header:1, defval:''});
+    rows.forEach(r => {
+        const tipo  = String(r[0]||'').trim();
+        const cod   = String(r[1]||'').trim().toUpperCase();
+        const nom   = String(r[2]||'').trim();
+        const stock = parseInt(r[3]) || 0;
+        const etiq  = parseFloat(r[4]) || 0;
+        const ofert = parseFloat(r[5]) || 0;
+        const lista = parseFloat(r[6]) || 0;
+        const mayor = parseFloat(r[7]) || 0;
+        if (!cod || cod.length < 5 || isNaN(etiq)) return;
+        if (['CODIGO','TIPO','DENOMINACION'].includes(cod)) return;
+        csPreciosMayorDB[cod] = {tipo, nombre:nom, stock, etiqueta:etiq, oferta:ofert, lista, mayor};
+    });
+    return Object.keys(csPreciosMayorDB).length;
+}
+
+function csSavePreciosMayorLocal() {
+    try {
+        localStorage.setItem(CS_MAYOR_KEY, JSON.stringify({db: csPreciosMayorDB, date: new Date().toLocaleString('es-PE')}));
+    } catch(e) {}
+}
+
+function csLoadPreciosMayorLocal() {
+    try {
+        const raw = localStorage.getItem(CS_MAYOR_KEY);
+        if (!raw) return false;
+        const p = JSON.parse(raw);
+        if (!p.db || !Object.keys(p.db).length) return false;
+        csPreciosMayorDB = p.db;
+        return true;
+    } catch(e) { return false; }
+}
+
+function csLoadPreciosMayor(event) {
+    const f = event.target.files[0]; if (!f) return;
+    showLoading('Cargando precios por mayor...', true);
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        setTimeout(() => {
+            try {
+                const wb  = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+                const cnt = csParsePreciosMayorXLSX(wb);
+                csSavePreciosMayorLocal();
+                updateProgress('Precios por mayor cargados ✅', 100);
+                setTimeout(hideLoading, 300);
+                showToast('📊 Precios por mayor: ' + cnt + ' productos', '#1A237E');
+                csSetStatus(document.getElementById('cs-status-bar')?.textContent +
+                            ' · 📊 Precios mayor: ' + cnt);
+            } catch(err) { hideLoading(); showToast('❌ Error: ' + err.message, '#c62828'); }
+        }, 50);
+    };
+    reader.readAsArrayBuffer(f);
+    event.target.value = '';
+}
+
+// ── Render precio por mayor (5ta caja) ───────────────────────────────
+function csRenderPreciosMayor(modelCode) {
+    const cod = String(modelCode||'').toUpperCase();
+    const m   = csPreciosMayorDB[cod];
+    const fmt = v => v > 0 ? v.toFixed(4) : '0.0000';
+    const pct = (p, etiq) => p>0&&etiq>0&&p<etiq ? '-'+((etiq-p)/etiq*100).toFixed(0)+'% dto.' : '—';
+
+    // 5ta caja: Precio x Mayor
+    const mayBox  = document.getElementById('cs-p-mayor-val');
+    const mayPct  = document.getElementById('cs-pct-mayor-val');
+
+    if (!m) {
+        if (mayBox) mayBox.textContent = '0.0000';
+        if (mayPct) mayPct.textContent = '—';
+        return;
+    }
+
+    // Etiqueta: SIEMPRE desde este archivo (ya fue seteada en csRenderPrecios)
+    const etiqRef = m.etiqueta > 0 ? m.etiqueta :
+        (parseFloat(document.getElementById('cs-p-etiqueta')?.textContent||'0')||0);
+
+    // Si el memorandum no tiene oferta y aquí es tipo OF
+    const ofVal = parseFloat(document.getElementById('cs-p-oferta')?.textContent||'0')||0;
+    if (ofVal === 0 && m.tipo === 'OF' && m.oferta > 0) {
+        const ofEl  = document.getElementById('cs-p-oferta');
+        const ofPct = document.getElementById('cs-pct-oferta');
+        if (ofEl)  ofEl.textContent  = fmt(m.oferta);
+        if (ofPct) ofPct.textContent = pct(m.oferta, etiqRef);
+    }
+
+    // Llenar 5ta caja: Precio x Mayor
+    if (mayBox) mayBox.textContent = m.mayor > 0 ? fmt(m.mayor) : '0.0000';
+    if (mayPct) mayPct.textContent = m.mayor > 0 ? pct(m.mayor, etiqRef) : '—';
 }
 
 /* ── Helpers UI ── */
@@ -3837,7 +4182,9 @@ function csInit() {
         csSetBadge(0);
         csSetStatus('Cargue una base de datos para comenzar.');
     }
-    // Restaurar precios guardados
+    // Restaurar precios por mayor guardados
+    csLoadPreciosMayorLocal();
+    // Restaurar precios promo guardados
     if (csLoadPreciosLocal()) {
         const nP = Object.keys(csPreciosDB).length;
         csSetStatus((document.getElementById('cs-status-bar')?.textContent || '') +
@@ -3861,7 +4208,14 @@ function csParseCSVLine(line) {
 function csParseStockCSV(text) {
     const db = {};
     const lines = text.split(/\r?\n/).filter(l => l.trim().length > 10);
+    const totalLineas = lines.length;
+    let processed = 0;
     for (const line of lines) {
+        processed++;
+        if (processed % 500 === 0) {
+            const pct = Math.round((processed / totalLineas) * 90);
+            updateProgress('Procesando artículos... (' + processed + '/' + totalLineas + ')', pct);
+        }
         const cols = csParseCSVLine(line);
         // ESTADO puede ser 'LINEA' (regular) o 'OFERTA' (bajar oferta)
         let li = cols.indexOf('LINEA');
@@ -3968,6 +4322,8 @@ function csBuscar() {
                 'Puede ser un artículo de BAJAR OFERTA.<br>' +
                 'Recarga el stock desde Drive para incluirlo.</span></div>';
             csRenderPrecios(codBusq);
+            csRenderPreciosMayor(codBusq);
+            csAplicarModo();
         } else {
             if (descEl) descEl.value = 'NO ENCONTRADO';
             csSetStatus('⚠ "' + art + '" no encontrado.');
@@ -3983,7 +4339,16 @@ function csBuscar() {
     const tot = data.colors.reduce((a, c) => a + c.total, 0);
     csSetStatus(key + ' | ' + data.desc + ' | ' + data.colors.length + ' colores | TOTAL: ' + tot);
     csRenderTable(data, outer);
+    // Activar tabs y mostrar búsqueda por nombre
+    const hasPrecio = csPreciosDB && csPreciosDB[key];
+    csMostrarTabs(!!hasPrecio);
+    // Mostrar búsqueda por nombre si hay base cargada
+    const nameWrap = document.getElementById('cs-name-search-wrap');
+    if (nameWrap) nameWrap.style.display = Object.keys(csStockDB).length > 0 ? 'block' : 'none';
     csRenderPrecios(key);
+    csRenderPreciosMayor(key);
+    // Respetar el modo seleccionado
+    csAplicarModo();
 }
 
 
@@ -4078,7 +4443,8 @@ function driveAbrirModal(tipo) {
         'guia-comp':'📄 GUIA/Stock WAMA → Maestro',
         'guia-alm': '📄 GUIA/Stock WAMA → Almacén',
         'guia-cs':  '📄 GUIA/Stock WAMA → Consultar',
-        'precios':  '💰 Memorandum de Precios WAMA'
+        'precios':  '💰 Memorandum de Precios WAMA',
+        'preciosMayor': '📊 Precios por Mayor / Etiqueta'
     };
     document.getElementById('drive-modal-tipo').textContent = labels[tipo] || tipo;
     // Cerrar menú solo si está abierto
@@ -4233,6 +4599,11 @@ function driveProcesar(ab, tipo) {
                 csSetBadge(cnt); csSetStatus('Base cargada desde Drive — ' + cnt + ' artículos.');
                 csSaveDB('Drive', cnt); hideLoading();
                 showToast('✅ ' + cnt.toLocaleString() + ' artículos cargados','#111');
+            } else if (tipo === 'preciosMayor') {
+                var cantM = csParsePreciosMayorXLSX(wb);
+                csSavePreciosMayorLocal();
+                hideLoading();
+                showToast('📊 Precios por mayor: ' + cantM + ' productos', '#1A237E');
             } else if (tipo === 'precios') {
                 var cantP = csParsePreciosXLSX(wb);
                 csSavePreciosLocal();
