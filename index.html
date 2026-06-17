@@ -668,6 +668,39 @@
             font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 900;
             color: var(--rojo); margin-left: 8px; white-space: nowrap;
         }
+        #cs-cambio-banner {
+            background: linear-gradient(135deg, #FF6F00, #F57C00);
+            color: white; border-radius: 10px; padding: 9px 14px;
+            font-family: 'Barlow Condensed', sans-serif; font-size: 13px;
+            font-weight: 700; letter-spacing: 0.5px; margin-bottom: 6px;
+            display: flex; align-items: center; gap: 8px;
+            box-shadow: 0 2px 8px rgba(255,111,0,0.35);
+            animation: pulseCambio 1.8s ease-in-out infinite;
+        }
+        @keyframes pulseCambio {
+            0%,100% { box-shadow: 0 2px 8px rgba(255,111,0,0.35); }
+            50%      { box-shadow: 0 4px 16px rgba(255,111,0,0.65); }
+        }
+        /* ── Promos activas ── */
+        .cs-promo-activa-row {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 12px; border-radius: 10px; margin-bottom: 4px;
+            border-left: 5px solid #999;
+        }
+        .cs-pa-promo   { background: #FFF3E0; border-left-color: #FF6D00; }
+        .cs-pa-oferta  { background: #E8F5E9; border-left-color: #00C853; }
+        .cs-pa-combo   { background: #E3F2FD; border-left-color: #0288D1; }
+        .cs-pa-ejecutivo { background: #F3E5F5; border-left-color: #7B1FA2; }
+        .cs-pa-ico { font-size: 20px; flex-shrink: 0; }
+        .cs-pa-body { display: flex; flex-direction: column; gap: 1px; flex: 1; }
+        .cs-pa-nombre {
+            font-family: 'Barlow Condensed', sans-serif; font-size: 13px;
+            font-weight: 800; color: #111; letter-spacing: 0.5px; text-transform: uppercase;
+        }
+        .cs-pa-precio {
+            font-family: 'Inter', sans-serif; font-size: 10px;
+            color: #666; font-weight: 600; letter-spacing: 0.3px;
+        }
         .cs-badge-precios {
             background: #FF6D00; color: white; font-size: 8px; font-weight: 700;
             padding: 1px 6px; border-radius: 10px; margin-left: 8px;
@@ -994,6 +1027,8 @@
 
         <!-- ── PANEL DE PRECIOS ── -->
         <div id="cs-price-panel" style="display:none; flex-shrink:0; padding:6px 8px 2px;">
+            <!-- Promos activas -->
+            <div id="cs-promo-activa" style="display:none; margin-bottom:6px;"></div>
             <div style="display:flex; gap:5px; margin-bottom:5px;">
                 <div class="cs-price-box" style="background:#FFD600;">
                     <div class="cs-price-label">Precio Etiqueta</div>
@@ -3523,100 +3558,115 @@ function csLoadPreciosLocal() {
 function csParsePreciosXLSX(wb) {
     csPreciosDB = {};
     const LOCAL = 'CAJAMARCA';
-    function numV(r, col) { const v=parseFloat(r[col]); return isNaN(v)?0:v; }
-    function ensureCod(cod) {
-        const c=String(cod||'').trim().toUpperCase();
-        if(!c||c.length<5) return null;
-        if(!csPreciosDB[c]) csPreciosDB[c]={etiqueta:0,menor:0,mayor:0,oferta:0,promos:[]};
+
+    const esCodigo = v => { const s=String(v||'').trim(); return s.length===7&&/^[A-Z0-9]+$/i.test(s); };
+
+    function ensureCod(v) {
+        const c = String(v||'').trim().toUpperCase();
+        if (!esCodigo(c)) return null;
+        if (!csPreciosDB[c]) csPreciosDB[c]={etiqueta:0,menor:0,mayor:0,oferta:0,promos:[],cambio:false};
         return c;
     }
-    // 1. PRomo tiendas (CAJAMARCA)
-    if(wb.Sheets['PRomo tiendas']) {
-        const rows=XLSX.utils.sheet_to_json(wb.Sheets['PRomo tiendas'],{header:1,defval:''});
-        rows.slice(2).forEach(r=>{
-            if(String(r[1]||'').toUpperCase()!==LOCAL) return;
-            const cod=ensureCod(r[6]); if(!cod) return;
-            const promo=String(r[2]||'').trim(), etiq=numV(r,8), precio=numV(r,11);
-            if(etiq>csPreciosDB[cod].etiqueta) csPreciosDB[cod].etiqueta=etiq;
-            if(promo.includes('BAJAR OFERTA')||r[9]==='OF') {
-                if(precio>0&&(csPreciosDB[cod].oferta===0||precio<csPreciosDB[cod].oferta)) csPreciosDB[cod].oferta=precio;
-                csPreciosDB[cod].promos.push({nombre:'OFERTA: '+promo,precio,tipo:'oferta'});
-            } else {
-                if(precio>0&&(csPreciosDB[cod].menor===0||precio<csPreciosDB[cod].menor)) csPreciosDB[cod].menor=precio;
-                csPreciosDB[cod].promos.push({nombre:promo,precio,tipo:'promo'});
+
+    function reg(cod, tipo, etiq, menor, mayor, oferta, nombre) {
+        if (!cod) return;
+        if (etiq  > csPreciosDB[cod].etiqueta) csPreciosDB[cod].etiqueta = etiq;
+        if (menor > 0 && (!csPreciosDB[cod].menor || menor < csPreciosDB[cod].menor)) csPreciosDB[cod].menor = menor;
+        if (mayor > 0 && (!csPreciosDB[cod].mayor || mayor < csPreciosDB[cod].mayor)) csPreciosDB[cod].mayor = mayor;
+        if (oferta > 0 && (!csPreciosDB[cod].oferta || oferta < csPreciosDB[cod].oferta)) csPreciosDB[cod].oferta = oferta;
+        if (nombre && nombre.length > 2) {
+            const pFinal = oferta||menor||mayor||0;
+            const key = nombre+'|'+pFinal.toFixed(2);
+            if (!csPreciosDB[cod].promos.some(p=>p.nombre+'|'+p.precio.toFixed(2)===key))
+                csPreciosDB[cod].promos.push({nombre, precio:pFinal, tipo});
+        }
+    }
+
+    wb.SheetNames.forEach(sheetName => {
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName],{header:1,defval:''});
+        const shU  = sheetName.toUpperCase();
+
+        // Tipo base desde nombre de hoja
+        let baseTipo = 'promo';
+        if (shU.includes('OFERTA'))                                baseTipo = 'oferta';
+        else if (shU.includes('EJEC'))                             baseTipo = 'ejecutivo';
+        else if (shU.includes('COMBO'))                            baseTipo = 'combo';
+
+        rows.forEach(r => {
+            if (!r||r.length<5) return;
+
+            // Solo filas con CAJAMARCA
+            if (!r.some(c=>String(c||'').toUpperCase().includes(LOCAL))) return;
+
+            // Encontrar código 7 chars (primera aparición)
+            let cod=null, codIdx=-1;
+            for(let i=0;i<r.length;i++){
+                if(esCodigo(r[i])){cod=ensureCod(r[i]);codIdx=i;break;}
             }
+            if(!cod||codIdx<0) return;
+
+            // Tipo desde contexto de la fila
+            const rowStr = r.map(c=>String(c||'').toUpperCase()).join(' ');
+            let tipo = baseTipo;
+            if (rowStr.includes('BAJAR OFERTA')||rowStr.includes('OFERTA')||r.some(c=>String(c||'').trim()==='OF'))
+                tipo = 'oferta';
+            else if (rowStr.includes('EJECUTIVO'))
+                tipo = 'ejecutivo';
+            else if (rowStr.includes('COMBO'))
+                tipo = 'combo';
+
+            // Nombre de la promo: siempre en columna 2 (DESCRIPCION PROMO)
+            const nombre = String(r[2]||'').trim();
+
+            // ── Recoger precios ──────────────────────────────────────────
+            // 1. Tomar números DESPUÉS del código (desde codIdx+2)
+            // 2. Filtrar: mayor a 1 (excluye ratios como 0.64, cantidades como 0, 1)
+            // 3. Excluir el ÚLTIMO número de la fila (siempre es cantidad de stock)
+            const nums = []; // {v, i}
+            for(let i=codIdx+2;i<r.length;i++){
+                const n=parseFloat(r[i]);
+                if(!isNaN(n)&&n>1) nums.push({v:n,i});
+            }
+            if(!nums.length) return;
+
+            // Excluir el último (qty de stock al final de la fila)
+            if(nums.length>1) nums.pop();
+
+            // Ordenar por valor descendente y obtener únicos
+            const vals = [...new Set(nums.map(n=>n.v))].sort((a,b)=>b-a);
+
+            // Precio etiqueta = mayor valor
+            const etiq = vals[0];
+
+            // Asignar según tipo:
+            // oferta    → oferta = menor precio
+            // combo     → mayor = menor precio; menor = segundo precio (si hay 3+)
+            // ejecutivo → mayor = menor precio
+            // promo     → menor = menor precio
+            let pMenor=0, pMayor=0, pOferta=0;
+            const pMin = vals[vals.length-1]; // precio más bajo
+            const pSeg = vals.length>=3 ? vals[1] : 0; // segundo precio
+
+            if(tipo==='oferta'){
+                pOferta = pMin;
+            } else if(tipo==='combo'){
+                pMayor = pMin;
+                pMenor = pSeg || pMin; // precio individual = segundo si hay 3 distintos
+            } else if(tipo==='ejecutivo'){
+                pMayor = pMin;
+                pMenor = pSeg || 0;
+            } else { // promo
+                pMenor = pMin;
+            }
+
+            // Detectar cambio de precio: si la fila tiene 'SI'
+            if (r.some(c => String(c||'').trim().toUpperCase() === 'SI'))
+                csPreciosDB[cod].cambio = true;
+
+            reg(cod, tipo, etiq, pMenor, pMayor, pOferta, nombre);
         });
-    }
-    // 2. PromocomboTda (CAJAMARCA)
-    if(wb.Sheets['PromocomboTda']) {
-        const rows=XLSX.utils.sheet_to_json(wb.Sheets['PromocomboTda'],{header:1,defval:''});
-        rows.slice(2).forEach(r=>{
-            if(String(r[1]||'').toUpperCase()!==LOCAL) return;
-            const cod=ensureCod(r[6]); if(!cod) return;
-            const promo=String(r[2]||'').trim(), etiq=numV(r,8), comboprc=numV(r,12), menor=numV(r,11);
-            if(etiq>csPreciosDB[cod].etiqueta) csPreciosDB[cod].etiqueta=etiq;
-            if(comboprc>0&&(csPreciosDB[cod].mayor===0||comboprc<csPreciosDB[cod].mayor)) csPreciosDB[cod].mayor=comboprc;
-            if(menor>0&&(csPreciosDB[cod].menor===0||menor<csPreciosDB[cod].menor)) csPreciosDB[cod].menor=menor;
-            csPreciosDB[cod].promos.push({nombre:promo,precio:comboprc||menor,tipo:'combo'});
-        });
-    }
-    // 3. ComboEjec.tdas (CAJAMARCA)
-    if(wb.Sheets['ComboEjec.tdas']) {
-        const rows=XLSX.utils.sheet_to_json(wb.Sheets['ComboEjec.tdas'],{header:1,defval:''});
-        rows.slice(2).forEach(r=>{
-            if(String(r[1]||'').toUpperCase()!==LOCAL) return;
-            const cod=ensureCod(r[6]); if(!cod) return;
-            const etiq=numV(r,8), exec=numV(r,11), prec=numV(r,10);
-            if(etiq>csPreciosDB[cod].etiqueta) csPreciosDB[cod].etiqueta=etiq;
-            if(exec>0&&(csPreciosDB[cod].mayor===0||exec<csPreciosDB[cod].mayor)) csPreciosDB[cod].mayor=exec;
-            if(!csPreciosDB[cod].promos.some(p=>p.tipo==='ejecutivo'))
-                csPreciosDB[cod].promos.push({nombre:'COMBO EJECUTIVO',precio:exec||prec,tipo:'ejecutivo'});
-        });
-    }
-    // 4. Ofertas (CAJAMARCA)
-    if(wb.Sheets['Ofertas']) {
-        const rows=XLSX.utils.sheet_to_json(wb.Sheets['Ofertas'],{header:1,defval:''});
-        rows.slice(2).forEach(r=>{
-            if(String(r[1]||'').toUpperCase()!==LOCAL) return;
-            const cod=ensureCod(r[6]); if(!cod) return;
-            const etiq=numV(r,8), precio=numV(r,11), promo=String(r[2]||'').trim();
-            if(etiq>csPreciosDB[cod].etiqueta) csPreciosDB[cod].etiqueta=etiq;
-            if(precio>0&&(csPreciosDB[cod].oferta===0||precio<csPreciosDB[cod].oferta)) csPreciosDB[cod].oferta=precio;
-            if(!csPreciosDB[cod].promos.some(p=>p.tipo==='oferta'&&p.precio===precio))
-                csPreciosDB[cod].promos.push({nombre:'OFERTA: '+promo,precio,tipo:'oferta'});
-        });
-    }
-    // 5. PRomo general (fallback)
-    if(wb.Sheets['PRomo']) {
-        const rows=XLSX.utils.sheet_to_json(wb.Sheets['PRomo'],{header:1,defval:''});
-        rows.slice(2).forEach(r=>{
-            const cod=ensureCod(r[4]); if(!cod) return;
-            const precio=numV(r,9), promo=String(r[0]||'').trim();
-            if(csPreciosDB[cod].menor===0&&precio>0) csPreciosDB[cod].menor=precio;
-            if(!csPreciosDB[cod].promos.some(p=>p.nombre===promo)&&precio>0)
-                csPreciosDB[cod].promos.push({nombre:promo,precio,tipo:'promo'});
-        });
-    }
-    // 6. Combo general (fallback)
-    if(wb.Sheets['Combo']) {
-        const rows=XLSX.utils.sheet_to_json(wb.Sheets['Combo'],{header:1,defval:''});
-        rows.slice(1).forEach(r=>{
-            const cod=ensureCod(r[4]); if(!cod) return;
-            const comboprc=numV(r,11), promo=String(r[0]||'').trim();
-            if(csPreciosDB[cod].mayor===0&&comboprc>0) csPreciosDB[cod].mayor=comboprc;
-            if(!csPreciosDB[cod].promos.some(p=>p.nombre===promo&&p.tipo==='combo')&&comboprc>0)
-                csPreciosDB[cod].promos.push({nombre:promo,precio:comboprc,tipo:'combo'});
-        });
-    }
-    // 7. COmboejecutivo general (fallback)
-    if(wb.Sheets['COmboejecutivo']) {
-        const rows=XLSX.utils.sheet_to_json(wb.Sheets['COmboejecutivo'],{header:1,defval:''});
-        rows.slice(2).forEach(r=>{
-            const cod=ensureCod(r[4]); if(!cod) return;
-            const exec=numV(r,11);
-            if(csPreciosDB[cod].mayor===0&&exec>0) csPreciosDB[cod].mayor=exec;
-        });
-    }
+    });
+
     return Object.keys(csPreciosDB).length;
 }
 
@@ -3648,9 +3698,8 @@ function csRenderPrecios(modelCode) {
     panel.style.display='block';
     const fmt=v=>v>0?v.toFixed(4):'0.0000';
     const pct=(precio,etiq)=>{
-        if(!precio||!etiq||precio>=etiq) return '—';
-        const d=((etiq-precio)/etiq*100);
-        return '-'+d.toFixed(0)+'% dto.';
+        if(!precio||!etiq||precio>=etiq) return '\u2014';
+        return '-'+((etiq-precio)/etiq*100).toFixed(0)+'% dto.';
     };
     const etiq=p.etiqueta;
     document.getElementById('cs-p-etiqueta').textContent=fmt(etiq);
@@ -3661,17 +3710,39 @@ function csRenderPrecios(modelCode) {
     document.getElementById('cs-pct-mayor').textContent=pct(p.mayor,etiq);
     document.getElementById('cs-p-oferta').textContent=fmt(p.oferta);
     document.getElementById('cs-pct-oferta').textContent=pct(p.oferta,etiq);
+
+    // ── Promos activas (encima de los precios) ──
+    const promoDiv = document.getElementById('cs-promo-activa');
+    const promos = p.promos || [];
+    const nombresUnicos = [...new Set(promos.map(pr=>pr.nombre))].filter(n=>n&&n.length>1);
+    if (nombresUnicos.length) {
+        const tipoIcon = {oferta:'\uD83D\uDFF7', combo:'\uD83D\uDCE6', ejecutivo:'\uD83D\uDC54', promo:'\uD83C\uDFF7'};
+        promoDiv.style.display='block';
+        promoDiv.innerHTML = nombresUnicos.map(nombre=>{
+            const pr = promos.find(x=>x.nombre===nombre);
+            const tipo = pr?.tipo||'promo';
+            const ico  = tipoIcon[tipo]||'\uD83C\uDFF7';
+            const pFmt = pr?.precio>0 ? ' — S/ '+pr.precio.toFixed(2) : '';
+            const pctStr = pr?.precio>0&&etiq>0&&pr.precio<etiq
+                ? ' (-'+((etiq-pr.precio)/etiq*100).toFixed(0)+'%)'
+                : '';
+            return '<div class="cs-promo-activa-row cs-pa-'+tipo+'">'
+                + '<span class="cs-pa-ico">'+ico+'</span>'
+                + '<div class="cs-pa-body">'
+                + '<div class="cs-pa-nombre">'+nombre+'</div>'
+                + '<div class="cs-pa-precio">'+tipo.toUpperCase()+pctStr+pFmt+'</div>'
+                + '</div></div>';
+        }).join('');
+    } else {
+        promoDiv.style.display='none';
+    }
+
+    // ── Lista de promos detalle ──
     const lista=document.getElementById('cs-promos-list');
-    const vistas=new Set(); lista.innerHTML='';
-    (p.promos||[]).forEach(pr=>{
-        const key=pr.nombre+'|'+pr.precio;
-        if(vistas.has(key)) return; vistas.add(key);
-        const descPct=etiq>0&&pr.precio>0&&pr.precio<etiq ? ' (-'+((etiq-pr.precio)/etiq*100).toFixed(0)+'%)' : '';
-        const div=document.createElement('div');
-        div.className='cs-promo-row '+(pr.tipo||'promo');
-        div.innerHTML=`<span class="cs-promo-nombre">${pr.nombre}</span><span class="cs-badge-precios">${pr.tipo.toUpperCase()}${descPct}</span><span class="cs-promo-precio">S/ ${pr.precio.toFixed(2)}</span>`;
-        lista.appendChild(div);
-    });
+    const vistas=new Set();
+    lista.innerHTML = p.cambio
+        ? '<div id="cs-cambio-banner">\uD83D\uDD14 <strong>CAMBIO DE PRECIO</strong> \u2014 Precio actualizado en este memorandum</div>'
+        : '';
 }
 
 /* ── Helpers UI ── */
