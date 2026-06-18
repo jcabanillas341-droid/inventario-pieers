@@ -3813,18 +3813,34 @@ function csParsePreciosXLSX(wb) {
                          shU.includes('OFERTA') || shU.includes('EJEC') ||
                          (shU.includes('COMBO') && sheetName.toLowerCase().includes('tda'));
 
+        // Primero: códigos que SÍ tienen fila de CAJAMARCA en esta hoja (prioridad real)
+        const codConCajamarca = new Set();
+        rows.forEach(r => {
+            if (!r||r.length<5) return;
+            if (!r.some(c=>String(c||'').toUpperCase().includes(LOCAL))) return;
+            for(let i=0;i<r.length;i++){ if(esCodigo(r[i])){ codConCajamarca.add(String(r[i]).trim().toUpperCase()); break; } }
+        });
+
         rows.forEach(r => {
             if (!r||r.length<5) return;
 
-            // Solo filas con CAJAMARCA
-            if (!r.some(c=>String(c||'').toUpperCase().includes(LOCAL))) return;
+            const esFilaCajamarca = r.some(c=>String(c||'').toUpperCase().includes(LOCAL));
 
             // Encontrar código 7 chars (primera aparición)
-            let cod=null, codIdx=-1;
+            let codRaw=null, codIdx=-1;
             for(let i=0;i<r.length;i++){
-                if(esCodigo(r[i])){cod=ensureCod(r[i]);codIdx=i;break;}
+                if(esCodigo(r[i])){codRaw=String(r[i]).trim().toUpperCase();codIdx=i;break;}
             }
-            if(!cod||codIdx<0) return;
+            if(!codRaw||codIdx<0) return;
+
+            // Si NO es fila de Cajamarca, solo usarla como respaldo nacional
+            // cuando Cajamarca no tiene fila para este código en esta hoja
+            // (precio nacional uniforme — mismo precio en todas las tiendas)
+            if (!esFilaCajamarca && codConCajamarca.has(codRaw)) return; // ya hay dato de Cajamarca, ignorar
+
+            const cod = ensureCod(codRaw);
+            if(!cod) return;
+            const esRespaldoNacional = !esFilaCajamarca; // true = vino de otra tienda como fallback
 
             // Tipo desde contexto de la fila
             const rowStr = r.map(c=>String(c||'').toUpperCase()).join(' ');
@@ -3890,7 +3906,11 @@ function csParsePreciosXLSX(wb) {
                 }
             }
 
-            reg(cod, tipo, etiq, pMenor, pMayor, pOferta, nombre, esTienda);        });
+            // Si es respaldo nacional (Cajamarca no tiene esta promo en esta hoja),
+            // marcarlo en el nombre para que se note en la app, y no forzar prioridad
+            const nombreFinal = esRespaldoNacional ? nombre + ' (precio nacional)' : nombre;
+            reg(cod, tipo, etiq, pMenor, pMayor, pOferta, nombreFinal, esTienda && !esRespaldoNacional);
+        });
     });
 
     return Object.keys(csPreciosDB).length;
