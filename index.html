@@ -4182,18 +4182,36 @@ function csRenderPrecios(modelCode) {
     if (nombresUnicos.length) {
         const tipoIcon = {oferta:'\uD83D\uDFF7', combo:'\uD83D\uDCE6', ejecutivo:'\uD83D\uDC54', promo:'\uD83C\uDFF7'};
         promoDiv.style.display='block';
+
+        // Calcular precio ganador real (el mismo que usa csRenderPrecioFinal)
+        const menor  = p.menor  || 0;
+        const _oferta = ofertaFinal || 0;
+        let precioGanador = 0, libroGanador = null;
+        if (menor > 0 && _oferta > 0) {
+            if (menor <= _oferta) { precioGanador = menor;  libroGanador = p.menorLibro; }
+            else                  { precioGanador = _oferta; libroGanador = p.ofertaLibro; }
+        } else if (menor  > 0) { precioGanador = menor;  libroGanador = p.menorLibro; }
+        else if (_oferta > 0) { precioGanador = _oferta; libroGanador = p.ofertaLibro; }
+        if (!libroGanador && Array.isArray(p.libros) && p.libros.length) libroGanador = p.libros[p.libros.length-1];
+
         promoDiv.innerHTML = nombresUnicos.map(nombre=>{
             const pr = promos.find(x=>x.nombre===nombre);
             const tipo = pr?.tipo||'promo';
             const ico  = tipoIcon[tipo]||'\uD83C\uDFF7';
-            const pFmt = pr?.precio>0 ? ' — S/ '+pr.precio.toFixed(2) : '';
-            const pctStr = pr?.precio>0&&etiq>0&&pr.precio<etiq
-                ? ' (-'+((etiq-pr.precio)/etiq*100).toFixed(0)+'%)'
+            // Usar precio ganador real en lugar del precio de la promo
+            const precioMostrar = precioGanador > 0 ? precioGanador : (pr?.precio||0);
+            const libroMostrar  = libroGanador || pr?.libro || '';
+            const pFmt   = precioMostrar > 0 ? ' — S/ '+precioMostrar.toFixed(2) : '';
+            const pctStr = precioMostrar > 0 && etiq > 0 && precioMostrar < etiq
+                ? ' (-'+((etiq-precioMostrar)/etiq*100).toFixed(0)+'%)'
+                : '';
+            const libroTag = libroMostrar
+                ? '<span style="font-size:9px;color:#666;font-family:Inter,sans-serif;display:block;margin-top:1px;">📖 '+libroMostrar+'</span>'
                 : '';
             return '<div class="cs-promo-activa-row cs-pa-'+tipo+'">'
                 + '<span class="cs-pa-ico">'+ico+'</span>'
                 + '<div class="cs-pa-body">'
-                + '<div class="cs-pa-nombre">'+nombre+'</div>'
+                + '<div class="cs-pa-nombre">'+nombre+libroTag+'</div>'
                 + '<div class="cs-pa-precio">'+tipo.toUpperCase()+pctStr+pFmt+'</div>'
                 + '</div></div>';
         }).join('');
