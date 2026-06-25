@@ -631,31 +631,9 @@
         }
 
         /* ── TABS MODO STOCK/PRECIOS ── */
-        #cs-modo-selector { display: flex; gap: 0; background: #e8eef4; border-bottom: 2px solid #c8d4e0; flex-shrink: 0; padding: 0; }
-        .cs-modo-btn {
-            flex: 1; padding: 9px 8px; border: none; cursor: pointer;
-            font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.5px;
-            display: flex; align-items: center; justify-content: flex-start; gap: 7px;
-            background: #dce8f4; color: #446688;
-            border-right: 1px solid #c0d0e0;
-            border-bottom: 3px solid transparent;
-            transition: all 0.15s; position: relative;
-        }
-        .cs-modo-btn:last-child { border-right: none; }
-        .cs-modo-btn::before {
-            content: ''; width: 14px; height: 14px; border: 2px solid #88aac8;
-            border-radius: 3px; flex-shrink: 0; background: white;
-            transition: all 0.15s;
-        }
-        .cs-modo-btn.activo {
-            background: #f0f8ff; color: #002266;
-            border-bottom: 3px solid #cc2200; font-weight: 900;
-        }
-        .cs-modo-btn.activo::before {
-            background: #cc2200; border-color: #cc2200;
-            box-shadow: inset 0 0 0 2px white;
-        }
+        .cs-modo-bar { display: flex; gap: 0; background: #111; border-bottom: 1px solid #1A1A1A; flex-shrink: 0; }
+        .cs-modo-btn { flex: 1; padding: 9px 6px; border: none; background: none; color: #444; font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .cs-modo-btn.activo { color: var(--rojo-light); border-bottom-color: var(--rojo); background: rgba(229,57,53,0.06); }
         .cs-modo-ico { font-size: 13px; }
 
         /* ── TABS STOCK/PRECIOS ── */
@@ -1609,8 +1587,7 @@ function seleccionarModo(modo) {
         const panelAlmComp=$('panel-alm-comp'); if(panelAlmComp) panelAlmComp.classList.remove('visible');
 
         if (modo === 'comp') {
-            document.body.classList.remove('modo-stock','modo-alm','tema-claro');
-            document.body.classList.add('modo-comp');
+            document.body.className = 'modo-comp';
             $s('badge-txt').textContent = 'COMPARATIVO';
             $s('menu-sec-comp').classList.remove('hidden');
             ['btn-carga-comp','btn-comp-alm','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
@@ -1623,9 +1600,7 @@ function seleccionarModo(modo) {
             if (scannerEl2) scannerEl2.placeholder = 'ESCANEE CÓDIGO (13 DÍGITOS)';
             loadStateComp(); renderComp(); focusScanner();
         } else if (modo === 'stock') {
-            // Forzar tema claro en Consultar Stock, preservando otras clases
-            document.body.classList.remove('modo-comp','modo-alm','modo-stock','tema-oscuro');
-            document.body.classList.add('modo-stock','tema-claro');
+            document.body.className = 'modo-stock';
             $s('badge-txt').textContent = 'STOCK';
             const secSt=$('menu-sec-stock'); if(secSt) secSt.classList.remove('hidden');
             ['btn-carga-cs','btn-stock-buscar','btn-stock-borrar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
@@ -1638,8 +1613,7 @@ function seleccionarModo(modo) {
             const nw = document.getElementById('cs-name-search-wrap');
             if (nw) nw.style.display = Object.keys(csStockDB).length > 0 ? 'block' : 'none';
         } else {
-            document.body.classList.remove('modo-comp','modo-stock','tema-claro');
-            document.body.classList.add('modo-alm');
+            document.body.className = 'modo-alm';
             $s('badge-txt').textContent = 'ALMACÉN';
             $s('menu-sec-alm').classList.remove('hidden');
             ['btn-carga-alm','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
@@ -3000,14 +2974,17 @@ function mostrarDesc(cod) {
 function guardarLote() {
     if (!historial.length) { showToast('Nada que guardar','#c62828'); toggleMenu(); return; }
     toggleMenu();
-    const def='COMPARATIVO_'+new Date().toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'2-digit'}).replace(/\/g,'-')+'_'+(lotes.length+1);
-    const n=prompt('Nombre del reporte:', def);
-    if (!n) return;
-    lotes.push({nombre:n, fecha:new Date().toLocaleString(), tipo:'comp', datosLectura:[...historial], maestroSnapshot:Object.fromEntries(maestroMap), descSnapshot:Object.fromEntries(descripcionMap)});
-    historial=[]; maestroMap.forEach(v=>v.real=0);
-    saveComp(); saveLotes(); renderComp();
-    showToast('✅ Guardado: '+n,'#111');
-    verDetalleLote(lotes.length - 1);
+    mostrarResumen(() => {
+        const def='COMPARATIVO_'+new Date().toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'2-digit'}).replace(/\//g,'-')+'_'+(lotes.length+1);
+        const n=prompt('Nombre del reporte:', def);
+        if (!n) return;
+        lotes.push({nombre:n, fecha:new Date().toLocaleString(), tipo:'comp', datosLectura:[...historial], maestroSnapshot:Object.fromEntries(maestroMap), descSnapshot:Object.fromEntries(descripcionMap)});
+        historial=[]; maestroMap.forEach(v=>v.real=0);
+        saveComp(); saveLotes(); renderComp();
+        showToast('✅ Guardado: '+n,'#111');
+        // Abrir detalle del lote recién guardado
+        verDetalleLote(lotes.length - 1);
+    });
 }
 
 // ── RESETEAR ──
@@ -5203,7 +5180,7 @@ function driveProcesar(ab, tipo) {
 <!-- ══════ MODAL PIN (9) ══════ -->
 <div id="modal-pin">
     <div class="pin-card">
-        <div class="pin-header"><div class="pin-title" id="pin-tit">🔐 SEGURIDAD</div></div>
+        <div class="pin-header"><div class="pin-title" id="pin-tit">🔐 PIN REQUERIDO</div></div>
         <div class="pin-body">
             <div class="pin-dots">
                 <div class="pin-dot" id="pd0"></div>
