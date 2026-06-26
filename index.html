@@ -1846,14 +1846,18 @@ function abrirGuia(modulo) {
 
 function _convertirGuiaXLSX(wb) {
     // Parser para GUIA de movimientos WAMA
-    // Columnas fijas: A(0)=modelo, F(5)=descripcion, I(8)=colorCod, L(11)=colorNom
-    // Tallas: en la fila de cabecera (misma fila que modelo) a partir de col V(21)
-    // Código = P + modelo + colorCod + (posición_talla*2, dos dígitos)
+    // Columnas fijas: A(0)=modelo, F(5)=desc, I(8)=colorCod, L(11)=colorNom
+    // Tallas en cabecera: col V(21), Z(25), AD(29), AG(32), AJ(35), AM(38), AP(41), AS(44), AW(48), AZ(51), BC(54), BG(58)
+    //
+    // REGLA de código talla (últimos 2 dígitos del barcode):
+    //   Pantalón adulto  (26,28,30...): código = posición * 2  → 26=02, 28=04, 30=06...
+    //   Ropa adulto      (S,M,L,XL...): código = posición      → S=01, M=02, L=03, XL=04...
+    //   Junior           (02,04,06...): código = valor mismo    → 02=02, 04=04, 06=06...
     const ws = wb.Sheets[wb.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
 
-    // Columnas donde van las tallas (V,Z,AD,AG,AJ,AM,AP,AS,AW,AZ,BC,BG = índices)
     const TALLA_IDX = [21,25,29,32,35,38,41,44,48,51,54,58];
+    const ROPA_ADULTO = new Set(['S','M','L','XL','XS','2X','4X','3X','ST','S ','M ','L ']);
 
     const res = [];
     let curCode = null, curDesc = null, curTallaMap = {};
@@ -1861,28 +1865,44 @@ function _convertirGuiaXLSX(wb) {
     for (const row of data) {
         const c0  = String(row[0]  ||'').trim();
         const c5  = String(row[5]  ||'').trim();
-        const c8  = String(row[8]  ||'').trim();   // código color
-        const c11 = String(row[11] ||'').trim();   // nombre color
+        const c8  = String(row[8]  ||'').trim();
+        const c11 = String(row[11] ||'').trim();
 
-        // Fila de cabecera de producto: tiene código en col A y descripción en col F
         if (c0 && c5 && !['CÓDIGO','TOTAL:','TOTAL ITEMS'].includes(c0)) {
             curCode = c0;
             curDesc = c5;
-            // Construir mapa dinámico: índice_columna → código_talla (posición*2, 2 dígitos)
             curTallaMap = {};
-            let pos = 1;
+
+            // Recoger los valores de talla de la cabecera
+            const tallasPresentes = [];
             for (const idx of TALLA_IDX) {
-                const tallaVal = String(row[idx]||'').trim();
-                if (tallaVal && tallaVal !== '') {
-                    // Código talla = posición * 2, con cero a la izquierda
-                    curTallaMap[idx] = String(pos * 2).padStart(2, '0');
-                    pos++;
-                }
+                const tv = String(row[idx]||'').trim();
+                if (tv) tallasPresentes.push({idx, val: tv});
             }
+
+            // Detectar tipo de talla por el primer valor
+            const primerVal = tallasPresentes.length ? tallasPresentes[0].val : '';
+            const esRopaAdulto  = ROPA_ADULTO.has(primerVal);
+            const esJunior      = /^(02|04|06|08|10|12|14|16|18)$/.test(primerVal);
+            // esRopaAdulto: S,M,L... → código = posición
+            // esJunior: 02,04,06...  → código = valor mismo de la talla
+            // sino: pantalón adulto  → código = posición * 2
+
+            tallasPresentes.forEach(({idx, val}, posIdx) => {
+                let tallaCode;
+                if (esRopaAdulto) {
+                    tallaCode = String(posIdx + 1).padStart(2, '0');
+                } else if (esJunior) {
+                    tallaCode = val.padStart(2, '0');
+                } else {
+                    // pantalón adulto: posición * 2
+                    tallaCode = String((posIdx + 1) * 2).padStart(2, '0');
+                }
+                curTallaMap[idx] = tallaCode;
+            });
             continue;
         }
 
-        // Fila de color: tiene colorCod en col I, colorNom en col L
         if (!c8 || !curCode || ['CÓDIGO','TOTAL:','TOTAL ITEMS'].includes(c0)) continue;
 
         for (const [idxStr, tallaCode] of Object.entries(curTallaMap)) {
