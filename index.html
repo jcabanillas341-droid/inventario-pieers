@@ -1898,18 +1898,19 @@ function _convertirGuiaXLSX(wb) {
                     // pantalón adulto: posición * 2
                     tallaCode = String((posIdx + 1) * 2).padStart(2, '0');
                 }
-                curTallaMap[idx] = tallaCode;
+                // Guardar código Y valor real de la talla para la descripción
+                curTallaMap[idx] = { code: tallaCode, label: val };
             });
             continue;
         }
 
         if (!c8 || !curCode || ['CÓDIGO','TOTAL:','TOTAL ITEMS'].includes(c0)) continue;
 
-        for (const [idxStr, tallaCode] of Object.entries(curTallaMap)) {
+        for (const [idxStr, tallaObj] of Object.entries(curTallaMap)) {
             const qty = parseInt(row[parseInt(idxStr)]) || 0;
             if (qty > 0) {
-                const codigo = 'P' + curCode + c8 + tallaCode;
-                const desc   = curDesc + ' ' + c11 + ' T/' + tallaCode;
+                const codigo = 'P' + curCode + c8 + tallaObj.code;
+                const desc   = curDesc + ' ' + c11 + ' T/' + tallaObj.label;
                 res.push({ codigo, descripcion: desc, cantidad: qty, colorNom: c11 });
             }
         }
