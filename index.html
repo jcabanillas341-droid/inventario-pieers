@@ -1847,17 +1847,21 @@ function abrirGuia(modulo) {
 function _convertirGuiaXLSX(wb) {
     // Parser para GUIA de movimientos WAMA
     // Columnas fijas: A(0)=modelo, F(5)=desc, I(8)=colorCod, L(11)=colorNom
-    // Tallas en cabecera: col V(21), Z(25), AD(29), AG(32), AJ(35), AM(38), AP(41), AS(44), AW(48), AZ(51), BC(54), BG(58)
+    // Tallas en cabecera: cols V(21),Z(25),AD(29),AG(32),AJ(35),AM(38),AP(41),AS(44),AW(48),AZ(51),BC(54),BG(58)
     //
-    // REGLA de código talla (últimos 2 dígitos del barcode):
-    //   Pantalón adulto  (26,28,30...): código = posición * 2  → 26=02, 28=04, 30=06...
-    //   Ropa adulto      (S,M,L,XL...): código = posición      → S=01, M=02, L=03, XL=04...
-    //   Junior           (02,04,06...): código = valor mismo    → 02=02, 04=04, 06=06...
+    // REGLA código talla (últimos 2 dígitos del barcode):
+    //   Ropa adulto   (S,M,L,XL...): posición directa → S=01, M=02, L=03, XL=04...
+    //   Junior        (02,04,06...): valor mismo → 02=02, 04=04, 06=06...
+    //   Pantalón CO/ED (26,28,30...): posición * 2 → 26=02, 28=04, 30=06...
+    //   Pantalón otros (26,28,30...): posición directa → 26=01, 28=02, 30=03...
     const ws = wb.Sheets[wb.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
 
     const TALLA_IDX = [21,25,29,32,35,38,41,44,48,51,54,58];
-    const ROPA_ADULTO = new Set(['S','M','L','XL','XS','2X','4X','3X','ST','S ','M ','L ']);
+    const ROPA_ADULTO = new Set(['S','M','L','XL','XS','2X','4X','3X','ST']);
+    const JUNIOR_TALLAS = new Set(['02','04','06','08','10','12','14','16','18']);
+    // Marcas que usan posición*2 para pantalón adulto (verificado con barcodes reales)
+    const MARCAS_POS2 = ['CO','ED'];
 
     const res = [];
     let curCode = null, curDesc = null, curTallaMap = {};
@@ -1873,32 +1877,28 @@ function _convertirGuiaXLSX(wb) {
             curDesc = c5;
             curTallaMap = {};
 
-            // Recoger los valores de talla de la cabecera
             const tallasPresentes = [];
             for (const idx of TALLA_IDX) {
                 const tv = String(row[idx]||'').trim();
                 if (tv) tallasPresentes.push({idx, val: tv});
             }
 
-            // Detectar tipo de talla por el primer valor
             const primerVal = tallasPresentes.length ? tallasPresentes[0].val : '';
-            const esRopaAdulto  = ROPA_ADULTO.has(primerVal);
-            const esJunior      = /^(02|04|06|08|10|12|14|16|18)$/.test(primerVal);
-            // esRopaAdulto: S,M,L... → código = posición
-            // esJunior: 02,04,06...  → código = valor mismo de la talla
-            // sino: pantalón adulto  → código = posición * 2
+            const esRopaAdulto = ROPA_ADULTO.has(primerVal);
+            const esJunior     = JUNIOR_TALLAS.has(primerVal);
+            // Para pantalón adulto: verificar si el modelo usa pos*2 (CO*, ED*) o pos directa
+            const prefijo2 = curCode.substring(0, 2).toUpperCase();
+            const esPantalonPos2 = !esRopaAdulto && !esJunior && MARCAS_POS2.includes(prefijo2);
 
             tallasPresentes.forEach(({idx, val}, posIdx) => {
                 let tallaCode;
-                if (esRopaAdulto) {
-                    tallaCode = String(posIdx + 1).padStart(2, '0');
-                } else if (esJunior) {
-                    tallaCode = val.padStart(2, '0');
+                if (esJunior) {
+                    tallaCode = val.padStart(2, '0');          // 02,04,06...
+                } else if (esRopaAdulto || !esPantalonPos2) {
+                    tallaCode = String(posIdx + 1).padStart(2, '0');  // pos directa
                 } else {
-                    // pantalón adulto: posición * 2
-                    tallaCode = String((posIdx + 1) * 2).padStart(2, '0');
+                    tallaCode = String((posIdx + 1) * 2).padStart(2, '0'); // pos*2
                 }
-                // Guardar código Y valor real de la talla para la descripción
                 curTallaMap[idx] = { code: tallaCode, label: val };
             });
             continue;
