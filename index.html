@@ -1845,22 +1845,53 @@ function abrirGuia(modulo) {
 }
 
 function _convertirGuiaXLSX(wb) {
-    // Parser para archivos GUIA de movimientos (WAMA)
+    // Parser para GUIA de movimientos WAMA
+    // Columnas fijas: A(0)=modelo, F(5)=descripcion, I(8)=colorCod, L(11)=colorNom
+    // Tallas: en la fila de cabecera (misma fila que modelo) a partir de col V(21)
+    // Código = P + modelo + colorCod + (posición_talla*2, dos dígitos)
     const ws = wb.Sheets[wb.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
-    const TALLA_COLS = {21:'02',25:'04',29:'06',32:'08',35:'10',38:'12',41:'14',44:'16',48:'18'};
+
+    // Columnas donde van las tallas (V,Z,AD,AG,AJ,AM,AP,AS,AW,AZ,BC,BG = índices)
+    const TALLA_IDX = [21,25,29,32,35,38,41,44,48,51,54,58];
+
     const res = [];
-    let curCode = null, curDesc = null;
+    let curCode = null, curDesc = null, curTallaMap = {};
+
     for (const row of data) {
-        const c0 = String(row[0]||'').trim();
-        const c5 = String(row[5]||'').trim();
-        const c8 = String(row[8]||'').trim();
-        const c11= String(row[11]||'').trim();
-        if (c0 && !['CÓDIGO','TOTAL:','TOTAL ITEMS'].includes(c0) && c5) { curCode=c0; curDesc=c5; continue; }
+        const c0  = String(row[0]  ||'').trim();
+        const c5  = String(row[5]  ||'').trim();
+        const c8  = String(row[8]  ||'').trim();   // código color
+        const c11 = String(row[11] ||'').trim();   // nombre color
+
+        // Fila de cabecera de producto: tiene código en col A y descripción en col F
+        if (c0 && c5 && !['CÓDIGO','TOTAL:','TOTAL ITEMS'].includes(c0)) {
+            curCode = c0;
+            curDesc = c5;
+            // Construir mapa dinámico: índice_columna → código_talla (posición*2, 2 dígitos)
+            curTallaMap = {};
+            let pos = 1;
+            for (const idx of TALLA_IDX) {
+                const tallaVal = String(row[idx]||'').trim();
+                if (tallaVal && tallaVal !== '') {
+                    // Código talla = posición * 2, con cero a la izquierda
+                    curTallaMap[idx] = String(pos * 2).padStart(2, '0');
+                    pos++;
+                }
+            }
+            continue;
+        }
+
+        // Fila de color: tiene colorCod en col I, colorNom en col L
         if (!c8 || !curCode || ['CÓDIGO','TOTAL:','TOTAL ITEMS'].includes(c0)) continue;
-        for (const [ci, talla] of Object.entries(TALLA_COLS)) {
-            const qty = parseInt(row[parseInt(ci)]) || 0;
-            if (qty > 0) res.push({codigo:'P'+curCode+c8+talla, descripcion:curDesc+' '+c11+' T/'+talla, cantidad:qty, colorNom:c11});
+
+        for (const [idxStr, tallaCode] of Object.entries(curTallaMap)) {
+            const qty = parseInt(row[parseInt(idxStr)]) || 0;
+            if (qty > 0) {
+                const codigo = 'P' + curCode + c8 + tallaCode;
+                const desc   = curDesc + ' ' + c11 + ' T/' + tallaCode;
+                res.push({ codigo, descripcion: desc, cantidad: qty, colorNom: c11 });
+            }
         }
     }
     return res;
