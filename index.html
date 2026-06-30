@@ -4022,8 +4022,10 @@ function csParsePreciosXLSX(wb, nombreLibro) {
             if(tipo==='oferta'){
                 pOferta = pMin;
             } else if(tipo==='combo'){
+                // COMBO: pMayor = precio combo, pMenor = 0 (no tocar el unitario)
+                // El precio unitario viene de la hoja PRomo/PRomo tiendas por separado
                 pMayor = pMin;
-                pMenor = pSeg || pMin;
+                pMenor = 0;
             } else if(tipo==='ejecutivo'){
                 pMayor = pMin;
                 pMenor = pSeg || 0;
@@ -4031,13 +4033,13 @@ function csParsePreciosXLSX(wb, nombreLibro) {
                 pMenor = pMin;
             }
 
-            // Si nombre dice "X% DSCTO ADIC", calcular: PRECIO_PROP x (1 - X/100)
-            // igual que WAMA cuando col PREC_ADC = 0 o #N/D
+            // Si nombre dice "X% DSCTO ADIC", calcular precio combo adicional
+            // Aplica sobre el precio unitario (pMin = precio base de la fila)
             if (nombre) {
                 const mPct = nombre.match(/(\d+(?:\.\d+)?)\s*%\s*(?:DSCTO|DESC|DESCUENTO)/i);
                 if (mPct) {
                     const pct = parseFloat(mPct[1]) / 100;
-                    const base = pMenor || pMin;
+                    const base = pMin; // siempre sobre el precio base de la fila
                     if (base > 0) {
                         const calc = parseFloat((base * (1 - pct)).toFixed(3));
                         if (calc > 0 && calc < base) pMayor = calc;
