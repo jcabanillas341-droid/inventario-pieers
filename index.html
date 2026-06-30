@@ -3990,10 +3990,6 @@ function csParsePreciosXLSX(wb, nombreLibro) {
                 tipo = 'ejecutivo';
             else if (rowStr.includes('COMBO'))
                 tipo = 'combo';
-            // Detectar combo por patrón NX en el nombre de promo (col 2) o cualquier celda
-            // Ej: "POLOS DESDE 2X79.90", "CASACAS 3X99.90"
-            else if (/\b\d+X\d/i.test(String(r[2]||'')))
-                tipo = 'combo';
 
             // Nombre de la promo: siempre en columna 2 (DESCRIPCION PROMO)
             const nombre = String(r[2]||'').trim();
