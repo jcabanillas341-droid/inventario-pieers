@@ -3803,12 +3803,15 @@ function csLoadPreciosLocal() {
         if (!payload.db || !Object.keys(payload.db).length) return false;
         csPreciosDB      = payload.db;
         csLibrosCargados = payload.libros || [];
-        // ── Migración v2: detectar y corregir datos corruptos ──
-        // En versiones anteriores, combo pisaba entry.menor con el precio combo.
-        // Señal de corrupción: entry.menor <= entry.mayor (unitario debe ser > combo)
-        // También: entry.menor === entry.mayor (combo pisó unitario con mismo valor)
+        // ── Migración v2: si datos son de versión anterior, borrar caché completo ──
+        // En versiones anteriores, combo pisaba entry.menor con precio incorrecto.
+        // La única forma segura es descartar el caché y pedir recargar el Memorandum.
         const SCHEMA_VERSION = payload.schemaVersion || 1;
-        let needsMigration = SCHEMA_VERSION < 2;
+        if (SCHEMA_VERSION < 2) {
+            // Caché corrupto — descartarlo completamente
+            try { localStorage.removeItem(CS_PRECIOS_KEY); } catch(e2) {}
+            return false; // Forzar que el usuario recargue el Memorandum
+        }
 
         // Reparar entradas de versiones anteriores que puedan venir incompletas
         Object.keys(csPreciosDB).forEach(k => {
@@ -3828,15 +3831,6 @@ function csLoadPreciosLocal() {
             if (typeof e.mayorLibro  !== 'string') e.mayorLibro  = null;
             if (typeof e.ofertaLibro !== 'string') e.ofertaLibro = null;
             if (e.cambioInfo === undefined) e.cambioInfo = null;
-
-            // Migración v2: limpiar entry.menor si el combo lo pisó
-            // Un unitario siempre debe ser MAYOR que el combo (unitario > combo)
-            // Si menor <= mayor y ambos > 0, el menor fue contaminado por el combo
-            if (needsMigration && e.menor > 0 && e.mayor > 0 && e.menor <= e.mayor) {
-                e.menor = 0;
-                e.menorLibro = null;
-                e.menorEsTienda = false;
-            }
         });
         return true;
     } catch(e) { return false; }
