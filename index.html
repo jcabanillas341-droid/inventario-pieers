@@ -4002,8 +4002,10 @@ function csParsePreciosXLSX(wb, nombreLibro) {
             else if (rowStr.includes('COMBO'))
                 tipo = 'combo';
 
-            // Nombre de la promo: siempre en columna 2 (DESCRIPCION PROMO)
-            const nombre = String(r[2]||'').trim();
+            // Nombre de la promo: siempre en r[codIdx - 4] (verificado en todas las hojas)
+            // PRomo: codIdx=4 → r[0]; Combo: codIdx=4 → r[0]
+            // PRomo tiendas: codIdx=7 → r[3]; PromocomboTda: codIdx=6 → r[2]
+            const nombre = String(r[Math.max(0, codIdx - 4)]||'').trim();
 
             // ── Recoger precios ──────────────────────────────────────────
             // 1. Tomar números DESPUÉS del código (desde codIdx+2)
