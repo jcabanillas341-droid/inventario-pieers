@@ -1095,12 +1095,14 @@
                     <div class="cs-price-val" id="cs-p-menor">0.00</div>
                     <div class="cs-price-pct" id="cs-pct-menor">—</div>
                     <div id="cs-pf-libro" style="font-size:8px;font-weight:800;color:#fff;background:rgba(0,0,0,0.22);border-radius:8px;padding:2px 6px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">📖 —</div>
+                    <div id="cs-pf-promo-unitario" style="font-size:7px;font-weight:700;color:rgba(255,255,255,0.85);margin-top:2px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:none;"></div>
                 </div>
                 <div class="cs-price-box" style="background:#00B8D4;flex:1;">
                     <div class="cs-price-label">COMBO</div>
                     <div class="cs-price-val" id="cs-p-mayor">0.00</div>
                     <div class="cs-price-pct" id="cs-pct-mayor">—</div>
                     <div id="cs-pf-libro-combo" style="font-size:8px;font-weight:800;color:#fff;background:rgba(0,0,0,0.22);border-radius:8px;padding:2px 6px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">📖 —</div>
+                    <div id="cs-pf-promo-combo" style="font-size:7px;font-weight:700;color:rgba(255,255,255,0.85);margin-top:2px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:none;"></div>
                 </div>
             </div>
             <!-- Fila 2: Oferta (grande) + Mayor (pequeño, secundario) -->
@@ -4002,10 +4004,18 @@ function csParsePreciosXLSX(wb, nombreLibro) {
             else if (rowStr.includes('COMBO'))
                 tipo = 'combo';
 
-            // Nombre de la promo: siempre en r[codIdx - 4] (verificado en todas las hojas)
-            // PRomo: codIdx=4 → r[0]; Combo: codIdx=4 → r[0]
-            // PRomo tiendas: codIdx=7 → r[3]; PromocomboTda: codIdx=6 → r[2]
-            const nombre = String(r[Math.max(0, codIdx - 4)]||'').trim();
+            // Nombre de la promo: buscar el primer texto con palabra clave antes del código
+            // Funciona para todas las hojas independientemente del número de columnas previas
+            const _PALABRAS_PROMO = ['PROMO','COMBO','OFERTA','BAJAR','EJECUTIVO','DESCUENTO'];
+            let nombre = '';
+            for (let _ni = 0; _ni < codIdx - 1; _ni++) {
+                const _nv = String(r[_ni]||'').trim().toUpperCase();
+                if (_nv && _PALABRAS_PROMO.some(p => _nv.includes(p))) {
+                    nombre = String(r[_ni]||'').trim();
+                    break;
+                }
+            }
+            if (!nombre) nombre = String(r[Math.max(0, codIdx-4)]||'').trim();
 
             // ── Recoger precios ──────────────────────────────────────────
             // 1. Tomar números DESPUÉS del código (desde codIdx+2)
@@ -4161,6 +4171,26 @@ function csRenderPrecioFinal(cod, p, etiq, ofertaFinal) {
         libroEncontrado = p.libros[p.libros.length - 1];
     }
     if (libroEl) libroEl.textContent = libroEncontrado ? '📖 ' + libroEncontrado : '📖 Libro no identificado';
+
+    // Nombre de promo del UNITARIO (solo la promo que corresponde al precio ganador)
+    const promoUnitEl = document.getElementById('cs-pf-promo-unitario');
+    if (promoUnitEl && p) {
+        const promos = p.promos || [];
+        // Buscar promo cuyo tipo sea promo/oferta y tenga precio cercano al ganador
+        const promoMatch = promos.find(pr =>
+            (pr.tipo === 'promo' || pr.tipo === 'oferta') &&
+            pr.nombre && pr.nombre.length > 3 &&
+            pr.precio > 0 && Math.abs(pr.precio - ganador.valor) < 1
+        ) || promos.find(pr =>
+            (pr.tipo === 'promo' || pr.tipo === 'oferta') && pr.nombre && pr.nombre.length > 3
+        );
+        if (promoMatch) {
+            promoUnitEl.textContent = '🏷 ' + promoMatch.nombre;
+            promoUnitEl.style.display = 'block';
+        } else {
+            promoUnitEl.style.display = 'none';
+        }
+    }
 }
 
 function csRenderPrecios(modelCode) {
@@ -4296,8 +4326,9 @@ function csRenderPrecios(modelCode) {
     }
     lista.innerHTML = headerHTML;
 
-    // ── Libro de origen del COMBO (precio mayor) ──
+    // ── Libro y nombre de promo del COMBO ──
     const libroComboEl = document.getElementById('cs-pf-libro-combo');
+    const promoComboEl = document.getElementById('cs-pf-promo-combo');
     if (libroComboEl) {
         let libroCombo = null;
         if (p.mayor > 0) {
@@ -4305,6 +4336,20 @@ function csRenderPrecios(modelCode) {
             if (!libroCombo && Array.isArray(p.libros) && p.libros.length) libroCombo = p.libros[p.libros.length - 1];
         }
         libroComboEl.textContent = libroCombo ? '📖 ' + libroCombo : '📖 —';
+
+        // Nombre de promo del COMBO
+        if (promoComboEl) {
+            const promos = p.promos || [];
+            const promoCombo = promos.find(pr =>
+                (pr.tipo === 'combo' || pr.tipo === 'ejecutivo') && pr.nombre && pr.nombre.length > 3
+            );
+            if (promoCombo && p.mayor > 0) {
+                promoComboEl.textContent = '🏷 ' + promoCombo.nombre;
+                promoComboEl.style.display = 'block';
+            } else {
+                promoComboEl.style.display = 'none';
+            }
+        }
     }
 }
 
