@@ -3810,7 +3810,7 @@ function csSavePreciosLocal() {
             db:            csPreciosDB,
             libros:        csLibrosCargados,
             date:          new Date().toLocaleString('es-PE'),
-            schemaVersion: 3
+            schemaVersion: 4
         }));
     } catch(e) { /* quota: sigue en memoria */ }
 }
@@ -3827,7 +3827,7 @@ function csLoadPreciosLocal() {
         // En versiones anteriores, combo pisaba entry.menor con precio incorrecto.
         // La única forma segura es descartar el caché y pedir recargar el Memorandum.
         const SCHEMA_VERSION = payload.schemaVersion || 1;
-        if (SCHEMA_VERSION < 3) {
+        if (SCHEMA_VERSION < 4) {
             // Caché de versión anterior — descartarlo completamente
             try { localStorage.removeItem(CS_PRECIOS_KEY); } catch(e2) {}
             return false; // Forzar que el usuario recargue el Memorandum
@@ -4079,18 +4079,12 @@ function csParsePreciosXLSX(wb, nombreLibro) {
                 pMenor = pMin;
             }
 
-            // Si nombre dice "X% DSCTO ADIC", calcular precio combo adicional
-            // Aplica sobre el precio unitario (pMin = precio base de la fila)
+            // Si nombre dice "X% DSCTO ADIC", guardar el % para aplicarlo
+            // DESPUÉS sobre entry.menor (precio unitario real, no el pMin de esta fila)
+            let _pctDsctoAdi = 0;
             if (nombre) {
                 const mPct = nombre.match(/(\d+(?:\.\d+)?)\s*%\s*(?:DSCTO|DESC|DESCUENTO)/i);
-                if (mPct) {
-                    const pct = parseFloat(mPct[1]) / 100;
-                    const base = pMin; // siempre sobre el precio base de la fila
-                    if (base > 0) {
-                        const calc = parseFloat((base * (1 - pct)).toFixed(3));
-                        if (calc > 0 && calc < base) pMayor = calc;
-                    }
-                }
+                if (mPct) _pctDsctoAdi = parseFloat(mPct[1]) / 100;
             }
 
             // Si estado=OF: este producto está en oferta, no en promo normal
@@ -4106,13 +4100,35 @@ function csParsePreciosXLSX(wb, nombreLibro) {
             // Marcar el entry como oferta para que la UI solo muestre cuadro OFERTA
             if (esEstadoOF && csPreciosDB[cod]) {
                 csPreciosDB[cod].esOferta = true;
-                // Limpiar menor y mayor si ya estaban (promo anterior puede haber pisado)
                 csPreciosDB[cod].menor = 0;
                 csPreciosDB[cod].mayor = 0;
                 csPreciosDB[cod].menorLibro = null;
                 csPreciosDB[cod].mayorLibro = null;
             }
+            // Si hay %DSCTO ADIC pendiente: guardar en entry para aplicar al finalizar
+            // Se aplica sobre entry.menor (precio unitario real), no sobre pMin de la fila
+            if (_pctDsctoAdi > 0 && csPreciosDB[cod]) {
+                csPreciosDB[cod]._pctDsctoAdi = _pctDsctoAdi;
+                csPreciosDB[cod]._pctDsctoLibro = libroId;
+            }
         });
+    });
+
+    // ── Segunda pasada: aplicar %DSCTO ADIC sobre entry.menor real ──
+    // Ahora que todas las hojas fueron procesadas, entry.menor tiene el precio unitario correcto
+    Object.keys(csPreciosDB).forEach(cod => {
+        const entry = csPreciosDB[cod];
+        if (entry._pctDsctoAdi > 0 && entry.menor > 0) {
+            const calc = parseFloat((entry.menor * (1 - entry._pctDsctoAdi)).toFixed(3));
+            if (calc > 0 && calc < entry.menor) {
+                entry.mayor = calc;
+                entry.mayorLibro = entry._pctDsctoLibro || entry.menorLibro;
+                entry.mayorEsTienda = entry.menorEsTienda;
+            }
+        }
+        // Limpiar campos temporales
+        delete entry._pctDsctoAdi;
+        delete entry._pctDsctoLibro;
     });
 
     // Registrar este libro en el historial
