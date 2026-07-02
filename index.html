@@ -5133,8 +5133,20 @@ function driveProcesar(ab, tipo) {
                     );
                 } else { aplicarCargaAlm(nuevos2, 'replace'); }
             } else if (tipo === 'cs') {
-                var csv = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
-                csStockDB = csParseStockCSV(csv);
+                // Intentar leer como texto CSV directamente (más fiable que sheet_to_csv para WAMA)
+                var csvDirect = '';
+                try {
+                    // Decodificar el ArrayBuffer como UTF-8
+                    csvDirect = new TextDecoder('utf-8').decode(new Uint8Array(ab));
+                    // Si no tiene LINEA, intentar latin1
+                    if (csvDirect.indexOf('LINEA') < 0) {
+                        csvDirect = new TextDecoder('latin1').decode(new Uint8Array(ab));
+                    }
+                } catch(e2) { csvDirect = ''; }
+                // Si tiene estructura WAMA (columna LINEA), usar directamente
+                var csvFinal = (csvDirect.indexOf('LINEA') >= 0) ? csvDirect
+                             : XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+                csStockDB = csParseStockCSV(csvFinal);
                 var cnt = Object.keys(csStockDB).length;
                 csSetBadge(cnt); csSetStatus('Base cargada desde Drive — ' + cnt + ' artículos.');
                 csSaveDB('Drive', cnt); hideLoading();
