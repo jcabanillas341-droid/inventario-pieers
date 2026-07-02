@@ -4787,11 +4787,26 @@ function csLoadFile(e) {
                 const wb = XLSX.read(ev.target.result, { type: 'array' });
                 csv = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
             }
-            csStockDB = csParseStockCSV(csv);
+            const lineasCs = parsearCSV(csv);
+            const resCs = _convertirStockCSV(lineasCs);
+            if (!resCs.length) throw new Error('Sin productos válidos en el archivo');
+            csStockDB = {};
+            resCs.forEach(r => {
+                const cod = r.codigo.toUpperCase();
+                const modelo = cod.length===13 ? cod.substring(1,8) : cod;
+                const color  = cod.length===13 ? cod.substring(8,11) : '';
+                const talla  = cod.length===13 ? cod.substring(11) : '';
+                if (!csStockDB[modelo]) csStockDB[modelo] = {desc: r.descripcion, sizes:[], colors:[]};
+                let ce = csStockDB[modelo].colors.find(x=>x.code===color);
+                if (!ce) { ce={code:color,name:r.colorNom||color,stocks:{},total:0}; csStockDB[modelo].colors.push(ce); }
+                ce.stocks[talla] = (ce.stocks[talla]||0) + r.cantidad;
+                ce.total = (ce.total||0) + r.cantidad;
+                if (!csStockDB[modelo].sizes.includes(talla)) csStockDB[modelo].sizes.push(talla);
+            });
             const cnt = Object.keys(csStockDB).length;
             csSetBadge(cnt);
             csSetStatus('Base cargada: ' + file.name + ' — ' + cnt + ' artículos.');
-            csSaveDB(file.name, cnt);          // ← guardar automáticamente
+            csSaveDB(file.name, cnt);
         } catch(err) { csSetStatus('❌ Error: ' + err.message); }
     };
     if (isCsv) reader.readAsText(file, 'utf-8');
@@ -5133,20 +5148,29 @@ function driveProcesar(ab, tipo) {
                     );
                 } else { aplicarCargaAlm(nuevos2, 'replace'); }
             } else if (tipo === 'cs') {
-                // Intentar leer como texto CSV directamente (más fiable que sheet_to_csv para WAMA)
-                var csvDirect = '';
-                try {
-                    // Decodificar el ArrayBuffer como UTF-8
-                    csvDirect = new TextDecoder('utf-8').decode(new Uint8Array(ab));
-                    // Si no tiene LINEA, intentar latin1
-                    if (csvDirect.indexOf('LINEA') < 0) {
-                        csvDirect = new TextDecoder('latin1').decode(new Uint8Array(ab));
-                    }
-                } catch(e2) { csvDirect = ''; }
-                // Si tiene estructura WAMA (columna LINEA), usar directamente
-                var csvFinal = (csvDirect.indexOf('LINEA') >= 0) ? csvDirect
-                             : XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
-                csStockDB = csParseStockCSV(csvFinal);
+                // Leer CSV directamente como texto UTF-8 (más fiable que XLSX para CSV de WAMA)
+                var csvDriveTxt = '';
+                try { csvDriveTxt = new TextDecoder('utf-8').decode(new Uint8Array(ab)); } catch(e2) {}
+                if (csvDriveTxt.indexOf('LINEA') < 0) {
+                    try { csvDriveTxt = new TextDecoder('latin1').decode(new Uint8Array(ab)); } catch(e3) {}
+                }
+                if (csvDriveTxt.indexOf('LINEA') < 0) {
+                    csvDriveTxt = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+                }
+                var resDrive = _convertirStockCSV(parsearCSV(csvDriveTxt));
+                csStockDB = {};
+                resDrive.forEach(function(r) {
+                    var cod = r.codigo.toUpperCase();
+                    var modelo = cod.length===13 ? cod.substring(1,8) : cod;
+                    var color  = cod.length===13 ? cod.substring(8,11) : '';
+                    var talla  = cod.length===13 ? cod.substring(11) : '';
+                    if (!csStockDB[modelo]) csStockDB[modelo] = {desc: r.descripcion, sizes:[], colors:[]};
+                    var ce = csStockDB[modelo].colors.find(function(x){return x.code===color;});
+                    if (!ce) { ce={code:color,name:r.colorNom||color,stocks:{},total:0}; csStockDB[modelo].colors.push(ce); }
+                    ce.stocks[talla] = (ce.stocks[talla]||0) + r.cantidad;
+                    ce.total = (ce.total||0) + r.cantidad;
+                    if (csStockDB[modelo].sizes.indexOf(talla) < 0) csStockDB[modelo].sizes.push(talla);
+                });
                 var cnt = Object.keys(csStockDB).length;
                 csSetBadge(cnt); csSetStatus('Base cargada desde Drive — ' + cnt + ' artículos.');
                 csSaveDB('Drive', cnt); hideLoading();
