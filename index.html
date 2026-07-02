@@ -83,9 +83,9 @@
         .btn-modo:active { transform: scale(0.97); }
         .btn-modo .ico { font-size: 28px; min-width: 38px; text-align: center; }
         .btn-modo .txt { display: flex; flex-direction: column; }
-        .btn-modo .tit { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+        .btn-modo .tit { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #fff !important; }
         .btn-modo .desc { font-size: 11px; font-weight: 400; margin-top: 3px; opacity: 0.8; line-height: 1.45; }
-        .btn-comp { background: linear-gradient(135deg, #1A1A1A 0%, #2C2C2C 100%); color: white; border: none; box-shadow: 0 4px 16px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .btn-comp { background: linear-gradient(135deg, #2C2C2C 0%, #1A1A1A 100%); color: white; border: none; box-shadow: 0 4px 16px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.06); }
         .btn-comp:hover { filter: brightness(1.15); }
         .btn-alm  { background: linear-gradient(135deg, var(--rojo) 0%, var(--rojo-dark) 100%); color: white; border: none; box-shadow: 0 4px 16px rgba(211,47,47,0.32), inset 0 1px 0 rgba(255,255,255,0.10); }
         .btn-alm:hover { filter: brightness(1.08); }
@@ -126,11 +126,11 @@
         /* ── PANELES ── */
         .split-view { display: flex; flex: 1; gap: 8px; overflow: hidden; padding: 0 10px 10px; min-height: 0; }
         .panel      { flex: 1; display: flex; flex-direction: column; background: var(--blanco); border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,0,0,0.07); box-shadow: var(--shadow-sm); }
-        .panel-h    { background: var(--negro); padding: 8px 10px; font-size: 10px; text-align: center; color: #DDD; flex-shrink: 0; font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; border-bottom: 2px solid var(--rojo); }
+        .panel-h    { background: #1A1A1A; padding: 8px 10px; font-size: 10px; text-align: center; color: #FFFFFF; flex-shrink: 0; font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; border-bottom: 2px solid var(--rojo); }
         .scroll     { flex: 1; overflow-y: auto; background: white; -webkit-overflow-scrolling: touch; }
 
         table  { width: 100%; border-collapse: collapse; color: var(--texto); table-layout: fixed; }
-        th     { background: #1A1A1A; color: #BBB; padding: 7px 4px; font-size: 9px; position: sticky; top: 0; z-index: 10; text-transform: uppercase; letter-spacing: 0.8px; font-family: 'Inter', sans-serif; }
+        th     { background: #1A1A1A; color: #FFFFFF; padding: 7px 4px; font-size: 9px; position: sticky; top: 0; z-index: 10; text-transform: uppercase; letter-spacing: 0.8px; font-family: 'Inter', sans-serif; }
         td     { padding: 10px 4px; border-bottom: 1px solid #F2F2F2; text-align: center; font-size: 12px; font-weight: 600; }
 
         .match    { background: #F0FAF1 !important; color: #1B5E20; }
@@ -837,11 +837,26 @@
         .menu-btn-danger { color: var(--rojo-light) !important; }
         a { color: #0066CC !important; }
 
-        /* Letras sobre fondos de botones rojos siguen blancas */
-        .btn-alm *, .btn-menu *, .busq-btn-ok *,
-        .dl-btn-excel *, .btn-confirm-yes *, .mov-btn-aplicar.ingreso *,
-        .asc-btn-ok *, .madc-btn-bulk-add *, .madc-btn-agregar-todos *,
-        .madc-btn-sel-alm * { color: #fff !important; }
+        /* Letras sobre fondos oscuros siguen blancas */
+        .btn-alm, .btn-alm *,
+        .btn-menu, .btn-menu *,
+        .btn-comp, .btn-comp *,
+        .busq-btn-ok, .busq-btn-ok *,
+        .dl-btn-excel, .dl-btn-excel *,
+        .btn-confirm-yes, .btn-confirm-yes *,
+        .mov-btn-aplicar.ingreso, .mov-btn-aplicar.ingreso *,
+        .mov-btn-aplicar.retiro, .mov-btn-aplicar.retiro *,
+        .asc-btn-ok, .asc-btn-ok *,
+        .madc-btn-bulk-add, .madc-btn-bulk-add *,
+        .madc-btn-agregar-todos, .madc-btn-agregar-todos *,
+        .madc-btn-sel-alm, .madc-btn-sel-alm *,
+        .panel-h, .panel-h *,
+        th, th *,
+        .alm-btn-buscar, .alm-btn-buscar *,
+        .mov-tab.activo, .mov-tab.activo *,
+        .btn-modo .tit,
+        .btn-modo .desc,
+        #toast, #toast * { color: #fff !important; }
     </style>
 </head>
 <body class="modo-comp">
