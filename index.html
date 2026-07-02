@@ -4397,13 +4397,8 @@ function csRenderPrecios(modelCode) {
             if(lista) lista.innerHTML='';
             const libroComboElFb = document.getElementById('cs-pf-libro-combo');
             if(libroComboElFb) libroComboElFb.textContent='📖 —';
-            // Cuadro único: en este caso solo hay precio de Oferta (si tipo=OF) o Etiqueta
-            const ofertaSola = mFallback.tipo === 'OF' ? mFallback.oferta : 0;
-            const stubMayor = ofertaSola > 0
-                ? {menor:0, oferta:ofertaSola, libros:['Precios por Mayor'],
-                   promos:[{nombre:'OFERTA', precio:ofertaSola, tipo:'oferta', libro:'Precios por Mayor'}]}
-                : {menor:0, oferta:0, libros:[], promos:[]};
-            csRenderPrecioFinal(cod, stubMayor, mFallback.etiqueta, ofertaSola);
+            // Sin memorandum: solo mostrar etiqueta y X Mayor (no UNITARIO, COMBO, OFERTA)
+            csRenderPrecioFinal(cod, {menor:0, oferta:0, libros:[], promos:[], mayor:0}, mFallback.etiqueta, 0);
         } else {
             panel.style.display='none';
         }
@@ -4422,10 +4417,12 @@ function csRenderPrecios(modelCode) {
     document.getElementById('cs-pct-etiqueta').textContent='Precio base';
     document.getElementById('cs-p-menor').textContent=fmt(p.menor);
     document.getElementById('cs-pct-menor').textContent=pct(p.menor,etiq);
-    document.getElementById('cs-p-mayor').textContent=fmt(p.mayor);
-    document.getElementById('cs-pct-mayor').textContent=pct(p.mayor,etiq);
-    // Oferta: desde memorandum o desde PRECIOS_POR_MAYOR si tipo=OF
-    const ofertaFinal = p.oferta > 0 ? p.oferta : (mDB && mDB.tipo==='OF' ? mDB.oferta : 0);
+    // X Mayor: primero de Precios por Mayor, luego del memorandum (combo)
+    const precioMayor = (mDB && mDB.mayor > 0) ? mDB.mayor : p.mayor;
+    document.getElementById('cs-p-mayor').textContent=fmt(precioMayor);
+    document.getElementById('cs-pct-mayor').textContent=pct(precioMayor,etiq);
+    // Oferta: SOLO desde memorandum. Precios por Mayor NO afecta OFERTA.
+    const ofertaFinal = p.oferta > 0 ? p.oferta : 0;
     document.getElementById('cs-p-oferta').textContent=fmt(ofertaFinal);
     document.getElementById('cs-pct-oferta').textContent=pct(ofertaFinal,etiq);
 
