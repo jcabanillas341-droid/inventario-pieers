@@ -4607,19 +4607,24 @@ function csLoadSaved() {
         const payload = JSON.parse(raw);
         if (!payload.db || !Object.keys(payload.db).length) return false;
 
-        // Detectar datos viejos con nombres abreviados (3 chars = código, no nombre)
+        // Detectar datos viejos:
+        // 1. Colores con nombre abreviado (<=3 chars)
+        // 2. Stocks guardados como ARRAY en vez de OBJETO {talla:qty}
         const db = payload.db;
         const firstKey = Object.keys(db)[0];
         const firstColors = db[firstKey]?.colors || [];
         const tieneAbrev = firstColors.length > 0 &&
             firstColors.every(c => String(c.name || '').length <= 3);
+        // Stocks viejo = array, nuevo = objeto
+        const tieneStocksArray = firstColors.length > 0 &&
+            firstColors.some(c => Array.isArray(c.stocks));
 
-        if (tieneAbrev) {
+        if (tieneAbrev || tieneStocksArray) {
             // Datos viejos — borrar y pedir recarga
             localStorage.removeItem(CS_STORAGE_KEY);
             csSetBadge(0);
-            csSetStatus('⚠️ Base desactualizada eliminada. Por favor recarga desde Drive (☰ → 📂 CARGAR BASE).');
-            showToast('⚠️ Base antigua eliminada — recarga desde Drive', '#E65100', 5000);
+            csSetStatus('⚠️ Base desactualizada eliminada. Por favor recarga el archivo de stock.');
+            showToast('⚠️ Base antigua eliminada — recarga el archivo de stock', '#E65100', 5000);
             return false;
         }
 
