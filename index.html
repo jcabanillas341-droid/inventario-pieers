@@ -22,7 +22,7 @@
             --rojo-light: #EF5350;
             --rojo-glow: rgba(211,47,47,0.18);
             --negro: #111111;
-            --negro-soft: #1E1E1E;
+            --negro-soft: #FFFFFF;
             --gris-borde: #E8E8E8;
             --gris-bg: #F7F7F7;
             --gris-mid: #9E9E9E;
@@ -188,7 +188,7 @@
         .mov-body { padding: 14px; }
         .mov-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
         .mov-tab { flex: 1; padding: 9px 6px; border: 2px solid var(--gris-borde); border-radius: 8px; background: var(--gris-bg); color: var(--gris-mid); cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.15s; }
-        .mov-tab.activo { background: var(--negro); color: var(--blanco); border-color: var(--negro); }
+        .mov-tab.activo { background: #333; color: #FFF; border-color: #333; }
         .mov-scanner-label { font-size: 9px; color: var(--gris-mid); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 3px; }
         #mov-scanner { width: 100%; padding: 11px 12px; border-radius: 8px; font-size: 16px; border: 2px solid var(--gris-borde); background: var(--gris-bg); color: var(--texto); text-align: center; font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: 2px; margin-bottom: 0; }
         #mov-scanner:focus { outline: none; border-color: var(--rojo); }
@@ -203,7 +203,7 @@
         .mov-manual-cant { width: 80px; padding: 9px 10px; border-radius: 8px; font-size: 14px; border: 2px solid var(--gris-borde); background: var(--gris-bg); color: var(--texto); font-family: 'Outfit', sans-serif; font-weight: 700; text-align: center; }
         .mov-manual-cant:focus { outline: none; border-color: var(--rojo); }
         .mov-btn-aplicar { width: 100%; padding: 14px; border: none; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; margin-top: 10px; transition: filter 0.15s; }
-        .mov-btn-aplicar.retiro  { background: var(--negro); color: white; }
+        .mov-btn-aplicar.retiro  { background: #444; color: white; }
         .mov-btn-aplicar.ingreso { background: var(--rojo); color: white; }
         .mov-btn-aplicar:active { filter: brightness(0.85); }
         .mov-btn-cancelar { width: 100%; padding: 10px; border: none; background: none; color: var(--gris-mid); font-size: 13px; cursor: pointer; margin-top: 4px; font-family: 'Outfit', sans-serif; }
@@ -218,7 +218,7 @@
         #panel-desc { display: none; margin: 0 10px 4px; background: #FFF5F5; border: 1px solid rgba(211,47,47,0.2); border-radius: 10px; padding: 7px 14px; flex-shrink: 0; }
 
         /* ── PANEL ALMACÉN EN COMPARATIVO ── */
-        #panel-alm-comp { display: none; margin: 0 8px 4px; background: #0a1a0a; border: 2px solid #2E7D32; border-radius: 8px; padding: 8px 12px; flex-shrink: 0; flex-direction: column; gap: 2px; }
+        #panel-alm-comp { display: none; margin: 0 8px 4px; background: #E8F5E9; border: 2px solid #2E7D32; border-radius: 8px; padding: 8px 12px; flex-shrink: 0; flex-direction: column; gap: 2px; }
         #panel-alm-comp.visible { display: flex; }
         .pac-row { display: flex; align-items: center; gap: 8px; }
         .pac-ico  { font-size: 16px; flex-shrink: 0; }
@@ -340,7 +340,7 @@
     font-family: 'Outfit', sans-serif; font-size: 14px;
     font-weight: 900; letter-spacing: 1px; cursor: pointer; transition: filter 0.15s;
 }
-.madc-btn-bulk-add:disabled { background: #2a2a2a; color: #555; cursor: not-allowed; }
+.madc-btn-bulk-add:disabled { background: #E0E0E0; color: #999; cursor: not-allowed; }
 .madc-btn-bulk-add:not(:disabled):active { filter: brightness(1.2); }
 
 /* ── NUEVA TARJETA COMPARATIVO-STOCK ── */
@@ -355,9 +355,9 @@
 .madc-col-lab { font-size: 8px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
 .madc-col-pill.alm  { background: #0a1a0a; }
 .madc-col-pill.alm .madc-col-val  { color: #4CAF50; }
-.madc-col-pill.esp  { background: #111; }
+.madc-col-pill.esp  { background: #F0F0F0; }
 .madc-col-pill.esp .madc-col-val  { color: #aaa; }
-.madc-col-pill.real { background: #111; }
+.madc-col-pill.real { background: #F0F0F0; }
 .madc-col-pill.real.ok  .madc-col-val { color: #4CAF50; }
 .madc-col-pill.real.falta .madc-col-val { color: #FF9800; }
 .madc-col-pill.real.sobra .madc-col-val { color: #EF5350; }
@@ -398,7 +398,7 @@
     justify-content: center; align-items: center; padding: 20px;
 }
 .asc-card {
-    background: #1A1A1A; border-radius: 14px; width: 100%; max-width: 340px;
+    background: #F5F5F5; border-radius: 14px; width: 100%; max-width: 340px; border: 1px solid #E0E0E0;
     overflow: hidden; border-top: 4px solid #2E7D32;
 }
 .asc-head {
@@ -420,7 +420,7 @@
 .asc-total-lab { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
 .asc-btns { display: flex; gap: 8px; }
 .asc-btn-ok { flex: 1; padding: 13px; border: none; border-radius: 8px; background: #1B5E20; color: white; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: 1px; }
-.asc-btn-cancel { flex: 1; padding: 13px; border: 1px solid #333; border-radius: 8px; background: #222; color: #888; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
+.asc-btn-cancel { flex: 1; padding: 13px; border: 1px solid #CCC; border-radius: 8px; background: #F0F0F0; color: #555; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
 
         /* ── COMP: botones archivo ── */
         #comp-file-btns { display: none; gap: 6px; flex-shrink: 0; padding: 2px 0; }
@@ -452,7 +452,7 @@
 
         /* ── ALMACÉN: barras y botones ── */
         .alm-action-bar { display: flex; gap: 8px; flex-shrink: 0; padding: 4px 10px 2px; }
-        .alm-btn-buscar { flex: 1; padding: 13px 8px; background: #1A1A1A; color: white; border: none; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; }
+        .alm-btn-buscar { flex: 1; padding: 13px 8px; background: #333; color: white; border: none; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; }
         .alm-btn-retiro { flex: 2; padding: 13px 8px; background: linear-gradient(135deg, var(--rojo), var(--rojo-dark)); color: white; border: none; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; box-shadow: 0 2px 8px var(--rojo-glow); }
         .alm-btn-buscar:active, .alm-btn-retiro:active { filter: brightness(0.85); }
         #alm-estado-badge { margin: 0 10px 4px; padding: 7px 14px; background: #F8F8FA; border: 1px solid #EEEEF0; border-radius: 12px; font-size: 11px; color: #999; text-align: center; font-family: 'Inter', sans-serif; flex-shrink: 0; font-weight: 500; }
@@ -494,7 +494,7 @@
 
         /* ── PIN ── */
         #modal-pin { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.93); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:9800; justify-content:center; align-items:center; padding:20px; }
-        .pin-card { background:#1A1A1A; border-radius:20px; width:100%; max-width:290px; overflow:hidden; border-top:4px solid var(--rojo); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+        .pin-card { background:#F5F5F5; border-radius:20px; width:100%; max-width:290px; overflow:hidden; border-top:4px solid var(--rojo); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
         .pin-header { background:var(--negro); padding:14px 16px; text-align:center; }
         .pin-title  { font-family:'Outfit',sans-serif; font-size:16px; font-weight:900; color:white; letter-spacing:1px; text-transform:uppercase; }
         .pin-body   { padding:16px; }
@@ -502,7 +502,7 @@
         .pin-dot    { width:14px; height:14px; border-radius:50%; background:#333; border:2px solid #555; transition:background 0.15s; }
         .pin-dot.on { background:var(--rojo); border-color:var(--rojo); box-shadow: 0 0 8px var(--rojo-glow); }
         .pin-grid   { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
-        .pin-k      { padding:16px; border:none; border-radius:12px; background:#2a2a2a; color:#fff; font-family:'Outfit',sans-serif; font-size:22px; font-weight:700; cursor:pointer; transition:background 0.12s; }
+        .pin-k      { padding:16px; border:none; border-radius:12px; background:#E0E0E0; color:#111; font-family:'Outfit',sans-serif; font-size:22px; font-weight:700; cursor:pointer; transition:background 0.12s; }
         .pin-k:active { background:#444; }
         .pin-k.dim  { background:#1a1a1a; color:#666; font-size:15px; }
         .pin-err    { text-align:center; font-size:12px; color:var(--rojo-light); margin-top:10px; font-family:'Inter',sans-serif; min-height:16px; }
@@ -521,7 +521,7 @@
 
         /* ── RESUMEN LOTE (7) ── */
         #modal-resumen { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:7500; justify-content:center; align-items:center; padding:16px; }
-        .res-card   { background:#1A1A1A; border-radius:14px; width:100%; max-width:320px; overflow:hidden; border-top:4px solid var(--rojo); }
+        .res-card   { background:#F5F5F5; border-radius:14px; width:100%; max-width:320px; overflow:hidden; border-top:4px solid var(--rojo); }
         .res-head   { background:var(--negro); padding:12px 16px; text-align:center; }
         .res-title  { font-family:'Outfit',sans-serif; font-size:16px; font-weight:900; color:white; letter-spacing:1px; text-transform:uppercase; }
         .res-body   { padding:12px 16px; }
