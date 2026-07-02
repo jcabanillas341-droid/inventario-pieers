@@ -5170,7 +5170,7 @@ function driveMostrarLista() {
             var kb = f.size ? (f.size > 1048576 ? (f.size/1048576).toFixed(1)+' MB' : (f.size/1024).toFixed(0)+' KB') : '';
             var ext = f.name.split('.').pop().toLowerCase();
             var ico = (ext==='xlsx'||ext==='xls') ? '📊' : (ext==='csv' ? '📄' : '📁');
-            html += '<div onclick="driveSeleccionarArchivo(\'' + f.id + '\',\'' + f.name.replace(/'/g,"\\'") + '\')" style="display:flex;align-items:center;gap:12px;padding:13px 12px;border-radius:10px;background:#111;margin-bottom:8px;cursor:pointer;border:1px solid #222;active:background:#1e2a3a;">';
+            html += '<div onclick="driveSeleccionarArchivo(\'' + f.id + '\',\'' + f.name.replace(/'/g,"\\'") + '\')" style="display:flex;align-items:center;gap:12px;padding:13px 12px;border-radius:10px;background:#F8F8F8;margin-bottom:8px;cursor:pointer;border:1px solid #E0E0E0;">';
             html += '<span style="font-size:22px;">' + ico + '</span>';
             html += '<div style="flex:1;min-width:0;"><div style="color:#fff;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + f.name + '</div>';
             if (kb) html += '<div style="color:#555;font-size:11px;margin-top:2px;">' + kb + '</div>';
@@ -5353,7 +5353,7 @@ function driveProcesar(ab, tipo) {
 </div>
 
 <div id="modal-drive" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9800;align-items:center;justify-content:center;padding:14px;">
-  <div style="background:#1a1a1a;border-radius:18px;width:100%;max-width:420px;border:1px solid #2a2a2a;box-shadow:0 16px 48px rgba(0,0,0,0.7);overflow:hidden;">
+  <div style="background:#FFFFFF;border-radius:18px;width:100%;max-width:420px;border:1px solid #E0E0E0;box-shadow:0 16px 48px rgba(0,0,0,0.3);overflow:hidden;">
 
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#0d47a1,#1565C0);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;">
@@ -5368,17 +5368,17 @@ function driveProcesar(ab, tipo) {
     </div>
 
     <!-- VISTA LOGIN -->
-    <div id="drive-vista-login" style="padding:20px;">
+    <div id="drive-vista-login" style="padding:20px;background:#FFFFFF;">
       <div style="text-align:center;margin-bottom:18px;">
         <div style="font-size:36px;margin-bottom:6px;">🔐</div>
-        <div style="color:#eee;font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;">INGRESA LA CONTRASEÑA</div>
-        <div style="color:#777;font-size:12px;margin-top:4px;">Para acceder a tus archivos en Drive</div>
+        <div style="color:#111;font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;">INGRESA LA CONTRASEÑA</div>
+        <div style="color:#555;font-size:12px;margin-top:4px;">Para acceder a tus archivos en Drive</div>
       </div>
       <input type="password" id="drive-pass-input" placeholder="Contraseña..."
         onkeydown="if(event.key==='Enter') driveIngresarPass()"
-        style="width:100%;padding:13px;border-radius:10px;border:2px solid #333;background:#111;color:white;font-size:15px;margin-bottom:12px;font-family:'Outfit',sans-serif;outline:none;text-align:center;letter-spacing:3px;"
+        style="width:100%;padding:13px;border-radius:10px;border:2px solid #CCC;background:#F5F5F5;color:#111;font-size:15px;margin-bottom:12px;font-family:'Outfit',sans-serif;outline:none;text-align:center;letter-spacing:3px;"
         onfocus="this.style.borderColor='#4FC3F7'" onblur="this.style.borderColor='#333'">
-      <label style="display:flex;align-items:center;gap:10px;color:#888;font-size:12px;margin-bottom:16px;cursor:pointer;">
+      <label style="display:flex;align-items:center;gap:10px;color:#444;font-size:12px;margin-bottom:16px;cursor:pointer;">
         <input type="checkbox" id="drive-recordar-pass" style="width:16px;height:16px;accent-color:#4FC3F7;" checked>
         Recordar contraseña en este dispositivo
       </label>
@@ -5388,16 +5388,16 @@ function driveProcesar(ab, tipo) {
     </div>
 
     <!-- VISTA LISTA DE ARCHIVOS -->
-    <div id="drive-vista-lista" style="display:none;padding:16px;">
+    <div id="drive-vista-lista" style="display:none;padding:16px;background:#FFFFFF;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div style="color:#aaa;font-size:12px;">📁 Carpeta: <b style="color:#4FC3F7;">PIEERS BASES</b></div>
+        <div style="color:#333;font-size:12px;font-weight:600;">📁 Carpeta: <b style="color:#1565C0;">PIEERS BASES</b></div>
         <div style="display:flex;gap:8px;">
-          <button onclick="driveMostrarLista()" style="background:#222;border:1px solid #333;color:#aaa;padding:5px 10px;border-radius:7px;font-size:11px;cursor:pointer;">🔄</button>
-          <button onclick="driveCerrarSesion()" style="background:#222;border:1px solid #333;color:#e57373;padding:5px 10px;border-radius:7px;font-size:11px;cursor:pointer;">Salir</button>
+          <button onclick="driveMostrarLista()" style="background:#F0F0F0;border:1px solid #CCC;color:#333;padding:5px 10px;border-radius:7px;font-size:11px;cursor:pointer;">🔄</button>
+          <button onclick="driveCerrarSesion()" style="background:#FFF0F0;border:1px solid #FFCDD2;color:#C62828;padding:5px 10px;border-radius:7px;font-size:11px;cursor:pointer;">Salir</button>
         </div>
       </div>
       <div id="drive-lista-archivos" style="max-height:340px;overflow-y:auto;"></div>
-      <div style="color:#555;font-size:10px;text-align:center;margin-top:10px;">Toca el archivo para cargarlo directo en la app</div>
+      <div style="color:#777;font-size:10px;text-align:center;margin-top:10px;">Toca el archivo para cargarlo directo en la app</div>
     </div>
 
   </div>
