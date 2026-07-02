@@ -3810,7 +3810,7 @@ function csSavePreciosLocal() {
             db:            csPreciosDB,
             libros:        csLibrosCargados,
             date:          new Date().toLocaleString('es-PE'),
-            schemaVersion: 2
+            schemaVersion: 3
         }));
     } catch(e) { /* quota: sigue en memoria */ }
 }
@@ -3827,8 +3827,8 @@ function csLoadPreciosLocal() {
         // En versiones anteriores, combo pisaba entry.menor con precio incorrecto.
         // La única forma segura es descartar el caché y pedir recargar el Memorandum.
         const SCHEMA_VERSION = payload.schemaVersion || 1;
-        if (SCHEMA_VERSION < 2) {
-            // Caché corrupto — descartarlo completamente
+        if (SCHEMA_VERSION < 3) {
+            // Caché de versión anterior — descartarlo completamente
             try { localStorage.removeItem(CS_PRECIOS_KEY); } catch(e2) {}
             return false; // Forzar que el usuario recargue el Memorandum
         }
