@@ -1082,7 +1082,7 @@
 
         <!-- ── PANEL PRECIOS PROMO ── -->
         <div id="cs-price-panel" style="display:none;flex-direction:column;flex:1;overflow-y:auto;padding:8px;min-height:0;">
-            <div id="cs-promo-activa" style="display:none;margin-bottom:8px;"></div>
+            <div id="cs-promo-activa" style="display:none !important;margin-bottom:8px;"></div>
             <!-- Fila 1: Etiqueta + Unitario + Combo -->
             <div style="display:flex;gap:6px;margin-bottom:6px;">
                 <div class="cs-price-box" style="background:#FFD600;flex:1.1;">
@@ -4336,7 +4336,8 @@ function csRenderPrecios(modelCode) {
     const nombresUnicos = [...new Set(promos.map(pr=>pr.nombre))].filter(esNombrePromoReal);
     if (nombresUnicos.length) {
         const tipoIcon = {oferta:'\uD83D\uDFF7', combo:'\uD83D\uDCE6', ejecutivo:'\uD83D\uDC54', promo:'\uD83C\uDFF7'};
-        promoDiv.style.display='block';
+        // promoDiv oculto — info de promo se muestra abajo de los precios
+        promoDiv.style.display='none';
 
         // Calcular precio ganador real (el mismo que usa csRenderPrecioFinal)
         const menor  = p.menor  || 0;
