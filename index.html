@@ -2015,14 +2015,20 @@ document.getElementById('guiaInput').addEventListener('change', function(e) {
                     res = esStock ? _convertirStockCSV(parsearCSV(csvTxt)) : _convertirGuiaXLSX(wb);
                     if (!res.length) res = esStock ? _convertirGuiaXLSX(wb) : _convertirStockCSV(parsearCSV(csvTxt));
                 } else {
-                    var lineasLocal = evt.target.result.split(/\r?\n/).map(function(l){ return csParseCSVLine(l); });
-                    res = _convertirStockCSV(lineasLocal);
+                    // Usar parsearCSV que maneja correctamente las comillas del CSV de WAMA
+                    res = _convertirStockCSV(parsearCSV(evt.target.result));
+                    if (!res.length) {
+                        // Fallback con split simple
+                        var lineasFb = evt.target.result.split(/\r?\n/).map(function(l){ return csParseCSVLine(l); });
+                        res = _convertirStockCSV(lineasFb);
+                    }
                 }
                 _cargarResultadosEnModulo(res, _guiaModulo);
             } catch(err) { hideLoading(); showToast('❌ '+err.message,'#c62828'); }
         }, 30);
     };
-    if (isXlsx) reader.readAsArrayBuffer(f); else reader.readAsText(f,'latin1');
+    // Usar UTF-8 (el CSV de WAMA es UTF-8, no latin1)
+    if (isXlsx) reader.readAsArrayBuffer(f); else reader.readAsText(f,'utf-8');
     e.target.value = '';
 });
 
@@ -4753,8 +4759,16 @@ function csParseStockCSV(text) {
         const stocks    = cols.slice(li + 18, li + 30).map(v => parseInt(v) || 0);
         const total     = parseInt(cols[li + 30]) || 0;
         if (!article || article === 'MODELO' || !colorName) continue;
-        if (!db[article]) db[article] = { desc: desc.replace(/\s+/g,' ').trim(), sizes, colors: [] };
-        db[article].colors.push({ code: colorCode, name: colorName, stocks, total });
+        // Filtrar tallas '--' y alinear stocks como objeto {talla: qty}
+        const stocksObj = {};
+        sizes.forEach((s, i) => {
+            if (s && s !== '--' && stocks[i] > 0) stocksObj[s] = stocks[i];
+        });
+        const sizesLimpias = sizes.filter(s => s && s !== '--');
+        if (!db[article]) db[article] = { desc: desc.replace(/\s+/g,' ').trim(), sizes: sizesLimpias, colors: [] };
+        // Unir sizes: agregar las que no estén aún
+        sizesLimpias.forEach(s => { if (!db[article].sizes.includes(s)) db[article].sizes.push(s); });
+        db[article].colors.push({ code: colorCode, name: colorName, stocks: stocksObj, total });
     }
     return db;
 }
@@ -4780,7 +4794,7 @@ function csLoadFile(e) {
             csSaveDB(file.name, cnt);          // ← guardar automáticamente
         } catch(err) { csSetStatus('❌ Error: ' + err.message); }
     };
-    if (isCsv) reader.readAsText(file, 'latin1');
+    if (isCsv) reader.readAsText(file, 'utf-8');
     else reader.readAsArrayBuffer(file);
     e.target.value = '';
 }
