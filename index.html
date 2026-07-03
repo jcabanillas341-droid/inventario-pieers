@@ -4051,18 +4051,21 @@ function csParsePreciosXLSX(wb, nombreLibro) {
             if (!nombre) nombre = String(r[Math.max(0, codIdx-4)]||'').trim();
 
             // ── Recoger precios ──────────────────────────────────────────
-            // 1. Tomar números DESPUÉS del código (desde codIdx+2)
-            // 2. Filtrar: mayor a 1 (excluye ratios como 0.64, cantidades como 0, 1)
-            // 3. Excluir el ÚLTIMO número de la fila (siempre es cantidad de stock)
-            const nums = []; // {v, i}
+            // 1. Tomar todos los números DESPUÉS del código (desde codIdx+2)
+            // 2. El ÚLTIMO número de la fila = stock (puede ser <=1, ej: stock=1)
+            //    Por eso se excluye por POSICIÓN (último índice), no por valor
+            // 3. Filtrar precios: mayor a 1, excluyendo el índice del stock
+            const allNums = [];
             for(let i=codIdx+2;i<r.length;i++){
                 const n=parseFloat(r[i]);
-                if(!isNaN(n)&&n>1) nums.push({v:n,i});
+                if(!isNaN(n)&&n>=0) allNums.push({v:n,i});
             }
+            if(!allNums.length) return;
+            // Stock = último número de la fila → excluir por posición
+            const stockIdx = allNums[allNums.length-1].i;
+            // Precios válidos: >1 y que no sean el stock
+            const nums = allNums.filter(x => x.v > 1 && x.i !== stockIdx);
             if(!nums.length) return;
-
-            // Excluir el último (qty de stock al final de la fila)
-            if(nums.length>1) nums.pop();
 
             // Ordenar por valor descendente y obtener únicos
             const vals = [...new Set(nums.map(n=>n.v))].sort((a,b)=>b-a);
