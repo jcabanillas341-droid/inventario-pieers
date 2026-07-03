@@ -14,7 +14,7 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600;700;900&family=Inter:wght@400;500;600;700&display=swap');
 
         :root {
             --rojo: #D32F2F;
@@ -22,7 +22,7 @@
             --rojo-light: #EF5350;
             --rojo-glow: rgba(211,47,47,0.18);
             --negro: #111111;
-            --negro-soft: #FFFFFF;
+            --negro-soft: #1E1E1E;
             --gris-borde: #E8E8E8;
             --gris-bg: #F7F7F7;
             --gris-mid: #9E9E9E;
@@ -37,7 +37,7 @@
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
-            font-family: 'Outfit', 'Inter', sans-serif;
+            font-family: 'Inter', 'Barlow', sans-serif;
             background: #F4F4F6;
             color: var(--texto);
             margin: 0; display: flex; flex-direction: column;
@@ -57,14 +57,14 @@
             background: linear-gradient(135deg, var(--rojo-light), var(--rojo-dark));
             border-radius: 22px;
             display: flex; align-items: center; justify-content: center;
-            font-family: 'Outfit', sans-serif; font-size: 38px; font-weight: 900;
+            font-family: 'Barlow', sans-serif; font-size: 38px; font-weight: 900;
             color: white;
             box-shadow: 0 8px 24px rgba(211,47,47,0.38), 0 2px 6px rgba(211,47,47,0.22);
             margin-bottom: 6px;
             letter-spacing: -1px;
         }
         .logo-modo {
-            font-family: 'Outfit', sans-serif; font-size: 32px; font-weight: 900;
+            font-family: 'Barlow', sans-serif; font-size: 32px; font-weight: 900;
             color: #111; letter-spacing: 3px; text-align: center; text-transform: uppercase; margin-bottom: 0;
         }
         .logo-acento { color: var(--rojo); }
@@ -76,32 +76,32 @@
         .logo-sub::before, .logo-sub::after {
             content: ''; display: block; height: 1px; width: 28px; background: var(--rojo); opacity: 0.4;
         }
-        .logo-selector { font-size: 10px; color: #777; text-align: center; letter-spacing: 2.5px; margin-bottom: 2px; text-transform: uppercase; font-weight: 500; }
-        .logo-v { font-size: 10px; color: #bbb; text-align: center; margin-top: -4px; font-weight: 400; }
+        .logo-selector { font-size: 10px; color: #111111; text-align: center; letter-spacing: 2.5px; margin-bottom: 2px; text-transform: uppercase; font-weight: 500; }
+        .logo-v { font-size: 10px; color: #111111; text-align: center; margin-top: -4px; font-weight: 400; }
 
         .btn-modo { width: 100%; padding: 18px 18px; border: none; border-radius: 16px; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 16px; transition: transform var(--transition), box-shadow var(--transition), filter var(--transition); }
         .btn-modo:active { transform: scale(0.97); }
         .btn-modo .ico { font-size: 28px; min-width: 38px; text-align: center; }
         .btn-modo .txt { display: flex; flex-direction: column; }
-        .btn-modo .tit { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: #fff !important; }
+        .btn-modo .tit { font-family: 'Barlow', sans-serif; font-size: 16px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
         .btn-modo .desc { font-size: 11px; font-weight: 400; margin-top: 3px; opacity: 0.8; line-height: 1.45; }
-        .btn-comp { background: linear-gradient(135deg, #2C2C2C 0%, #1A1A1A 100%); color: white; border: none; box-shadow: 0 4px 16px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.06); }
+        .btn-comp { background: linear-gradient(135deg, #1A1A1A 0%, #2C2C2C 100%); color: white; border: none; box-shadow: 0 4px 16px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.06); }
         .btn-comp:hover { filter: brightness(1.15); }
         .btn-alm  { background: linear-gradient(135deg, var(--rojo) 0%, var(--rojo-dark) 100%); color: white; border: none; box-shadow: 0 4px 16px rgba(211,47,47,0.32), inset 0 1px 0 rgba(255,255,255,0.10); }
         .btn-alm:hover { filter: brightness(1.08); }
 
         /* ── CABECERA ── */
         .header-app { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--blanco); border-bottom: 1px solid rgba(0,0,0,0.07); flex-shrink: 0; position: relative; box-shadow: 0 1px 8px rgba(0,0,0,0.07); }
-        .header-logo { font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 900; color: var(--negro); letter-spacing: 1.5px; }
+        .header-logo { font-family: 'Barlow', sans-serif; font-size: 18px; font-weight: 900; color: var(--negro); letter-spacing: 1.5px; }
         .logo-red { color: var(--rojo); }
-        .badge-modo { font-size: 9px; padding: 2px 9px; border-radius: 20px; color: white; background: var(--rojo); margin-left: 7px; letter-spacing: 0.5px; font-family: 'Outfit', sans-serif; font-weight: 700; box-shadow: 0 1px 4px var(--rojo-glow); }
-        .btn-menu { background: linear-gradient(135deg, var(--rojo), var(--rojo-dark)); color: white; border: none; padding: 8px 14px; border-radius: 9px; font-size: 12px; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: 1px; box-shadow: 0 2px 8px var(--rojo-glow); transition: filter var(--transition); }
+        .badge-modo { font-size: 9px; padding: 2px 9px; border-radius: 20px; color: white; background: var(--rojo); margin-left: 7px; letter-spacing: 0.5px; font-family: 'Barlow', sans-serif; font-weight: 700; box-shadow: 0 1px 4px var(--rojo-glow); }
+        .btn-menu { background: linear-gradient(135deg, var(--rojo), var(--rojo-dark)); color: white; border: none; padding: 8px 14px; border-radius: 9px; font-size: 12px; cursor: pointer; font-family: 'Barlow', sans-serif; font-weight: 700; letter-spacing: 1px; box-shadow: 0 2px 8px var(--rojo-glow); transition: filter var(--transition); }
         .btn-menu:active { filter: brightness(0.88); }
-        .btn-cambio { background: #F5F5F7; color: #555; border: 1px solid #E0E0E0; padding: 7px 11px; border-radius: 9px; font-size: 10px; cursor: pointer; transition: background var(--transition); }
+        .btn-cambio { background: #F5F5F7; color: #111111; border: 1px solid #E0E0E0; padding: 7px 11px; border-radius: 9px; font-size: 10px; cursor: pointer; transition: background var(--transition); }
         .btn-cambio:active { background: #EAEAEA; }
 
         .menu-dropdown { display: none; position: absolute; right: 10px; top: 56px; background: var(--blanco); z-index: 5000; border: 1px solid rgba(0,0,0,0.08); border-radius: 16px; min-width: 290px; max-width: calc(100vw - 20px); overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.15); max-height: calc(100vh - 70px); overflow-y: auto; }
-        .menu-section { padding: 10px 16px 6px; font-size: 10px; color: #bbb; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; border-top: 1px solid #F3F3F3; font-family: 'Inter', sans-serif; }
+        .menu-section { padding: 10px 16px 6px; font-size: 10px; color: #111111; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; border-top: 1px solid #F3F3F3; font-family: 'Inter', sans-serif; }
         .menu-section:first-child { border-top: none; }
         .menu-dropdown button { width: 100%; padding: 15px 18px; background: none; border: none; color: #222; text-align: left; border-bottom: 1px solid #F8F8F8; cursor: pointer; font-size: 14px; font-family: 'Inter', sans-serif; font-weight: 500; display: flex; align-items: center; gap: 10px; min-height: 50px; transition: background var(--transition); }
         .menu-dropdown button:active { background: #FFF0F0; }
@@ -109,14 +109,14 @@
         .menu-btn-danger { color: var(--rojo-light) !important; }
 
         /* ── SCANNER INPUT ── */
-        #scanner { width: 96%; margin: 8px auto; display: block; padding: 12px 14px; font-size: 18px; border-radius: 12px; border: 2px solid var(--rojo); text-align: center; background: var(--blanco); color: var(--negro); flex-shrink: 0; font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: 2px; box-shadow: 0 0 0 0 var(--rojo-glow); transition: box-shadow var(--transition); }
+        #scanner { width: 96%; margin: 8px auto; display: block; padding: 12px 14px; font-size: 18px; border-radius: 12px; border: 2px solid var(--rojo); text-align: center; background: var(--blanco); color: var(--negro); flex-shrink: 0; font-family: 'Barlow', sans-serif; font-weight: 700; letter-spacing: 2px; box-shadow: 0 0 0 0 var(--rojo-glow); transition: box-shadow var(--transition); }
         #scanner:focus { outline: none; box-shadow: 0 0 0 4px var(--rojo-glow); }
 
         /* ── PROGRESO ── */
         .progress-box { background: var(--blanco); padding: 10px 14px; margin: 0 10px 8px; border-radius: 14px; border: 1px solid rgba(0,0,0,0.06); flex-shrink: 0; box-shadow: var(--shadow-sm); }
         .stats-grid   { display: flex; justify-content: space-between; margin-bottom: 8px; }
-        .stat-val     { display: block; font-size: 24px; color: var(--rojo); text-align: center; font-family: 'Outfit', sans-serif; font-weight: 900; }
-        .stat-lab     { font-size: 8px; color: #bbb; text-transform: uppercase; text-align: center; letter-spacing: 0.8px; font-family: 'Inter', sans-serif; }
+        .stat-val     { display: block; font-size: 24px; color: var(--rojo); text-align: center; font-family: 'Barlow', sans-serif; font-weight: 900; }
+        .stat-lab     { font-size: 8px; color: #111111; text-transform: uppercase; text-align: center; letter-spacing: 0.8px; font-family: 'Inter', sans-serif; }
         .bar-bg       { background: #EBEBEB; height: 5px; border-radius: 10px; overflow: hidden; }
         #bar-fill     { background: linear-gradient(90deg, var(--rojo-dark), var(--rojo-light)); height: 100%; width: 0%; transition: width 0.4s cubic-bezier(.4,0,.2,1); border-radius: 10px; }
 
@@ -126,11 +126,11 @@
         /* ── PANELES ── */
         .split-view { display: flex; flex: 1; gap: 8px; overflow: hidden; padding: 0 10px 10px; min-height: 0; }
         .panel      { flex: 1; display: flex; flex-direction: column; background: var(--blanco); border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,0,0,0.07); box-shadow: var(--shadow-sm); }
-        .panel-h    { background: #1A1A1A; padding: 8px 10px; font-size: 10px; text-align: center; color: #FFFFFF; flex-shrink: 0; font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; border-bottom: 2px solid var(--rojo); }
+        .panel-h    { background: var(--negro); padding: 8px 10px; font-size: 10px; text-align: center; color: #DDD; flex-shrink: 0; font-family: 'Barlow', sans-serif; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; border-bottom: 2px solid var(--rojo); }
         .scroll     { flex: 1; overflow-y: auto; background: white; -webkit-overflow-scrolling: touch; }
 
         table  { width: 100%; border-collapse: collapse; color: var(--texto); table-layout: fixed; }
-        th     { background: #1A1A1A; color: #FFFFFF; padding: 7px 4px; font-size: 9px; position: sticky; top: 0; z-index: 10; text-transform: uppercase; letter-spacing: 0.8px; font-family: 'Inter', sans-serif; }
+        th     { background: #1A1A1A; color: #BBB; padding: 7px 4px; font-size: 9px; position: sticky; top: 0; z-index: 10; text-transform: uppercase; letter-spacing: 0.8px; font-family: 'Inter', sans-serif; }
         td     { padding: 10px 4px; border-bottom: 1px solid #F2F2F2; text-align: center; font-size: 12px; font-weight: 600; }
 
         .match    { background: #F0FAF1 !important; color: #1B5E20; }
@@ -142,7 +142,7 @@
 
         /* ── MODALES ── */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.70); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 5500; padding: 14px; flex-direction: column; }
-        .modal-title { font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 20px; color: var(--rojo); text-align: center; margin-bottom: 12px; letter-spacing: 1px; text-transform: uppercase; }
+        .modal-title { font-family: 'Barlow', sans-serif; font-weight: 900; font-size: 20px; color: var(--rojo); text-align: center; margin-bottom: 12px; letter-spacing: 1px; text-transform: uppercase; }
         .card-lote  { background: #1a1a1a; padding: 14px; border-radius: 12px; margin-bottom: 10px; border-left: 4px solid var(--rojo); }
         .hidden     { display: none !important; }
 
@@ -152,17 +152,17 @@
         #modal-busqueda { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 6000; justify-content: center; align-items: flex-start; padding: 30px 16px 16px; }
         .busq-card { background: var(--blanco); border-radius: 14px; width: 100%; max-width: 420px; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,0.4); border-top: 4px solid var(--rojo); }
         .busq-header { background: var(--negro); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
-        .busq-title { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 900; color: var(--blanco); letter-spacing: 1px; text-transform: uppercase; }
+        .busq-title { font-family: 'Barlow', sans-serif; font-size: 16px; font-weight: 900; color: var(--blanco); letter-spacing: 1px; text-transform: uppercase; }
         .busq-close { background: none; border: none; color: #aaa; font-size: 20px; cursor: pointer; padding: 0 4px; }
         .busq-body { padding: 14px; }
         .busq-label { font-size: 10px; font-weight: 700; color: var(--gris-mid); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; display: block; }
-        .busq-select { width: 100%; padding: 9px 10px; border-radius: 8px; border: 2px solid var(--gris-borde); background: var(--gris-bg); color: var(--texto); font-size: 13px; font-family: 'Outfit', sans-serif; margin-bottom: 10px; cursor: pointer; }
+        .busq-select { width: 100%; padding: 9px 10px; border-radius: 8px; border: 2px solid var(--gris-borde); background: var(--gris-bg); color: var(--texto); font-size: 13px; font-family: 'Barlow', sans-serif; margin-bottom: 10px; cursor: pointer; }
         .busq-select:focus { outline: none; border-color: var(--rojo); }
         .busq-input-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
-        #busq-input { flex: 1; padding: 10px 12px; border-radius: 8px; border: 2px solid var(--gris-borde); background: var(--blanco); color: var(--texto); font-size: 14px; font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: 1px; }
+        #busq-input { flex: 1; padding: 10px 12px; border-radius: 8px; border: 2px solid var(--gris-borde); background: var(--blanco); color: var(--texto); font-size: 14px; font-family: 'Barlow', sans-serif; font-weight: 700; letter-spacing: 1px; }
         #busq-input:focus { outline: none; border-color: var(--rojo); }
         #busq-input::placeholder { color: #bbb; font-weight: 400; font-size: 13px; letter-spacing: 0; }
-        .busq-btn-ok { padding: 10px 14px; border: none; border-radius: 8px; background: var(--rojo); color: white; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+        .busq-btn-ok { padding: 10px 14px; border: none; border-radius: 8px; background: var(--rojo); color: white; font-family: 'Barlow', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; }
         .busq-btn-ok:active { filter: brightness(0.85); }
         #busq-resultados { max-height: 220px; overflow-y: auto; border-radius: 8px; border: 1px solid var(--gris-borde); background: var(--gris-bg); }
         .busq-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--gris-borde); cursor: pointer; transition: background 0.1s; }
@@ -170,12 +170,12 @@
         .busq-item:hover { background: #FFEBEE; }
         .busq-item:active { background: #FFCDD2; }
         .busq-item-desc { font-size: 12px; color: var(--texto); font-weight: 600; flex: 1; margin-right: 8px; line-height: 1.3; }
-        .busq-item-stock { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 900; min-width: 32px; text-align: right; }
+        .busq-item-stock { font-family: 'Barlow', sans-serif; font-size: 20px; font-weight: 900; min-width: 32px; text-align: right; }
         .busq-item-cod { font-size: 9px; color: var(--gris-mid); display: block; margin-top: 1px; }
         .busq-empty { padding: 20px; text-align: center; color: var(--gris-mid); font-size: 12px; }
         .busq-footer { padding: 10px 14px; background: var(--gris-bg); border-top: 1px solid var(--gris-borde); display: flex; justify-content: space-between; align-items: center; }
         .busq-total-label { font-size: 10px; color: var(--gris-mid); text-transform: uppercase; letter-spacing: 1px; }
-        .busq-total-val { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 900; color: var(--rojo); }
+        .busq-total-val { font-family: 'Barlow', sans-serif; font-size: 20px; font-weight: 900; color: var(--rojo); }
 
         /* ── MODAL RETIRO / INGRESO ── */
         #modal-movimiento { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 6000; justify-content: center; align-items: center; padding: 16px; }
@@ -183,30 +183,30 @@
         .mov-header { padding: 13px 16px; display: flex; justify-content: space-between; align-items: center; }
         .mov-header.retiro  { background: var(--negro); border-bottom: 3px solid #FF5252; }
         .mov-header.ingreso { background: var(--rojo); border-bottom: 3px solid var(--rojo-dark); }
-        .mov-title { font-family: 'Outfit', sans-serif; font-size: 17px; font-weight: 900; color: var(--blanco); letter-spacing: 1px; text-transform: uppercase; }
+        .mov-title { font-family: 'Barlow', sans-serif; font-size: 17px; font-weight: 900; color: var(--blanco); letter-spacing: 1px; text-transform: uppercase; }
         .mov-close { background: rgba(255,255,255,0.15); border: none; color: white; font-size: 15px; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
         .mov-body { padding: 14px; }
         .mov-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
-        .mov-tab { flex: 1; padding: 9px 6px; border: 2px solid var(--gris-borde); border-radius: 8px; background: var(--gris-bg); color: var(--gris-mid); cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.15s; }
-        .mov-tab.activo { background: #333; color: #FFF; border-color: #333; }
+        .mov-tab { flex: 1; padding: 9px 6px; border: 2px solid var(--gris-borde); border-radius: 8px; background: var(--gris-bg); color: var(--gris-mid); cursor: pointer; font-family: 'Barlow', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.15s; }
+        .mov-tab.activo { background: var(--negro); color: var(--blanco); border-color: var(--negro); }
         .mov-scanner-label { font-size: 9px; color: var(--gris-mid); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 3px; }
-        #mov-scanner { width: 100%; padding: 11px 12px; border-radius: 8px; font-size: 16px; border: 2px solid var(--gris-borde); background: var(--gris-bg); color: var(--texto); text-align: center; font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: 2px; margin-bottom: 0; }
+        #mov-scanner { width: 100%; padding: 11px 12px; border-radius: 8px; font-size: 16px; border: 2px solid var(--gris-borde); background: var(--gris-bg); color: var(--texto); text-align: center; font-family: 'Barlow', sans-serif; font-weight: 700; letter-spacing: 2px; margin-bottom: 0; }
         #mov-scanner:focus { outline: none; border-color: var(--rojo); }
         #mov-scanner::placeholder { color: #bbb; font-weight: 400; font-size: 13px; letter-spacing: 0; }
-        .mov-manual-inp { width: 100%; padding: 10px 12px; border-radius: 8px; font-size: 14px; border: 2px solid var(--gris-borde); background: var(--gris-bg); color: var(--texto); font-family: 'Outfit', sans-serif; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
+        .mov-manual-inp { width: 100%; padding: 10px 12px; border-radius: 8px; font-size: 14px; border: 2px solid var(--gris-borde); background: var(--gris-bg); color: var(--texto); font-family: 'Barlow', sans-serif; font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; }
         .mov-manual-inp:focus { outline: none; border-color: var(--rojo); }
         .mov-manual-inp::placeholder { color: #bbb; font-weight: 400; letter-spacing: 0; font-size: 13px; }
         .mov-manual-row { display: flex; gap: 6px; margin-bottom: 8px; }
-        .mov-manual-desc { flex: 1; padding: 9px 12px; border-radius: 8px; font-size: 13px; border: 2px solid var(--gris-borde); background: var(--gris-bg); color: var(--texto); font-family: 'Outfit', sans-serif; }
+        .mov-manual-desc { flex: 1; padding: 9px 12px; border-radius: 8px; font-size: 13px; border: 2px solid var(--gris-borde); background: var(--gris-bg); color: var(--texto); font-family: 'Barlow', sans-serif; }
         .mov-manual-desc:focus { outline: none; border-color: var(--rojo); }
         .mov-manual-desc::placeholder { color: #bbb; }
-        .mov-manual-cant { width: 80px; padding: 9px 10px; border-radius: 8px; font-size: 14px; border: 2px solid var(--gris-borde); background: var(--gris-bg); color: var(--texto); font-family: 'Outfit', sans-serif; font-weight: 700; text-align: center; }
+        .mov-manual-cant { width: 80px; padding: 9px 10px; border-radius: 8px; font-size: 14px; border: 2px solid var(--gris-borde); background: var(--gris-bg); color: var(--texto); font-family: 'Barlow', sans-serif; font-weight: 700; text-align: center; }
         .mov-manual-cant:focus { outline: none; border-color: var(--rojo); }
-        .mov-btn-aplicar { width: 100%; padding: 14px; border: none; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; margin-top: 10px; transition: filter 0.15s; }
-        .mov-btn-aplicar.retiro  { background: #444; color: white; }
+        .mov-btn-aplicar { width: 100%; padding: 14px; border: none; border-radius: 10px; font-family: 'Barlow', sans-serif; font-size: 15px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; margin-top: 10px; transition: filter 0.15s; }
+        .mov-btn-aplicar.retiro  { background: var(--negro); color: white; }
         .mov-btn-aplicar.ingreso { background: var(--rojo); color: white; }
         .mov-btn-aplicar:active { filter: brightness(0.85); }
-        .mov-btn-cancelar { width: 100%; padding: 10px; border: none; background: none; color: var(--gris-mid); font-size: 13px; cursor: pointer; margin-top: 4px; font-family: 'Outfit', sans-serif; }
+        .mov-btn-cancelar { width: 100%; padding: 10px; border: none; background: none; color: var(--gris-mid); font-size: 13px; cursor: pointer; margin-top: 4px; font-family: 'Barlow', sans-serif; }
 
         /* ── LOADING OVERLAY ── */
         #loading-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.80); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); z-index: 8500; flex-direction: column; justify-content: center; align-items: center; gap: 18px; }
@@ -218,16 +218,16 @@
         #panel-desc { display: none; margin: 0 10px 4px; background: #FFF5F5; border: 1px solid rgba(211,47,47,0.2); border-radius: 10px; padding: 7px 14px; flex-shrink: 0; }
 
         /* ── PANEL ALMACÉN EN COMPARATIVO ── */
-        #panel-alm-comp { display: none; margin: 0 8px 4px; background: #E8F5E9; border: 2px solid #2E7D32; border-radius: 8px; padding: 8px 12px; flex-shrink: 0; flex-direction: column; gap: 2px; }
+        #panel-alm-comp { display: none; margin: 0 8px 4px; background: #0a1a0a; border: 2px solid #2E7D32; border-radius: 8px; padding: 8px 12px; flex-shrink: 0; flex-direction: column; gap: 2px; }
         #panel-alm-comp.visible { display: flex; }
         .pac-row { display: flex; align-items: center; gap: 8px; }
         .pac-ico  { font-size: 16px; flex-shrink: 0; }
-        .pac-cod  { font-family: 'Outfit', sans-serif; font-size: 11px; color: #888; letter-spacing: 1px; }
-        .pac-desc { font-family: 'Outfit', sans-serif; font-size: 12px; color: #ccc; flex: 1; line-height: 1.3; }
-        .pac-stock-badge { background: #1B5E20; color: white; font-family: 'Outfit', sans-serif; font-size: 18px; font-weight: 900; padding: 3px 12px; border-radius: 6px; letter-spacing: 1px; flex-shrink: 0; }
+        .pac-cod  { font-family: 'Barlow', sans-serif; font-size: 11px; color: #888; letter-spacing: 1px; }
+        .pac-desc { font-family: 'Barlow', sans-serif; font-size: 12px; color: #ccc; flex: 1; line-height: 1.3; }
+        .pac-stock-badge { background: #1B5E20; color: white; font-family: 'Barlow', sans-serif; font-size: 18px; font-weight: 900; padding: 3px 12px; border-radius: 6px; letter-spacing: 1px; flex-shrink: 0; }
         .pac-stock-badge.cero { background: #B71C1C; }
         .pac-stock-badge.bajo { background: #E65100; }
-        .pac-label { font-size: 9px; color: #4CAF50; text-transform: uppercase; letter-spacing: 1px; font-family: 'Outfit', sans-serif; }
+        .pac-label { font-size: 9px; color: #4CAF50; text-transform: uppercase; letter-spacing: 1px; font-family: 'Barlow', sans-serif; }
 
         /* ── MINI MODAL ALMACÉN DESDE COMPARATIVO ── */
 #modal-alm-desde-comp {
@@ -241,11 +241,11 @@
     border-bottom: 3px solid #2E7D32; flex-shrink: 0;
 }
 #modal-alm-desde-comp .madc-title {
-    font-family: 'Outfit', sans-serif; font-size: 15px;
+    font-family: 'Barlow', sans-serif; font-size: 15px;
     font-weight: 900; color: white; letter-spacing: 1px; flex: 1;
 }
 #modal-alm-desde-comp .madc-close {
-    background: none; border: none; color: #aaa; font-size: 22px; cursor: pointer;
+    background: none; border: none; color: #111111; font-size: 22px; cursor: pointer;
 }
 .madc-tabs {
     display: flex; gap: 0; flex-shrink: 0;
@@ -254,8 +254,8 @@
 }
 .madc-tab {
     flex: 1; padding: 9px 6px; border: none;
-    background: transparent; color: #666;
-    font-family: 'Outfit', sans-serif; font-size: 11px;
+    background: transparent; color: #111111;
+    font-family: 'Barlow', sans-serif; font-size: 11px;
     font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
     cursor: pointer; white-space: nowrap; border-bottom: 3px solid transparent;
     transition: all 0.15s; min-width: 70px;
@@ -274,12 +274,12 @@
     padding: 6px 12px; background: #0f1f0f; border-bottom: 1px solid #1a2a1a;
 }
 .madc-chk-all { width: 20px; height: 20px; cursor: pointer; flex-shrink: 0; accent-color: #4CAF50; }
-.madc-sel-info { flex: 1; font-family: 'Outfit', sans-serif; font-size: 12px; color: #888; letter-spacing: 0.5px; }
+.madc-sel-info { flex: 1; font-family: 'Barlow', sans-serif; font-size: 12px; color: #888; letter-spacing: 0.5px; }
 .madc-sel-info span { color: #4CAF50; font-size: 15px; font-weight: 900; }
 .madc-btn-agregar-todos {
     padding: 8px 14px; border: none; border-radius: 8px;
     background: #1B5E20; color: white;
-    font-family: 'Outfit', sans-serif; font-size: 12px;
+    font-family: 'Barlow', sans-serif; font-size: 12px;
     font-weight: 900; letter-spacing: 1px; cursor: pointer;
     transition: filter 0.15s; white-space: nowrap;
 }
@@ -289,7 +289,7 @@
 .madc-btn-sel-alm {
     padding: 8px 14px; border: none; border-radius: 8px;
     background: #0d47a1; color: white;
-    font-family: 'Outfit', sans-serif; font-size: 12px;
+    font-family: 'Barlow', sans-serif; font-size: 12px;
     font-weight: 900; letter-spacing: 0.5px; cursor: pointer;
     transition: filter 0.15s; white-space: nowrap; width: 100%;
     margin-top: 5px;
@@ -299,7 +299,7 @@
 .madc-search input {
     flex: 1; padding: 9px 12px; border-radius: 8px;
     border: 2px solid var(--gris-borde); background: var(--gris-bg);
-    font-size: 14px; font-family: 'Outfit', sans-serif;
+    font-size: 14px; font-family: 'Barlow', sans-serif;
     font-weight: 700; letter-spacing: 1px; color: var(--texto);
 }
 .madc-results { flex: 1; overflow-y: auto; padding: 0 12px 80px; }
@@ -314,16 +314,16 @@
 .madc-item.seleccionado { outline: 2px solid #4CAF50; }
 .madc-item-check { width: 22px; height: 22px; flex-shrink: 0; cursor: pointer; accent-color: #4CAF50; margin-top: 2px; }
 .madc-item-info { flex: 1; }
-.madc-item-cod { font-family: 'Outfit', sans-serif; font-size: 12px; color: #888; letter-spacing: 1px; }
+.madc-item-cod { font-family: 'Barlow', sans-serif; font-size: 12px; color: #888; letter-spacing: 1px; }
 .madc-item-desc { font-size: 12px; color: var(--texto); line-height: 1.3; margin-top: 1px; }
 .madc-item-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
-.madc-tag { font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.madc-tag { font-family: 'Barlow', sans-serif; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 .madc-tag.en-conteo { background: #E8F5E9; color: #1B5E20; }
 .madc-tag.faltante   { background: #FFF3E0; color: #E65100; }
 .madc-tag.sobrante   { background: #FFEBEE; color: #B71C1C; }
 .madc-tag.sincontar  { background: #F3E5F5; color: #7B1FA2; }
 .madc-item-right { display: flex; flex-direction: column; align-items: flex-end; flex-shrink: 0; gap: 4px; }
-.madc-item-stock { font-family: 'Outfit', sans-serif; font-size: 26px; font-weight: 900; color: #2E7D32; }
+.madc-item-stock { font-family: 'Barlow', sans-serif; font-size: 26px; font-weight: 900; color: #2E7D32; }
 .madc-item-stock.cero { color: #B71C1C; }
 .madc-item-stock.bajo { color: #E65100; }
 .madc-item-stock-label { font-size: 9px; color: #888; }
@@ -332,15 +332,15 @@
     background: #0a1a0a; border-top: 2px solid #1B5E20;
     padding: 10px 14px; display: flex; align-items: center; gap: 10px; z-index: 10;
 }
-.madc-bulk-float .bulk-count { font-family: 'Outfit', sans-serif; font-size: 13px; color: #aaa; flex: 1; }
+.madc-bulk-float .bulk-count { font-family: 'Barlow', sans-serif; font-size: 13px; color: #aaa; flex: 1; }
 .madc-bulk-float .bulk-count strong { color: #4CAF50; font-size: 20px; }
 .madc-btn-bulk-add {
     padding: 12px 20px; border: none; border-radius: 10px;
     background: #1B5E20; color: white;
-    font-family: 'Outfit', sans-serif; font-size: 14px;
+    font-family: 'Barlow', sans-serif; font-size: 14px;
     font-weight: 900; letter-spacing: 1px; cursor: pointer; transition: filter 0.15s;
 }
-.madc-btn-bulk-add:disabled { background: #E0E0E0; color: #999; cursor: not-allowed; }
+.madc-btn-bulk-add:disabled { background: #2a2a2a; color: #555; cursor: not-allowed; }
 .madc-btn-bulk-add:not(:disabled):active { filter: brightness(1.2); }
 
 /* ── NUEVA TARJETA COMPARATIVO-STOCK ── */
@@ -351,13 +351,13 @@
     display: flex; flex-direction: column; align-items: center;
     background: rgba(0,0,0,0.06); border-radius: 6px; padding: 3px 8px; min-width: 44px;
 }
-.madc-col-val { font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 900; }
+.madc-col-val { font-family: 'Barlow', sans-serif; font-size: 15px; font-weight: 900; }
 .madc-col-lab { font-size: 8px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
 .madc-col-pill.alm  { background: #0a1a0a; }
 .madc-col-pill.alm .madc-col-val  { color: #4CAF50; }
-.madc-col-pill.esp  { background: #F0F0F0; }
+.madc-col-pill.esp  { background: #111; }
 .madc-col-pill.esp .madc-col-val  { color: #aaa; }
-.madc-col-pill.real { background: #F0F0F0; }
+.madc-col-pill.real { background: #111; }
 .madc-col-pill.real.ok  .madc-col-val { color: #4CAF50; }
 .madc-col-pill.real.falta .madc-col-val { color: #FF9800; }
 .madc-col-pill.real.sobra .madc-col-val { color: #EF5350; }
@@ -369,21 +369,21 @@
 .madc-qty-inp {
     width: 52px; padding: 5px 6px; border-radius: 6px;
     border: 2px solid #2E7D32; background: #0a1a0a;
-    color: #4CAF50; font-family: 'Outfit', sans-serif;
+    color: #4CAF50; font-family: 'Barlow', sans-serif;
     font-size: 16px; font-weight: 900; text-align: center;
 }
 .madc-qty-inp:focus { outline: none; border-color: #81C784; }
 .madc-btn-add-one {
     flex: 1; padding: 6px 10px; border: none; border-radius: 6px;
     background: #1B5E20; color: white;
-    font-family: 'Outfit', sans-serif; font-size: 11px;
+    font-family: 'Barlow', sans-serif; font-size: 11px;
     font-weight: 900; letter-spacing: 0.5px; cursor: pointer; transition: filter 0.15s;
     white-space: nowrap;
 }
 .madc-btn-add-one:active { filter: brightness(1.3); }
 .madc-btn-add-one.sin-stock { background: #333; color: #888; }
 .madc-diff-badge {
-    font-family: 'Outfit', sans-serif; font-size: 11px;
+    font-family: 'Barlow', sans-serif; font-size: 11px;
     font-weight: 900; padding: 2px 7px; border-radius: 4px; letter-spacing: 0.3px;
 }
 .madc-diff-badge.falta { background: #FFF3E0; color: #E65100; }
@@ -398,7 +398,7 @@
     justify-content: center; align-items: center; padding: 20px;
 }
 .asc-card {
-    background: #F5F5F5; border-radius: 14px; width: 100%; max-width: 340px; border: 1px solid #E0E0E0;
+    background: #1A1A1A; border-radius: 14px; width: 100%; max-width: 340px;
     overflow: hidden; border-top: 4px solid #2E7D32;
 }
 .asc-head {
@@ -406,25 +406,25 @@
     display: flex; justify-content: space-between; align-items: center;
     border-bottom: 2px solid #1B5E20;
 }
-.asc-title { font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 900; color: white; letter-spacing: 1px; }
+.asc-title { font-family: 'Barlow', sans-serif; font-size: 15px; font-weight: 900; color: white; letter-spacing: 1px; }
 .asc-body { padding: 14px 16px; }
-.asc-info { font-size: 12px; color: #aaa; font-family: 'Outfit', sans-serif; line-height: 1.5; margin-bottom: 12px; }
+.asc-info { font-size: 12px; color: #aaa; font-family: 'Barlow', sans-serif; line-height: 1.5; margin-bottom: 12px; }
 .asc-info strong { color: #4CAF50; }
 .asc-list { max-height: 180px; overflow-y: auto; margin-bottom: 12px; }
 .asc-list-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid #2a2a2a; }
 .asc-list-item:last-child { border-bottom: none; }
-.asc-item-cod { font-family: 'Outfit', sans-serif; font-size: 12px; color: #ccc; flex: 1; }
-.asc-item-qty { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 900; color: #4CAF50; margin-left: 8px; }
+.asc-item-cod { font-family: 'Barlow', sans-serif; font-size: 12px; color: #ccc; flex: 1; }
+.asc-item-qty { font-family: 'Barlow', sans-serif; font-size: 16px; font-weight: 900; color: #4CAF50; margin-left: 8px; }
 .asc-total { background: #0a1a0a; padding: 10px 12px; border-radius: 8px; text-align: center; margin-bottom: 12px; }
-.asc-total-num { font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 900; color: #4CAF50; }
+.asc-total-num { font-family: 'Barlow', sans-serif; font-size: 28px; font-weight: 900; color: #4CAF50; }
 .asc-total-lab { font-size: 10px; color: #666; text-transform: uppercase; letter-spacing: 1px; }
 .asc-btns { display: flex; gap: 8px; }
-.asc-btn-ok { flex: 1; padding: 13px; border: none; border-radius: 8px; background: #1B5E20; color: white; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: 1px; }
-.asc-btn-cancel { flex: 1; padding: 13px; border: 1px solid #CCC; border-radius: 8px; background: #F0F0F0; color: #555; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
+.asc-btn-ok { flex: 1; padding: 13px; border: none; border-radius: 8px; background: #1B5E20; color: white; font-family: 'Barlow', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: 1px; }
+.asc-btn-cancel { flex: 1; padding: 13px; border: 1px solid #333; border-radius: 8px; background: #222; color: #888; font-family: 'Barlow', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; }
 
         /* ── COMP: botones archivo ── */
         #comp-file-btns { display: none; gap: 6px; flex-shrink: 0; padding: 2px 0; }
-        .comp-file-btn { flex: 1; padding: 10px 6px; border: none; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 700; font-family: 'Outfit', sans-serif; letter-spacing: 0.3px; text-transform: uppercase; transition: filter 0.15s; }
+        .comp-file-btn { flex: 1; padding: 10px 6px; border: none; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 700; font-family: 'Barlow', sans-serif; letter-spacing: 0.3px; text-transform: uppercase; transition: filter 0.15s; }
         .comp-file-btn:active { filter: brightness(0.85); }
 
         .scroll::-webkit-scrollbar { width: 3px; }
@@ -434,14 +434,14 @@
         /* ── MODAL CONFIRMACIÓN ── */
         #modal-confirm { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.65); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); z-index: 9999; padding: 24px; flex-direction: column; justify-content: center; align-items: center; gap: 16px; }
         .confirm-card { background: var(--blanco); border-radius: 20px; padding: 26px; width: 100%; max-width: 340px; box-shadow: 0 20px 60px rgba(0,0,0,0.22); }
-        .confirm-title { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 900; color: var(--rojo); text-align: center; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
-        .confirm-msg { font-size: 13px; color: #666; text-align: center; line-height: 1.6; margin-bottom: 18px; font-family: 'Inter', sans-serif; }
+        .confirm-title { font-family: 'Barlow', sans-serif; font-size: 20px; font-weight: 900; color: var(--rojo); text-align: center; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .confirm-msg { font-size: 13px; color: #111111; text-align: center; line-height: 1.6; margin-bottom: 18px; font-family: 'Inter', sans-serif; }
         .confirm-btns { display: flex; gap: 8px; }
-        .btn-confirm-yes { flex: 1; padding: 14px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--rojo), var(--rojo-dark)); color: white; font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: 1px; box-shadow: 0 2px 8px var(--rojo-glow); }
-        .btn-confirm-no  { flex: 1; padding: 14px; border: 1.5px solid var(--gris-borde); border-radius: 10px; background: var(--gris-bg); color: var(--gris-mid); font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
+        .btn-confirm-yes { flex: 1; padding: 14px; border: none; border-radius: 10px; background: linear-gradient(135deg, var(--rojo), var(--rojo-dark)); color: white; font-family: 'Barlow', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; letter-spacing: 1px; box-shadow: 0 2px 8px var(--rojo-glow); }
+        .btn-confirm-no  { flex: 1; padding: 14px; border: 1.5px solid var(--gris-borde); border-radius: 10px; background: var(--gris-bg); color: var(--gris-mid); font-family: 'Barlow', sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; }
 
         .module-footer { display: flex; gap: 6px; flex-shrink: 0; padding: 4px 0 2px; }
-        .btn-modulo { flex: 1; padding: 11px 6px; border: none; border-radius: 10px; cursor: pointer; font-size: 11px; font-weight: 700; font-family: 'Outfit', sans-serif; letter-spacing: 0.5px; text-transform: uppercase; transition: filter var(--transition); }
+        .btn-modulo { flex: 1; padding: 11px 6px; border: none; border-radius: 10px; cursor: pointer; font-size: 11px; font-weight: 700; font-family: 'Barlow', sans-serif; letter-spacing: 0.5px; text-transform: uppercase; transition: filter var(--transition); }
         .btn-modulo:active { filter: brightness(0.85); }
         .btn-guardar-mod  { background: linear-gradient(135deg, var(--rojo), var(--rojo-dark)); color: white; box-shadow: 0 2px 6px var(--rojo-glow); }
         .btn-reset-mod    { background: var(--gris-bg); color: var(--rojo); border: 1.5px solid rgba(211,47,47,0.3); }
@@ -452,15 +452,15 @@
 
         /* ── ALMACÉN: barras y botones ── */
         .alm-action-bar { display: flex; gap: 8px; flex-shrink: 0; padding: 4px 10px 2px; }
-        .alm-btn-buscar { flex: 1; padding: 13px 8px; background: #333; color: white; border: none; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; }
-        .alm-btn-retiro { flex: 2; padding: 13px 8px; background: linear-gradient(135deg, var(--rojo), var(--rojo-dark)); color: white; border: none; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; box-shadow: 0 2px 8px var(--rojo-glow); }
+        .alm-btn-buscar { flex: 1; padding: 13px 8px; background: #1A1A1A; color: white; border: none; border-radius: 10px; font-family: 'Barlow', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; }
+        .alm-btn-retiro { flex: 2; padding: 13px 8px; background: linear-gradient(135deg, var(--rojo), var(--rojo-dark)); color: white; border: none; border-radius: 10px; font-family: 'Barlow', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; letter-spacing: 0.5px; box-shadow: 0 2px 8px var(--rojo-glow); }
         .alm-btn-buscar:active, .alm-btn-retiro:active { filter: brightness(0.85); }
-        #alm-estado-badge { margin: 0 10px 4px; padding: 7px 14px; background: #F8F8FA; border: 1px solid #EEEEF0; border-radius: 12px; font-size: 11px; color: #999; text-align: center; font-family: 'Inter', sans-serif; flex-shrink: 0; font-weight: 500; }
+        #alm-estado-badge { margin: 0 10px 4px; padding: 7px 14px; background: #F8F8FA; border: 1px solid #EEEEF0; border-radius: 12px; font-size: 11px; color: #111111; text-align: center; font-family: 'Inter', sans-serif; flex-shrink: 0; font-weight: 500; }
         .alm-load-row { display: flex; gap: 6px; flex-shrink: 0; padding: 0 10px 4px; }
-        .alm-load-btn { flex: 1; padding: 11px 4px; border: none; border-radius: 10px; cursor: pointer; font-size: 11px; font-weight: 700; font-family: 'Outfit', sans-serif; letter-spacing: 0.3px; text-align: center; min-height: 44px; }
+        .alm-load-btn { flex: 1; padding: 11px 4px; border: none; border-radius: 10px; cursor: pointer; font-size: 11px; font-weight: 700; font-family: 'Barlow', sans-serif; letter-spacing: 0.3px; text-align: center; min-height: 44px; }
         .alm-load-btn:active { filter: brightness(0.85); }
         .alm-footer-row { display: flex; gap: 6px; flex-shrink: 0; padding: 4px 10px 6px; }
-        .alm-footer-btn { flex: 1; padding: 11px 4px; border: none; border-radius: 10px; cursor: pointer; font-size: 10px; font-weight: 700; font-family: 'Outfit', sans-serif; letter-spacing: 0.3px; text-align: center; min-height: 44px; }
+        .alm-footer-btn { flex: 1; padding: 11px 4px; border: none; border-radius: 10px; cursor: pointer; font-size: 10px; font-weight: 700; font-family: 'Barlow', sans-serif; letter-spacing: 0.3px; text-align: center; min-height: 44px; }
         .alm-footer-btn:active { filter: brightness(0.85); }
 
         /* ── MÓVIL ── */
@@ -489,67 +489,67 @@
         body.modo-claro #alm-estado-badge { background: #F5F5F7; border-color: #E0E0E0; color: #555; }
 
         /* ── BOTÓN MODO CLARO/OSCURO ── */
-        .btn-modo-luz { background: #F0F0F2; color: #666; border: 1px solid #E0E0E0; padding: 7px 10px; border-radius: 9px; font-size: 14px; cursor: pointer; line-height: 1; }
+        .btn-modo-luz { background: #F0F0F2; color: #111111; border: 1px solid #E0E0E0; padding: 7px 10px; border-radius: 9px; font-size: 14px; cursor: pointer; line-height: 1; }
         body.modo-claro .btn-modo-luz { background: #E0E0E0; color: #333; border-color: #C8C8C8; }
 
         /* ── PIN ── */
         #modal-pin { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.93); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); z-index:9800; justify-content:center; align-items:center; padding:20px; }
-        .pin-card { background:#F5F5F5; border-radius:20px; width:100%; max-width:290px; overflow:hidden; border-top:4px solid var(--rojo); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+        .pin-card { background:#1A1A1A; border-radius:20px; width:100%; max-width:290px; overflow:hidden; border-top:4px solid var(--rojo); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
         .pin-header { background:var(--negro); padding:14px 16px; text-align:center; }
-        .pin-title  { font-family:'Outfit',sans-serif; font-size:16px; font-weight:900; color:white; letter-spacing:1px; text-transform:uppercase; }
+        .pin-title  { font-family:'Barlow',sans-serif; font-size:16px; font-weight:900; color:white; letter-spacing:1px; text-transform:uppercase; }
         .pin-body   { padding:16px; }
         .pin-dots   { display:flex; justify-content:center; gap:12px; margin-bottom:18px; }
         .pin-dot    { width:14px; height:14px; border-radius:50%; background:#333; border:2px solid #555; transition:background 0.15s; }
         .pin-dot.on { background:var(--rojo); border-color:var(--rojo); box-shadow: 0 0 8px var(--rojo-glow); }
         .pin-grid   { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
-        .pin-k      { padding:16px; border:none; border-radius:12px; background:#E0E0E0; color:#111; font-family:'Outfit',sans-serif; font-size:22px; font-weight:700; cursor:pointer; transition:background 0.12s; }
+        .pin-k      { padding:16px; border:none; border-radius:12px; background:#2a2a2a; color:#fff; font-family:'Barlow',sans-serif; font-size:22px; font-weight:700; cursor:pointer; transition:background 0.12s; }
         .pin-k:active { background:#444; }
         .pin-k.dim  { background:#1a1a1a; color:#666; font-size:15px; }
         .pin-err    { text-align:center; font-size:12px; color:var(--rojo-light); margin-top:10px; font-family:'Inter',sans-serif; min-height:16px; }
 
         /* ── BÚSQUEDA COMPARATIVO ── */
         #comp-search-wrap { display:none; padding:0 10px 5px; flex-shrink:0; }
-        #comp-search-inp  { width:100%; padding:9px 14px; border-radius:10px; border:2px solid var(--rojo); background:white; color:var(--negro); font-size:13px; font-family:'Outfit',sans-serif; font-weight:700; letter-spacing:1px; transition: box-shadow var(--transition); }
+        #comp-search-inp  { width:100%; padding:9px 14px; border-radius:10px; border:2px solid var(--rojo); background:white; color:var(--negro); font-size:13px; font-family:'Barlow',sans-serif; font-weight:700; letter-spacing:1px; transition: box-shadow var(--transition); }
         #comp-search-inp:focus { outline:none; box-shadow: 0 0 0 3px var(--rojo-glow); }
         #comp-search-inp::placeholder { color:#bbb; font-weight:400; letter-spacing:0; font-size:12px; }
 
         /* ── RETIRO / INGRESO MODO TOGGLE (2) ── */
         .mov-tipo-row { display:flex; gap:0; margin-bottom:12px; border-radius:8px; overflow:hidden; border:2px solid #DDD; }
-        .mov-tipo-btn { flex:1; padding:10px; border:none; background:#F5F5F5; color:#999; font-family:'Outfit',sans-serif; font-size:13px; font-weight:700; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px; transition:all 0.15s; }
+        .mov-tipo-btn { flex:1; padding:10px; border:none; background:#F5F5F5; color:#111111; font-family:'Barlow',sans-serif; font-size:13px; font-weight:700; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px; transition:all 0.15s; }
         .mov-tipo-btn.ret-on { background:var(--negro); color:#fff; }
         .mov-tipo-btn.ing-on { background:var(--rojo); color:#fff; }
 
         /* ── RESUMEN LOTE (7) ── */
         #modal-resumen { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:7500; justify-content:center; align-items:center; padding:16px; }
-        .res-card   { background:#F5F5F5; border-radius:14px; width:100%; max-width:320px; overflow:hidden; border-top:4px solid var(--rojo); }
+        .res-card   { background:#1A1A1A; border-radius:14px; width:100%; max-width:320px; overflow:hidden; border-top:4px solid var(--rojo); }
         .res-head   { background:var(--negro); padding:12px 16px; text-align:center; }
-        .res-title  { font-family:'Outfit',sans-serif; font-size:16px; font-weight:900; color:white; letter-spacing:1px; text-transform:uppercase; }
+        .res-title  { font-family:'Barlow',sans-serif; font-size:16px; font-weight:900; color:white; letter-spacing:1px; text-transform:uppercase; }
         .res-body   { padding:12px 16px; }
         .res-row    { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid #2a2a2a; }
         .res-row:last-child { border-bottom:none; }
-        .res-lbl    { font-size:13px; color:#aaa; font-family:'Outfit',sans-serif; }
-        .res-val    { font-family:'Outfit',sans-serif; font-size:22px; font-weight:900; }
+        .res-lbl    { font-size:13px; color:#aaa; font-family:'Barlow',sans-serif; }
+        .res-val    { font-family:'Barlow',sans-serif; font-size:22px; font-weight:900; }
         .res-foot   { display:flex; gap:8px; padding:12px 16px; border-top:1px solid #2a2a2a; }
-        .res-ok     { flex:1; padding:13px; background:var(--rojo); color:white; border:none; border-radius:8px; font-family:'Outfit',sans-serif; font-size:14px; font-weight:700; cursor:pointer; letter-spacing:1px; }
-        .res-cancel { flex:1; padding:13px; background:#222; color:#888; border:1px solid #333; border-radius:8px; font-family:'Outfit',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
+        .res-ok     { flex:1; padding:13px; background:var(--rojo); color:white; border:none; border-radius:8px; font-family:'Barlow',sans-serif; font-size:14px; font-weight:700; cursor:pointer; letter-spacing:1px; }
+        .res-cancel { flex:1; padding:13px; background:#222; color:#888; border:1px solid #333; border-radius:8px; font-family:'Barlow',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
 
         /* ── SKU ÚNICO SUB-LABEL (3) ── */
-        .stat-sku { font-size:9px; color:#666; text-align:center; letter-spacing:0.3px; margin-top:1px; }
+        .stat-sku { font-size:9px; color:#111111; text-align:center; letter-spacing:0.3px; margin-top:1px; }
 
         /* ── MODAL DETALLE LOTE GUARDADO (8) ── */
         #modal-detalle-lote { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:8000; flex-direction:column; overflow:hidden; }
         .dl-header { display:flex; align-items:center; gap:10px; padding:12px 14px; background:#111; border-bottom:2px solid var(--rojo); flex-shrink:0; }
-        .dl-title  { font-family:'Outfit',sans-serif; font-size:16px; font-weight:900; color:white; letter-spacing:1px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .dl-title  { font-family:'Barlow',sans-serif; font-size:16px; font-weight:900; color:white; letter-spacing:1px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
         .dl-close  { background:none; border:none; color:#aaa; font-size:22px; cursor:pointer; padding:0 4px; flex-shrink:0; }
         .dl-resumen { display:flex; gap:6px; padding:8px 12px; background:#0a0a0a; border-bottom:1px solid #1a1a1a; flex-shrink:0; flex-wrap:wrap; }
         .dl-res-pill { display:flex; flex-direction:column; align-items:center; padding:5px 12px; border-radius:8px; min-width:50px; }
-        .dl-res-num  { font-family:'Outfit',sans-serif; font-size:20px; font-weight:900; }
+        .dl-res-num  { font-family:'Barlow',sans-serif; font-size:20px; font-weight:900; }
         .dl-res-lab  { font-size:9px; color:#888; text-transform:uppercase; letter-spacing:0.5px; }
         .dl-tabs { display:flex; background:#0d0d0d; border-bottom:1px solid #1a1a1a; flex-shrink:0; overflow-x:auto; }
-        .dl-tab  { flex:1; min-width:60px; padding:9px 4px; background:none; border:none; border-bottom:3px solid transparent; color:#666; font-family:'Outfit',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.3px; cursor:pointer; white-space:nowrap; }
+        .dl-tab  { flex:1; min-width:60px; padding:9px 4px; background:none; border:none; border-bottom:3px solid transparent; color:#666; font-family:'Barlow',sans-serif; font-size:10px; font-weight:700; letter-spacing:0.3px; cursor:pointer; white-space:nowrap; }
         .dl-tab.activo { color:white; border-bottom-color:var(--rojo); }
         .dl-search { padding:7px 10px; background:#111; flex-shrink:0; }
-        .dl-search input { width:100%; padding:7px 12px; border-radius:8px; border:1px solid #2a2a2a; background:#1a1a1a; color:white; font-size:13px; font-family:'Outfit',sans-serif; box-sizing:border-box; }
+        .dl-search input { width:100%; padding:7px 12px; border-radius:8px; border:1px solid #2a2a2a; background:#1a1a1a; color:white; font-size:13px; font-family:'Barlow',sans-serif; box-sizing:border-box; }
         .dl-search input:focus { outline:none; border-color:var(--rojo); }
         .dl-list { flex:1; overflow-y:auto; padding:8px 10px; }
         .dl-item { display:flex; align-items:flex-start; gap:10px; padding:10px 12px; background:#1a1a1a; border-radius:10px; margin-bottom:7px; border-left:4px solid #333; }
@@ -558,20 +558,20 @@
         .dl-item.sobra    { border-left-color:#1565C0; }
         .dl-item.nomaestro{ border-left-color:#7B1FA2; }
         .dl-item-body { flex:1; min-width:0; }
-        .dl-item-desc { font-family:'Outfit',sans-serif; font-size:13px; font-weight:700; color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .dl-item-cod  { font-size:10px; color:#666; font-family:'Outfit',sans-serif; margin-top:1px; }
+        .dl-item-desc { font-family:'Barlow',sans-serif; font-size:13px; font-weight:700; color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .dl-item-cod  { font-size:10px; color:#666; font-family:'Barlow',sans-serif; margin-top:1px; }
         .dl-item-cols { display:flex; gap:5px; margin-top:5px; flex-wrap:wrap; }
         .dl-pill { display:flex; flex-direction:column; align-items:center; padding:3px 8px; border-radius:5px; background:#222; min-width:38px; }
-        .dl-pill-val { font-family:'Outfit',sans-serif; font-size:14px; font-weight:900; }
+        .dl-pill-val { font-family:'Barlow',sans-serif; font-size:14px; font-weight:900; }
         .dl-pill-lab { font-size:8px; color:#777; text-transform:uppercase; }
-        .dl-badge { font-family:'Outfit',sans-serif; font-size:10px; font-weight:900; padding:2px 7px; border-radius:4px; white-space:nowrap; align-self:center; flex-shrink:0; }
+        .dl-badge { font-family:'Barlow',sans-serif; font-size:10px; font-weight:900; padding:2px 7px; border-radius:4px; white-space:nowrap; align-self:center; flex-shrink:0; }
         .dl-badge.ok    { background:#E8F5E9; color:#1B5E20; }
         .dl-badge.falta { background:#FFF3E0; color:#E65100; }
         .dl-badge.sobra { background:#E3F2FD; color:#1565C0; }
         .dl-badge.nm    { background:#F3E5F5; color:#7B1FA2; }
         .dl-footer { padding:10px 12px; background:#111; border-top:1px solid #1a1a1a; display:flex; gap:8px; flex-shrink:0; }
-        .dl-btn-excel { flex:1; padding:13px; border:none; border-radius:8px; background:var(--rojo); color:white; font-family:'Outfit',sans-serif; font-size:13px; font-weight:900; cursor:pointer; letter-spacing:1px; }
-        .dl-btn-close { flex:1; padding:13px; border:1px solid #333; border-radius:8px; background:#222; color:#aaa; font-family:'Outfit',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
+        .dl-btn-excel { flex:1; padding:13px; border:none; border-radius:8px; background:var(--rojo); color:white; font-family:'Barlow',sans-serif; font-size:13px; font-weight:900; cursor:pointer; letter-spacing:1px; }
+        .dl-btn-close { flex:1; padding:13px; border:1px solid #333; border-radius:8px; background:#222; color:#aaa; font-family:'Barlow',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
 
 
         /* ══════ MÓDULO CONSULTAR STOCK ══════ */
@@ -640,10 +640,10 @@
         .cs-price-label {
             font-size: 9px; font-weight: 800; color: #111;
             text-align: center; letter-spacing: 0.5px; line-height: 1.2; margin-bottom: 3px;
-            font-family: 'Outfit', sans-serif; text-transform: uppercase;
+            font-family: 'Barlow', sans-serif; text-transform: uppercase;
         }
         .cs-price-val {
-            font-family: 'Outfit', sans-serif; font-size: 22px; font-weight: 900;
+            font-family: 'Barlow', sans-serif; font-size: 22px; font-weight: 900;
             color: #000; letter-spacing: -0.5px; line-height: 1;
         }
         .cs-price-pct {
@@ -662,17 +662,17 @@
         .cs-promo-row.ejecutivo { border-left-color: #9C27B0; }
         .cs-promo-nombre {
             font-size: 11px; font-weight: 700; color: #111;
-            font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+            font-family: 'Barlow', sans-serif; letter-spacing: 0.5px;
             text-transform: uppercase; flex: 1;
         }
         .cs-promo-precio {
-            font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 900;
+            font-family: 'Barlow', sans-serif; font-size: 16px; font-weight: 900;
             color: var(--rojo); margin-left: 8px; white-space: nowrap;
         }
         #cs-cambio-banner {
             background: linear-gradient(135deg, #FF6F00, #F57C00);
             color: white; border-radius: 10px; padding: 9px 14px;
-            font-family: 'Outfit', sans-serif; font-size: 13px;
+            font-family: 'Barlow', sans-serif; font-size: 13px;
             font-weight: 700; letter-spacing: 0.5px; margin-bottom: 6px;
             display: flex; align-items: center; gap: 8px;
             box-shadow: 0 2px 8px rgba(255,111,0,0.35);
@@ -695,17 +695,17 @@
         .cs-pa-ico { font-size: 20px; flex-shrink: 0; }
         .cs-pa-body { display: flex; flex-direction: column; gap: 1px; flex: 1; }
         .cs-pa-nombre {
-            font-family: 'Outfit', sans-serif; font-size: 15px;
+            font-family: 'Barlow', sans-serif; font-size: 15px;
             font-weight: 800; color: #111; letter-spacing: 0.5px; text-transform: uppercase;
         }
         .cs-pa-precio {
             font-family: 'Inter', sans-serif; font-size: 12px;
-            color: #444; font-weight: 700; letter-spacing: 0.3px;
+            color: #111111; font-weight: 700; letter-spacing: 0.3px;
         }
         .cs-badge-precios {
             background: #FF6D00; color: white; font-size: 8px; font-weight: 700;
             padding: 1px 6px; border-radius: 10px; margin-left: 8px;
-            font-family: 'Outfit', sans-serif; letter-spacing: 0.5px;
+            font-family: 'Barlow', sans-serif; letter-spacing: 0.5px;
         }
 
         #cs-table-outer table { border-collapse: collapse; font-size: 10px; width: max-content; }
@@ -751,7 +751,7 @@
             text-align: center; padding: 5px 2px; border: 1px solid #d4e4f4;
         }
         .cs-td-zero {
-            background: #f8f8f8; color: #ccc;
+            background: #f8f8f8; color: #111111;
             font-size: 10px; text-align: center;
             padding: 5px 2px; border: 1px solid #ebebeb;
         }
@@ -777,86 +777,6 @@
             background: #006600; color: white;
             font-size: 14px; font-weight: bold;
         }
-
-        /* ── FORZAR TEXTO NEGRO EN TODA LA APP ── */
-        body, body * {
-            color: #111111 !important;
-        }
-        /* Excepciones: textos sobre fondos oscuros/rojo mantienen blanco */
-        .btn-menu, .btn-menu *,
-        .btn-alm, .btn-alm *,
-        .btn-comp, .btn-comp *,
-        .panel-h, .panel-h *,
-        th, th *,
-        .badge-modo,
-        #cs-db-badge.ok,
-        .busq-btn-ok, .busq-btn-ok *,
-        .dl-btn-excel, .dl-btn-excel *,
-        .dl-header, .dl-header *,
-        .mov-header.ingreso, .mov-header.ingreso *,
-        .mov-btn-aplicar.ingreso, .mov-btn-aplicar.ingreso *,
-        .btn-confirm-yes, .btn-confirm-yes *,
-        .madc-header, .madc-header *,
-        .asc-btn-ok, .asc-btn-ok *,
-        #bar-fill,
-        .cs-price-box *, .cs-price-box,
-        .cs-promo-row *,
-        #cs-cambio-banner, #cs-cambio-banner *,
-        .stat-val,
-        .busq-item-stock,
-        .busq-total-val,
-        .match *, .falta *, .sobrante *,
-        .cs-td-total *, .cs-th-total *,
-        .cs-tr-grand .cs-td-sum *,
-        .cs-tr-grand .cs-td-total *,
-        .madc-btn-bulk-add, .madc-btn-bulk-add *,
-        .madc-btn-agregar-todos, .madc-btn-agregar-todos *,
-        .asc-total-num,
-        .dl-badge,
-        .madc-diff-badge,
-        [style*="background:#"] *,
-        .logo-icono { color: inherit !important; }
-
-        /* Textos sobre fondos de color de los cuadros de precio */
-        .cs-price-val, .cs-price-label, .cs-price-pct,
-        #cs-pf-libro, #cs-pf-libro-combo,
-        #cs-pf-promo-unitario, #cs-pf-promo-combo {
-            color: #111 !important;
-        }
-        /* Cuadros de precio con texto negro */
-        .cs-price-box { color: #111 !important; }
-
-        /* Colores funcionales conservan su color */
-        .match  { color: #1B5E20 !important; }
-        .falta  { color: #E65100 !important; }
-        .sobrante { color: #B71C1C !important; }
-        .cs-td-total, .cs-th-total { color: #004400 !important; }
-        .cs-tr-grand .cs-td-sum { color: #001155 !important; }
-        .stat-val { color: var(--rojo) !important; }
-        .logo-acento, .logo-red { color: var(--rojo) !important; }
-        .menu-btn-danger { color: var(--rojo-light) !important; }
-        a { color: #0066CC !important; }
-
-        /* Letras sobre fondos oscuros siguen blancas */
-        .btn-alm, .btn-alm *,
-        .btn-menu, .btn-menu *,
-        .btn-comp, .btn-comp *,
-        .busq-btn-ok, .busq-btn-ok *,
-        .dl-btn-excel, .dl-btn-excel *,
-        .btn-confirm-yes, .btn-confirm-yes *,
-        .mov-btn-aplicar.ingreso, .mov-btn-aplicar.ingreso *,
-        .mov-btn-aplicar.retiro, .mov-btn-aplicar.retiro *,
-        .asc-btn-ok, .asc-btn-ok *,
-        .madc-btn-bulk-add, .madc-btn-bulk-add *,
-        .madc-btn-agregar-todos, .madc-btn-agregar-todos *,
-        .madc-btn-sel-alm, .madc-btn-sel-alm *,
-        .panel-h, .panel-h *,
-        th, th *,
-        .alm-btn-buscar, .alm-btn-buscar *,
-        .mov-tab.activo, .mov-tab.activo *,
-        .btn-modo .tit,
-        .btn-modo .desc,
-        #toast, #toast * { color: #fff !important; }
     </style>
 </head>
 <body class="modo-comp">
@@ -961,8 +881,8 @@
 
     <!-- PANEL DESCRIPCIÓN -->
     <div id="panel-desc">
-        <span style="font-size:9px;color:#888;text-transform:uppercase;">Descripción — </span>
-        <span id="desc-cod" style="font-size:9px;color:#aaa;"></span>
+        <span style="font-size:9px;color:#111111;text-transform:uppercase;">Descripción — </span>
+        <span id="desc-cod" style="font-size:9px;color:#111111;"></span>
         <span id="desc-txt" style="font-size:13px;color:var(--rojo);font-weight:bold;display:block;margin-top:1px;"></span>
     </div>
 
@@ -1031,15 +951,15 @@
     <!-- OVERLAY ERROR -->
     <div id="overlay-error">
         <h1 style="color:white;font-size:56px;margin:0;">⚠️</h1>
-        <div id="msg-error" style="color:white;font-size:17px;margin:20px;font-weight:bold;word-break:break-all;font-family:'Outfit',sans-serif;"></div>
-        <button onclick="desbloquear()" style="background:#f1c40f;color:#111;padding:16px;border:none;border-radius:10px;width:80%;font-weight:bold;font-size:17px;font-family:'Outfit',sans-serif;letter-spacing:1px;">✅ CORREGIR</button>
+        <div id="msg-error" style="color:white;font-size:17px;margin:20px;font-weight:bold;word-break:break-all;font-family:'Barlow',sans-serif;"></div>
+        <button onclick="desbloquear()" style="background:#f1c40f;color:#111;padding:16px;border:none;border-radius:10px;width:80%;font-weight:bold;font-size:17px;font-family:'Barlow',sans-serif;letter-spacing:1px;">✅ CORREGIR</button>
     </div>
 
     <!-- MODAL LOTES -->
     <div id="modalLotes" class="modal">
         <div class="modal-title" id="modal-lotes-title">REPORTES GUARDADOS</div>
         <div id="listaLotes" style="flex:1;overflow-y:auto;"></div>
-        <button onclick="cerrarModal('modalLotes')" style="background:var(--rojo);color:white;padding:14px;border:none;border-radius:10px;width:100%;margin-top:10px;font-size:14px;font-family:'Outfit',sans-serif;font-weight:700;letter-spacing:1px;">← VOLVER</button>
+        <button onclick="cerrarModal('modalLotes')" style="background:var(--rojo);color:white;padding:14px;border:none;border-radius:10px;width:100%;margin-top:10px;font-size:14px;font-family:'Barlow',sans-serif;font-weight:700;letter-spacing:1px;">← VOLVER</button>
     </div>
 
     <!-- ══════ PANEL ALMACÉN v8 — TABLAS PARALELAS ══════ -->
@@ -1059,7 +979,7 @@
 
         <!-- Filtro rápido -->
         <div style="display:flex;gap:5px;flex-shrink:0;">
-            <input type="text" id="alm-filtro-rapido" placeholder="Filtrar por código o nombre..." oninput="renderAlm(this.value.trim().toUpperCase())" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="flex:1;padding:7px 10px;border-radius:7px;border:1px solid var(--gris-borde);background:var(--gris-bg);color:var(--texto);font-size:12px;font-family:'Outfit',sans-serif;">
+            <input type="text" id="alm-filtro-rapido" placeholder="Filtrar por código o nombre..." oninput="renderAlm(this.value.trim().toUpperCase())" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="flex:1;padding:7px 10px;border-radius:7px;border:1px solid var(--gris-borde);background:var(--gris-bg);color:var(--texto);font-size:12px;font-family:'Barlow',sans-serif;">
         </div>
 
         <!-- TABLAS PARALELAS -->
@@ -1193,28 +1113,28 @@
                     <div class="cs-price-pct" id="cs-pct-oferta">—</div>
                 </div>
                 <div style="flex:1;background:#E8EAF6;border-radius:10px;padding:7px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #C5CAE9;">
-                    <div style="font-size:8px;font-weight:800;color:#555;font-family:'Outfit',sans-serif;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px;">x MAYOR</div>
-                    <div id="cs-p-mayor-val" style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:900;color:#1A237E;line-height:1;">0.00</div>
-                    <div id="cs-pct-mayor-val" style="font-size:8px;color:#666;margin-top:3px;font-family:'Inter',sans-serif;font-weight:700;">—</div>
+                    <div style="font-size:8px;font-weight:800;color:#111111;font-family:'Barlow',sans-serif;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px;">x MAYOR</div>
+                    <div id="cs-p-mayor-val" style="font-family:'Barlow',sans-serif;font-size:16px;font-weight:900;color:#1A237E;line-height:1;">0.00</div>
+                    <div id="cs-pct-mayor-val" style="font-size:8px;color:#111111;margin-top:3px;font-family:'Inter',sans-serif;font-weight:700;">—</div>
                 </div>
             </div>
             <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
                 <div id="cs-promo-info-unitario" style="display:none;background:#FFF3E0;border-left:4px solid #FF6D00;border-radius:8px;padding:6px 12px;margin-bottom:4px;">
-                    <div style="font-size:10px;font-weight:700;color:#E65100;font-family:'Outfit',sans-serif;letter-spacing:0.5px;text-transform:uppercase;">🏷 PROMO UNITARIO</div>
-                    <div id="cs-promo-nombre-unitario" style="font-size:13px;font-weight:900;color:#BF360C;font-family:'Outfit',sans-serif;letter-spacing:0.5px;"></div>
-                    <div id="cs-promo-libro-unitario" style="font-size:9px;color:#888;margin-top:2px;font-family:'Inter',sans-serif;">📖 —</div>
+                    <div style="font-size:10px;font-weight:700;color:#E65100;font-family:'Barlow',sans-serif;letter-spacing:0.5px;text-transform:uppercase;">🏷 PROMO UNITARIO</div>
+                    <div id="cs-promo-nombre-unitario" style="font-size:13px;font-weight:900;color:#BF360C;font-family:'Barlow',sans-serif;letter-spacing:0.5px;"></div>
+                    <div id="cs-promo-libro-unitario" style="font-size:9px;color:#111111;margin-top:2px;font-family:'Inter',sans-serif;">📖 —</div>
                 </div>
                 <div id="cs-promo-info-combo" style="display:none;background:#E0F7FA;border-left:4px solid #00B8D4;border-radius:8px;padding:6px 12px;margin-bottom:4px;">
-                    <div style="font-size:10px;font-weight:700;color:#00838F;font-family:'Outfit',sans-serif;letter-spacing:0.5px;text-transform:uppercase;">🏷 COMBO</div>
-                    <div id="cs-promo-nombre-combo" style="font-size:13px;font-weight:900;color:#006064;font-family:'Outfit',sans-serif;letter-spacing:0.5px;"></div>
-                    <div id="cs-promo-libro-combo-abajo" style="font-size:9px;color:#888;margin-top:2px;font-family:'Inter',sans-serif;">📖 —</div>
+                    <div style="font-size:10px;font-weight:700;color:#00838F;font-family:'Barlow',sans-serif;letter-spacing:0.5px;text-transform:uppercase;">🏷 COMBO</div>
+                    <div id="cs-promo-nombre-combo" style="font-size:13px;font-weight:900;color:#006064;font-family:'Barlow',sans-serif;letter-spacing:0.5px;"></div>
+                    <div id="cs-promo-libro-combo-abajo" style="font-size:9px;color:#111111;margin-top:2px;font-family:'Inter',sans-serif;">📖 —</div>
                 </div>
                 <div id="cs-promo-info-oferta" style="display:none;background:#E8F5E9;border-left:4px solid #00C853;border-radius:8px;padding:6px 12px;margin-bottom:4px;">
-                    <div style="font-size:10px;font-weight:700;color:#2E7D32;font-family:'Outfit',sans-serif;letter-spacing:0.5px;text-transform:uppercase;">🏷 OFERTA</div>
-                    <div id="cs-promo-nombre-oferta" style="font-size:13px;font-weight:900;color:#1B5E20;font-family:'Outfit',sans-serif;letter-spacing:0.5px;"></div>
-                    <div id="cs-promo-libro-oferta" style="font-size:9px;color:#888;margin-top:2px;font-family:'Inter',sans-serif;">📖 —</div>
+                    <div style="font-size:10px;font-weight:700;color:#2E7D32;font-family:'Barlow',sans-serif;letter-spacing:0.5px;text-transform:uppercase;">🏷 OFERTA</div>
+                    <div id="cs-promo-nombre-oferta" style="font-size:13px;font-weight:900;color:#1B5E20;font-family:'Barlow',sans-serif;letter-spacing:0.5px;"></div>
+                    <div id="cs-promo-libro-oferta" style="font-size:9px;color:#111111;margin-top:2px;font-family:'Inter',sans-serif;">📖 —</div>
                 </div>
             </div>
         </div>
@@ -1368,15 +1288,15 @@ function mostrarPanelWA(nombre, resumen) {
 
     panel.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;">
-            <span style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:#4CAF50;letter-spacing:0.5px;">
+            <span style="font-family:'Barlow',sans-serif;font-size:13px;font-weight:700;color:#4CAF50;letter-spacing:0.5px;">
                 ✅ DESCARGADO: <span style="color:#fff;">${nombre}</span>
             </span>
-            <button onclick="cerrarPanelWA()" style="background:none;border:none;color:#666;font-size:18px;cursor:pointer;padding:0 0 0 8px;line-height:1;">✕</button>
+            <button onclick="cerrarPanelWA()" style="background:none;border:none;color:#111111;font-size:18px;cursor:pointer;padding:0 0 0 8px;line-height:1;">✕</button>
         </div>
         <button onclick="compartirExcelWA()" style="
             width:100%;padding:13px;border:none;border-radius:10px;
             background:#25D366;color:#fff;cursor:pointer;
-            font-family:'Outfit',sans-serif;font-size:16px;font-weight:900;
+            font-family:'Barlow',sans-serif;font-size:16px;font-weight:900;
             letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:8px;">
             💬 COMPARTIR POR WHATSAPP
         </button>`;
@@ -1789,10 +1709,10 @@ function abrirSubCarga(modulo) {
         <button onclick="${op.accion}" style="display:flex;align-items:center;gap:14px;padding:16px;border:none;border-radius:12px;background:#F8F8F8;cursor:pointer;text-align:left;width:100%;border-left:4px solid ${op.color};margin-bottom:0;">
             <span style="font-size:28px;min-width:36px;text-align:center;">${op.ico}</span>
             <div style="flex:1;">
-                <div style="font-family:'Outfit',sans-serif;font-size:15px;font-weight:800;color:#111;letter-spacing:0.5px;">${op.titulo}</div>
-                <div style="font-size:11px;color:#888;margin-top:3px;line-height:1.4;">${op.desc}</div>
+                <div style="font-family:'Barlow',sans-serif;font-size:15px;font-weight:800;color:#111;letter-spacing:0.5px;">${op.titulo}</div>
+                <div style="font-size:11px;color:#111111;margin-top:3px;line-height:1.4;">${op.desc}</div>
             </div>
-            <span style="color:#CCC;font-size:20px;">›</span>
+            <span style="color:#111111;font-size:20px;">›</span>
         </button>`).join('');
 
     document.getElementById('modal-subcarga').style.display = 'flex';
@@ -1898,7 +1818,7 @@ function csBuscarPorNombre(texto) {
             + '<span class="cs-name-result-stock">' + total + ' un.</span>'
             + '</div>';
     });
-    if (resultados.length === 40) html += '<div style="text-align:center;padding:8px;font-size:11px;color:#aaa;">Mostrando primeros 40 resultados</div>';
+    if (resultados.length === 40) html += '<div style="text-align:center;padding:8px;font-size:11px;color:#111111;">Mostrando primeros 40 resultados</div>';
     outer.innerHTML = html;
 }
 
@@ -2152,14 +2072,14 @@ function renderAlm(filtro='') {
 
     const badge = document.getElementById('alm-estado-badge');
     if (almMap.size === 0) {
-        badge.innerHTML = '<span style="font-size:13px;color:#666;font-weight:400;">Sin inventario — carga con los botones de abajo</span>';
+        badge.innerHTML = '<span style="font-size:13px;color:#111111;font-weight:400;">Sin inventario — carga con los botones de abajo</span>';
     } else {
         const total = [...almMap.values()].reduce((a,v)=>a+v.stock,0);
         badge.innerHTML = `
             <span style="color:var(--rojo);font-size:22px;font-weight:900;letter-spacing:1px;">${almMap.size.toLocaleString()}</span>
-            <span style="color:#888;font-size:11px;font-weight:400;"> CÓDIGOS &nbsp;|&nbsp; </span>
+            <span style="color:#111111;font-size:11px;font-weight:400;"> CÓDIGOS &nbsp;|&nbsp; </span>
             <span style="color:var(--rojo);font-size:22px;font-weight:900;letter-spacing:1px;">${total.toLocaleString()}</span>
-            <span style="color:#888;font-size:11px;font-weight:400;"> UNIDADES</span>`;
+            <span style="color:#111111;font-size:11px;font-weight:400;"> UNIDADES</span>`;
     }
 
     let entries = [...almMap.entries()];
@@ -2187,7 +2107,7 @@ function renderAlm(filtro='') {
         const stockColor = v.stock === 0 ? '#B71C1C' : v.stock <= 2 ? '#E65100' : '#1B5E20';
         if (v.stock === 0) tr.style.background = '#FFF8E1';
         tr.innerHTML = `<td style="font-size:10px;word-break:break-all;color:#333;text-align:left;padding:6px 4px;">${cod}</td>
-                        <td style="font-size:10px;color:#444;text-align:left;padding:6px 4px;line-height:1.3;">${v.desc||''}</td>
+                        <td style="font-size:10px;color:#111111;text-align:left;padding:6px 4px;line-height:1.3;">${v.desc||''}</td>
                         <td style="font-weight:bold;color:${stockColor};font-size:15px;">${v.stock}</td>`;
         tr.addEventListener('click', () => abrirModalMovimiento(cod));
         frag.appendChild(tr);
@@ -2196,7 +2116,7 @@ function renderAlm(filtro='') {
 
     if (entries.length > 80) {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td colspan="3" style="text-align:center;color:#999;font-size:10px;padding:8px;">... y ${entries.length-80} más. Refina el filtro.</td>`;
+        tr.innerHTML = `<td colspan="3" style="text-align:center;color:#111111;font-size:10px;padding:8px;">... y ${entries.length-80} más. Refina el filtro.</td>`;
         tbody.appendChild(tr);
     }
 
@@ -2217,7 +2137,7 @@ function renderAlm(filtro='') {
                 <td style="color:${color};font-size:13px;font-weight:900;text-align:center;">${signo}${mv.cant}</td>
                 <td style="font-weight:bold;font-size:11px;">${mv.stockPost}</td>
                 <td style="padding:2px;">
-                    <button onclick="event.stopPropagation();almEliminarMov(${realIdx})" style="background:none;border:none;color:#666;cursor:pointer;font-size:13px;padding:2px 4px;" title="Eliminar este movimiento">🗑</button>
+                    <button onclick="event.stopPropagation();almEliminarMov(${realIdx})" style="background:none;border:none;color:#111111;cursor:pointer;font-size:13px;padding:2px 4px;" title="Eliminar este movimiento">🗑</button>
                 </td>`;
             tr.onclick = () => {
                 const tipo = mv.tipo === 'RETIRO' ? '📤 RETIRO' : '📥 INGRESO';
@@ -2329,7 +2249,7 @@ function renderAlmInformes() {
     const cont = document.getElementById('alm-informes-lista');
     cont.innerHTML = '';
     if (!almSnapshots.length) {
-        cont.innerHTML = '<p style="color:#888;text-align:center;margin-top:30px;font-family:Barlow,sans-serif;font-size:13px;">Sin informes guardados</p>';
+        cont.innerHTML = '<p style="color:#111111;text-align:center;margin-top:30px;font-family:Barlow,sans-serif;font-size:13px;">Sin informes guardados</p>';
         return;
     }
     [...almSnapshots].reverse().forEach((snap, ri) => {
@@ -2339,7 +2259,7 @@ function renderAlmInformes() {
 
         const info = document.createElement('div');
         info.innerHTML = '<div style="font-family:Arial,sans-serif;font-size:15px;font-weight:900;color:var(--rojo);margin-bottom:2px;">' + snap.nombre + '</div>'
-            + '<div style="font-size:11px;color:#888;margin-bottom:10px;">' + snap.fecha + ' | ' + (snap.totalCodigos||0).toLocaleString() + ' cod. | ' + (snap.totalUnidades||0).toLocaleString() + ' uds.</div>';
+            + '<div style="font-size:11px;color:#111111;margin-bottom:10px;">' + snap.fecha + ' | ' + (snap.totalCodigos||0).toLocaleString() + ' cod. | ' + (snap.totalUnidades||0).toLocaleString() + ' uds.</div>';
         card.appendChild(info);
 
         const row = document.createElement('div');
@@ -2387,7 +2307,7 @@ function almVerInforme(idx) {
     const entries = Object.entries(data).sort((a,b) => b[1].stock - a[1].stock);
     const movs = snap.movs || [];
 
-    let html = `<div style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:#aaa;letter-spacing:1px;margin-bottom:6px;text-transform:uppercase;">📦 INVENTARIO (${entries.length} códigos)</div>`;
+    let html = `<div style="font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;color:#111111;letter-spacing:1px;margin-bottom:6px;text-transform:uppercase;">📦 INVENTARIO (${entries.length} códigos)</div>`;
     html += `<div style="max-height:200px;overflow-y:auto;border-radius:6px;border:1px solid var(--gris-borde);">
         <table style="width:100%;border-collapse:collapse;font-size:11px;">
         <thead><tr style="background:var(--negro);color:white;">
@@ -2403,11 +2323,11 @@ function almVerInforme(idx) {
             <td style="padding:3px 6px;text-align:right;font-weight:bold;color:${sc};">${v.stock}</td>
         </tr>`;
     });
-    if (entries.length > 100) html += `<tr><td colspan="3" style="padding:6px;text-align:center;color:#999;font-size:10px;">...y ${entries.length-100} más</td></tr>`;
+    if (entries.length > 100) html += `<tr><td colspan="3" style="padding:6px;text-align:center;color:#111111;font-size:10px;">...y ${entries.length-100} más</td></tr>`;
     html += '</tbody></table></div>';
 
     if (movs.length) {
-        html += `<div style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:#aaa;letter-spacing:1px;margin:10px 0 6px;text-transform:uppercase;">🔄 MOVIMIENTOS (${movs.length})</div>`;
+        html += `<div style="font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;color:#111111;letter-spacing:1px;margin:10px 0 6px;text-transform:uppercase;">🔄 MOVIMIENTOS (${movs.length})</div>`;
         html += `<div style="max-height:150px;overflow-y:auto;border-radius:6px;border:1px solid var(--gris-borde);">
             <table style="width:100%;border-collapse:collapse;font-size:11px;">
             <thead><tr style="background:var(--negro);color:white;">
@@ -2420,7 +2340,7 @@ function almVerInforme(idx) {
         [...movs].reverse().slice(0, 50).forEach((mv, i) => {
             const col = mv.tipo === 'RETIRO' ? '#B71C1C' : '#1B5E20';
             html += `<tr style="border-bottom:1px solid #eee;">
-                <td style="padding:2px 6px;color:#888;">${movs.length - i}</td>
+                <td style="padding:2px 6px;color:#111111;">${movs.length - i}</td>
                 <td style="padding:2px 6px;font-size:10px;">${mv.cod}</td>
                 <td style="padding:2px 6px;color:${col};font-weight:bold;">${mv.tipo === 'RETIRO' ? '−' : '+'}${mv.cant}</td>
                 <td style="padding:2px 6px;text-align:center;">${mv.cant}</td>
@@ -2931,10 +2851,10 @@ function renderComp(ultimoCod=null, filtro='') {
     historial.slice(-30).reverse().forEach((c,i)=>{
         const realIdx = historial.length - 1 - i;
         const tr=document.createElement('tr');
-        tr.innerHTML=`<td style="color:#888;padding:2px 3px;">${historial.length-i}</td>
+        tr.innerHTML=`<td style="color:#111111;padding:2px 3px;">${historial.length-i}</td>
             <td style="font-size:11px;text-align:left;padding:2px 3px;word-break:break-all;">${c}</td>
             <td style="padding:2px 1px;">
-                <button onclick="eliminarLectura(${realIdx})" style="background:none;border:none;color:#555;cursor:pointer;font-size:13px;padding:1px 4px;" title="Eliminar esta lectura">🗑</button>
+                <button onclick="eliminarLectura(${realIdx})" style="background:none;border:none;color:#111111;cursor:pointer;font-size:13px;padding:1px 4px;" title="Eliminar esta lectura">🗑</button>
             </td>`;
         frag1.appendChild(tr);
     });
@@ -3074,11 +2994,11 @@ function exportarExcel(idx) {
 function renderLotes() {
     const d=document.getElementById('listaLotes'); d.innerHTML='';
     document.getElementById('modal-lotes-title').textContent='REPORTES COMPARATIVO';
-    const btnS=(bg,c)=>`background:${bg};color:${c};border:none;padding:8px 10px;border-radius:6px;font-size:11px;margin:3px;cursor:pointer;font-family:'Outfit',sans-serif;font-weight:700;`;
-    if (!lotes.length) { d.innerHTML='<p style="color:#666;text-align:center;margin-top:50px;font-family:Barlow,sans-serif;">Sin reportes guardados</p>'; return; }
+    const btnS=(bg,c)=>`background:${bg};color:${c};border:none;padding:8px 10px;border-radius:6px;font-size:11px;margin:3px;cursor:pointer;font-family:'Barlow',sans-serif;font-weight:700;`;
+    if (!lotes.length) { d.innerHTML='<p style="color:#111111;text-align:center;margin-top:50px;font-family:Barlow,sans-serif;">Sin reportes guardados</p>'; return; }
     lotes.forEach((l,i)=>{
         const div=document.createElement('div'); div.className='card-lote';
-        div.innerHTML=`<strong style="color:var(--rojo);font-family:'Outfit',sans-serif;font-size:14px;">${l.nombre}</strong><br><small style="color:#666;">${l.fecha} | ${l.datosLectura.length.toLocaleString()} unid.</small><br><br>
+        div.innerHTML=`<strong style="color:var(--rojo);font-family:'Barlow',sans-serif;font-size:14px;">${l.nombre}</strong><br><small style="color:#111111;">${l.fecha} | ${l.datosLectura.length.toLocaleString()} unid.</small><br><br>
         <button onclick="verDetalleLote(${i})"  style="${btnS('#0d47a1','white')}">👁 VER</button>
         <button onclick="reanudarLote(${i})" style="${btnS('#1A1A1A','white')}">▶ REANUDAR</button>
         <button onclick="exportarExcel(${i})" style="${btnS('#D32F2F','white')}">📊 EXCEL</button>
@@ -3187,7 +3107,7 @@ function dlRender() {
         return Math.abs(b.diff) - Math.abs(a.diff);
     });
     if (!entries.length) {
-        cont.innerHTML = `<p style="color:#888;text-align:center;margin-top:30px;font-family:'Outfit',sans-serif;font-size:13px;">Sin resultados${q?' para "'+q+'"':''}</p>`;
+        cont.innerHTML = `<p style="color:#111111;text-align:center;margin-top:30px;font-family:'Barlow',sans-serif;font-size:13px;">Sin resultados${q?' para "'+q+'"':''}</p>`;
         return;
     }
     cont.innerHTML = '';
@@ -3214,7 +3134,7 @@ function dlRender() {
     cont.appendChild(frag);
     if (entries.length > 200) {
         const p = document.createElement('p');
-        p.style.cssText = 'color:#888;text-align:center;font-size:11px;padding:8px;';
+        p.style.cssText = 'color:#111111;text-align:center;font-size:11px;padding:8px;';
         p.textContent = `... y ${entries.length-200} más. Usa el buscador para filtrar.`;
         cont.appendChild(p);
     }
@@ -3407,7 +3327,7 @@ function buscarEnAlmComp(q) {
     madcEntriesVis = entries;
 
     if (!entries.length) {
-        cont.innerHTML = `<p style="color:#888;text-align:center;margin-top:20px;font-family:'Outfit',sans-serif;font-size:13px;">Sin resultados${query?' para "'+query+'"':''}</p>`;
+        cont.innerHTML = `<p style="color:#111111;text-align:center;margin-top:20px;font-family:'Barlow',sans-serif;font-size:13px;">Sin resultados${query?' para "'+query+'"':''}</p>`;
         _madcActualizarBulkBar(); return;
     }
 
@@ -3493,7 +3413,7 @@ function buscarEnAlmComp(q) {
     cont.appendChild(frag);
     if (entries.length > 100) {
         const p = document.createElement('p');
-        p.style.cssText = 'color:#888;text-align:center;font-size:11px;padding:8px;';
+        p.style.cssText = 'color:#111111;text-align:center;font-size:11px;padding:8px;';
         p.textContent = `... y ${entries.length-100} más. Refina la búsqueda.`;
         cont.appendChild(p);
     }
@@ -3688,7 +3608,7 @@ function mostrarModalDescarga(plataforma) {
 
     let html = '';
     if (plataforma === 'iOS') {
-        html = `<div style="font-size:13px;line-height:1.8;font-family:'Outfit',sans-serif;color:var(--texto);">
+        html = `<div style="font-size:13px;line-height:1.8;font-family:'Barlow',sans-serif;color:var(--texto);">
             <div style="font-size:28px;text-align:center;margin-bottom:12px;">📱</div>
             <b>En iPhone/iPad:</b><br>
             Para instalar PIEERS PRO como app:<br><br>
@@ -3700,7 +3620,7 @@ function mostrarModalDescarga(plataforma) {
             La app queda en tu pantalla de inicio como ícono. ¡Sin descarga!
         </div>`;
     } else if (plataforma === 'Android') {
-        html = `<div style="font-size:13px;line-height:1.8;font-family:'Outfit',sans-serif;color:var(--texto);">
+        html = `<div style="font-size:13px;line-height:1.8;font-family:'Barlow',sans-serif;color:var(--texto);">
             <div style="font-size:28px;text-align:center;margin-bottom:12px;">🤖</div>
             <b>En Android — dos opciones:</b><br><br>
             <div style="background:var(--gris-bg);border-radius:8px;padding:12px;margin-bottom:8px;">
@@ -3715,7 +3635,7 @@ function mostrarModalDescarga(plataforma) {
             </div>
         </div>`;
     } else {
-        html = `<div style="font-size:13px;line-height:1.8;font-family:'Outfit',sans-serif;color:var(--texto);">
+        html = `<div style="font-size:13px;line-height:1.8;font-family:'Barlow',sans-serif;color:var(--texto);">
             <b>Guardar en PC:</b><br>
             Presiona <b>Ctrl+S</b> (Windows) o <b>Cmd+S</b> (Mac)<br>
             Selecciona "Página web, solo HTML"
@@ -4397,8 +4317,13 @@ function csRenderPrecios(modelCode) {
             if(lista) lista.innerHTML='';
             const libroComboElFb = document.getElementById('cs-pf-libro-combo');
             if(libroComboElFb) libroComboElFb.textContent='📖 —';
-            // Sin memorandum: solo mostrar etiqueta y X Mayor (no UNITARIO, COMBO, OFERTA)
-            csRenderPrecioFinal(cod, {menor:0, oferta:0, libros:[], promos:[], mayor:0}, mFallback.etiqueta, 0);
+            // Cuadro único: en este caso solo hay precio de Oferta (si tipo=OF) o Etiqueta
+            const ofertaSola = mFallback.tipo === 'OF' ? mFallback.oferta : 0;
+            const stubMayor = ofertaSola > 0
+                ? {menor:0, oferta:ofertaSola, libros:['Precios por Mayor'],
+                   promos:[{nombre:'OFERTA', precio:ofertaSola, tipo:'oferta', libro:'Precios por Mayor'}]}
+                : {menor:0, oferta:0, libros:[], promos:[]};
+            csRenderPrecioFinal(cod, stubMayor, mFallback.etiqueta, ofertaSola);
         } else {
             panel.style.display='none';
         }
@@ -4417,12 +4342,10 @@ function csRenderPrecios(modelCode) {
     document.getElementById('cs-pct-etiqueta').textContent='Precio base';
     document.getElementById('cs-p-menor').textContent=fmt(p.menor);
     document.getElementById('cs-pct-menor').textContent=pct(p.menor,etiq);
-    // X Mayor: primero de Precios por Mayor, luego del memorandum (combo)
-    const precioMayor = (mDB && mDB.mayor > 0) ? mDB.mayor : p.mayor;
-    document.getElementById('cs-p-mayor').textContent=fmt(precioMayor);
-    document.getElementById('cs-pct-mayor').textContent=pct(precioMayor,etiq);
-    // Oferta: SOLO desde memorandum. Precios por Mayor NO afecta OFERTA.
-    const ofertaFinal = p.oferta > 0 ? p.oferta : 0;
+    document.getElementById('cs-p-mayor').textContent=fmt(p.mayor);
+    document.getElementById('cs-pct-mayor').textContent=pct(p.mayor,etiq);
+    // Oferta: desde memorandum o desde PRECIOS_POR_MAYOR si tipo=OF
+    const ofertaFinal = p.oferta > 0 ? p.oferta : (mDB && mDB.tipo==='OF' ? mDB.oferta : 0);
     document.getElementById('cs-p-oferta').textContent=fmt(ofertaFinal);
     document.getElementById('cs-pct-oferta').textContent=pct(ofertaFinal,etiq);
 
@@ -4462,7 +4385,7 @@ function csRenderPrecios(modelCode) {
                 ? ' (-'+((etiq-precioMostrar)/etiq*100).toFixed(0)+'%)'
                 : '';
             const libroTag = libroMostrar
-                ? '<span style="font-size:9px;color:#666;font-family:Inter,sans-serif;display:block;margin-top:1px;">📖 '+libroMostrar+'</span>'
+                ? '<span style="font-size:9px;color:#111111;font-family:Inter,sans-serif;display:block;margin-top:1px;">📖 '+libroMostrar+'</span>'
                 : '';
             return '<div class="cs-promo-activa-row cs-pa-'+tipo+'">'
                 + '<span class="cs-pa-ico">'+ico+'</span>'
@@ -4788,7 +4711,7 @@ function csVerLibros() {
     const cont = document.getElementById('cs-libros-lista');
     if (!cont) return;
     if (!csLibrosCargados || !csLibrosCargados.length) {
-        cont.innerHTML = '<div style="text-align:center;padding:30px 10px;color:#aaa;font-size:13px;">📭 Aún no cargaste ningún libro de precios.<br>Toca "Cargar otro libro" para empezar.</div>';
+        cont.innerHTML = '<div style="text-align:center;padding:30px 10px;color:#111111;font-size:13px;">📭 Aún no cargaste ningún libro de precios.<br>Toca "Cargar otro libro" para empezar.</div>';
     } else {
         cont.innerHTML = csLibrosCargados.map(l => {
             const cambiosTxt = l.actualizados > 0
@@ -4796,7 +4719,7 @@ function csVerLibros() {
                 : '<span style="color:#2E7D32;">✓ sin cambios</span>';
             return '<div style="background:#F8F8F8;border-radius:12px;padding:12px 14px;border-left:4px solid #E65100;">'
                 + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:800;color:#111;">📖 ' + l.nombre + '</div>'
-                + '<div style="font-size:11px;color:#888;margin-top:3px;">' + l.fecha + ' · ' + l.articulos + ' artículos en base · ' + (l.nuevos||0) + ' nuevos</div>'
+                + '<div style="font-size:11px;color:#111111;margin-top:3px;">' + l.fecha + ' · ' + l.articulos + ' artículos en base · ' + (l.nuevos||0) + ' nuevos</div>'
                 + '<div style="font-size:11px;margin-top:4px;">' + cambiosTxt + '</div>'
                 + '</div>';
         }).join('');
@@ -4973,7 +4896,7 @@ function csBuscar() {
             if (outer) outer.innerHTML =
                 '<div class="cs-no-data" style="font-size:13px;color:#E65100;padding:20px 16px;">' +
                 '📦 Sin stock en la base cargada.<br>' +
-                '<span style="font-size:11px;color:#888;margin-top:6px;display:block;">' +
+                '<span style="font-size:11px;color:#111111;margin-top:6px;display:block;">' +
                 'Puede ser un artículo de BAJAR OFERTA.<br>' +
                 'Recarga el stock desde Drive para incluirlo.</span></div>';
             csRenderPrecios(codBusq);
@@ -5167,7 +5090,7 @@ function driveMostrarLista() {
             var kb = f.size ? (f.size > 1048576 ? (f.size/1048576).toFixed(1)+' MB' : (f.size/1024).toFixed(0)+' KB') : '';
             var ext = f.name.split('.').pop().toLowerCase();
             var ico = (ext==='xlsx'||ext==='xls') ? '📊' : (ext==='csv' ? '📄' : '📁');
-            html += '<div onclick="driveSeleccionarArchivo(\'' + f.id + '\',\'' + f.name.replace(/'/g,"\\'") + '\')" style="display:flex;align-items:center;gap:12px;padding:13px 12px;border-radius:10px;background:#F8F8F8;margin-bottom:8px;cursor:pointer;border:1px solid #E0E0E0;">';
+            html += '<div onclick="driveSeleccionarArchivo(\'' + f.id + '\',\'' + f.name.replace(/'/g,"\\'") + '\')" style="display:flex;align-items:center;gap:12px;padding:13px 12px;border-radius:10px;background:#111;margin-bottom:8px;cursor:pointer;border:1px solid #222;active:background:#1e2a3a;">';
             html += '<span style="font-size:22px;">' + ico + '</span>';
             html += '<div style="flex:1;min-width:0;"><div style="color:#fff;font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + f.name + '</div>';
             if (kb) html += '<div style="color:#555;font-size:11px;margin-top:2px;">' + kb + '</div>';
@@ -5328,73 +5251,73 @@ function driveProcesar(ab, tipo) {
 <div id="modal-cs-libros" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9850;align-items:flex-end;justify-content:center;padding:0;">
   <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 16px 32px;box-shadow:0 -8px 32px rgba(0,0,0,0.2);max-height:80vh;display:flex;flex-direction:column;">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-shrink:0;">
-      <div style="font-family:'Outfit',sans-serif;font-size:18px;font-weight:900;color:#111;letter-spacing:1px;">📚 LIBROS DE PRECIOS CARGADOS</div>
-      <button onclick="document.getElementById('modal-cs-libros').style.display='none'" style="background:#F0F0F0;border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#555;">✕</button>
+      <div style="font-family:'Barlow',sans-serif;font-size:18px;font-weight:900;color:#111;letter-spacing:1px;">📚 LIBROS DE PRECIOS CARGADOS</div>
+      <button onclick="document.getElementById('modal-cs-libros').style.display='none'" style="background:#F0F0F0;border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#111111;">✕</button>
     </div>
-    <div style="font-size:11px;color:#aaa;margin-bottom:14px;letter-spacing:0.3px;">Cada Excel que cargas (Memorandum Junio, Casacas, etc.) se acumula aquí. El sistema siempre muestra el precio más bajo entre todos los libros y avisa si un precio cambió.</div>
+    <div style="font-size:11px;color:#111111;margin-bottom:14px;letter-spacing:0.3px;">Cada Excel que cargas (Memorandum Junio, Casacas, etc.) se acumula aquí. El sistema siempre muestra el precio más bajo entre todos los libros y avisa si un precio cambió.</div>
     <div id="cs-libros-lista" style="display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1;"></div>
-    <button onclick="document.getElementById('cs-precio-input').click();document.getElementById('modal-cs-libros').style.display='none'" style="margin-top:14px;background:#E65100;color:#fff;border:none;border-radius:10px;padding:13px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:800;letter-spacing:0.5px;cursor:pointer;flex-shrink:0;">➕ CARGAR OTRO LIBRO DE PRECIOS</button>
-    <button onclick="csConfirmarLimpiarPrecios()" style="margin-top:8px;background:transparent;color:#c62828;border:1.5px solid #c62828;border-radius:10px;padding:10px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.5px;cursor:pointer;flex-shrink:0;">🗑️ Borrar todos los libros de precios</button>
+    <button onclick="document.getElementById('cs-precio-input').click();document.getElementById('modal-cs-libros').style.display='none'" style="margin-top:14px;background:#E65100;color:#fff;border:none;border-radius:10px;padding:13px;font-family:'Barlow',sans-serif;font-size:14px;font-weight:800;letter-spacing:0.5px;cursor:pointer;flex-shrink:0;">➕ CARGAR OTRO LIBRO DE PRECIOS</button>
+    <button onclick="csConfirmarLimpiarPrecios()" style="margin-top:8px;background:transparent;color:#c62828;border:1.5px solid #c62828;border-radius:10px;padding:10px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.5px;cursor:pointer;flex-shrink:0;">🗑️ Borrar todos los libros de precios</button>
   </div>
 </div>
 
 <div id="modal-subcarga" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9850;align-items:flex-end;justify-content:center;padding:0;">
   <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:20px 16px 32px;box-shadow:0 -8px 32px rgba(0,0,0,0.2);">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-      <div style="font-family:'Outfit',sans-serif;font-size:18px;font-weight:900;color:#111;letter-spacing:1px;" id="subcarga-titulo">📂 CARGAR</div>
-      <button onclick="cerrarSubCarga()" style="background:#F0F0F0;border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#555;">✕</button>
+      <div style="font-family:'Barlow',sans-serif;font-size:18px;font-weight:900;color:#111;letter-spacing:1px;" id="subcarga-titulo">📂 CARGAR</div>
+      <button onclick="cerrarSubCarga()" style="background:#F0F0F0;border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#111111;">✕</button>
     </div>
-    <div id="subcarga-desc" style="font-size:11px;color:#aaa;margin-bottom:16px;letter-spacing:0.5px;"></div>
+    <div id="subcarga-desc" style="font-size:11px;color:#111111;margin-bottom:16px;letter-spacing:0.5px;"></div>
     <div id="subcarga-opciones" style="display:flex;flex-direction:column;gap:10px;"></div>
   </div>
 </div>
 
 <div id="modal-drive" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9800;align-items:center;justify-content:center;padding:14px;">
-  <div style="background:#FFFFFF;border-radius:18px;width:100%;max-width:420px;border:1px solid #E0E0E0;box-shadow:0 16px 48px rgba(0,0,0,0.3);overflow:hidden;">
+  <div style="background:#1a1a1a;border-radius:18px;width:100%;max-width:420px;border:1px solid #2a2a2a;box-shadow:0 16px 48px rgba(0,0,0,0.7);overflow:hidden;">
 
     <!-- Header -->
     <div style="background:linear-gradient(135deg,#0d47a1,#1565C0);padding:16px 18px;display:flex;align-items:center;justify-content:space-between;">
       <div style="display:flex;align-items:center;gap:10px;">
         <span style="font-size:22px;">☁️</span>
         <div>
-          <div style="font-family:'Outfit',sans-serif;font-size:17px;font-weight:900;color:white;letter-spacing:1px;">BASES EN GOOGLE DRIVE</div>
-          <div id="drive-modal-tipo" style="font-size:10px;color:#90CAF9;font-family:'Outfit',sans-serif;font-weight:700;letter-spacing:0.5px;margin-top:1px;"></div>
+          <div style="font-family:'Barlow',sans-serif;font-size:17px;font-weight:900;color:white;letter-spacing:1px;">BASES EN GOOGLE DRIVE</div>
+          <div id="drive-modal-tipo" style="font-size:10px;color:#90CAF9;font-family:'Barlow',sans-serif;font-weight:700;letter-spacing:0.5px;margin-top:1px;"></div>
         </div>
       </div>
       <button onclick="closeDriveModal()" style="background:rgba(255,255,255,0.15);border:none;color:white;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;line-height:30px;text-align:center;">✕</button>
     </div>
 
     <!-- VISTA LOGIN -->
-    <div id="drive-vista-login" style="padding:20px;background:#FFFFFF;">
+    <div id="drive-vista-login" style="padding:20px;">
       <div style="text-align:center;margin-bottom:18px;">
         <div style="font-size:36px;margin-bottom:6px;">🔐</div>
-        <div style="color:#111;font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;">INGRESA LA CONTRASEÑA</div>
-        <div style="color:#555;font-size:12px;margin-top:4px;">Para acceder a tus archivos en Drive</div>
+        <div style="color:#eee;font-family:'Barlow',sans-serif;font-size:16px;font-weight:700;">INGRESA LA CONTRASEÑA</div>
+        <div style="color:#777;font-size:12px;margin-top:4px;">Para acceder a tus archivos en Drive</div>
       </div>
       <input type="password" id="drive-pass-input" placeholder="Contraseña..."
         onkeydown="if(event.key==='Enter') driveIngresarPass()"
-        style="width:100%;padding:13px;border-radius:10px;border:2px solid #CCC;background:#F5F5F5;color:#111;font-size:15px;margin-bottom:12px;font-family:'Outfit',sans-serif;outline:none;text-align:center;letter-spacing:3px;"
+        style="width:100%;padding:13px;border-radius:10px;border:2px solid #333;background:#111;color:white;font-size:15px;margin-bottom:12px;font-family:'Barlow',sans-serif;outline:none;text-align:center;letter-spacing:3px;"
         onfocus="this.style.borderColor='#4FC3F7'" onblur="this.style.borderColor='#333'">
-      <label style="display:flex;align-items:center;gap:10px;color:#444;font-size:12px;margin-bottom:16px;cursor:pointer;">
+      <label style="display:flex;align-items:center;gap:10px;color:#888;font-size:12px;margin-bottom:16px;cursor:pointer;">
         <input type="checkbox" id="drive-recordar-pass" style="width:16px;height:16px;accent-color:#4FC3F7;" checked>
         Recordar contraseña en este dispositivo
       </label>
-      <button onclick="driveIngresarPass()" style="width:100%;padding:14px;border:none;background:linear-gradient(135deg,#1976D2,#1565C0);color:white;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;letter-spacing:1px;">
+      <button onclick="driveIngresarPass()" style="width:100%;padding:14px;border:none;background:linear-gradient(135deg,#1976D2,#1565C0);color:white;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif;letter-spacing:1px;">
         ENTRAR →
       </button>
     </div>
 
     <!-- VISTA LISTA DE ARCHIVOS -->
-    <div id="drive-vista-lista" style="display:none;padding:16px;background:#FFFFFF;">
+    <div id="drive-vista-lista" style="display:none;padding:16px;">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <div style="color:#333;font-size:12px;font-weight:600;">📁 Carpeta: <b style="color:#1565C0;">PIEERS BASES</b></div>
+        <div style="color:#aaa;font-size:12px;">📁 Carpeta: <b style="color:#4FC3F7;">PIEERS BASES</b></div>
         <div style="display:flex;gap:8px;">
-          <button onclick="driveMostrarLista()" style="background:#F0F0F0;border:1px solid #CCC;color:#333;padding:5px 10px;border-radius:7px;font-size:11px;cursor:pointer;">🔄</button>
-          <button onclick="driveCerrarSesion()" style="background:#FFF0F0;border:1px solid #FFCDD2;color:#C62828;padding:5px 10px;border-radius:7px;font-size:11px;cursor:pointer;">Salir</button>
+          <button onclick="driveMostrarLista()" style="background:#222;border:1px solid #333;color:#aaa;padding:5px 10px;border-radius:7px;font-size:11px;cursor:pointer;">🔄</button>
+          <button onclick="driveCerrarSesion()" style="background:#222;border:1px solid #333;color:#e57373;padding:5px 10px;border-radius:7px;font-size:11px;cursor:pointer;">Salir</button>
         </div>
       </div>
       <div id="drive-lista-archivos" style="max-height:340px;overflow-y:auto;"></div>
-      <div style="color:#777;font-size:10px;text-align:center;margin-top:10px;">Toca el archivo para cargarlo directo en la app</div>
+      <div style="color:#555;font-size:10px;text-align:center;margin-top:10px;">Toca el archivo para cargarlo directo en la app</div>
     </div>
 
   </div>
@@ -5454,11 +5377,11 @@ function driveProcesar(ab, tipo) {
     <div class="madc-header">
         <span style="font-size:20px;">📋</span>
         <span class="madc-title">COMPARATIVO + ALMACÉN</span>
-        <div id="madc-badge" style="background:#1B5E20;color:white;font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;margin-right:6px;">0 cód.</div>
+        <div id="madc-badge" style="background:#1B5E20;color:white;font-family:'Barlow',sans-serif;font-size:11px;font-weight:700;padding:3px 10px;border-radius:6px;margin-right:6px;">0 cód.</div>
         <button class="madc-close" onclick="cerrarAlmDesdeComp()">✕</button>
     </div>
     <!-- Resumen rápido -->
-    <div id="madc-resumen-bar" style="display:flex;gap:0;background:#0a0a0a;padding:6px 10px;border-bottom:1px solid #1a1a1a;flex-shrink:0;font-family:'Outfit',sans-serif;font-size:11px;gap:8px;flex-wrap:wrap;">
+    <div id="madc-resumen-bar" style="display:flex;gap:0;background:#0a0a0a;padding:6px 10px;border-bottom:1px solid #1a1a1a;flex-shrink:0;font-family:'Barlow',sans-serif;font-size:11px;gap:8px;flex-wrap:wrap;">
         <span style="color:#aaa;">Maestro: <strong id="madc-res-maestro" style="color:#fff;">0</strong></span>
         <span style="color:#aaa;">Conteo: <strong id="madc-res-conteo" style="color:#4CAF50;">0</strong></span>
         <span style="color:#aaa;">Diferencia: <strong id="madc-res-dif" style="color:#FF9800;">0</strong></span>
@@ -5496,7 +5419,7 @@ function driveProcesar(ab, tipo) {
     </div>
     <!-- Resultados -->
     <div class="madc-results" id="madc-results">
-        <p style="color:#888;text-align:center;margin-top:30px;font-family:'Outfit',sans-serif;font-size:13px;">Cargando códigos del comparativo...</p>
+        <p style="color:#111111;text-align:center;margin-top:30px;font-family:'Barlow',sans-serif;font-size:13px;">Cargando códigos del comparativo...</p>
     </div>
     <!-- Barra flotante inferior -->
     <div class="madc-bulk-float">
@@ -5582,11 +5505,11 @@ function driveProcesar(ab, tipo) {
 <div id="modal-alm-informes" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:6500;justify-content:center;align-items:flex-start;padding:16px;">
     <div style="background:var(--blanco);border-radius:14px;width:100%;max-width:480px;max-height:90vh;overflow:hidden;display:flex;flex-direction:column;margin-top:20px;">
         <div style="background:var(--negro);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid var(--rojo);flex-shrink:0;">
-            <span style="font-family:'Outfit',sans-serif;font-size:15px;font-weight:900;color:white;letter-spacing:1px;">📋 INFORMES ALMACÉN</span>
+            <span style="font-family:'Barlow',sans-serif;font-size:15px;font-weight:900;color:white;letter-spacing:1px;">📋 INFORMES ALMACÉN</span>
             <button onclick="cerrarModalAlmInformes()" style="background:none;border:none;color:#aaa;font-size:22px;cursor:pointer;">✕</button>
         </div>
         <div id="alm-informes-lista" style="flex:1;overflow-y:auto;padding:10px 14px;display:flex;flex-direction:column;gap:8px;">
-            <p style="color:#888;text-align:center;margin-top:30px;font-family:'Outfit',sans-serif;">Sin informes guardados</p>
+            <p style="color:#111111;text-align:center;margin-top:30px;font-family:'Barlow',sans-serif;">Sin informes guardados</p>
         </div>
     </div>
 </div>
