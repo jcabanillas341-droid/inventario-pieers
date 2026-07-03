@@ -710,34 +710,37 @@
 
         #cs-table-outer table { border-collapse: collapse; font-size: 10px; width: max-content; }
         .cs-th-color {
-            position: sticky; left: 0; z-index: 10;
+            position: sticky; left: 0; top: 0; z-index: 15;
             background: #2b4a6a; color: #c8e0f8;
             font-size: 9px; font-weight: bold;
             padding: 4px 5px; border: 1px solid #1a3050;
             text-align: left; white-space: nowrap; min-width: 70px;
         }
         .cs-th-size {
+            position: sticky; top: 0; z-index: 12;
             background: #2b4a6a; color: #e0f0ff;
             font-size: 10px; font-weight: bold; text-align: center;
             padding: 4px 3px; border: 1px solid #1a3050; min-width: 26px;
         }
         .cs-th-total {
+            position: sticky; top: 0; z-index: 12;
             background: #1a4020; color: #99ffaa;
             font-size: 10px; font-weight: bold; text-align: center;
             padding: 4px 5px; border: 1px solid #0a2010; white-space: nowrap;
         }
         .cs-th-tp-label {
-            position: sticky; left: 0; z-index: 10;
+            position: sticky; left: 0; top: var(--cs-row1-h, 22px); z-index: 15;
             background: #9ab8d0; color: #cc2200;
             font-size: 7px; font-weight: bold;
             padding: 2px 5px; border: 1px solid #7a9ab8; text-align: left; white-space: nowrap;
         }
         .cs-th-tp {
+            position: sticky; top: var(--cs-row1-h, 22px); z-index: 12;
             background: #c0d8ee; color: #003366;
             font-size: 7px; font-weight: bold;
             text-align: center; padding: 2px 2px; border: 1px solid #9ab8d0;
         }
-        .cs-th-tp-tot { background: #c0d8ee; padding: 2px 2px; border: 1px solid #9ab8d0; }
+        .cs-th-tp-tot { position: sticky; top: var(--cs-row1-h, 22px); z-index: 12; background: #c0d8ee; padding: 2px 2px; border: 1px solid #9ab8d0; }
         .cs-td-color {
             position: sticky; left: 0; z-index: 5;
             background: #eaf2fc; color: #0a2244;
@@ -4975,6 +4978,13 @@ function csRenderTable(data, outer) {
     h += '</tbody></table>';
 
     outer.innerHTML = h;
+
+    // Fijar la altura real de la 1ª fila de encabezado (talla) para que la 2ª fila
+    // (TALLEROS TG/TP) se pegue justo debajo al hacer scroll, sin superponerse.
+    const firstHeadRow = outer.querySelector('thead tr');
+    if (firstHeadRow) {
+        outer.style.setProperty('--cs-row1-h', firstHeadRow.getBoundingClientRect().height + 'px');
+    }
 }
 
 // ══════════════════════════════════════════════════════
