@@ -3978,7 +3978,15 @@ function csParsePreciosXLSX(wb, nombreLibro) {
         }
     }
 
-    wb.SheetNames.forEach(sheetName => {
+    // Procesar hojas ordenadas: primero las pequeñas (Combo, COmboejecutivo),
+    // luego PRomo, Ofertas, y al final la más grande (PRomo tiendas)
+    const ordenHojas = ['Combo','COmboejecutivo','Ofertas','PRomo','ComboEjec.tdas','PromocomboTda','PRomo tiendas'];
+    const hojasOrdenadas = [
+        ...ordenHojas.filter(h => wb.SheetNames.includes(h)),
+        ...wb.SheetNames.filter(h => !ordenHojas.includes(h))
+    ];
+
+    hojasOrdenadas.forEach((sheetName, shIdx) => {
         const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName],{header:1,defval:''});
         const shU  = sheetName.toUpperCase();
 
@@ -3993,18 +4001,33 @@ function csParsePreciosXLSX(wb, nombreLibro) {
                          shU.includes('OFERTA') || shU.includes('EJEC') ||
                          (shU.includes('COMBO') && sheetName.toLowerCase().includes('tda'));
 
-        // Primero: códigos que SÍ tienen fila de CAJAMARCA en esta hoja (prioridad real)
+        // Pasada única: separar filas de Cajamarca y filas nacionales
+        // Usar Map para acceso O(1) en vez de dos forEach sobre 55k filas
+        const filasLocal   = [];  // filas de CAJAMARCA
+        const filasNacl    = [];  // filas de otras tiendas/nacional
         const codConCajamarca = new Set();
-        rows.forEach(r => {
-            if (!r||r.length<5) return;
-            if (!r.some(c=>String(c||'').toUpperCase().includes(LOCAL))) return;
-            for(let i=0;i<r.length;i++){ if(esCodigo(r[i])){ codConCajamarca.add(String(r[i]).trim().toUpperCase()); break; } }
-        });
+        for (let ri=0; ri<rows.length; ri++) {
+            const r = rows[ri];
+            if (!r||r.length<5) continue;
+            // Detección rápida de Cajamarca: buscar LOCAL en los primeros 3 índices
+            const esLocal = String(r[0]||'').toUpperCase().includes(LOCAL) ||
+                            String(r[1]||'').toUpperCase().includes(LOCAL) ||
+                            String(r[2]||'').toUpperCase().includes(LOCAL);
+            if (esLocal) {
+                filasLocal.push(r);
+                for(let i=0;i<r.length;i++){ if(esCodigo(r[i])){ codConCajamarca.add(String(r[i]).trim().toUpperCase()); break; } }
+            } else {
+                filasNacl.push(r);
+            }
+        }
+        // Procesar: primero locales, luego nacionales solo si no hay local para ese código
+        const filasAProcesar = [...filasLocal, ...filasNacl];
 
-        rows.forEach(r => {
+        filasAProcesar.forEach(r => {
             if (!r||r.length<5) return;
-
-            const esFilaCajamarca = r.some(c=>String(c||'').toUpperCase().includes(LOCAL));
+            const esFilaCajamarca = String(r[0]||'').toUpperCase().includes(LOCAL) ||
+                                    String(r[1]||'').toUpperCase().includes(LOCAL) ||
+                                    String(r[2]||'').toUpperCase().includes(LOCAL);
 
             // Encontrar código 7 chars (primera aparición)
             let codRaw=null, codIdx=-1;
