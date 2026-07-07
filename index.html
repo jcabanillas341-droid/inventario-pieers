@@ -864,6 +864,21 @@
             <button id="btn-alm-informes"  class="hidden" onclick="abrirModalAlmInformes();toggleMenu()">📋 Ver Informes</button>
             <button id="btn-alm-reiniciar" class="hidden" onclick="resetearModulo();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Reiniciar almacén</button>
             <div id="menu-sec-stock" class="menu-section hidden">📦 Consultar Stock</div>
+            <!-- Botones de modo: STOCK+PRECIOS, SOLO STOCK, SOLO PRECIOS -->
+            <div id="btn-modos-cs" class="hidden" style="display:none;gap:6px;padding:6px 14px 2px;">
+                <button onclick="csSetModo('ambos');toggleMenu()" id="cs-menu-modo-ambos"
+                    style="flex:1;padding:7px 4px;border:2px solid #1565C0;border-radius:8px;background:#E3F2FD;color:#0D47A1;font-size:10px;font-weight:800;cursor:pointer;font-family:'Outfit',sans-serif;text-align:center;">
+                    📦💰<br>STOCK+PRECIOS
+                </button>
+                <button onclick="csSetModo('stock');toggleMenu()" id="cs-menu-modo-stock"
+                    style="flex:1;padding:7px 4px;border:2px solid #2E7D32;border-radius:8px;background:#E8F5E9;color:#1B5E20;font-size:10px;font-weight:800;cursor:pointer;font-family:'Outfit',sans-serif;text-align:center;">
+                    📦<br>SOLO STOCK
+                </button>
+                <button onclick="csSetModo('precios');toggleMenu()" id="cs-menu-modo-precios"
+                    style="flex:1;padding:7px 4px;border:2px solid #E65100;border-radius:8px;background:#FFF3E0;color:#BF360C;font-size:10px;font-weight:800;cursor:pointer;font-family:'Outfit',sans-serif;text-align:center;">
+                    💰<br>SOLO PRECIOS
+                </button>
+            </div>
             <button id="btn-carga-cs"      class="hidden" onclick="abrirSubCarga('cs');toggleMenu()">📂 CARGAR BASE</button>
             <button id="btn-stock-buscar"  class="hidden" onclick="csBuscar();toggleMenu()">🔍 Buscar Artículo</button>
             <button id="btn-stock-borrar"  class="hidden" onclick="csBorrarDB();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Borrar base guardada</button>
@@ -1021,23 +1036,18 @@
 
     <!-- ══════ PANEL CONSULTAR STOCK ══════ -->
     <div id="vista-stock" style="display:none;flex-direction:column;flex:1;overflow:hidden;background:#b8cfe0;">
-        <!-- ── SELECTOR MODO CONSULTA ── -->
-        <div id="cs-modo-selector">
-            <button class="cs-modo-btn activo" id="cs-modo-ambos" onclick="csSetModo('ambos')">
-                <span class="cs-modo-ico">📦💰</span>STOCK + PRECIOS
-            </button>
-            <button class="cs-modo-btn" id="cs-modo-stock" onclick="csSetModo('stock')">
-                <span class="cs-modo-ico">📦</span>SOLO STOCK
-            </button>
-            <button class="cs-modo-btn" id="cs-modo-precios" onclick="csSetModo('precios')">
-                <span class="cs-modo-ico">💰</span>SOLO PRECIOS
-            </button>
-        </div>
+        <!-- ── SELECTOR MODO CONSULTA (movido a OPC.) ── -->
+        <div id="cs-modo-selector" style="display:none;"></div>
         <div class="cs-top-panel">
             <div class="cs-ctrl-row">
                 <span class="cs-field-label">CODBAR:</span>
                 <input type="text" id="cs-inp-codbar" class="cs-inp" placeholder="Escanear / 13 dígitos" maxlength="20"
                        oninput="csOnBarcodeInput(this.value)" onkeydown="if(event.key==='Enter')csBuscar()">
+            </div>
+            <!-- Nombre del artículo encima de todo, en negro -->
+            <div id="cs-nombre-articulo" style="display:none;padding:6px 10px 2px;flex-shrink:0;">
+                <div id="cs-nombre-texto" style="font-family:'Outfit',sans-serif;font-size:15px;font-weight:900;color:#111111;letter-spacing:0.3px;line-height:1.2;"></div>
+                <div id="cs-codigo-texto" style="font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;color:#555;margin-top:1px;"></div>
             </div>
             <div class="cs-ctrl-row">
                 <span class="cs-field-label">Artículo:</span>
@@ -1055,9 +1065,9 @@
                 <span id="cs-db-badge" class="empty">SIN BASE</span>
             </div>
         </div>
-        <div style="display:flex;align-items:center;background:#7aaac8;border-bottom:1px solid #5a8aaa;flex-shrink:0;">
-            <div id="cs-status-bar" style="background:transparent;border-bottom:none;flex:1;">Cargue una base de datos para comenzar.</div>
-            <button onclick="csVerLibros()" title="Ver libros de precios cargados" style="background:#5a8aaa;border:none;color:#fff;font-size:11px;font-weight:bold;padding:3px 10px;cursor:pointer;white-space:nowrap;flex-shrink:0;">📚 Libros</button>
+        <div style="display:none;">
+            <div id="cs-status-bar">Cargue una base de datos para comenzar.</div>
+            <button onclick="csVerLibros()" style="display:none;">📚 Libros</button>
         </div>
 
         <!-- ── TABS STOCK / PRECIOS ── -->
@@ -1485,7 +1495,7 @@ function seleccionarModo(modo) {
         $s('menu-sec-comp').classList.add('hidden');
         ['btn-carga-alm','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
         const secStock=$('menu-sec-stock'); if(secStock) secStock.classList.add('hidden');
-        ['btn-carga-cs','btn-stock-buscar','btn-stock-borrar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
+        ['btn-modos-cs','btn-carga-cs','btn-stock-buscar','btn-stock-borrar'].forEach(id => { const el=$(id); if(el) { el.classList.add('hidden'); el.style.display='none'; } });
         const bgl = $('btn-guardar-lote'); if(bgl) bgl.style.display = 'block';
 
         const scannerEl2 = $('scanner');
@@ -1511,7 +1521,9 @@ function seleccionarModo(modo) {
             document.body.className = 'modo-stock';
             $s('badge-txt').textContent = 'STOCK';
             const secSt=$('menu-sec-stock'); if(secSt) secSt.classList.remove('hidden');
-            ['btn-carga-cs','btn-stock-buscar','btn-stock-borrar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
+            ['btn-modos-cs','btn-carga-cs','btn-stock-buscar','btn-stock-borrar'].forEach(id => {
+                const el=$(id); if(el) { el.classList.remove('hidden'); el.style.display = id==='btn-modos-cs' ? 'flex' : ''; }
+            });
             const vs=$('vista-stock'); if(vs) vs.style.display='flex';
             const csw3=document.getElementById('comp-search-wrap'); if(csw3) csw3.style.display='none';
             csInit();
@@ -4744,6 +4756,8 @@ function csBorrarDB() {
             const outer = document.getElementById('cs-table-outer');
             if (outer) outer.innerHTML = '<div class="cs-no-data">📦 Cargue su base de datos<br>luego escanee o ingrese un artículo</div>';
             const d = document.getElementById('cs-inp-descripcion'); if(d) d.value = '';
+            const nw = document.getElementById('cs-name-search-wrap'); if(nw) nw.style.display='none';
+            const nd = document.getElementById('cs-nombre-articulo'); if(nd) nd.style.display='none';
             showToast('🗑️ Base borrada', '#c62828');
         }
     );
@@ -4966,6 +4980,15 @@ function csBuscar() {
         const precioData = csPreciosDB[codBusq] || csPreciosDB[art];
         if (precioData) {
             if (descEl) descEl.value = '⚠ Sin stock en base cargada';
+            // Mostrar nombre del precio encima
+            const _nomDivNS = document.getElementById('cs-nombre-articulo');
+            const _nomTxtNS = document.getElementById('cs-nombre-texto');
+            const _codTxtNS = document.getElementById('cs-codigo-texto');
+            if (_nomDivNS && _nomTxtNS) {
+                _nomTxtNS.textContent = (precioData.desc || codBusq) + ' ⚠ Sin stock';
+                if (_codTxtNS) _codTxtNS.textContent = codBusq;
+                _nomDivNS.style.display = 'block';
+            }
             csSetStatus('💰 "' + art + '" no está en el stock cargado — puede ser artículo de OFERTA.');
             if (outer) outer.innerHTML =
                 '<div class="cs-no-data" style="font-size:13px;color:#E65100;padding:20px 16px;">' +
@@ -4979,6 +5002,8 @@ function csBuscar() {
         } else {
             if (descEl) descEl.value = 'NO ENCONTRADO';
             csSetStatus('⚠ "' + art + '" no encontrado.');
+            const _nomDivNF = document.getElementById('cs-nombre-articulo');
+            if (_nomDivNF) _nomDivNF.style.display = 'none';
             if (outer) outer.innerHTML = '<div class="cs-no-data">❌ Artículo no encontrado.</div>';
             const pp = document.getElementById('cs-price-panel'); if(pp) pp.style.display = 'none';
         }
@@ -4990,13 +5015,23 @@ function csBuscar() {
     if (descEl) descEl.value = data.desc;
     const tot = data.colors.reduce((a, c) => a + c.total, 0);
     csSetStatus(key + ' | ' + data.desc + ' | ' + data.colors.length + ' colores | TOTAL: ' + tot);
+    // Mostrar nombre en negro encima de todo
+    const _nomDiv2 = document.getElementById('cs-nombre-articulo');
+    const _nomTxt2 = document.getElementById('cs-nombre-texto');
+    const _codTxt2 = document.getElementById('cs-codigo-texto');
+    if (_nomDiv2 && _nomTxt2) {
+        _nomTxt2.textContent = data.desc || '';
+        if (_codTxt2) _codTxt2.textContent = key + ' | ' + data.colors.length + ' color(es) | TOTAL: ' + tot;
+        _nomDiv2.style.display = 'block';
+    }
     csRenderTable(data, outer);
     // Activar tabs y mostrar búsqueda por nombre
     const hasPrecio = csPreciosDB && csPreciosDB[key];
     csMostrarTabs(!!hasPrecio);
     // Mostrar búsqueda por nombre si hay base cargada
+    // Buscador por nombre: mostrar solo cuando el usuario hace clic en Buscar
     const nameWrap = document.getElementById('cs-name-search-wrap');
-    if (nameWrap) nameWrap.style.display = Object.keys(csStockDB).length > 0 ? 'block' : 'none';
+    if (nameWrap) nameWrap.style.display = 'block';
     csRenderPrecios(key);
     csRenderPreciosMayor(key);
     // Respetar el modo seleccionado
