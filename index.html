@@ -1121,6 +1121,14 @@
                     <div id="cs-pct-mayor-val" style="font-size:8px;color:#111111;margin-top:3px;font-family:'Inter',sans-serif;font-weight:700;">—</div>
                 </div>
             </div>
+            <!-- Alerta: producto sin precio en ningún libro -->
+            <div id="cs-sin-precio-alert" style="display:none;align-items:center;gap:10px;background:#FFF3E0;border:2px solid #FF6D00;border-radius:12px;padding:12px 16px;margin-bottom:6px;">
+                <span style="font-size:22px;">⚠️</span>
+                <div>
+                    <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:800;color:#E65100;text-transform:uppercase;letter-spacing:0.5px;">Sin precio en libros cargados</div>
+                    <div style="font-family:'Outfit',sans-serif;font-size:11px;color:#BF360C;margin-top:2px;">Este artículo no aparece en el Memorandum ni en Precios por Mayor</div>
+                </div>
+            </div>
             <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4354,11 +4362,48 @@ function csRenderPrecios(modelCode) {
                 : {menor:0, oferta:0, libros:[], promos:[]};
             csRenderPrecioFinal(cod, stubMayor, mFallback.etiqueta, ofertaSola);
         } else {
-            panel.style.display='none';
+            // Sin precio en ningún libro: limpiar TODO y mostrar alerta
+            panel.style.display='block';
+            // Limpiar todos los valores
+            ['etiqueta','menor','mayor','oferta'].forEach(k=>{
+                const el=document.getElementById('cs-p-'+k);
+                const pe=document.getElementById('cs-pct-'+k);
+                if(el) el.textContent='0.0000';
+                if(pe) pe.textContent='—';
+            });
+            document.getElementById('cs-pct-etiqueta').textContent='Sin precio';
+            // Limpiar promos del artículo anterior
+            const promoDivSP=document.getElementById('cs-promo-activa');
+            if(promoDivSP) { promoDivSP.style.display='none'; promoDivSP.innerHTML=''; }
+            const listaSP=document.getElementById('cs-promos-list');
+            if(listaSP) listaSP.innerHTML='';
+            const infoAbSP=document.getElementById('cs-promo-info-abajo');
+            if(infoAbSP) infoAbSP.style.display='none';
+            const infoUnitSP=document.getElementById('cs-promo-info-unitario');
+            if(infoUnitSP) infoUnitSP.style.display='none';
+            const infoCombSP=document.getElementById('cs-promo-info-combo');
+            if(infoCombSP) infoCombSP.style.display='none';
+            const infoOfSP=document.getElementById('cs-promo-info-oferta');
+            if(infoOfSP) infoOfSP.style.display='none';
+            const libroSP=document.getElementById('cs-pf-libro');
+            if(libroSP) libroSP.textContent='';
+            const libroCSP=document.getElementById('cs-pf-libro-combo');
+            if(libroCSP) libroCSP.textContent='';
+            // Mostrar alerta visible debajo de los precios
+            const alertaSP=document.getElementById('cs-sin-precio-alert');
+            if(alertaSP) alertaSP.style.display='flex';
         }
         return;
     }
+    // Limpiar alerta si había
+    const alertaOK=document.getElementById('cs-sin-precio-alert');
+    if(alertaOK) alertaOK.style.display='none';
     panel.style.display='block';
+    // Limpiar alerta y promos del artículo anterior antes de renderizar el nuevo
+    const alertaClear=document.getElementById('cs-sin-precio-alert');
+    if(alertaClear) alertaClear.style.display='none';
+    const infoAbClear=document.getElementById('cs-promo-info-abajo');
+    if(infoAbClear) infoAbClear.style.display='none';
     const fmt=v=>v>0?v.toFixed(4):'0.0000';
     const pct=(precio,etiq)=>{
         if(!precio||!etiq||precio>=etiq) return '\u2014';
