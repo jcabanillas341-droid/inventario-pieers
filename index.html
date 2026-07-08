@@ -4414,8 +4414,12 @@ function csRenderPrecios(modelCode) {
     // Limpiar alerta y promos del artículo anterior antes de renderizar el nuevo
     const alertaClear=document.getElementById('cs-sin-precio-alert');
     if(alertaClear) alertaClear.style.display='none';
+    // Limpiar SIEMPRE bloques de promo del artículo anterior
     const infoAbClear=document.getElementById('cs-promo-info-abajo');
     if(infoAbClear) infoAbClear.style.display='none';
+    ['cs-promo-info-unitario','cs-promo-info-combo','cs-promo-info-oferta'].forEach(id=>{
+        const el=document.getElementById(id); if(el) el.style.display='none';
+    });
     const fmt=v=>v>0?v.toFixed(4):'0.0000';
     const pct=(precio,etiq)=>{
         if(!precio||!etiq||precio>=etiq) return '\u2014';
