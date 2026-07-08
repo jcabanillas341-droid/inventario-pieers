@@ -895,6 +895,40 @@
     <input type="file" id="almInput"       class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
     <input type="file" id="almStockInput"  class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
 
+    <!-- ── MODAL PROMO COLOR ── -->
+    <div id="modal-promo-color" style="display:none;position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);justify-content:center;align-items:center;padding:16px;">
+        <div style="background:#FFFFFF;border-radius:20px;width:100%;max-width:380px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.5);border-top:6px solid #E53935;">
+            <!-- Header -->
+            <div style="background:#E53935;padding:14px 18px;display:flex;align-items:center;gap:12px;">
+                <span style="font-size:28px;">🎨</span>
+                <div>
+                    <div style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);text-transform:uppercase;letter-spacing:2px;">PROMO COLOR</div>
+                    <div style="font-family:'Outfit',sans-serif;font-size:14px;font-weight:900;color:#FFF;letter-spacing:0.5px;">¡PRECIO ESPECIAL POR COLOR!</div>
+                </div>
+                <button onclick="document.getElementById('modal-promo-color').style.display='none'" 
+                    style="margin-left:auto;background:rgba(255,255,255,0.2);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:16px;cursor:pointer;flex-shrink:0;">✕</button>
+            </div>
+            <!-- Contenido -->
+            <div style="padding:20px;">
+                <div id="mpc-desc" style="font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:#111;margin-bottom:4px;"></div>
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+                    <span id="mpc-color-badge" style="background:#E3F2FD;border:2px solid #1565C0;border-radius:8px;padding:4px 12px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;color:#0D47A1;"></span>
+                </div>
+                <!-- Precio -->
+                <div style="background:linear-gradient(135deg,#E53935,#B71C1C);border-radius:14px;padding:18px;text-align:center;margin-bottom:14px;">
+                    <div style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;color:rgba(255,255,255,0.8);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;">PRECIO PROMO COLOR</div>
+                    <div id="mpc-precio" style="font-family:'Outfit',sans-serif;font-size:42px;font-weight:900;color:#FFFFFF;line-height:1;"></div>
+                    <div id="mpc-dto" style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:rgba(255,255,255,0.8);margin-top:4px;"></div>
+                </div>
+                <div id="mpc-cod" style="font-family:'Outfit',sans-serif;font-size:10px;color:#888;text-align:center;margin-bottom:14px;"></div>
+                <button onclick="document.getElementById('modal-promo-color').style.display='none'"
+                    style="width:100%;padding:14px;background:#111;border:none;border-radius:12px;color:#fff;font-family:'Outfit',sans-serif;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:1px;">
+                    ENTENDIDO
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- SCANNER COMPARATIVO -->
     <input id="scanner" inputmode="none" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus placeholder="ESCANEE CÓDIGO">
 
@@ -3832,6 +3866,7 @@ window.addEventListener('beforeunload', ()=>{ clearTimeout(saveTimer); clearTime
 let csStockDB = {};
 let csPreciosDB = {};
 let csLibrosCargados = []; // [{nombre, fecha, articulos}]
+let csPromoColorDB   = {}; // {codColor11: {precio, desc, color, modelo}} — hoja 'promo color'
 const CS_STORAGE_KEY  = 'pieers_cs_db';
 const CS_PRECIOS_KEY  = 'pieers_cs_precios';
 
@@ -4010,6 +4045,23 @@ function csParsePreciosXLSX(wb, nombreLibro) {
     hojasOrdenadas.forEach((sheetName, shIdx) => {
         const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName],{header:1,defval:''});
         const shU  = sheetName.toUpperCase();
+
+        // ── Parser hoja 'promo color' ──────────────────────────────────
+        if (shU.includes('PROMO COLOR') || shU.includes('PROMOCOLOR')) {
+            rows.forEach(r => {
+                if (!r || r.length < 7) return;
+                const local    = String(r[0]||'').trim().toUpperCase();
+                if (!local.includes('CAJAMARCA')) return;
+                const codColor = String(r[3]||'').trim().toUpperCase();
+                const desc     = String(r[4]||'').trim();
+                const colorNom = String(r[5]||'').trim();
+                const modelo   = String(r[2]||'').trim();
+                const precio   = parseFloat(r[6]);
+                if (!codColor || codColor.length !== 11 || isNaN(precio) || precio <= 0) return;
+                csPromoColorDB[codColor] = {precio, desc, color: colorNom, modelo};
+            });
+            return; // No procesar esta hoja como precios normales
+        }
 
         // Tipo base desde nombre de hoja
         let baseTipo = 'promo';
@@ -4197,6 +4249,27 @@ function csParsePreciosXLSX(wb, nombreLibro) {
     else csLibrosCargados.push(infoLibro);
 
     return {total: totalActual, nuevos, actualizados};
+}
+
+// ── PROMO COLOR: mostrar alerta al escanear un código con promo por color ──
+function csCheckPromoColor(barcode) {
+    if (!barcode || barcode.length < 11 || Object.keys(csPromoColorDB).length === 0) return;
+    const codColor = barcode.substring(0, 11).toUpperCase();
+    const promo = csPromoColorDB[codColor];
+    if (!promo) return;
+    // Calcular descuento vs etiqueta
+    const p = csPreciosDB[barcode.substring(1,8).toUpperCase()];
+    const etiq = p ? p.etiqueta : 0;
+    const dto = etiq > 0 && promo.precio < etiq
+        ? '-' + Math.round((etiq - promo.precio) / etiq * 100) + '% dto.'
+        : '';
+    // Llenar modal
+    document.getElementById('mpc-desc').textContent   = promo.desc;
+    document.getElementById('mpc-color-badge').textContent = '🎨 ' + promo.color;
+    document.getElementById('mpc-precio').textContent = 'S/ ' + promo.precio.toFixed(2);
+    document.getElementById('mpc-dto').textContent    = dto;
+    document.getElementById('mpc-cod').textContent    = 'Código color: ' + codColor;
+    document.getElementById('modal-promo-color').style.display = 'flex';
 }
 
 // ── CARGA DE ARCHIVO DE PRECIOS (multi-libro: Memorandum Junio, Casacas, etc.) ──
@@ -4955,9 +5028,11 @@ function csOnBarcodeInput(val) {
             const artEl = document.getElementById('cs-inp-articulo');
             if (artEl) artEl.value = found;
             if (val.length >= 13) {
+                const bc13 = val.trim().toUpperCase();
+                // Verificar promo color con el barcode completo
+                csCheckPromoColor(bc13);
                 setTimeout(() => {
                     csBuscar();
-                    // Limpiar el campo para siguiente lectura
                     const inp = document.getElementById('cs-inp-codbar');
                     if (inp) { inp.value = ''; inp.focus(); }
                 }, 80);
