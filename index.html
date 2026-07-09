@@ -1069,7 +1069,7 @@
             <div class="cs-ctrl-row">
                 <span class="cs-field-label">CODBAR:</span>
                 <input type="text" id="cs-inp-codbar" class="cs-inp" placeholder="Escanear / 13 dígitos" maxlength="20"
-                       oninput="csOnBarcodeInput(this.value)" onkeydown="if(event.key==='Enter')csBuscar()"
+                       oninput="csOnBarcodeInput(this.value)" onkeydown="if(event.key==='Enter'&&this.value.trim().length<13)csBuscar()"
                        onblur="setTimeout(()=>{
     const activo=document.activeElement;
     const ids=['cs-inp-articulo','cs-name-search','cs-inp-descripcion'];
@@ -5234,31 +5234,32 @@ function csFindInBarcode(bc) {
 
 function csOnBarcodeInput(val) {
     val = val.trim();
-    if (val.length >= 7) {
+    if (val.length >= 13) {
+        // Barcode completo de 13 dígitos
+        const bc13 = val.trim().toUpperCase();
+        // Cerrar modal anterior
+        if (_mpcTimer) { clearTimeout(_mpcTimer); _mpcTimer = null; }
+        const _mp = document.getElementById('modal-promo-color');
+        if (_mp) _mp.style.display = 'none';
+        // Guardar barcode y artículo para botón VER STOCK
+        window._mpcLastBarcode = bc13;
+        window._mpcLastArt = bc13.substring(1, 8);
+        // Precargar artículo en campo (sin mostrar stock aún)
+        const artEl2 = document.getElementById('cs-inp-articulo');
+        if (artEl2) artEl2.value = window._mpcLastArt;
+        // Mostrar SOLO la ventana flotante
+        csCheckPromoColor(bc13);
+        // Mantener foco en CODBAR
+        setTimeout(() => {
+            const inp = document.getElementById('cs-inp-codbar');
+            if (inp) { inp.value = ''; inp.focus(); }
+        }, 80);
+    } else if (val.length >= 7) {
+        // Código parcial (7 chars) → solo actualizar campo artículo
         const found = csFindInBarcode(val);
         if (found) {
             const artEl = document.getElementById('cs-inp-articulo');
             if (artEl) artEl.value = found;
-            if (val.length >= 13) {
-                const bc13 = val.trim().toUpperCase();
-                // Cerrar modal anterior
-                if (_mpcTimer) { clearTimeout(_mpcTimer); _mpcTimer = null; }
-                const _mp = document.getElementById('modal-promo-color');
-                if (_mp) _mp.style.display = 'none';
-                // Guardar barcode para botón VER STOCK
-                window._mpcLastBarcode = bc13;
-                window._mpcLastArt = bc13.length===13 ? bc13.substring(1,8) : bc13;
-                // Precargar el artículo sin mostrar resultados (para que VER STOCK funcione)
-                const artEl2 = document.getElementById('cs-inp-articulo');
-                if (artEl2) artEl2.value = window._mpcLastArt;
-                // Solo mostrar ventana flotante, NO buscar stock
-                csCheckPromoColor(bc13);
-                // Mantener foco en CODBAR
-                setTimeout(() => {
-                    const inp = document.getElementById('cs-inp-codbar');
-                    if (inp) { inp.value = ''; inp.focus(); }
-                }, 80);
-            }
         }
     }
 }
