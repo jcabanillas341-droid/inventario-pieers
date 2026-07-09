@@ -4285,8 +4285,8 @@ function csModalPromoMostrar(config) {
     lista.innerHTML = '';
     const config_art = config.cod || '';
     (config.items || []).forEach(item => {
-        const bgMap = {color:'linear-gradient(135deg,#E53935,#B71C1C)', promo:'#FFF3E0', combo:'#E3F2FD', oferta:'#E8F5E9'};
-        const clrMap= {color:'#fff', promo:'#E65100', combo:'#0288D1', oferta:'#2E7D32'};
+        const bgMap = {color:'linear-gradient(135deg,#E53935,#B71C1C)', promo:'#FFF3E0', combo:'#E3F2FD', oferta:'#E8F5E9', etiqueta:'#FFFDE7', sinprecio:'#F5F5F5'};
+        const clrMap= {color:'#fff', promo:'#E65100', combo:'#0288D1', oferta:'#2E7D32', etiqueta:'#F57F17', sinprecio:'#777'};
         const isColor = item.tipo === 'color';
         lista.innerHTML += isColor
             ? `<div style="background:${bgMap.color};border-radius:16px;padding:20px 18px;text-align:center;">
@@ -4295,10 +4295,15 @@ function csModalPromoMostrar(config) {
                 <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:64px;color:#fff;line-height:1;">S/ ${Number(item.precio).toFixed(2)}</div>
                 <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:28px;color:rgba(255,255,255,0.95);margin-top:4px;">${item.dto||''}</div>
                </div>`
+            : item.tipo === 'sinprecio'
+            ? `<div style="background:#F5F5F5;border-left:6px solid #999;border-radius:14px;padding:16px;">
+                <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:20px;color:#555;text-transform:uppercase;letter-spacing:2px;text-align:center;">${item.nombre}</div>
+                <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:15px;color:#999;text-align:center;margin-top:6px;letter-spacing:1px;">${item.dto||''}</div>
+               </div>`
             : `<div style="background:${bgMap[item.tipo]||'#F5F5F5'};border-left:6px solid ${clrMap[item.tipo]||'#999'};border-radius:14px;padding:14px 16px;">
                 <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:18px;color:#111;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;">${item.nombre}</div>
                 <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <span style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:48px;color:#E53935;line-height:1;">S/ ${Number(item.precio).toFixed(2)}</span>
+                    <span style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:48px;color:#E53935;line-height:1;">${item.tipo==='etiqueta'?'S/ '+Number(item.precio).toFixed(2):'S/ '+Number(item.precio).toFixed(2)}</span>
                     <span style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:26px;color:#E53935;">${item.dto||''}</span>
                 </div>
                </div>`;
@@ -4343,7 +4348,7 @@ function csCheckPromoColor(barcode) {
     // ── CASO 1: Promo por color ──
     if (Object.keys(csPromoColorDB).length > 0 && csPromoColorDB[codColor]) {
         const promo = csPromoColorDB[codColor];
-        const dto   = etiq > 0 && promo.precio < etiq
+        const dto = etiq > 0 && promo.precio < etiq
             ? '-' + Math.round((etiq - promo.precio) / etiq * 100) + '% dto.' : '';
         csModalPromoMostrar({
             headerColor: '#E53935',
@@ -4376,15 +4381,42 @@ function csCheckPromoColor(barcode) {
         const dto = etiq>0&&p.oferta<etiq ? '-'+Math.round((etiq-p.oferta)/etiq*100)+'% dto.' : '';
         items.push({ tipo:'oferta', nombre: pr ? pr.nombre : 'OFERTA', precio: p.oferta, dto });
     }
-    if (!items.length) return;
 
+    if (items.length > 0) {
+        // Tiene promos normales → mostrarlas
+        csModalPromoMostrar({
+            headerColor: '#1A1A1A',
+            ico: '🏷',
+            tipoLabel: 'PROMOCIONES',
+            titulo: '',
+            desc, cod: artCod,
+            items
+        });
+        return;
+    }
+
+    // ── CASO 3: Solo precio de etiqueta ──
+    if (etiq > 0) {
+        csModalPromoMostrar({
+            headerColor: '#F9A825',
+            ico: '🏷',
+            tipoLabel: 'PRECIO DE ETIQUETA',
+            titulo: '',
+            desc, cod: artCod,
+            items: [{ tipo:'etiqueta', nombre: 'PRECIO DE ETIQUETA', precio: etiq, dto: '' }]
+        });
+        return;
+    }
+
+    // ── CASO 4: Sin precio en ningún libro ──
     csModalPromoMostrar({
-        headerColor: '#1A1A1A',
-        ico: '🏷',
-        tipoLabel: 'PROMOCIONES',
+        headerColor: '#555',
+        ico: '⚠️',
+        tipoLabel: 'SIN PRECIO',
         titulo: '',
-        desc, cod: artCod,
-        items
+        desc: desc || artCod,
+        cod: artCod,
+        items: [{ tipo:'sinprecio', nombre: 'NO SE ENCONTRÓ PRECIO', precio: 0, dto: 'Recarga el Memorandum' }]
     });
 }
 
