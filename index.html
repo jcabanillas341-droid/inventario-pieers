@@ -4049,18 +4049,39 @@ function csParsePreciosXLSX(wb, nombreLibro) {
         const shU  = sheetName.toUpperCase();
 
         // ── Parser hoja 'promo color' ──────────────────────────────────
+        // Prioridad: CAJAMARCA pisa otras tiendas (igual que promos normales)
         if (shU.includes('PROMO COLOR') || shU.includes('PROMOCOLOR')) {
+            const _cajaCodes = new Set(); // códigos que ya tienen dato de Cajamarca
+            // Pasada 1: registrar CAJAMARCA primero
             rows.forEach(r => {
                 if (!r || r.length < 7) return;
-                const local    = String(r[0]||'').trim().toUpperCase();
+                const local = String(r[0]||'').trim().toUpperCase();
                 if (!local.includes('CAJAMARCA')) return;
                 const codColor = String(r[3]||'').trim().toUpperCase();
-                const desc     = String(r[4]||'').trim();
-                const colorNom = String(r[5]||'').trim();
-                const modelo   = String(r[2]||'').trim();
                 const precio   = parseFloat(r[6]);
                 if (!codColor || codColor.length < 10 || codColor.length > 12 || isNaN(precio) || precio <= 0) return;
-                csPromoColorDB[codColor] = {precio, desc, color: colorNom, modelo};
+                csPromoColorDB[codColor] = {
+                    precio, desc: String(r[4]||'').trim(),
+                    color: String(r[5]||'').trim(), modelo: String(r[2]||'').trim()
+                };
+                _cajaCodes.add(codColor);
+            });
+            // Pasada 2: otras tiendas como respaldo (solo si no hay dato de Cajamarca)
+            rows.forEach(r => {
+                if (!r || r.length < 7) return;
+                const local = String(r[0]||'').trim().toUpperCase();
+                if (local.includes('CAJAMARCA')) return; // ya procesado
+                const codColor = String(r[3]||'').trim().toUpperCase();
+                if (_cajaCodes.has(codColor)) return; // Cajamarca tiene prioridad
+                const precio = parseFloat(r[6]);
+                if (!codColor || codColor.length < 10 || codColor.length > 12 || isNaN(precio) || precio <= 0) return;
+                // Solo agregar si no existe ya
+                if (!csPromoColorDB[codColor]) {
+                    csPromoColorDB[codColor] = {
+                        precio, desc: String(r[4]||'').trim(),
+                        color: String(r[5]||'').trim(), modelo: String(r[2]||'').trim()
+                    };
+                }
             });
             return; // No procesar esta hoja como precios normales
         }
