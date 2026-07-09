@@ -1161,8 +1161,8 @@
                 </div>
             </div>
             <!-- Fila 2: Oferta (grande) + Mayor (pequeño, secundario) -->
-            <div style="display:flex;gap:6px;align-items:stretch;margin-bottom:8px;">
-                <div class="cs-price-box" style="background:#00C853;flex:2;">
+            <div id="cs-box-oferta-row" style="display:flex;gap:6px;align-items:stretch;margin-bottom:8px;">
+                <div id="cs-box-oferta" class="cs-price-box" style="background:#00C853;flex:2;">
                     <div class="cs-price-label">OFERTA</div>
                     <div class="cs-price-val" id="cs-p-oferta" style="font-size:26px;">0.00</div>
                     <div class="cs-price-pct" id="cs-pct-oferta">—</div>
@@ -4525,10 +4525,17 @@ function csRenderPrecios(modelCode) {
     document.getElementById('cs-pct-menor').textContent=pct(p.menor,etiq);
     document.getElementById('cs-p-mayor').textContent=fmt(p.mayor);
     document.getElementById('cs-pct-mayor').textContent=pct(p.mayor,etiq);
-    // Oferta: desde memorandum o desde PRECIOS_POR_MAYOR si tipo=OF
-    const ofertaFinal = p.oferta > 0 ? p.oferta : (mDB && mDB.tipo==='OF' ? mDB.oferta : 0);
+    // Ocultar cuadro COMBO si no tiene precio
+    const boxComboEl = document.getElementById('cs-box-combo');
+    if (boxComboEl) boxComboEl.style.display = p.mayor > 0 ? '' : 'none';
+
+    // Oferta: solo desde memorandum
+    const ofertaFinal = p.oferta > 0 ? p.oferta : 0;
     document.getElementById('cs-p-oferta').textContent=fmt(ofertaFinal);
     document.getElementById('cs-pct-oferta').textContent=pct(ofertaFinal,etiq);
+    // Ocultar cuadro OFERTA si no tiene precio
+    const ofertaBox = document.getElementById('cs-box-oferta');
+    if (ofertaBox) ofertaBox.style.display = ofertaFinal > 0 ? '' : 'none';
 
     // ── Cuadro único: precio más económico entre Unitario y Oferta + libro de origen ──
     csRenderPrecioFinal(cod, p, etiq, ofertaFinal);
