@@ -4264,12 +4264,19 @@ function csCheckPromoColor(barcode) {
         ? '-' + Math.round((etiq - promo.precio) / etiq * 100) + '% dto.'
         : '';
     // Llenar modal
-    document.getElementById('mpc-desc').textContent   = promo.desc;
-    document.getElementById('mpc-color-badge').textContent = '🎨 ' + promo.color;
-    document.getElementById('mpc-precio').textContent = 'S/ ' + promo.precio.toFixed(2);
-    document.getElementById('mpc-dto').textContent    = dto;
-    document.getElementById('mpc-cod').textContent    = 'Código color: ' + codColor;
-    document.getElementById('modal-promo-color').style.display = 'flex';
+    const mpcDesc = document.getElementById('mpc-desc');
+    const mpcBadge = document.getElementById('mpc-color-badge');
+    const mpcPrecio = document.getElementById('mpc-precio');
+    const mpcDto = document.getElementById('mpc-dto');
+    const mpcCod = document.getElementById('mpc-cod');
+    const mpcModal = document.getElementById('modal-promo-color');
+    if (!mpcModal) return;
+    if (mpcDesc)   mpcDesc.textContent   = promo.desc;
+    if (mpcBadge)  mpcBadge.textContent  = '🎨 ' + promo.color;
+    if (mpcPrecio) mpcPrecio.textContent = 'S/ ' + promo.precio.toFixed(2);
+    if (mpcDto)    mpcDto.textContent    = dto;
+    if (mpcCod)    mpcCod.textContent    = 'Código color: ' + codColor;
+    mpcModal.style.display = 'flex';
 }
 
 // ── CARGA DE ARCHIVO DE PRECIOS (multi-libro: Memorandum Junio, Casacas, etc.) ──
