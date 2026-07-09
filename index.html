@@ -3887,6 +3887,10 @@ function csLoadPreciosLocal() {
         if (!payload.db || !Object.keys(payload.db).length) return false;
         csPreciosDB      = payload.db;
         csLibrosCargados = payload.libros || [];
+        // Restaurar csPromoColorDB si está guardado
+        if (payload.promoColor && Object.keys(payload.promoColor).length > 0) {
+            csPromoColorDB = payload.promoColor;
+        }
         // ── Migración v2: si datos son de versión anterior, borrar caché completo ──
         // En versiones anteriores, combo pisaba entry.menor con precio incorrecto.
         // La única forma segura es descartar el caché y pedir recargar el Memorandum.
@@ -4055,7 +4059,7 @@ function csParsePreciosXLSX(wb, nombreLibro) {
                 const colorNom = String(r[5]||'').trim();
                 const modelo   = String(r[2]||'').trim();
                 const precio   = parseFloat(r[6]);
-                if (!codColor || codColor.length !== 11 || isNaN(precio) || precio <= 0) return;
+                if (!codColor || codColor.length < 10 || codColor.length > 12 || isNaN(precio) || precio <= 0) return;
                 csPromoColorDB[codColor] = {precio, desc, color: colorNom, modelo};
             });
             return; // No procesar esta hoja como precios normales
@@ -4338,8 +4342,14 @@ function csCheckPromoColor(barcode) {
     barcode = barcode.trim().toUpperCase();
     if (barcode.length < 13) return;
 
-    const codColor = barcode.substring(0, 11);
+    const codColor = barcode.substring(0, 11); // 11 chars = P+modelo(7)+color(3)
     const artCod   = barcode.substring(1, 8);
+    // Debug: log para verificar
+    if (Object.keys(csPromoColorDB).length > 0) {
+        console.log('PromoColor check:', codColor, '→', csPromoColorDB[codColor] ? 'ENCONTRADO' : 'no encontrado');
+    } else {
+        console.log('csPromoColorDB vacío — ¿se cargó el Memorandum con hoja promo color?');
+    }
     const p        = csPreciosDB[artCod] || {};
     const etiq     = p.etiqueta || 0;
     const stockD   = csStockDB && csStockDB[artCod];
