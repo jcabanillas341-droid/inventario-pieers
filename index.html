@@ -901,18 +901,18 @@
             <!-- Barra de progreso auto-cierre -->
             <div id="mpc-progress" style="height:4px;background:linear-gradient(90deg,#E53935,#FF6D00);width:100%;transform-origin:left;transition:transform 3s linear;"></div>
             <!-- Header dinámico -->
-            <div id="mpc-header" style="padding:12px 18px;display:flex;align-items:center;gap:10px;">
-                <span id="mpc-ico" style="font-size:26px;">🏷</span>
+            <div id="mpc-header" style="padding:14px 18px;display:flex;align-items:center;gap:12px;">
+                <span id="mpc-ico" style="font-size:32px;">🏷</span>
                 <div style="flex:1;">
-                    <div id="mpc-tipo-label" style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:2px;opacity:0.8;color:#fff;"></div>
-                    <div id="mpc-titulo" style="font-family:'Outfit',sans-serif;font-size:15px;font-weight:900;color:#fff;"></div>
+                    <div id="mpc-tipo-label" style="font-family:'Outfit',sans-serif;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:2px;opacity:0.85;color:#fff;"></div>
+                    <div id="mpc-titulo" style="font-family:'Outfit',sans-serif;font-size:18px;font-weight:900;color:#fff;"></div>
                 </div>
                 <button onclick="csModalPromoCerrar()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:14px;cursor:pointer;flex-shrink:0;">✕</button>
             </div>
             <!-- Descripción artículo -->
-            <div style="padding:8px 18px 0;">
-                <div id="mpc-desc" style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:#111;"></div>
-                <div id="mpc-cod" style="font-family:'Outfit',sans-serif;font-size:10px;color:#888;margin-top:1px;"></div>
+            <div style="padding:10px 18px 4px;border-bottom:1px solid #F0F0F0;">
+                <div id="mpc-desc" style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:900;color:#111;line-height:1.2;"></div>
+                <div id="mpc-cod" style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:#888;margin-top:3px;letter-spacing:0.5px;"></div>
             </div>
             <!-- Contenido promos -->
             <div id="mpc-lista" style="padding:10px 18px 16px;display:flex;flex-direction:column;gap:8px;"></div>
@@ -4287,17 +4287,17 @@ function csModalPromoMostrar(config) {
         const clrMap= {color:'#fff', promo:'#E65100', combo:'#0288D1', oferta:'#2E7D32'};
         const isColor = item.tipo === 'color';
         lista.innerHTML += isColor
-            ? `<div style="background:${bgMap.color};border-radius:12px;padding:14px 18px;text-align:center;">
-                <div style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;color:rgba(255,255,255,0.8);letter-spacing:2px;text-transform:uppercase;">PRECIO PROMO COLOR</div>
-                <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:rgba(255,255,255,0.9);margin:4px 0;">🎨 ${item.color||''}</div>
-                <div style="font-family:'Outfit',sans-serif;font-size:40px;font-weight:900;color:#fff;line-height:1;">S/ ${Number(item.precio).toFixed(2)}</div>
-                <div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:800;color:rgba(255,255,255,0.85);margin-top:4px;">${item.dto||''}</div>
+            ? `<div style="background:${bgMap.color};border-radius:16px;padding:20px 18px;text-align:center;">
+                <div style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;color:rgba(255,255,255,0.8);letter-spacing:2px;text-transform:uppercase;">PRECIO PROMO COLOR</div>
+                <div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:800;color:rgba(255,255,255,0.95);margin:6px 0;">🎨 ${item.color||''}</div>
+                <div style="font-family:'Outfit',sans-serif;font-size:56px;font-weight:900;color:#fff;line-height:1;">S/ ${Number(item.precio).toFixed(2)}</div>
+                <div style="font-family:'Outfit',sans-serif;font-size:22px;font-weight:900;color:rgba(255,255,255,0.9);margin-top:6px;">${item.dto||''}</div>
                </div>`
-            : `<div style="background:${bgMap[item.tipo]||'#F5F5F5'};border-left:4px solid ${clrMap[item.tipo]||'#999'};border-radius:10px;padding:10px 14px;">
-                <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:800;color:${clrMap[item.tipo]};text-transform:uppercase;letter-spacing:1px;">${item.nombre}</div>
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
-                    <span style="font-family:'Outfit',sans-serif;font-size:22px;font-weight:900;color:${clrMap[item.tipo]};">S/ ${Number(item.precio).toFixed(2)}</span>
-                    <span style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:800;color:${clrMap[item.tipo]};">${item.dto||''}</span>
+            : `<div style="background:${bgMap[item.tipo]||'#F5F5F5'};border-left:6px solid ${clrMap[item.tipo]||'#999'};border-radius:14px;padding:14px 16px;">
+                <div style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:900;color:${clrMap[item.tipo]};text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">${item.nombre}</div>
+                <div style="display:flex;justify-content:space-between;align-items:center;">
+                    <span style="font-family:'Outfit',sans-serif;font-size:36px;font-weight:900;color:${clrMap[item.tipo]};">S/ ${Number(item.precio).toFixed(2)}</span>
+                    <span style="font-family:'Outfit',sans-serif;font-size:22px;font-weight:900;color:${clrMap[item.tipo]};">${item.dto||''}</span>
                 </div>
                </div>`;
     });
@@ -4305,10 +4305,10 @@ function csModalPromoMostrar(config) {
     modal.style.display = 'flex';
     // Reset y lanzar barra de progreso de 3s
     if (progress) { progress.style.transition='none'; progress.style.transform='scaleX(1)'; }
-    setTimeout(() => { if (progress) { progress.style.transition='transform 3s linear'; progress.style.transform='scaleX(0)'; } }, 50);
+    setTimeout(() => { if (progress) { progress.style.transition='transform 15s linear'; progress.style.transform='scaleX(0)'; } }, 50);
     // Auto-cierre a los 3 segundos
     if (_mpcTimer) clearTimeout(_mpcTimer);
-    _mpcTimer = setTimeout(() => csModalPromoCerrar(), 3000);
+    _mpcTimer = setTimeout(() => csModalPromoCerrar(), 15000);
 }
 
 function csCheckPromoColor(barcode) {
