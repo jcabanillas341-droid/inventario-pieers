@@ -4307,9 +4307,14 @@ function csModalPromoMostrar(config) {
     // Configurar botón Ver Stock
 
     // Botón VER STOCK — solo muestra el stock al presionar
-    // Un solo botón VER STOCK al final (fuera del forEach de items)
+    // Un solo botón VER STOCK — muestra SOLO el stock
     lista.innerHTML += `<button
-        onclick="csModalPromoCerrar();setTimeout(()=>{const a=document.getElementById('cs-inp-articulo');if(a)a.value=window._mpcLastArt||'';csBuscar();},80);"
+        onclick="csModalPromoCerrar();setTimeout(()=>{
+            csSetModo('stock');
+            const a=document.getElementById('cs-inp-articulo');
+            if(a) a.value=window._mpcLastArt||'';
+            csBuscar();
+        },80);"
         style="width:100%;padding:16px;background:#1565C0;border:none;border-radius:14px;color:#fff;font-family:'Bebas Neue','Outfit',sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;margin-top:8px;box-shadow:0 4px 14px rgba(21,101,192,0.35);">
         📦 VER STOCK
     </button>`;
