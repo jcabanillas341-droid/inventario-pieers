@@ -830,7 +830,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.13 — 09/Jul/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.14 — 09/Jul/2026</div>
     </div>
 </div>
 
@@ -916,6 +916,8 @@
                 <div id="mpc-cod" style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:14px;color:#888;margin-top:2px;letter-spacing:2px;"></div>
             </div>
             <!-- Contenido promos -->
+            <!-- Banner cambio de precio -->
+            <div id="mpc-cambio-banner" style="display:none;background:#E65100;color:#fff;font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;padding:6px 18px;letter-spacing:0.5px;"></div>
             <div id="mpc-lista" style="padding:10px 18px 8px;display:flex;flex-direction:column;gap:8px;"></div>
 
         </div>
@@ -1176,7 +1178,7 @@
             <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
             <!-- Versión -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.13 — 09/Jul/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.14 — 09/Jul/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4354,11 +4356,32 @@ function csModalPromoMostrar(config) {
         📦 VER STOCK
     </button>`;
 
+    // ── Indicador de cambio de precio ──
+    const _cambioDiv = document.getElementById('mpc-cambio-banner');
+    const _pC = csPreciosDB[config.cod || ''] || {};
+    if (_cambioDiv) {
+        if (_pC.cambio && _pC.cambioInfo) {
+            const ci = _pC.cambioInfo;
+            const antes = ci.antes || {};
+            let difStr = '';
+            if (antes.menor > 0 && _pC.menor > 0 && Math.abs(_pC.menor - antes.menor) > 0.01)
+                difStr = ` — S/${antes.menor.toFixed(2)} → S/${_pC.menor.toFixed(2)}`;
+            else if (antes.mayor > 0 && _pC.mayor > 0 && Math.abs(_pC.mayor - antes.mayor) > 0.01)
+                difStr = ` — S/${antes.mayor.toFixed(2)} → S/${_pC.mayor.toFixed(2)}`;
+            _cambioDiv.innerHTML = `🔔 CAMBIO DE PRECIO${difStr}`;
+            _cambioDiv.style.display = 'block';
+        } else {
+            _cambioDiv.innerHTML = '✅ SIN CAMBIO DE PRECIO';
+            _cambioDiv.style.cssText += ';background:#2E7D32;';
+            _cambioDiv.style.display = 'block';
+        }
+    }
+
     modal.style.display = 'flex';
-    // Reset y lanzar barra de progreso de 1 minuto
+    // Reset y lanzar barra de progreso de 2 minutos
     if (progress) { progress.style.transition='none'; progress.style.transform='scaleX(1)'; }
     setTimeout(() => { if (progress) { progress.style.transition='transform 120s linear'; progress.style.transform='scaleX(0)'; } }, 50);
-    // Auto-cierre a 1 minuto
+    // Auto-cierre a 2 minutos
     if (_mpcTimer) clearTimeout(_mpcTimer);
     _mpcTimer = setTimeout(() => csModalPromoCerrar(), 120000);
 }
