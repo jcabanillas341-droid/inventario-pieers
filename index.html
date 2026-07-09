@@ -4302,10 +4302,10 @@ function csModalPromoMostrar(config) {
                 <div style="font-family:'Outfit',sans-serif;font-size:22px;font-weight:900;color:rgba(255,255,255,0.9);margin-top:6px;">${item.dto||''}</div>
                </div>`
             : `<div style="background:${bgMap[item.tipo]||'#F5F5F5'};border-left:6px solid ${clrMap[item.tipo]||'#999'};border-radius:14px;padding:14px 16px;">
-                <div style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:900;color:${clrMap[item.tipo]};text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px;">${item.nombre}</div>
+                <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:900;color:${clrMap[item.tipo]};text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">${item.nombre}</div>
                 <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <span style="font-family:'Outfit',sans-serif;font-size:36px;font-weight:900;color:${clrMap[item.tipo]};">S/ ${Number(item.precio).toFixed(2)}</span>
-                    <span style="font-family:'Outfit',sans-serif;font-size:22px;font-weight:900;color:${clrMap[item.tipo]};">${item.dto||''}</span>
+                    <span style="font-family:'Outfit',sans-serif;font-size:40px;font-weight:900;color:${clrMap[item.tipo]};line-height:1;">S/ ${Number(item.precio).toFixed(2)}</span>
+                    <span style="font-family:'Outfit',sans-serif;font-size:24px;font-weight:900;color:${clrMap[item.tipo]};">${item.dto||''}</span>
                 </div>
                </div>`;
     });
@@ -4324,20 +4324,20 @@ function csModalPromoMostrar(config) {
         };
     }
 
-    // Botón VER STOCK
+    // Botón VER STOCK — solo muestra el stock al presionar
     lista.innerHTML += `<button
-        onclick="csModalPromoCerrar();setTimeout(()=>{const a=document.getElementById('cs-inp-articulo');if(a){a.value='${config_art}';csBuscar();}},80);"
-        style="width:100%;padding:14px;background:linear-gradient(135deg,#1565C0,#0D47A1);border:none;border-radius:14px;color:#fff;font-family:'Outfit',sans-serif;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:1px;margin-top:4px;">
+        onclick="csModalPromoCerrar();setTimeout(()=>{const a=document.getElementById('cs-inp-articulo');if(a){a.value=window._mpcLastArt||'${config_art}';}csBuscar();},80);"
+        style="width:100%;padding:16px;background:linear-gradient(135deg,#1565C0,#0D47A1);border:none;border-radius:14px;color:#fff;font-family:'Outfit',sans-serif;font-size:17px;font-weight:900;cursor:pointer;letter-spacing:1.5px;margin-top:6px;box-shadow:0 4px 12px rgba(21,101,192,0.4);">
         📦 VER STOCK
     </button>`;
 
     modal.style.display = 'flex';
     // Reset y lanzar barra de progreso de 1 minuto
     if (progress) { progress.style.transition='none'; progress.style.transform='scaleX(1)'; }
-    setTimeout(() => { if (progress) { progress.style.transition='transform 60s linear'; progress.style.transform='scaleX(0)'; } }, 50);
+    setTimeout(() => { if (progress) { progress.style.transition='transform 120s linear'; progress.style.transform='scaleX(0)'; } }, 50);
     // Auto-cierre a 1 minuto
     if (_mpcTimer) clearTimeout(_mpcTimer);
-    _mpcTimer = setTimeout(() => csModalPromoCerrar(), 60000);
+    _mpcTimer = setTimeout(() => csModalPromoCerrar(), 120000);
 }
 
 function csCheckPromoColor(barcode) {
@@ -5185,21 +5185,22 @@ function csOnBarcodeInput(val) {
             if (artEl) artEl.value = found;
             if (val.length >= 13) {
                 const bc13 = val.trim().toUpperCase();
-                // Cerrar modal anterior y mostrar nuevo
+                // Cerrar modal anterior
                 if (_mpcTimer) { clearTimeout(_mpcTimer); _mpcTimer = null; }
                 const _mp = document.getElementById('modal-promo-color');
                 if (_mp) _mp.style.display = 'none';
-                // Mostrar promo color o promos normales
+                // Guardar barcode para botón VER STOCK
+                window._mpcLastBarcode = bc13;
+                window._mpcLastArt = bc13.length===13 ? bc13.substring(1,8) : bc13;
+                // Precargar el artículo sin mostrar resultados (para que VER STOCK funcione)
+                const artEl2 = document.getElementById('cs-inp-articulo');
+                if (artEl2) artEl2.value = window._mpcLastArt;
+                // Solo mostrar ventana flotante, NO buscar stock
                 csCheckPromoColor(bc13);
+                // Mantener foco en CODBAR
                 setTimeout(() => {
-                    csBuscar();
                     const inp = document.getElementById('cs-inp-codbar');
                     if (inp) { inp.value = ''; inp.focus(); }
-                    // Si el modal de promo color está abierto, vuelve el foco después de cerrarlo
-                    setTimeout(()=>{
-                        const ci=document.getElementById('cs-inp-codbar');
-                        if(ci && document.getElementById('modal-promo-color').style.display==='none') ci.focus();
-                    }, 300);
                 }, 80);
             }
         }
