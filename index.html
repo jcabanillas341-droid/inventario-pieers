@@ -5300,7 +5300,7 @@ function csBuscar() {
         if (_codTxt2) _codTxt2.textContent = key + ' | ' + data.colors.length + ' color(es) | TOTAL: ' + tot;
         _nomDiv2.style.display = 'block';
     }
-    csRenderTable(data, outer);
+    csRenderTable(data, outer, key);
     // Activar tabs y mostrar búsqueda por nombre
     const hasPrecio = csPreciosDB && csPreciosDB[key];
     csMostrarTabs(!!hasPrecio);
@@ -5316,7 +5316,7 @@ function csBuscar() {
 
 
 /* ── Render tabla ── */
-function csRenderTable(data, outer) {
+function csRenderTable(data, outer, art) {
     if (!outer) return;
     const sizes  = data.sizes;
     const colors = data.colors;
@@ -5346,7 +5346,19 @@ function csRenderTable(data, outer) {
     h += '</thead><tbody>';
 
     colors.forEach(c => {
-        h += '<tr><td class="cs-td-color">' + c.name + '</td>';
+        // Verificar si este color está en promo color
+        const _codC11 = ('P' + art + c.code).toUpperCase();
+        const _promoC = csPromoColorDB && csPromoColorDB[_codC11];
+        const _trStyle = _promoC
+            ? ' style="background:linear-gradient(90deg,#FFF3E0,#fff);border-left:3px solid #E53935;"'
+            : '';
+        const _nameCell = _promoC
+            ? `<td class="cs-td-color"${_trStyle}>`
+              + `<span style="font-weight:900;color:#E53935;">🎨 ${c.name}</span>`
+              + `<span style="font-size:9px;font-weight:800;color:#E53935;margin-left:4px;">S/${_promoC.precio.toFixed(2)}</span>`
+              + `</td>`
+            : `<td class="cs-td-color">${c.name}</td>`;
+        h += `<tr${_trStyle}>${_nameCell}`;
         for (let i = 0; i < nS; i++) {
             const s = getStk(c, i);
             h += s > 0 ? `<td class="cs-td-pos">${s}</td>` : `<td class="cs-td-zero">·</td>`;
