@@ -14,7 +14,7 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600;700;900&family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600;700;900&family=Inter:wght@400;500;600;700&family=Bebas+Neue&display=swap');
 
         :root {
             --rojo: #D32F2F;
@@ -904,15 +904,15 @@
             <div id="mpc-header" style="padding:14px 18px;display:flex;align-items:center;gap:12px;">
                 <span id="mpc-ico" style="font-size:32px;">🏷</span>
                 <div style="flex:1;">
-                    <div id="mpc-tipo-label" style="font-family:'Outfit',sans-serif;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:2px;opacity:0.85;color:#fff;"></div>
-                    <div id="mpc-titulo" style="font-family:'Outfit',sans-serif;font-size:18px;font-weight:900;color:#fff;"></div>
+                    <div id="mpc-tipo-label" style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:14px;letter-spacing:3px;text-transform:uppercase;opacity:0.9;color:#fff;"></div>
+                    <div id="mpc-titulo" style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:22px;color:#fff;letter-spacing:1px;"></div>
                 </div>
                 <button onclick="csModalPromoCerrar()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;width:28px;height:28px;border-radius:50%;font-size:14px;cursor:pointer;flex-shrink:0;">✕</button>
             </div>
             <!-- Descripción artículo -->
             <div style="padding:10px 18px 4px;border-bottom:1px solid #F0F0F0;">
-                <div id="mpc-desc" style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:900;color:#111;line-height:1.2;"></div>
-                <div id="mpc-cod" style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:#888;margin-top:3px;letter-spacing:0.5px;"></div>
+                <div id="mpc-desc" style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:20px;color:#111;line-height:1.2;letter-spacing:1px;"></div>
+                <div id="mpc-cod" style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:14px;color:#888;margin-top:2px;letter-spacing:2px;"></div>
             </div>
             <!-- Contenido promos -->
             <div id="mpc-lista" style="padding:10px 18px 8px;display:flex;flex-direction:column;gap:8px;"></div>
@@ -4297,15 +4297,15 @@ function csModalPromoMostrar(config) {
         lista.innerHTML += isColor
             ? `<div style="background:${bgMap.color};border-radius:16px;padding:20px 18px;text-align:center;">
                 <div style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;color:rgba(255,255,255,0.8);letter-spacing:2px;text-transform:uppercase;">PRECIO PROMO COLOR</div>
-                <div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:800;color:rgba(255,255,255,0.95);margin:6px 0;">🎨 ${item.color||''}</div>
-                <div style="font-family:'Outfit',sans-serif;font-size:56px;font-weight:900;color:#fff;line-height:1;">S/ ${Number(item.precio).toFixed(2)}</div>
-                <div style="font-family:'Outfit',sans-serif;font-size:22px;font-weight:900;color:rgba(255,255,255,0.9);margin-top:6px;">${item.dto||''}</div>
+                <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:20px;color:#fff;margin:4px 0;">🎨 ${item.color||''}</div>
+                <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:64px;color:#fff;line-height:1;">S/ ${Number(item.precio).toFixed(2)}</div>
+                <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:28px;color:rgba(255,255,255,0.95);margin-top:4px;">${item.dto||''}</div>
                </div>`
             : `<div style="background:${bgMap[item.tipo]||'#F5F5F5'};border-left:6px solid ${clrMap[item.tipo]||'#999'};border-radius:14px;padding:14px 16px;">
-                <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:900;color:${clrMap[item.tipo]};text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;">${item.nombre}</div>
+                <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:18px;color:#111;text-transform:uppercase;letter-spacing:2px;margin-bottom:4px;">${item.nombre}</div>
                 <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <span style="font-family:'Outfit',sans-serif;font-size:40px;font-weight:900;color:${clrMap[item.tipo]};line-height:1;">S/ ${Number(item.precio).toFixed(2)}</span>
-                    <span style="font-family:'Outfit',sans-serif;font-size:24px;font-weight:900;color:${clrMap[item.tipo]};">${item.dto||''}</span>
+                    <span style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:48px;color:#111;line-height:1;">S/ ${Number(item.precio).toFixed(2)}</span>
+                    <span style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:26px;color:#111;">${item.dto||''}</span>
                 </div>
                </div>`;
     });
@@ -4325,9 +4325,10 @@ function csModalPromoMostrar(config) {
     }
 
     // Botón VER STOCK — solo muestra el stock al presionar
+    // Un solo botón VER STOCK al final (fuera del forEach de items)
     lista.innerHTML += `<button
-        onclick="csModalPromoCerrar();setTimeout(()=>{const a=document.getElementById('cs-inp-articulo');if(a){a.value=window._mpcLastArt||'${config_art}';}csBuscar();},80);"
-        style="width:100%;padding:16px;background:linear-gradient(135deg,#1565C0,#0D47A1);border:none;border-radius:14px;color:#fff;font-family:'Outfit',sans-serif;font-size:17px;font-weight:900;cursor:pointer;letter-spacing:1.5px;margin-top:6px;box-shadow:0 4px 12px rgba(21,101,192,0.4);">
+        onclick="csModalPromoCerrar();setTimeout(()=>{const a=document.getElementById('cs-inp-articulo');if(a)a.value=window._mpcLastArt||'';csBuscar();},80);"
+        style="width:100%;padding:16px;background:#1565C0;border:none;border-radius:14px;color:#fff;font-family:'Bebas Neue','Outfit',sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;margin-top:8px;box-shadow:0 4px 14px rgba(21,101,192,0.35);">
         📦 VER STOCK
     </button>`;
 
