@@ -896,7 +896,7 @@
     <input type="file" id="almStockInput"  class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
 
     <!-- ── MODAL PROMO COLOR ── -->
-    <div id="modal-promo-color" style="display:none;position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px);justify-content:center;align-items:center;padding:16px;">
+    <div id="modal-promo-color" style="display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);justify-content:center;align-items:center;padding:16px;pointer-events:all;">
         <div style="background:#FFFFFF;border-radius:20px;width:100%;max-width:380px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,0.5);border-top:6px solid #E53935;">
             <!-- Header -->
             <div style="background:#E53935;padding:14px 18px;display:flex;align-items:center;gap:12px;">
@@ -1078,7 +1078,13 @@
                 <span class="cs-field-label">CODBAR:</span>
                 <input type="text" id="cs-inp-codbar" class="cs-inp" placeholder="Escanear / 13 dígitos" maxlength="20"
                        oninput="csOnBarcodeInput(this.value)" onkeydown="if(event.key==='Enter')csBuscar()"
-                       onblur="setTimeout(()=>{const m=document.getElementById('modal-promo-color');if(!m||m.style.display==='none')this.focus();},100)">
+                       onblur="setTimeout(()=>{
+    const activo=document.activeElement;
+    const ids=['cs-inp-articulo','cs-name-search','cs-inp-descripcion'];
+    if(ids.some(id=>activo&&activo.id===id)) return;
+    const m=document.getElementById('modal-promo-color');
+    if(!m||m.style.display==='none') this.focus();
+},120)">
             </div>
             <!-- Nombre del artículo encima de todo, en negro -->
             <div id="cs-nombre-articulo" style="display:none;padding:6px 10px 2px;flex-shrink:0;">
@@ -4254,8 +4260,11 @@ function csParsePreciosXLSX(wb, nombreLibro) {
 
 // ── PROMO COLOR: mostrar alerta al escanear un código con promo por color ──
 function csCheckPromoColor(barcode) {
-    if (!barcode || barcode.length < 11 || Object.keys(csPromoColorDB).length === 0) return;
-    const codColor = barcode.substring(0, 11).toUpperCase();
+    if (!barcode) return;
+    barcode = barcode.trim().toUpperCase();
+    if (barcode.length < 11 || Object.keys(csPromoColorDB).length === 0) return;
+    // Buscar coincidencia: el cod color son los primeros 11 chars del barcode
+    const codColor = barcode.substring(0, 11);
     const promo = csPromoColorDB[codColor];
     if (!promo) return;
     // Calcular descuento vs etiqueta
