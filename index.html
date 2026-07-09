@@ -4523,6 +4523,11 @@ function csRenderPrecios(modelCode) {
     document.getElementById('cs-pct-etiqueta').textContent='Precio base';
     document.getElementById('cs-p-menor').textContent=fmt(p.menor);
     document.getElementById('cs-pct-menor').textContent=pct(p.menor,etiq);
+    // Si no hay precio unitario → limpiar bloque PROMO UNITARIO de abajo
+    if (p.menor <= 0) {
+        const _iu=document.getElementById('cs-promo-info-unitario');
+        if(_iu) _iu.style.display='none';
+    }
     document.getElementById('cs-p-mayor').textContent=fmt(p.mayor);
     document.getElementById('cs-pct-mayor').textContent=pct(p.mayor,etiq);
     // Ocultar cuadro COMBO si no tiene precio
@@ -4533,9 +4538,24 @@ function csRenderPrecios(modelCode) {
     const ofertaFinal = p.oferta > 0 ? p.oferta : 0;
     document.getElementById('cs-p-oferta').textContent=fmt(ofertaFinal);
     document.getElementById('cs-pct-oferta').textContent=pct(ofertaFinal,etiq);
+    // Si no hay combo → limpiar bloque COMBO abajo
+    if (p.mayor <= 0) {
+        const _ic=document.getElementById('cs-promo-info-combo');
+        if(_ic) _ic.style.display='none';
+    }
     // Ocultar cuadro OFERTA si no tiene precio
     const ofertaBox = document.getElementById('cs-box-oferta');
     if (ofertaBox) ofertaBox.style.display = ofertaFinal > 0 ? '' : 'none';
+    // Si no hay oferta → limpiar bloque OFERTA abajo
+    if (ofertaFinal <= 0) {
+        const _io=document.getElementById('cs-promo-info-oferta');
+        if(_io) _io.style.display='none';
+    }
+    // Si ninguno tiene promo → ocultar el contenedor padre
+    if (p.menor <= 0 && p.mayor <= 0 && ofertaFinal <= 0) {
+        const _ia=document.getElementById('cs-promo-info-abajo');
+        if(_ia) _ia.style.display='none';
+    }
 
     // ── Cuadro único: precio más económico entre Unitario y Oferta + libro de origen ──
     csRenderPrecioFinal(cod, p, etiq, ofertaFinal);
