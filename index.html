@@ -5269,6 +5269,16 @@ function csBuscar() {
     if (!art && bc) art = csFindInBarcode(bc) || bc.toUpperCase();
     if (!art) { csSetStatus('⚠ Ingrese un artículo o escanee.'); return; }
 
+    // ── Limpiar SIEMPRE los bloques de promo del artículo anterior ──
+    ['cs-promo-info-unitario','cs-promo-info-combo','cs-promo-info-oferta'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+    const _infoAb = document.getElementById('cs-promo-info-abajo');
+    if (_infoAb) _infoAb.style.display = 'none';
+    const _alert = document.getElementById('cs-sin-precio-alert');
+    if (_alert) _alert.style.display = 'none';
+
     const artEl  = document.getElementById('cs-inp-articulo');
     const descEl = document.getElementById('cs-inp-descripcion');
     const outer  = document.getElementById('cs-table-outer');
