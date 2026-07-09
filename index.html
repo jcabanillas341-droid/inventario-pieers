@@ -4352,8 +4352,9 @@ function csRenderPrecioFinal(cod, p, etiq, ofertaFinal) {
         if (boxUnit) boxUnit.style.display = 'none';
         if (boxComb) boxComb.style.display = 'none';
     } else {
-        if (boxUnit) boxUnit.style.display = '';
-        if (boxComb) boxComb.style.display = '';
+        if (boxUnit) boxUnit.style.display = 'flex';
+        // COMBO solo visible si tiene precio mayor > 0
+        if (boxComb) boxComb.style.display = (p && p.mayor > 0) ? 'flex' : 'none';
     }
 
     // Candidatos válidos (mayor a 0)
@@ -4532,7 +4533,7 @@ function csRenderPrecios(modelCode) {
     document.getElementById('cs-pct-mayor').textContent=pct(p.mayor,etiq);
     // Ocultar cuadro COMBO si no tiene precio
     const boxComboEl = document.getElementById('cs-box-combo');
-    if (boxComboEl) boxComboEl.style.display = p.mayor > 0 ? '' : 'none';
+    if (boxComboEl) boxComboEl.style.display = p.mayor > 0 ? 'flex' : 'none';
 
     // Oferta: solo desde memorandum
     const ofertaFinal = p.oferta > 0 ? p.oferta : 0;
@@ -4545,7 +4546,7 @@ function csRenderPrecios(modelCode) {
     }
     // Ocultar cuadro OFERTA si no tiene precio
     const ofertaBox = document.getElementById('cs-box-oferta');
-    if (ofertaBox) ofertaBox.style.display = ofertaFinal > 0 ? '' : 'none';
+    if (ofertaBox) ofertaBox.style.display = ofertaFinal > 0 ? 'flex' : 'none';
     // Si no hay oferta → limpiar bloque OFERTA abajo
     if (ofertaFinal <= 0) {
         const _io=document.getElementById('cs-promo-info-oferta');
