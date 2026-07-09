@@ -921,7 +921,7 @@
                     <div id="mpc-dto" style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:rgba(255,255,255,0.8);margin-top:4px;"></div>
                 </div>
                 <div id="mpc-cod" style="font-family:'Outfit',sans-serif;font-size:10px;color:#888;text-align:center;margin-bottom:14px;"></div>
-                <button onclick="document.getElementById('modal-promo-color').style.display='none'"
+                <button onclick="document.getElementById('modal-promo-color').style.display='none'; setTimeout(()=>{const ci=document.getElementById('cs-inp-codbar');if(ci){ci.value='';ci.focus();}},50);"
                     style="width:100%;padding:14px;background:#111;border:none;border-radius:12px;color:#fff;font-family:'Outfit',sans-serif;font-size:14px;font-weight:800;cursor:pointer;letter-spacing:1px;">
                     ENTENDIDO
                 </button>
@@ -1077,7 +1077,8 @@
             <div class="cs-ctrl-row">
                 <span class="cs-field-label">CODBAR:</span>
                 <input type="text" id="cs-inp-codbar" class="cs-inp" placeholder="Escanear / 13 dígitos" maxlength="20"
-                       oninput="csOnBarcodeInput(this.value)" onkeydown="if(event.key==='Enter')csBuscar()">
+                       oninput="csOnBarcodeInput(this.value)" onkeydown="if(event.key==='Enter')csBuscar()"
+                       onblur="setTimeout(()=>{const m=document.getElementById('modal-promo-color');if(!m||m.style.display==='none')this.focus();},100)">
             </div>
             <!-- Nombre del artículo encima de todo, en negro -->
             <div id="cs-nombre-articulo" style="display:none;padding:6px 10px 2px;flex-shrink:0;">
@@ -5042,6 +5043,11 @@ function csOnBarcodeInput(val) {
                     csBuscar();
                     const inp = document.getElementById('cs-inp-codbar');
                     if (inp) { inp.value = ''; inp.focus(); }
+                    // Si el modal de promo color está abierto, vuelve el foco después de cerrarlo
+                    setTimeout(()=>{
+                        const ci=document.getElementById('cs-inp-codbar');
+                        if(ci && document.getElementById('modal-promo-color').style.display==='none') ci.focus();
+                    }, 300);
                 }, 80);
             }
         }
