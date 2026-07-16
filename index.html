@@ -830,7 +830,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.18 — 09/Jul/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.19 — 09/Jul/2026</div>
     </div>
 </div>
 
@@ -1199,7 +1199,7 @@
             <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
             <!-- Versión -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.18 — 09/Jul/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.19 — 09/Jul/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4382,11 +4382,14 @@ function csBuscarPorNombreManual(texto) {
 }
 
 function csSeleccionarManual(artCod) {
-    // Ocultar resultados
+    // Limpiar buscador y resultados
     const results = document.getElementById('cs-name-results-manual');
     if (results) results.style.display = 'none';
-    const search = document.getElementById('cs-name-search-manual');
-    if (search) search.value = csStockDB[artCod]?.desc || artCod;
+    const search = document.getElementById('cs-name-search');
+    if (search) { search.value = ''; search.focus(); }
+    // Limpiar cs-table-outer
+    const outer = document.getElementById('cs-table-outer');
+    if (outer) outer.innerHTML = '';
     // Guardar y mostrar ventana flotante igual que la lectora
     window._mpcLastArt = artCod;
     const fakeBc = 'P' + artCod + '00000';
