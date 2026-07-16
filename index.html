@@ -830,7 +830,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.15 — 09/Jul/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.16 — 09/Jul/2026</div>
     </div>
 </div>
 
@@ -1096,18 +1096,26 @@
                 </div>
             </div>
 
-            <!-- ── MODO MANUAL (búsqueda por nombre o código) ── -->
+            <!-- ── MODO MANUAL (búsqueda por nombre) ── -->
             <div id="cs-panel-manual" style="display:none;">
+                <!-- Buscador por nombre primero -->
                 <div class="cs-ctrl-row">
-                    <span class="cs-field-label">Artículo:</span>
-                    <input type="text" id="cs-inp-articulo" class="cs-inp" placeholder="Código 7 dígitos o nombre" maxlength="40"
-                           oninput="this.value=this.value.toUpperCase();if(this.value.length>=7&&this.value.length<=10)csOnBarcodeInputManual(this.value)"
+                    <input type="text" id="cs-name-search-manual" class="cs-inp"
+                           placeholder="🔍  Buscar por nombre de artículo..."
+                           oninput="csBuscarPorNombreManual(this.value)"
+                           style="flex:1;background:#fff;border-radius:20px;padding:10px 16px;font-size:13px;">
+                </div>
+                <!-- Resultados debajo del buscador -->
+                <div id="cs-name-results-manual" style="max-height:220px;overflow-y:auto;background:#fff;border-radius:12px;margin:0 10px 4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);display:none;"></div>
+                <!-- Campo código manual (secundario) -->
+                <div class="cs-ctrl-row" style="padding-top:2px;">
+                    <span class="cs-field-label">Código:</span>
+                    <input type="text" id="cs-inp-articulo" class="cs-inp" placeholder="7 dígitos"
+                           maxlength="10" oninput="this.value=this.value.toUpperCase()"
                            onkeydown="if(event.key==='Enter')csBuscarManual()">
                     <button class="cs-btn cs-btn-buscar" onclick="csBuscarManual()" style="flex-shrink:0;">🔍</button>
                 </div>
-                <div class="cs-ctrl-row" style="padding-top:0;">
-                    <input type="text" id="cs-inp-descripcion" class="cs-inp" readonly placeholder="Descripción del artículo" style="flex:1;">
-                </div>
+                <input type="text" id="cs-inp-descripcion" style="display:none;">
             </div>
 
             <!-- Nombre del artículo encima de todo, en negro -->
@@ -1200,7 +1208,7 @@
             <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
             <!-- Versión -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.15 — 09/Jul/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.16 — 09/Jul/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4327,6 +4335,43 @@ function csModoManual() {
     document.getElementById('btn-modo-lectora').style.cssText += ';background:#F5F5F5;color:#555;border-color:#CCC;';
     // Foco en campo artículo
     setTimeout(() => { const ai = document.getElementById('cs-inp-articulo'); if(ai) { ai.value=''; ai.focus(); } }, 100);
+}
+
+function csBuscarPorNombreManual(texto) {
+    const results = document.getElementById('cs-name-results-manual');
+    if (!results) return;
+    if (!texto || texto.length < 2) { results.style.display = 'none'; return; }
+    const q = texto.toLowerCase();
+    const matches = Object.keys(csStockDB).filter(k =>
+        (csStockDB[k].desc || '').toLowerCase().includes(q) || k.includes(q.toUpperCase())
+    ).slice(0, 30);
+    if (!matches.length) { results.innerHTML = '<div style="padding:10px 14px;color:#999;font-size:12px;">Sin resultados</div>'; results.style.display = 'block'; return; }
+    results.innerHTML = matches.map(k => {
+        const d = csStockDB[k];
+        const tot = (d.colors || []).reduce((s, c) => s + c.total, 0);
+        return `<div onclick="csSeleccionarManual('${k}')"
+            style="padding:10px 14px;border-bottom:1px solid #F0F0F0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+                <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:#111;">${d.desc || k}</div>
+                <div style="font-family:'Outfit',sans-serif;font-size:10px;color:#888;">${k}</div>
+            </div>
+            <span style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;color:#1565C0;">${tot} u.</span>
+        </div>`;
+    }).join('');
+    results.style.display = 'block';
+}
+
+function csSeleccionarManual(artCod) {
+    // Ocultar resultados
+    const results = document.getElementById('cs-name-results-manual');
+    if (results) results.style.display = 'none';
+    const search = document.getElementById('cs-name-search-manual');
+    if (search) search.value = csStockDB[artCod]?.desc || artCod;
+    // Guardar y mostrar ventana flotante igual que la lectora
+    window._mpcLastArt = artCod;
+    const fakeBc = 'P' + artCod + '00000';
+    window._mpcLastBarcode = fakeBc;
+    csCheckPromoColor(fakeBc);
 }
 
 function csOnBarcodeInputManual(val) {
