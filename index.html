@@ -830,7 +830,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.14 — 09/Jul/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.15 — 09/Jul/2026</div>
     </div>
 </div>
 
@@ -1068,32 +1068,54 @@
         <!-- ── SELECTOR MODO CONSULTA (movido a OPC.) ── -->
         <div id="cs-modo-selector" style="display:none;"></div>
         <div class="cs-top-panel">
-            <div class="cs-ctrl-row">
-                <span class="cs-field-label">CODBAR:</span>
-                <input type="text" id="cs-inp-codbar" class="cs-inp" placeholder="Escanear / 13 dígitos" maxlength="20"
-                       oninput="csOnBarcodeInput(this.value)" onkeydown="if(event.key==='Enter'&&this.value.trim().length<13)csBuscar()"
-                       onblur="setTimeout(()=>{
+            <!-- ── SELECTOR DE MODO DE BÚSQUEDA ── -->
+            <div style="display:flex;gap:6px;padding:8px 10px 4px;">
+                <button id="btn-modo-lectora" onclick="csModoLectora()"
+                    style="flex:1;padding:10px 6px;border-radius:10px;border:2px solid #E53935;background:#E53935;color:#fff;font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:0.5px;">
+                    📷 LECTORA
+                </button>
+                <button id="btn-modo-manual" onclick="csModoManual()"
+                    style="flex:1;padding:10px 6px;border-radius:10px;border:2px solid #CCC;background:#F5F5F5;color:#555;font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:0.5px;">
+                    ✏️ MANUAL
+                </button>
+            </div>
+
+            <!-- ── MODO LECTORA (pistola) ── -->
+            <div id="cs-panel-lectora">
+                <div class="cs-ctrl-row">
+                    <span class="cs-field-label">CODBAR:</span>
+                    <input type="text" id="cs-inp-codbar" class="cs-inp" placeholder="Escanear / 13 dígitos" maxlength="20"
+                           oninput="csOnBarcodeInput(this.value)" onkeydown="if(event.key==='Enter'&&this.value.trim().length<13)csBuscar()"
+                           onblur="setTimeout(()=>{
     const activo=document.activeElement;
     const ids=['cs-inp-articulo','cs-name-search','cs-inp-descripcion'];
     if(ids.some(id=>activo&&activo.id===id)) return;
     const m=document.getElementById('modal-promo-color');
     if(!m||m.style.display==='none') this.focus();
 },120)">
+                </div>
             </div>
+
+            <!-- ── MODO MANUAL (búsqueda por nombre o código) ── -->
+            <div id="cs-panel-manual" style="display:none;">
+                <div class="cs-ctrl-row">
+                    <span class="cs-field-label">Artículo:</span>
+                    <input type="text" id="cs-inp-articulo" class="cs-inp" placeholder="Código 7 dígitos o nombre" maxlength="40"
+                           oninput="this.value=this.value.toUpperCase();if(this.value.length>=7&&this.value.length<=10)csOnBarcodeInputManual(this.value)"
+                           onkeydown="if(event.key==='Enter')csBuscarManual()">
+                    <button class="cs-btn cs-btn-buscar" onclick="csBuscarManual()" style="flex-shrink:0;">🔍</button>
+                </div>
+                <div class="cs-ctrl-row" style="padding-top:0;">
+                    <input type="text" id="cs-inp-descripcion" class="cs-inp" readonly placeholder="Descripción del artículo" style="flex:1;">
+                </div>
+            </div>
+
             <!-- Nombre del artículo encima de todo, en negro -->
             <div id="cs-nombre-articulo" style="display:none;padding:6px 10px 2px;flex-shrink:0;">
                 <div id="cs-nombre-texto" style="font-family:'Outfit',sans-serif;font-size:15px;font-weight:900;color:#111111;letter-spacing:0.3px;line-height:1.2;"></div>
                 <div id="cs-codigo-texto" style="font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;color:#555;margin-top:1px;"></div>
             </div>
             <div class="cs-ctrl-row">
-                <span class="cs-field-label">Artículo:</span>
-                <input type="text" id="cs-inp-articulo" class="cs-inp" placeholder="7 cód." maxlength="10"
-                       oninput="this.value=this.value.toUpperCase()"
-                       onkeydown="if(event.key==='Enter')csBuscar()">
-                <input type="text" id="cs-inp-descripcion" class="cs-inp" readonly placeholder="Descripción del artículo">
-            </div>
-            <div class="cs-ctrl-row">
-                <button class="cs-btn cs-btn-buscar" onclick="csBuscar()">🔍 Buscar</button>
                 <button class="cs-btn cs-btn-upload" onclick="document.getElementById('cs-file-input').click()">📂 Cargar Base</button>
                 <input type="file" id="cs-file-input" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*" onchange="csLoadFile(event)" style="display:none">
                 <input type="file" id="cs-mayorprecios-input" accept=".xlsx,.xls" onchange="csLoadPreciosMayor(event)" style="display:none">
@@ -1178,7 +1200,7 @@
             <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
             <!-- Versión -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.14 — 09/Jul/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.15 — 09/Jul/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4283,6 +4305,86 @@ function csParsePreciosXLSX(wb, nombreLibro) {
 
 // ── PROMO COLOR: mostrar alerta al escanear un código con promo por color ──
 let _mpcTimer = null;
+let _csModoBusqueda = 'lectora'; // 'lectora' | 'manual'
+
+function csModoLectora() {
+    _csModoBusqueda = 'lectora';
+    document.getElementById('cs-panel-lectora').style.display = '';
+    document.getElementById('cs-panel-manual').style.display = 'none';
+    // Estilos botones
+    document.getElementById('btn-modo-lectora').style.cssText += ';background:#E53935;color:#fff;border-color:#E53935;';
+    document.getElementById('btn-modo-manual').style.cssText += ';background:#F5F5F5;color:#555;border-color:#CCC;';
+    // Foco en CODBAR
+    setTimeout(() => { const ci = document.getElementById('cs-inp-codbar'); if(ci) ci.focus(); }, 100);
+}
+
+function csModoManual() {
+    _csModoBusqueda = 'manual';
+    document.getElementById('cs-panel-lectora').style.display = 'none';
+    document.getElementById('cs-panel-manual').style.display = '';
+    // Estilos botones
+    document.getElementById('btn-modo-manual').style.cssText += ';background:#1565C0;color:#fff;border-color:#1565C0;';
+    document.getElementById('btn-modo-lectora').style.cssText += ';background:#F5F5F5;color:#555;border-color:#CCC;';
+    // Foco en campo artículo
+    setTimeout(() => { const ai = document.getElementById('cs-inp-articulo'); if(ai) { ai.value=''; ai.focus(); } }, 100);
+}
+
+function csOnBarcodeInputManual(val) {
+    // En modo manual: al escribir 7 chars, autocompletar con búsqueda
+    if (!val || val.length < 7) return;
+    const art = val.trim().toUpperCase();
+    const keys = Object.keys(csStockDB).filter(k => k === art || k.startsWith(art));
+    if (keys.length === 1) {
+        const descEl = document.getElementById('cs-inp-descripcion');
+        if (descEl) descEl.value = csStockDB[keys[0]].desc || '';
+    }
+}
+
+function csBuscarManual() {
+    // Buscar en modo manual → muestra ventana flotante igual que la lectora
+    const artEl = document.getElementById('cs-inp-articulo');
+    if (!artEl) return;
+    const val = artEl.value.trim().toUpperCase();
+    if (!val) return;
+
+    // Buscar el artículo
+    const keys = Object.keys(csStockDB).filter(k => k === val || k.startsWith(val));
+    if (!keys.length) {
+        // Buscar por nombre
+        const nombre = val.toLowerCase();
+        const porNombre = Object.keys(csStockDB).filter(k =>
+            (csStockDB[k].desc||'').toLowerCase().includes(nombre)
+        );
+        if (porNombre.length === 1) {
+            // Un único resultado → simular pistolada
+            const artCod = porNombre[0];
+            window._mpcLastArt = artCod;
+            artEl.value = artCod;
+            const descEl = document.getElementById('cs-inp-descripcion');
+            if (descEl) descEl.value = csStockDB[artCod].desc || '';
+            // Mostrar ventana flotante igual que la lectora
+            const fakeBc = 'P' + artCod + '00000'; // barcode simulado
+            window._mpcLastBarcode = fakeBc;
+            csCheckPromoColor(fakeBc);
+            return;
+        } else if (porNombre.length > 1) {
+            // Mostrar lista de resultados en búsqueda por nombre
+            csBuscarPorNombre(val);
+            return;
+        }
+        showToast('⚠️ Artículo no encontrado', '#c62828');
+        return;
+    }
+    // Código exacto encontrado
+    const artCod = keys[0];
+    window._mpcLastArt = artCod;
+    const descEl = document.getElementById('cs-inp-descripcion');
+    if (descEl) descEl.value = csStockDB[artCod]?.desc || '';
+    // Mostrar ventana flotante igual que la lectora
+    const fakeBc = 'P' + artCod + '00000';
+    window._mpcLastBarcode = fakeBc;
+    csCheckPromoColor(fakeBc);
+}
 
 function csModalPromoCerrar() {
     const modal = document.getElementById('modal-promo-color');
