@@ -830,7 +830,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.17 — 09/Jul/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.18 — 09/Jul/2026</div>
     </div>
 </div>
 
@@ -1199,7 +1199,7 @@
             <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
             <!-- Versión -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.17 — 09/Jul/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.18 — 09/Jul/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4310,6 +4310,17 @@ function csModoLectora() {
     _csModoBusqueda = 'lectora';
     document.getElementById('cs-panel-lectora').style.display = '';
     document.getElementById('cs-panel-manual').style.display = 'none';
+    // Devolver el buscador a su posición original en cs-panel-stock
+    const wrap = document.getElementById('cs-name-search-wrap');
+    const panelStock = document.getElementById('cs-panel-stock');
+    const tableOuter = document.getElementById('cs-table-outer');
+    if (wrap && panelStock && tableOuter) {
+        wrap.style.display = 'none';
+        panelStock.insertBefore(wrap, tableOuter);
+        // Restaurar función original
+        const inp = document.getElementById('cs-name-search');
+        if (inp) { inp.value=''; inp.oninput = function(){ csBuscarPorNombre(this.value); }; }
+    }
     // Estilos botones
     document.getElementById('btn-modo-lectora').style.cssText += ';background:#E53935;color:#fff;border-color:#E53935;';
     document.getElementById('btn-modo-manual').style.cssText += ';background:#F5F5F5;color:#555;border-color:#CCC;';
@@ -4321,35 +4332,53 @@ function csModoManual() {
     _csModoBusqueda = 'manual';
     document.getElementById('cs-panel-lectora').style.display = 'none';
     document.getElementById('cs-panel-manual').style.display = '';
+    // Mostrar el buscador por nombre en la posición del panel manual
+    const wrap = document.getElementById('cs-name-search-wrap');
+    const panelManual = document.getElementById('cs-panel-manual');
+    if (wrap && panelManual) {
+        wrap.style.display = 'block';
+        panelManual.appendChild(wrap);
+    }
+    // Conectar el buscador a csSeleccionarManual en vez de csBuscarPorNombre
+    const inp = document.getElementById('cs-name-search');
+    if (inp) {
+        inp.value = '';
+        inp.oninput = function() { csBuscarPorNombreManual(this.value); };
+        inp.focus();
+    }
     // Estilos botones
     document.getElementById('btn-modo-manual').style.cssText += ';background:#1565C0;color:#fff;border-color:#1565C0;';
     document.getElementById('btn-modo-lectora').style.cssText += ';background:#F5F5F5;color:#555;border-color:#CCC;';
-    // Foco en campo artículo
-    setTimeout(() => { const ai = document.getElementById('cs-inp-articulo'); if(ai) { ai.value=''; ai.focus(); } }, 100);
 }
 
 function csBuscarPorNombreManual(texto) {
-    const results = document.getElementById('cs-name-results-manual');
-    if (!results) return;
-    if (!texto || texto.length < 2) { results.style.display = 'none'; return; }
+    // Usar cs-table-outer como contenedor de resultados en modo manual
+    const outer = document.getElementById('cs-table-outer');
+    if (!outer) return;
+    if (!texto || texto.length < 2) {
+        outer.innerHTML = '<div class="cs-no-data">Escribe para buscar...</div>';
+        return;
+    }
     const q = texto.toLowerCase();
     const matches = Object.keys(csStockDB).filter(k =>
-        (csStockDB[k].desc || '').toLowerCase().includes(q) || k.includes(q.toUpperCase())
-    ).slice(0, 30);
-    if (!matches.length) { results.innerHTML = '<div style="padding:10px 14px;color:#999;font-size:12px;">Sin resultados</div>'; results.style.display = 'block'; return; }
-    results.innerHTML = matches.map(k => {
+        (csStockDB[k].desc || '').toLowerCase().includes(q) || k.toLowerCase().includes(q)
+    ).slice(0, 40);
+    if (!matches.length) {
+        outer.innerHTML = '<div class="cs-no-data">Sin resultados para "' + texto + '"</div>';
+        return;
+    }
+    outer.innerHTML = matches.map(k => {
         const d = csStockDB[k];
-        const tot = (d.colors || []).reduce((s, c) => s + c.total, 0);
+        const tot = (d.colors || []).reduce((s, cc) => s + cc.total, 0);
         return `<div onclick="csSeleccionarManual('${k}')"
-            style="padding:10px 14px;border-bottom:1px solid #F0F0F0;cursor:pointer;display:flex;justify-content:space-between;align-items:center;">
+            style="padding:12px 16px;border-bottom:1px solid #E8E8E8;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:#fff;">
             <div>
                 <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:#111;">${d.desc || k}</div>
-                <div style="font-family:'Outfit',sans-serif;font-size:10px;color:#888;">${k}</div>
+                <div style="font-family:'Outfit',sans-serif;font-size:10px;color:#888;margin-top:2px;">${k}</div>
             </div>
-            <span style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;color:#1565C0;">${tot} u.</span>
+            <span style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:18px;color:#1565C0;font-weight:900;">${tot}</span>
         </div>`;
     }).join('');
-    results.style.display = 'block';
 }
 
 function csSeleccionarManual(artCod) {
