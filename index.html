@@ -830,7 +830,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.20 — 09/Jul/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.21 — 09/Jul/2026</div>
     </div>
 </div>
 
@@ -1199,7 +1199,7 @@
             <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
             <!-- Versión -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.20 — 09/Jul/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.21 — 09/Jul/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4310,17 +4310,11 @@ function csModoLectora() {
     _csModoBusqueda = 'lectora';
     document.getElementById('cs-panel-lectora').style.display = '';
     document.getElementById('cs-panel-manual').style.display = 'none';
-    // Devolver el buscador a su posición original en cs-panel-stock
+    // Ocultar el buscador y restaurar función original
     const wrap = document.getElementById('cs-name-search-wrap');
-    const panelStock = document.getElementById('cs-panel-stock');
-    const tableOuter = document.getElementById('cs-table-outer');
-    if (wrap && panelStock && tableOuter) {
-        wrap.style.display = 'none';
-        panelStock.insertBefore(wrap, tableOuter);
-        // Restaurar función original
-        const inp = document.getElementById('cs-name-search');
-        if (inp) { inp.value=''; inp.oninput = function(){ csBuscarPorNombre(this.value); }; }
-    }
+    if (wrap) wrap.style.display = 'none';
+    const inp = document.getElementById('cs-name-search');
+    if (inp) { inp.value=''; inp.oninput = function(){ csBuscarPorNombre(this.value); }; }
     // Estilos botones
     document.getElementById('btn-modo-lectora').style.cssText += ';background:#E53935;color:#fff;border-color:#E53935;';
     document.getElementById('btn-modo-manual').style.cssText += ';background:#F5F5F5;color:#555;border-color:#CCC;';
@@ -4335,19 +4329,14 @@ function csModoManual() {
     // Ocultar nombre artículo anterior
     const nomDiv = document.getElementById('cs-nombre-articulo');
     if (nomDiv) nomDiv.style.display = 'none';
-    // Mostrar el buscador por nombre en la posición del panel manual
+    // Mostrar el buscador original (cs-name-search-wrap) y conectarlo al modo manual
     const wrap = document.getElementById('cs-name-search-wrap');
-    const panelManual = document.getElementById('cs-panel-manual');
-    if (wrap && panelManual) {
-        wrap.style.display = 'block';
-        panelManual.appendChild(wrap);
-    }
-    // Conectar el buscador a csSeleccionarManual en vez de csBuscarPorNombre
+    if (wrap) wrap.style.display = 'block';
     const inp = document.getElementById('cs-name-search');
     if (inp) {
         inp.value = '';
         inp.oninput = function() { csBuscarPorNombreManual(this.value); };
-        inp.focus();
+        setTimeout(() => inp.focus(), 150);
     }
     // Estilos botones
     document.getElementById('btn-modo-manual').style.cssText += ';background:#1565C0;color:#fff;border-color:#1565C0;';
