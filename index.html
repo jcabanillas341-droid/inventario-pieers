@@ -830,7 +830,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.23 — 09/Jul/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.24 — 09/Jul/2026</div>
     </div>
 </div>
 
@@ -1192,7 +1192,7 @@
             <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
             <!-- Versión -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.23 — 09/Jul/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.24 — 09/Jul/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -3898,8 +3898,9 @@ function csSavePreciosLocal() {
         localStorage.setItem(CS_PRECIOS_KEY, JSON.stringify({
             db:            csPreciosDB,
             libros:        csLibrosCargados,
+            promoColor:    csPromoColorDB,
             date:          new Date().toLocaleString('es-PE'),
-            schemaVersion: 4
+            schemaVersion: 5
         }));
     } catch(e) { /* quota: sigue en memoria */ }
 }
@@ -3920,7 +3921,7 @@ function csLoadPreciosLocal() {
         // En versiones anteriores, combo pisaba entry.menor con precio incorrecto.
         // La única forma segura es descartar el caché y pedir recargar el Memorandum.
         const SCHEMA_VERSION = payload.schemaVersion || 1;
-        if (SCHEMA_VERSION < 4) {
+        if (SCHEMA_VERSION < 5) {
             // Caché de versión anterior — descartarlo completamente
             try { localStorage.removeItem(CS_PRECIOS_KEY); } catch(e2) {}
             return false; // Forzar que el usuario recargue el Memorandum
