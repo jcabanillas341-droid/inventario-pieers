@@ -830,7 +830,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.25 — 09/Jul/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.26 — 09/Jul/2026</div>
     </div>
 </div>
 
@@ -925,6 +925,11 @@
 
     <!-- SCANNER COMPARATIVO -->
     <input id="scanner" inputmode="none" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus placeholder="ESCANEE CÓDIGO">
+
+    <!-- Nombre archivo cargado -->
+    <div id="comp-archivo-badge" style="display:none;position:absolute;top:6px;right:48px;z-index:10;">
+        <span id="comp-archivo-txt" style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#fff;background:rgba(0,0,0,0.45);padding:3px 8px;border-radius:8px;letter-spacing:0.5px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;"></span>
+    </div>
 
     <!-- PANEL DESCRIPCIÓN -->
     <div id="panel-desc">
@@ -1192,7 +1197,7 @@
             <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
             <!-- Versión -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.25 — 09/Jul/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.26 — 09/Jul/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -1555,6 +1560,8 @@ function seleccionarModo(modo) {
         const scannerEl2 = $('scanner');
         if (scannerEl2) scannerEl2.style.display = (modo === 'alm' || modo === 'stock') ? 'none' : '';
         const panelDesc = $('panel-desc'); if(panelDesc) panelDesc.style.display = 'none';
+        const _badgeC = document.getElementById('comp-archivo-badge');
+        if (_badgeC) _badgeC.style.display = 'none';
         const pbox = document.querySelector('.progress-box'); if(pbox) pbox.style.display = (modo === 'alm' || modo === 'stock') ? 'none' : '';
         const panelAlmComp=$('panel-alm-comp'); if(panelAlmComp) panelAlmComp.classList.remove('visible');
 
@@ -1733,12 +1740,19 @@ document.getElementById('fileInput').addEventListener('change', function(e) {
                         localStorage.setItem('p_total_v8', totalEsp);
                         saveComp(); hideLoading(); beep(880, 0.1);
                         showToast('✅ Maestro: ' + res.length.toLocaleString() + ' productos cargados', '#111');
+                        // Mostrar nombre del archivo
+                        const _badge = document.getElementById('comp-archivo-badge');
+                        const _btxt  = document.getElementById('comp-archivo-txt');
+                        if (_badge && _btxt) { _btxt.textContent = '📄 ' + f.name; _badge.style.display = 'block'; }
                         renderComp(); focusScanner();
                     } else {
                         // Formato normal (columnas código, descripción, cantidad)
                         maestroMap.clear(); totalEsp = 0;
                         const wb2 = XLSX.read(new Uint8Array(evt.target.result), {type:'array', dense:true});
                         procesarFilasMaestro(XLSX.utils.sheet_to_json(wb2.Sheets[wb2.SheetNames[0]], {defval:''}), 0);
+                        const _badge2 = document.getElementById('comp-archivo-badge');
+                        const _btxt2  = document.getElementById('comp-archivo-txt');
+                        if (_badge2 && _btxt2) { _btxt2.textContent = '📄 ' + f.name; _badge2.style.display = 'block'; }
                     }
                 } catch(err) { hideLoading(); showToast('❌ '+err.message, '#c62828'); }
             }, 30);
