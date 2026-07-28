@@ -830,7 +830,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.24 — 09/Jul/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.25 — 09/Jul/2026</div>
     </div>
 </div>
 
@@ -1192,7 +1192,7 @@
             <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
             <!-- Versión -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.24 — 09/Jul/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.25 — 09/Jul/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -1703,12 +1703,43 @@ document.getElementById('fileInput').addEventListener('change', function(e) {
     const reader = new FileReader();
     showLoading('Leyendo archivo...', true);
     reader.onload = function(evt) {
-        maestroMap.clear(); totalEsp = 0;
         if (ext === 'xlsx' || ext === 'xls') {
             setTimeout(() => {
                 try {
-                    const wb = XLSX.read(new Uint8Array(evt.target.result), {type:'array',dense:true});
-                    procesarFilasMaestro(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:''}), 0);
+                    const wb  = XLSX.read(new Uint8Array(evt.target.result), {type:'array'});
+                    const csv = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+                    const esStock = csv.includes(',LINEA,') || csv.includes('"LINEA"') || csv.includes(',OFERTA,');
+                    const esGuia  = csv.includes('DESCRIPCION') || csv.includes('DESCRIPCIÓN');
+
+                    let res = [];
+                    if (esStock) {
+                        // CSV de stock WAMA → convertir a maestro
+                        res = _convertirStockCSV(parsearCSV(csv));
+                    } else if (!esGuia) {
+                        // Formato Pedido/Factura (128002.xlsx) → convertir a maestro
+                        res = _convertirPedidoXLSX(wb);
+                    }
+
+                    if (res.length > 0) {
+                        // Cargar como maestro del comparativo
+                        maestroMap.clear(); totalEsp = 0;
+                        res.forEach(r => {
+                            const cod = r.codigo.toUpperCase();
+                            maestroMap.set(cod, {exp: r.cantidad, real: 0});
+                            if (r.descripcion) descripcionMap.set(cod, r.descripcion);
+                            totalEsp += r.cantidad;
+                        });
+                        if (historial.length > 0) syncConteo();
+                        localStorage.setItem('p_total_v8', totalEsp);
+                        saveComp(); hideLoading(); beep(880, 0.1);
+                        showToast('✅ Maestro: ' + res.length.toLocaleString() + ' productos cargados', '#111');
+                        renderComp(); focusScanner();
+                    } else {
+                        // Formato normal (columnas código, descripción, cantidad)
+                        maestroMap.clear(); totalEsp = 0;
+                        const wb2 = XLSX.read(new Uint8Array(evt.target.result), {type:'array', dense:true});
+                        procesarFilasMaestro(XLSX.utils.sheet_to_json(wb2.Sheets[wb2.SheetNames[0]], {defval:''}), 0);
+                    }
                 } catch(err) { hideLoading(); showToast('❌ '+err.message, '#c62828'); }
             }, 30);
         } else {
@@ -1941,6 +1972,67 @@ function abrirGuia(modulo) {
     inp.click();
 }
 
+function _convertirPedidoXLSX(wb) {
+    // Parser para archivos tipo "Pedido/Factura" WAMA (128002.xlsx y similares)
+    // Estructura: cabecera(modelo,desc,talla1,talla2...) + filas color(lote,colorCod,colorNom,cant1,cant2...)
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const data = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+    const res = [];
+
+    const TALLAS_ROPA = new Set(['S','M','L','XL','XS','2X','3X','4X','ST']);
+    const esTalla = v => {
+        v = String(v||'').trim();
+        if (!v) return false;
+        if (TALLAS_ROPA.has(v)) return true;
+        const n = parseFloat(v);
+        return !isNaN(n) && n > 0 && n < 60; // tallas numéricas
+    };
+    const esModelo = v => {
+        v = String(v||'').trim();
+        const SKIP = new Set(['CÓDIGO','TOTAL:','CANT','PUNI','IMPORTE','PRODUCTO','DISTRIBUCION']);
+        return v.length >= 5 && v.length <= 8 && !v.startsWith('TOTAL') && !SKIP.has(v) && /[A-Za-z]/.test(v);
+    };
+
+    let curModelo = null, curDesc = '', curTallas = [];
+
+    for (const row of data) {
+        const c0 = String(row[0]||'').trim();
+        const c1 = String(row[1]||'').trim();
+        const c2 = String(row[2]||'').trim();
+        if (!c0 || c0.startsWith('TOTAL') || c0 === 'CÓDIGO') continue;
+
+        // Fila cabecera: c0=modelo, c2=primera talla
+        if (esModelo(c0) && esTalla(c2)) {
+            curModelo = c0;
+            curDesc   = c1;
+            curTallas = [];
+            for (let i = 2; i < row.length; i++) {
+                const v = String(row[i]||'').trim();
+                if (!v || !esTalla(v)) break;
+                curTallas.push(v);
+            }
+            continue;
+        }
+
+        // Fila color: c1=colorCod(3), c2=colorNom(texto no numérico)
+        if (curModelo && c1.length === 3 && c2 && isNaN(parseFloat(c2))) {
+            const colorCod = c1;
+            const colorNom = c2;
+            let pos = 1;
+            for (let t = 0; t < curTallas.length; t++) {
+                const cant = parseInt(row[3 + t]) || 0;
+                if (cant > 0) {
+                    const barcode = 'P' + curModelo + colorCod + String(pos).padStart(2,'0');
+                    const desc    = curDesc + ' ' + colorNom + ' T/' + curTallas[t];
+                    res.push({ codigo: barcode, descripcion: desc, cantidad: cant });
+                }
+                pos++;
+            }
+        }
+    }
+    return res;
+}
+
 function _convertirGuiaXLSX(wb) {
     // Parser para GUIA de movimientos WAMA - verificado contra 780 códigos reales
     // Columnas fijas: A(0)=modelo, F(5)=desc, I(8)=colorCod, L(11)=colorNom
@@ -2091,11 +2183,22 @@ document.getElementById('guiaInput').addEventListener('change', function(e) {
                 let res;
                 if (isXlsx) {
                     const wb = XLSX.read(new Uint8Array(evt.target.result),{type:'array'});
-                    // Detectar si es stock CSV disfrazado de xlsx o GUIA real
                     const csvTxt = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
-                    const esStock = csvTxt.indexOf(',LINEA,') >= 0 || csvTxt.indexOf('"LINEA"') >= 0;
-                    res = esStock ? _convertirStockCSV(parsearCSV(csvTxt)) : _convertirGuiaXLSX(wb);
-                    if (!res.length) res = esStock ? _convertirGuiaXLSX(wb) : _convertirStockCSV(parsearCSV(csvTxt));
+                    const esStock  = csvTxt.indexOf(',LINEA,') >= 0 || csvTxt.indexOf('"LINEA"') >= 0;
+                    const esOferta = csvTxt.indexOf(',OFERTA,') >= 0;
+                    const esGuia   = csvTxt.indexOf('DESCRIPCION') >= 0 || csvTxt.indexOf('DESCRIPCIÓN') >= 0;
+                    if (esStock || esOferta) {
+                        // CSV de stock WAMA
+                        res = _convertirStockCSV(parsearCSV(csvTxt));
+                    } else if (esGuia) {
+                        // Guía de movimientos WAMA
+                        res = _convertirGuiaXLSX(wb);
+                        if (!res.length) res = _convertirPedidoXLSX(wb);
+                    } else {
+                        // Formato Pedido/Factura (128002.xlsx y similares)
+                        res = _convertirPedidoXLSX(wb);
+                        if (!res.length) res = _convertirGuiaXLSX(wb);
+                    }
                 } else {
                     // Usar parsearCSV que maneja correctamente las comillas del CSV de WAMA
                     res = _convertirStockCSV(parsearCSV(evt.target.result));
