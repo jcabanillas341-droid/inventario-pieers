@@ -1,0 +1,24 @@
+{
+  "name": "PIEERS PRO",
+  "short_name": "PIEERS PRO",
+  "description": "Auditoría e Inventario PIEERS Cajamarca 067",
+  "start_url": "/inventario-pieers/",
+  "scope": "/inventario-pieers/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#D32F2F",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "https://jcabanillas341-droid.github.io/inventario-pieers/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://jcabanillas341-droid.github.io/inventario-pieers/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
