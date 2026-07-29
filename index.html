@@ -830,7 +830,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.27 — 09/Jul/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.28 — 09/Jul/2026</div>
     </div>
 </div>
 
@@ -1197,7 +1197,7 @@
             <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
             <!-- Versión -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.27 — 09/Jul/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.28 — 09/Jul/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -5890,8 +5890,38 @@ function driveProcesar(ab, tipo) {
         try {
             var wb = XLSX.read(new Uint8Array(ab), {type:'array', dense:true});
             if (tipo === 'maestro') {
-                maestroMap.clear(); totalEsp = 0;
-                procesarFilasMaestro(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:''}), 0);
+                var csvTxtD = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+                var esStockD  = csvTxtD.indexOf(',LINEA,') >= 0 || csvTxtD.indexOf('"LINEA"') >= 0 || csvTxtD.indexOf(',OFERTA,') >= 0;
+                var esGuiaD   = csvTxtD.indexOf('DESCRIPCION') >= 0 || csvTxtD.indexOf('DESCRIPCIÓN') >= 0;
+                var resD = [];
+                if (esStockD) {
+                    resD = _convertirStockCSV(parsearCSV(csvTxtD));
+                } else if (!esGuiaD) {
+                    resD = _convertirPedidoXLSX(wb);
+                }
+                if (resD.length > 0) {
+                    maestroMap.clear(); totalEsp = 0;
+                    resD.forEach(function(r) {
+                        var cod = r.codigo.toUpperCase();
+                        maestroMap.set(cod, {exp: r.cantidad, real: 0});
+                        if (r.descripcion) descripcionMap.set(cod, r.descripcion);
+                        totalEsp += r.cantidad;
+                    });
+                    if (historial.length > 0) syncConteo();
+                    localStorage.setItem('p_total_v8', totalEsp);
+                    saveComp(); hideLoading(); beep(880, 0.1);
+                    var _badgeDr = document.getElementById('comp-archivo-badge');
+                    var _btxtDr  = document.getElementById('comp-archivo-txt');
+                    if (_badgeDr && _btxtDr) { _btxtDr.textContent = '📄 ' + (driveArchivoNombre||'Drive'); _badgeDr.style.display = 'block'; }
+                    showToast('✅ Maestro: ' + resD.length.toLocaleString() + ' productos cargados', '#111');
+                    renderComp(); focusScanner();
+                } else {
+                    maestroMap.clear(); totalEsp = 0;
+                    procesarFilasMaestro(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:''}), 0);
+                    var _badgeDr2 = document.getElementById('comp-archivo-badge');
+                    var _btxtDr2  = document.getElementById('comp-archivo-txt');
+                    if (_badgeDr2 && _btxtDr2) { _btxtDr2.textContent = '📄 ' + (driveArchivoNombre||'Drive'); _badgeDr2.style.display = 'block'; }
+                }
             } else if (tipo === 'stock') {
                 var rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:'', header:1});
                 convertirStockDesdeFilas(rows);
