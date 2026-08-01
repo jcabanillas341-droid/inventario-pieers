@@ -835,7 +835,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.29 — 09/Jul/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.30 — 09/Jul/2026</div>
     </div>
 </div>
 
@@ -1202,7 +1202,7 @@
             <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
             <!-- Versión -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.29 — 09/Jul/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.30 — 09/Jul/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4626,17 +4626,17 @@ function csModalPromoMostrar(config) {
     // Configurar botón Ver Stock
 
     // Botón VER STOCK — solo muestra el stock al presionar
-    // Un solo botón VER STOCK — muestra SOLO el stock
-    lista.innerHTML += `<button
+    // Botón VER STOCK arriba (antes de las promos)
+    lista.innerHTML = `<button
         onclick="csModalPromoCerrar();setTimeout(()=>{
             csSetModo('stock');
             const a=document.getElementById('cs-inp-articulo');
             if(a) a.value=window._mpcLastArt||'';
             csBuscar();
         },80);"
-        style="width:100%;padding:16px;background:#1565C0;border:none;border-radius:14px;color:#fff;font-family:'Bebas Neue','Outfit',sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;margin-top:8px;box-shadow:0 4px 14px rgba(21,101,192,0.35);">
+        style="width:100%;padding:16px;background:#1565C0;border:none;border-radius:14px;color:#fff;font-family:'Bebas Neue','Outfit',sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;margin-bottom:8px;box-shadow:0 4px 14px rgba(21,101,192,0.35);">
         📦 VER STOCK
-    </button>`;
+    </button>` + lista.innerHTML;
 
     // ── Indicador de cambio de precio ──
     const _cambioDiv = document.getElementById('mpc-cambio-banner');
