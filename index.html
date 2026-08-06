@@ -478,26 +478,83 @@
         }
 
         /* ── MODO CLARO ── */
+
+        /* ══ NEGRITA GLOBAL ══ */
+        body { font-weight: 700; }
+        p, span, div, label, td, th, li, a, h1, h2, h3, h4, button { font-weight: 700; }
+        input, textarea { font-weight: 600; }
+
+        /* ══ 3D GLOBAL ══ */
+        .btn-modo, .btn-comp, .btn-alm {
+            box-shadow: 0 6px 14px rgba(0,0,0,0.22), 0 2px 4px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+        }
+        .cs-price-box {
+            box-shadow: 0 6px 18px rgba(0,0,0,0.18), 0 2px 6px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.25) !important;
+        }
+        .cs-btn, .cs-btn-buscar, .cs-btn-upload, .busq-btn-ok {
+            box-shadow: 0 4px 10px rgba(0,0,0,0.18), 0 1px 3px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+        }
+        button { transition: transform 0.1s, box-shadow 0.1s; }
+        button:active { transform: translateY(1px) !important; filter: brightness(0.92); }
+        table { box-shadow: 0 4px 14px rgba(0,0,0,0.1), 0 1px 4px rgba(0,0,0,0.06) !important; border-radius: 10px !important; overflow: hidden !important; }
+        .menu-dropdown { box-shadow: 0 14px 36px rgba(0,0,0,0.22), 0 4px 10px rgba(0,0,0,0.1) !important; }
+        #cs-db-badge.ok { box-shadow: 0 3px 8px rgba(27,94,32,0.4) !important; }
+        #btn-modo-lectora, #btn-modo-manual {
+            box-shadow: 0 5px 12px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+        }
+        .cs-inp { box-shadow: inset 0 2px 4px rgba(0,0,0,0.08) !important; }
+        .alm-btn-retiro { box-shadow: 0 4px 12px rgba(211,47,47,0.35) !important; }
+        .progress-box, #panel-desc, .alm-card {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+        }
+
         /* ══ MODO OSCURO ══ */
-        body.modo-oscuro { background: #121212 !important; color: #E0E0E0 !important; }
+        body.modo-oscuro, body.modo-oscuro * { color: #E8E8E8 !important; }
+        body.modo-oscuro { background: #121212 !important; }
         body.modo-oscuro .cs-top-panel,
-        body.modo-oscuro #vista-stock { background: #1E1E1E !important; }
-        body.modo-oscuro .cs-inp { background: #2C2C2C !important; color: #E0E0E0 !important; border-color: #444 !important; }
-        body.modo-oscuro .cs-btn { background: #2C2C2C !important; color: #E0E0E0 !important; border-color: #444 !important; }
-        body.modo-oscuro #cs-db-badge.ok { background: #1B5E20 !important; }
-        body.modo-oscuro table { background: #1E1E1E !important; }
-        body.modo-oscuro th { background: #0D0D0D !important; color: #E0E0E0 !important; }
-        body.modo-oscuro td { color: #E0E0E0 !important; border-color: #333 !important; }
-        body.modo-oscuro .cs-td-total { color: #66BB6A !important; }
-        body.modo-oscuro .cs-tr-grand td { background: #2C2C2C !important; }
-        body.modo-oscuro #cs-name-search-wrap,
-        body.modo-oscuro #cs-name-search { background: #2C2C2C !important; color: #E0E0E0 !important; border-color: #444 !important; }
-        body.modo-oscuro .menu-dropdown { background: #1E1E1E !important; border-color: #333 !important; }
-        body.modo-oscuro .menu-dropdown button { color: #E0E0E0 !important; border-bottom-color: #333 !important; }
-        body.modo-oscuro #btn-modo-lectora { background: #B71C1C !important; }
-        body.modo-oscuro #btn-modo-manual { background: #0D47A1 !important; }
-        body.modo-oscuro .cs-no-data { color: #888 !important; }
-        body.modo-oscuro #cs-version-badge span { color: #555 !important; }
+        body.modo-oscuro #vista-stock,
+        body.modo-oscuro #panel-alm-comp { background: #1A1A1A !important; }
+        body.modo-oscuro .cs-inp {
+            background: #2A2A2A !important; color: #F0F0F0 !important;
+            border-color: #444 !important;
+        }
+        body.modo-oscuro .cs-btn {
+            background: #2A2A2A !important; color: #F0F0F0 !important;
+            border-color: #555 !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4) !important;
+        }
+        body.modo-oscuro #cs-db-badge.ok { background: #1B5E20 !important; color: #fff !important; }
+        body.modo-oscuro table { background: #1E1E1E !important; border-color: #333 !important; }
+        body.modo-oscuro th { background: #0A0A0A !important; color: #F0F0F0 !important; }
+        body.modo-oscuro td { color: #E0E0E0 !important; border-color: #2A2A2A !important; }
+        body.modo-oscuro .cs-td-color { color: #E0E0E0 !important; }
+        body.modo-oscuro .cs-td-total, body.modo-oscuro .cs-th-total { color: #66BB6A !important; }
+        body.modo-oscuro .cs-tr-grand td { background: #252525 !important; color: #F0F0F0 !important; }
+        body.modo-oscuro .cs-td-pos { color: #90CAF9 !important; }
+        body.modo-oscuro #cs-name-search-wrap { background: #1E1E1E !important; }
+        body.modo-oscuro #cs-name-search {
+            background: #2A2A2A !important; color: #F0F0F0 !important;
+            border-color: #444 !important;
+        }
+        body.modo-oscuro .menu-dropdown {
+            background: #1E1E1E !important; border-color: #333 !important;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.6) !important;
+        }
+        body.modo-oscuro .menu-dropdown button { color: #E8E8E8 !important; border-bottom-color: #2A2A2A !important; }
+        body.modo-oscuro .menu-section { color: #888 !important; }
+        body.modo-oscuro #btn-modo-lectora { background: #B71C1C !important; color: #fff !important; }
+        body.modo-oscuro #btn-modo-manual { background: #0D47A1 !important; color: #fff !important; }
+        body.modo-oscuro .cs-no-data { color: #666 !important; }
+        body.modo-oscuro #cs-version-badge span { color: #444 !important; }
+        body.modo-oscuro .cs-price-box { box-shadow: 0 6px 16px rgba(0,0,0,0.5) !important; }
+        body.modo-oscuro .logo-modo { color: #E0E0E0 !important; }
+        body.modo-oscuro .logo-acento { color: #EF9A9A !important; }
+        body.modo-oscuro .btn-modo { background: #1E1E1E !important; border-color: #333 !important; }
+        body.modo-oscuro .btn-modo .tit { color: #F0F0F0 !important; }
+        body.modo-oscuro .btn-modo .desc { color: #AAA !important; }
+        body.modo-oscuro .cs-field-label { color: #AAA !important; }
+        body.modo-oscuro #cs-historial-lista button { background: #2A2A2A !important; color: #E0E0E0 !important; }
+        body.modo-oscuro .stat-val { color: #EF9A9A !important; }
 
         body.modo-claro { background: #EDEDF0; }
         body.modo-claro #pantalla-modo { background: linear-gradient(160deg, #F4F4F8 0%, #E8E8EE 100%); }
@@ -856,7 +913,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.35 — 09/Jul/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.36 — 09/Jul/2026</div>
     </div>
 </div>
 
@@ -1234,7 +1291,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.35 — 09/Jul/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.36 — 09/Jul/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
