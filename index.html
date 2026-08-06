@@ -907,114 +907,16 @@
         <button class="btn-modo btn-stock-mod" onclick="seleccionarModo('stock')" style="width:100%;max-width:360px;">
             <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">📦</div>
             <span class="txt">
-                <span class="tit">CONSULTAR PRECIOS</span>
+                <span class="tit">CONSULTAR STOCK</span>
                 <span class="desc">Escanea o ingresa código. Ve stock por color/talla y precios con descuentos.</span>
             </span>
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
-        <button class="btn-modo" onclick="seleccionarModo('rapida')" style="width:100%;max-width:360px;background:linear-gradient(135deg,#1A237E 0%,#311B92 100%);">
-            <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">⚡</div>
-            <span class="txt">
-                <span class="tit">CONSULTA RÁPIDA</span>
-                <span class="desc">Stock + Precio Etiqueta + X Mayor. Rápido y sin promos.</span>
-            </span>
-            <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
-        </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.43 — 09/Jul/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.36 — 09/Jul/2026</div>
     </div>
 </div>
 
-
-<!-- ══════ MÓDULO CONSULTA RÁPIDA ══════ -->
-<div id="vista-rapida" style="display:none;flex-direction:column;height:100vh;background:#F0F4FF;">
-
-    <!-- Header -->
-    <div class="header-app" style="background:linear-gradient(135deg,#1A237E,#311B92);">
-        <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-size:20px;">⚡</span>
-            <span style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:900;color:#fff;letter-spacing:1px;">CONSULTA RÁPIDA</span>
-        </div>
-        <div style="display:flex;gap:8px;margin-left:auto;">
-            <button onclick="irInicio()" style="background:rgba(255,255,255,0.15);border:none;color:#fff;padding:6px 14px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;cursor:pointer;">← INICIO</button>
-        </div>
-    </div>
-
-    <!-- Campo de escaneo -->
-    <div style="padding:10px;background:#fff;border-bottom:2px solid #E8EAF6;">
-        <input type="text" id="cr-inp-codbar" placeholder="📷 Escanear / 13 dígitos"
-            style="width:100%;padding:12px 16px;border:2px solid #3949AB;border-radius:14px;font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;outline:none;box-sizing:border-box;"
-            oninput="crOnBarcodeInput(this.value)"
-            onkeydown="if(event.key==='Enter'&&this.value.trim().length<13)crBuscar()">
-        <div style="margin-top:8px;">
-            <input type="text" id="cr-inp-nombre" placeholder="🔍 Buscar por nombre..."
-                style="width:100%;padding:10px 14px;border:1.5px solid #C5CAE9;border-radius:12px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;outline:none;box-sizing:border-box;"
-                oninput="crBuscarNombre(this.value)">
-        </div>
-    </div>
-
-
-    <!-- Resultados -->
-    <div style="flex:1;overflow-y:auto;padding:12px;-webkit-overflow-scrolling:touch;">
-
-        <!-- Nombre artículo -->
-        <div id="cr-nombre-art" style="display:none;margin-bottom:10px;">
-            <div id="cr-desc-txt" style="font-family:'Outfit',sans-serif;font-size:17px;font-weight:900;color:#1A237E;"></div>
-            <div id="cr-cod-txt" style="font-family:'Outfit',sans-serif;font-size:11px;color:#888;margin-top:2px;"></div>
-        </div>
-
-        <!-- Tarjetas de precio -->
-        <div id="cr-precios" style="display:none;flex-direction:column;gap:10px;margin-bottom:12px;">
-            <!-- Fila 1: Etiqueta + X Mayor -->
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-                <div style="background:linear-gradient(135deg,#F9A825,#F57F17);border-radius:16px;padding:14px;text-align:center;box-shadow:0 6px 16px rgba(249,168,37,0.35),inset 0 1px 0 rgba(255,255,255,0.2);">
-                    <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:800;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:2px;">ETIQUETA</div>
-                    <div id="cr-p-etiqueta" style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:32px;color:#fff;line-height:1.1;">—</div>
-                </div>
-                <div style="background:linear-gradient(135deg,#1565C0,#0D47A1);border-radius:16px;padding:14px;text-align:center;box-shadow:0 6px 16px rgba(21,101,192,0.35),inset 0 1px 0 rgba(255,255,255,0.2);">
-                    <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:800;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:2px;">X MAYOR</div>
-                    <div id="cr-p-mayor" style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:32px;color:#fff;line-height:1.1;">—</div>
-                    <div id="cr-pct-mayor" style="font-family:'Outfit',sans-serif;font-size:10px;color:rgba(255,255,255,0.8);"></div>
-                </div>
-            </div>
-            <!-- Fila 2: Unitario + Combo -->
-            <div id="cr-fila2" style="display:none;grid-template-columns:1fr 1fr;gap:10px;">
-                <div style="background:linear-gradient(135deg,#E65100,#BF360C);border-radius:16px;padding:14px;text-align:center;box-shadow:0 6px 16px rgba(230,81,0,0.35),inset 0 1px 0 rgba(255,255,255,0.2);">
-                    <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:800;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:2px;">UNITARIO</div>
-                    <div id="cr-p-unitario" style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:32px;color:#fff;line-height:1.1;">—</div>
-                    <div id="cr-pct-unitario" style="font-family:'Outfit',sans-serif;font-size:10px;color:rgba(255,255,255,0.8);"></div>
-                </div>
-                <div style="background:linear-gradient(135deg,#00838F,#006064);border-radius:16px;padding:14px;text-align:center;box-shadow:0 6px 16px rgba(0,131,143,0.35),inset 0 1px 0 rgba(255,255,255,0.2);">
-                    <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:800;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:2px;">COMBO</div>
-                    <div id="cr-p-combo" style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:32px;color:#fff;line-height:1.1;">—</div>
-                    <div id="cr-pct-combo" style="font-family:'Outfit',sans-serif;font-size:10px;color:rgba(255,255,255,0.8);"></div>
-                </div>
-            </div>
-            <!-- Fila 3: Oferta -->
-            <div id="cr-fila3" style="display:none;">
-                <div style="background:linear-gradient(135deg,#2E7D32,#1B5E20);border-radius:16px;padding:14px;text-align:center;box-shadow:0 6px 16px rgba(46,125,50,0.35),inset 0 1px 0 rgba(255,255,255,0.2);">
-                    <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:800;color:rgba(255,255,255,0.85);text-transform:uppercase;letter-spacing:2px;">OFERTA</div>
-                    <div id="cr-p-oferta" style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:32px;color:#fff;line-height:1.1;">—</div>
-                    <div id="cr-pct-oferta" style="font-family:'Outfit',sans-serif;font-size:10px;color:rgba(255,255,255,0.8);"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tabla de stock -->
-        <div id="cr-table-outer"></div>
-
-        <!-- Sin datos -->
-        <div id="cr-no-data" style="text-align:center;padding:40px 20px;color:#9FA8DA;">
-            <div style="font-size:48px;margin-bottom:12px;">⚡</div>
-            <div style="font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;">Escanea un código o busca por nombre</div>
-        </div>
-    </div>
-
-    <!-- Versión -->
-    <div style="text-align:center;padding:4px;background:#E8EAF6;">
-        <span style="font-family:'Outfit',sans-serif;font-size:9px;color:#9FA8DA;font-weight:700;letter-spacing:1px;">PIEERS PRO · CONSULTA RÁPIDA</span>
-    </div>
-</div>
 
 <!-- ══════ APP PRINCIPAL ══════ -->
 <div id="app-principal" style="display:flex;flex-direction:column;height:100vh;">
@@ -1389,7 +1291,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.43 — 09/Jul/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.36 — 09/Jul/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -1725,18 +1627,6 @@ function hideLoading()     { document.getElementById('loading-overlay').style.di
 
 // ── SELECTOR MODO ──
 function seleccionarModo(modo) {
-    if (modo === 'rapida') {
-        document.getElementById('pantalla-modo').style.display = 'none';
-        // Ocultar app-principal para que no se vea debajo
-        const ap = document.getElementById('app-principal');
-        if (ap) ap.classList.add('hidden');
-        document.getElementById('vista-rapida').style.display = 'flex';
-        setTimeout(() => {
-            const ci = document.getElementById('cr-inp-codbar');
-            if (ci) ci.focus();
-        }, 200);
-        return;
-    }
     // Cerrar menú siempre
     const mc = document.getElementById('menuContent');
     if (mc) mc.style.display = 'none';
@@ -1819,14 +1709,6 @@ function volverSelector() {
     document.getElementById('pantalla-modo').style.display = 'flex';
     document.getElementById('app-principal').classList.add('hidden');
     modoActual = null;
-}
-
-function irInicio() {
-    const vr = document.getElementById('vista-rapida');
-    if (vr) vr.style.display = 'none';
-    const ap = document.getElementById('app-principal');
-    if (ap) ap.classList.remove('hidden');
-    document.getElementById('pantalla-modo').style.display = 'flex';
 }
 
 // ── SCANNER COMPARATIVO ──
@@ -4928,140 +4810,6 @@ function csModalPromoMostrar(config) {
         if (_secsLeft <= 0) clearInterval(_tickInterval);
     }, 1000);
     _mpcTimer = setTimeout(() => { clearInterval(_tickInterval); csModalPromoCerrar(); }, 120000);
-}
-
-// ══════════════════════════════════════════════════
-//  MÓDULO CONSULTA RÁPIDA
-// ══════════════════════════════════════════════════
-function crOnBarcodeInput(val) {
-    if (!val) return;
-    const bc = val.trim().toUpperCase();
-    if (bc.length >= 13) {
-        const art = bc.substring(1, 8);
-        crMostrarArticulo(art);
-        setTimeout(() => {
-            const inp = document.getElementById('cr-inp-codbar');
-            if (inp) { inp.value = ''; inp.focus(); }
-        }, 80);
-    }
-}
-
-function crBuscar() {
-    const inp = document.getElementById('cr-inp-codbar');
-    if (!inp) return;
-    const val = inp.value.trim().toUpperCase();
-    if (!val) return;
-    const art = val.length === 13 ? val.substring(1, 8) : val;
-    crMostrarArticulo(art);
-}
-
-function crBuscarNombre(texto) {
-    const outer = document.getElementById('cr-table-outer');
-    const noData = document.getElementById('cr-no-data');
-    const precDiv = document.getElementById('cr-precios');
-    const nomDiv  = document.getElementById('cr-nombre-art');
-    if (!outer) return;
-    if (!texto || texto.length < 2) {
-        outer.innerHTML = '';
-        if (noData) noData.style.display = 'block';
-        return;
-    }
-    if (noData) noData.style.display = 'none';
-    if (precDiv) precDiv.style.display = 'none';
-    if (nomDiv)  nomDiv.style.display  = 'none';
-    const q = texto.toLowerCase();
-    const matches = Object.keys(csStockDB || {}).filter(k =>
-        (csStockDB[k].desc || '').toLowerCase().includes(q)
-    ).slice(0, 40);
-    if (!matches.length) {
-        outer.innerHTML = '<div style="text-align:center;padding:20px;color:#9FA8DA;font-family:Outfit,sans-serif;font-weight:700;">Sin resultados</div>';
-        return;
-    }
-    outer.innerHTML = matches.map(k => {
-        const d   = csStockDB[k];
-        const tot = (d.colors || []).reduce((s,cv) => s + cv.total, 0);
-        return `<div onclick="document.getElementById('cr-inp-nombre').value='';crMostrarArticulo('${k}');"
-            style="padding:12px 14px;border-bottom:1px solid #E8EAF6;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:10px;margin-bottom:6px;box-shadow:0 2px 6px rgba(0,0,0,0.06);">
-            <div>
-                <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:800;color:#1A237E;">${d.desc||k}</div>
-                <div style="font-family:'Outfit',sans-serif;font-size:10px;color:#888;margin-top:2px;">${k}</div>
-            </div>
-            <span style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#3949AB;">${tot}</span>
-        </div>`;
-    }).join('');
-}
-
-function crMostrarArticulo(art) {
-    art = art.toUpperCase();
-    const stockD  = csStockDB && csStockDB[art];
-    const precioD = csPreciosDB && csPreciosDB[art];
-    const mayorD  = csPreciosMayorDB && csPreciosMayorDB[art];
-
-    const noData   = document.getElementById('cr-no-data');
-    const nomDiv   = document.getElementById('cr-nombre-art');
-    const descEl   = document.getElementById('cr-desc-txt');
-    const codEl    = document.getElementById('cr-cod-txt');
-    const precDiv  = document.getElementById('cr-precios');
-    const etqEl    = document.getElementById('cr-p-etiqueta');
-    const mayEl    = document.getElementById('cr-p-mayor');
-    const pctEl    = document.getElementById('cr-pct-mayor');
-    const outer    = document.getElementById('cr-table-outer');
-
-    // Ocultar no-data
-    if (noData) noData.style.display = 'none';
-
-    // Nombre
-    if (nomDiv) {
-        const desc = (stockD && stockD.desc) || art;
-        if (descEl) descEl.textContent = desc;
-        if (codEl)  codEl.textContent  = art;
-        nomDiv.style.display = 'block';
-    }
-
-    // Precios
-    const etqReal  = precioD ? (precioD.etiqueta || 0) : 0;
-    const mayor    = (mayorD && mayorD.mayor > 0) ? mayorD.mayor
-                   : (precioD && precioD.mayor  > 0) ? precioD.mayor : 0;
-    const unitario = precioD ? (precioD.menor  || 0) : 0;
-    const combo    = precioD ? (precioD.mayor  || 0) : 0;
-    const oferta   = precioD ? (precioD.oferta || 0) : 0;
-    const pct = (p, e) => (e > 0 && p > 0 && p < e) ? '-' + Math.round((e-p)/e*100) + '% dto.' : '';
-
-    if (etqEl) etqEl.textContent = etqReal  > 0 ? 'S/ ' + etqReal.toFixed(2)  : '—';
-    if (mayEl) mayEl.textContent = mayor    > 0 ? 'S/ ' + mayor.toFixed(2)    : '—';
-    if (pctEl) pctEl.textContent = pct(mayor, etqReal);
-
-    // Unitario y Combo
-    const fila2 = document.getElementById('cr-fila2');
-    const unitEl = document.getElementById('cr-p-unitario');
-    const pctUEl = document.getElementById('cr-pct-unitario');
-    const combEl = document.getElementById('cr-p-combo');
-    const pctCEl = document.getElementById('cr-pct-combo');
-    if (unitEl) unitEl.textContent = unitario > 0 ? 'S/ ' + unitario.toFixed(2) : '—';
-    if (pctUEl) pctUEl.textContent = pct(unitario, etqReal);
-    if (combEl) combEl.textContent = combo    > 0 ? 'S/ ' + combo.toFixed(2)    : '—';
-    if (pctCEl) pctCEl.textContent = pct(combo, etqReal);
-    if (fila2) fila2.style.display = (unitario > 0 || combo > 0) ? 'grid' : 'none';
-
-    // Oferta
-    const fila3  = document.getElementById('cr-fila3');
-    const ofEl   = document.getElementById('cr-p-oferta');
-    const pctOEl = document.getElementById('cr-pct-oferta');
-    if (ofEl)   ofEl.textContent  = oferta > 0 ? 'S/ ' + oferta.toFixed(2) : '—';
-    if (pctOEl) pctOEl.textContent = pct(oferta, etqReal);
-    if (fila3)  fila3.style.display = oferta > 0 ? 'block' : 'none';
-
-    if (precDiv) precDiv.style.display = (etqReal > 0 || mayor > 0 || unitario > 0) ? 'flex' : 'none';
-
-    // Tabla de stock con scroll horizontal
-    if (outer) {
-        outer.style.cssText = 'overflow-x:auto;overflow-y:auto;-webkit-overflow-scrolling:touch;border-radius:10px;max-height:350px;';
-        if (stockD) {
-            csRenderTable(stockD, outer, art);
-        } else {
-            outer.innerHTML = '<div style="text-align:center;padding:20px;color:#9FA8DA;font-family:Outfit,sans-serif;font-weight:700;">Sin stock en base cargada</div>';
-        }
-    }
 }
 
 function csExportarExcel() {
