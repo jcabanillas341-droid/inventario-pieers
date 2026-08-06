@@ -907,7 +907,7 @@
         <button class="btn-modo btn-stock-mod" onclick="seleccionarModo('stock')" style="width:100%;max-width:360px;">
             <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">📦</div>
             <span class="txt">
-                <span class="tit">CONSULTAR STOCK</span>
+                <span class="tit">CONSULTAR PRECIOS</span>
                 <span class="desc">Escanea o ingresa código. Ve stock por color/talla y precios con descuentos.</span>
             </span>
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
@@ -921,7 +921,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.37 — 09/Jul/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.38 — 09/Jul/2026</div>
     </div>
 </div>
 
@@ -1367,7 +1367,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.37 — 09/Jul/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.38 — 09/Jul/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -1705,6 +1705,9 @@ function hideLoading()     { document.getElementById('loading-overlay').style.di
 function seleccionarModo(modo) {
     if (modo === 'rapida') {
         document.getElementById('pantalla-modo').style.display = 'none';
+        // Ocultar app-principal para que no se vea debajo
+        const ap = document.getElementById('app-principal');
+        if (ap) ap.classList.add('hidden');
         document.getElementById('vista-rapida').style.display = 'flex';
         setTimeout(() => {
             const ci = document.getElementById('cr-inp-codbar');
@@ -1797,10 +1800,10 @@ function volverSelector() {
 }
 
 function irInicio() {
-    // Ocultar módulo rápida
     const vr = document.getElementById('vista-rapida');
     if (vr) vr.style.display = 'none';
-    // Mostrar pantalla de inicio
+    const ap = document.getElementById('app-principal');
+    if (ap) ap.classList.remove('hidden');
     document.getElementById('pantalla-modo').style.display = 'flex';
 }
 
