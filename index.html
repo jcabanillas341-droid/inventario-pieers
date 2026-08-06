@@ -835,7 +835,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.33 — 09/Jul/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.31 — 09/Jul/2026</div>
     </div>
 </div>
 
@@ -1209,7 +1209,7 @@
             <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
             <!-- Versión -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.33 — 09/Jul/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.31 — 09/Jul/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4983,8 +4983,6 @@ function csRenderPrecios(modelCode) {
     // Limpiar alerta si había
     const alertaOK=document.getElementById('cs-sin-precio-alert');
     if(alertaOK) alertaOK.style.display='none';
-    // No mostrar precios si estamos en modo SOLO STOCK
-    if (csModoActual === 'stock') { panel.style.display='none'; return; }
     panel.style.display='block';
     // Limpiar alerta y promos del artículo anterior antes de renderizar el nuevo
     const alertaClear=document.getElementById('cs-sin-precio-alert');
@@ -5638,10 +5636,8 @@ function csBuscar() {
                 '<span style="font-size:11px;color:#111111;margin-top:6px;display:block;">' +
                 'Puede ser un artículo de BAJAR OFERTA.<br>' +
                 'Recarga el stock desde Drive para incluirlo.</span></div>';
-            if (csModoActual !== 'stock') {
-                csRenderPrecios(codBusq);
-                csRenderPreciosMayor(codBusq);
-            }
+            csRenderPrecios(codBusq);
+            csRenderPreciosMayor(codBusq);
             csAplicarModo();
         } else {
             if (descEl) descEl.value = 'NO ENCONTRADO';
@@ -5676,10 +5672,8 @@ function csBuscar() {
     // Buscador por nombre: mostrar solo cuando el usuario hace clic en Buscar
     const nameWrap = document.getElementById('cs-name-search-wrap');
     if (nameWrap) nameWrap.style.display = 'block';
-    if (csModoActual !== 'stock') {
-        csRenderPrecios(key);
-        csRenderPreciosMayor(key);
-    }
+    csRenderPrecios(key);
+    csRenderPreciosMayor(key);
     // Respetar el modo seleccionado
     csAplicarModo();
 }
