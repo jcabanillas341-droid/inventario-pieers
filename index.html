@@ -921,7 +921,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.40 — 09/Jul/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.41 — 09/Jul/2026</div>
     </div>
 </div>
 
@@ -1367,7 +1367,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.40 — 09/Jul/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.41 — 09/Jul/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4958,7 +4958,7 @@ function crBuscarNombre(texto) {
     outer.innerHTML = matches.map(k => {
         const d   = csStockDB[k];
         const tot = (d.colors || []).reduce((s,cv) => s + cv.total, 0);
-        return `<div onclick="crMostrarArticulo('${k}');document.getElementById('cr-inp-nombre').value='';crBuscarNombre('');"
+        return `<div onclick="document.getElementById('cr-inp-nombre').value='';crMostrarArticulo('${k}');"
             style="padding:12px 14px;border-bottom:1px solid #E8EAF6;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:#fff;border-radius:10px;margin-bottom:6px;box-shadow:0 2px 6px rgba(0,0,0,0.06);">
             <div>
                 <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:800;color:#1A237E;">${d.desc||k}</div>
@@ -4971,50 +4971,53 @@ function crBuscarNombre(texto) {
 
 function crMostrarArticulo(art) {
     art = art.toUpperCase();
-    const stockD = csStockDB && csStockDB[art];
+    const stockD  = csStockDB && csStockDB[art];
     const precioD = csPreciosDB && csPreciosDB[art];
     const mayorD  = csPreciosMayorDB && csPreciosMayorDB[art];
 
-    // Limpiar no-data
-    const noData = document.getElementById('cr-no-data');
+    const noData   = document.getElementById('cr-no-data');
+    const nomDiv   = document.getElementById('cr-nombre-art');
+    const descEl   = document.getElementById('cr-desc-txt');
+    const codEl    = document.getElementById('cr-cod-txt');
+    const precDiv  = document.getElementById('cr-precios');
+    const etqEl    = document.getElementById('cr-p-etiqueta');
+    const mayEl    = document.getElementById('cr-p-mayor');
+    const pctEl    = document.getElementById('cr-pct-mayor');
+    const outer    = document.getElementById('cr-table-outer');
+
+    // Ocultar no-data
     if (noData) noData.style.display = 'none';
 
-    // Nombre artículo
-    const nomDiv = document.getElementById('cr-nombre-art');
-    const descEl = document.getElementById('cr-desc-txt');
-    const codEl  = document.getElementById('cr-cod-txt');
-    if (nomDiv && stockD) {
-        descEl.textContent = stockD.desc || art;
-        codEl.textContent  = art;
+    // Nombre
+    if (nomDiv) {
+        const desc = (stockD && stockD.desc) || art;
+        if (descEl) descEl.textContent = desc;
+        if (codEl)  codEl.textContent  = art;
         nomDiv.style.display = 'block';
     }
 
     // Precios
-    const preciosDiv = document.getElementById('cr-precios');
-    const etqEl  = document.getElementById('cr-p-etiqueta');
-    const mayEl  = document.getElementById('cr-p-mayor');
-    const pctEl  = document.getElementById('cr-pct-mayor');
+    const etqReal = precioD ? (precioD.etiqueta || 0) : 0;
+    const mayor   = (mayorD && mayorD.mayor > 0) ? mayorD.mayor
+                  : (precioD && precioD.mayor  > 0) ? precioD.mayor : 0;
 
-    if (precioD || mayorD) {
-        const etiq  = (mayorD && mayorD.mayor > 0) ? mayorD.mayor : (precioD ? precioD.etiqueta : 0);
-        const mayor = (mayorD && mayorD.mayor > 0) ? mayorD.mayor : (precioD ? precioD.mayor : 0);
-        const etqReal = precioD ? precioD.etiqueta : etiq;
+    if (etqEl) etqEl.textContent = etqReal > 0 ? 'S/ ' + etqReal.toFixed(2) : '—';
+    if (mayEl) mayEl.textContent = mayor   > 0 ? 'S/ ' + mayor.toFixed(2)   : '—';
+    if (pctEl) pctEl.textContent = (etqReal > 0 && mayor > 0 && mayor < etqReal)
+        ? '-' + Math.round((etqReal - mayor) / etqReal * 100) + '% dto.' : '';
+    if (precDiv) precDiv.style.display = (etqReal > 0 || mayor > 0) ? 'grid' : 'none';
 
-        if (etqEl) etqEl.textContent = etqReal > 0 ? 'S/ ' + etqReal.toFixed(2) : '—';
-        if (mayEl) mayEl.textContent = mayor > 0 ? 'S/ ' + mayor.toFixed(2) : '—';
-        if (pctEl) pctEl.textContent = (etqReal > 0 && mayor > 0 && mayor < etqReal)
-            ? '-' + Math.round((etqReal - mayor) / etqReal * 100) + '% dto.' : '';
-        if (preciosDiv) preciosDiv.style.display = 'grid';
-    } else {
-        if (preciosDiv) preciosDiv.style.display = 'none';
-    }
-
-    // Tabla de stock
-    const outer = document.getElementById('cr-table-outer');
-    if (outer && stockD) {
-        csRenderTable(stockD, outer, art);
-    } else if (outer) {
-        outer.innerHTML = '<div style="text-align:center;padding:20px;color:#9FA8DA;font-family:Outfit,sans-serif;font-weight:700;">Sin stock en base cargada</div>';
+    // Tabla de stock con scroll horizontal
+    if (outer) {
+        outer.innerHTML = '';
+        if (stockD) {
+            const wrapper = document.createElement('div');
+            wrapper.style.cssText = 'overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:10px;';
+            outer.appendChild(wrapper);
+            csRenderTable(stockD, wrapper, art);
+        } else {
+            outer.innerHTML = '<div style="text-align:center;padding:20px;color:#9FA8DA;font-family:Outfit,sans-serif;font-weight:700;">Sin stock en base cargada</div>';
+        }
     }
 }
 
