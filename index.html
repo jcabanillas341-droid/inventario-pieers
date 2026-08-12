@@ -917,7 +917,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.40 — 12/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.41 — 12/Ago/2026</div>
     </div>
 </div>
 
@@ -1295,7 +1295,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.40 — 12/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.41 — 12/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4170,15 +4170,14 @@ function csLoadPreciosLocal() {
 
 // ── PARSER EXCEL DE PRECIOS (Memorandum WAMA) ──
 function csParsePreciosXLSX(wb, nombreLibro) {
-    // Cada Memorandum cargado REEMPLAZA por completo al anterior (no se acumula
-    // entre libros distintos). Esto evita que un precio viejo/obsoleto de un
-    // Memorandum de un mes anterior "gane" por ser más barato que el precio
-    // vigente del mes actual, lo cual generaba alertas falsas de "CAMBIO DE PRECIO".
+    // Acumula sobre los libros ya cargados — cada código nuevo se compara entre
+    // TODOS los libros vigentes y gana el precio MÁS ECONÓMICO; el libro de
+    // origen queda registrado para poder mostrar en qué base se encontró.
+    // Los códigos que no aparecen en un libro nuevo simplemente quedan como estaban.
     const LOCAL = 'CAJAMARCA';
     const libroId = nombreLibro || 'Memorandum';
     let nuevos = 0, actualizados = 0;
-    // Snapshot de precios ANTES de cargar este libro (para detectar cambios reales
-    // frente al Memorandum anterior, aunque ese Memorandum ya se va a descartar)
+    // Snapshot de precios ANTES de cargar este libro (para detectar cambios)
     const preciosAntes = {};
     Object.keys(csPreciosDB).forEach(k => {
         const e = csPreciosDB[k] || {};
@@ -4189,11 +4188,6 @@ function csParsePreciosXLSX(wb, nombreLibro) {
             etiqueta: typeof e.etiqueta === 'number' ? e.etiqueta : 0
         };
     });
-    // Reemplazo total: se descarta todo lo cargado anteriormente (de cualquier
-    // libro previo) y este Memorandum pasa a ser la única fuente de verdad.
-    csPreciosDB = {};
-    csLibrosCargados = [];
-    csPromoColorDB = {};
 
     const esCodigo = v => { const s=String(v||'').trim(); return s.length===7&&/^[A-Z0-9]+$/i.test(s)&&/\d/.test(s); }; // código WAMA siempre tiene al menos un dígito
 
