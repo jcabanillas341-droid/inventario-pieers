@@ -917,7 +917,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.48 — 12/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.49 — 12/Ago/2026</div>
     </div>
 </div>
 
@@ -1295,7 +1295,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.48 — 12/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.49 — 12/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4769,14 +4769,18 @@ function csModalPromoMostrar(config) {
     const config_art = config.cod || '';
     const itemsBase = config.items || [];
     const _preciosReales = itemsBase.filter(it => it.tipo !== 'color' && it.tipo !== 'sinprecio' && it.precio > 0);
+    // El COMBO (mayor) es condicional a llevar 2 unidades — no es un precio
+    // por unidad, así que NO compite por "más económico" contra Unitario/Oferta.
+    // Esa pelea es solo entre UNITARIO y OFERTA (precios de 1 sola prenda).
+    const _candidatosGanador = _preciosReales.filter(it => it.tipo !== 'combo');
 
-    // Caso A: el mismo campo (menor/mayor/oferta) tiene un valor distinto al
+    // Caso A: el mismo campo (menor/oferta) tiene un valor distinto al
     // del libro anterior (comparación exacta vía cambioInfo).
-    const _cambiados = _preciosReales.filter(it => it.cambio);
-    // Caso B: no hay un campo exactamente comparable, pero los precios que se
-    // están mostrando vienen de MÁS DE UN libro distinto (p.ej. Unitario y
-    // Combo de Julio, y una Oferta nueva de Agosto) — también es variación real.
-    const _librosDistintos = new Set(_preciosReales.map(it => it.libro || '').filter(l => l));
+    const _cambiados = _candidatosGanador.filter(it => it.cambio);
+    // Caso B: no hay un campo exactamente comparable, pero los precios
+    // unitario/oferta que se están mostrando vienen de MÁS DE UN libro
+    // distinto (p.ej. Unitario de Julio y una Oferta nueva de Agosto).
+    const _librosDistintos = new Set(_candidatosGanador.map(it => it.libro || '').filter(l => l));
     const _hayVariacionLibros = _librosDistintos.size > 1;
 
     const _huboCambioReal = _cambiados.length > 0 || _hayVariacionLibros;
@@ -4784,15 +4788,17 @@ function csModalPromoMostrar(config) {
     let itemsAMostrar = itemsBase;
     if (_cambiados.length > 0) {
         // Cambio exacto detectado: se mantienen todos los precios visibles,
-        // solo se resalta el más económico de los que cambiaron.
+        // solo se resalta el más económico entre Unitario/Oferta que cambiaron.
         _itemDestacado = _cambiados.reduce((a, b) => a.precio <= b.precio ? a : b);
     } else if (_hayVariacionLibros) {
         // Variación entre libros sin campo exacto comparable: mostrar SOLO
-        // el precio más económico, ocultando el resto.
-        _itemDestacado = _preciosReales.reduce((a, b) => a.precio <= b.precio ? a : b);
-        itemsAMostrar = itemsBase.filter(it => it.tipo === 'color' || it.tipo === 'sinprecio' || it === _itemDestacado);
+        // el precio unitario/oferta más económico — el Combo se mantiene
+        // siempre visible aparte, porque no es comparable 1 a 1.
+        _itemDestacado = _candidatosGanador.reduce((a, b) => a.precio <= b.precio ? a : b);
+        itemsAMostrar = itemsBase.filter(it => it.tipo === 'color' || it.tipo === 'sinprecio' || it.tipo === 'combo' || it === _itemDestacado);
     }
     if (_huboCambioReal) csAlertaCambioPrecio();
+
 
     itemsAMostrar.forEach(item => {
         const esMasBarato = _huboCambioReal && item === _itemDestacado;
@@ -4853,29 +4859,33 @@ function csModalPromoMostrar(config) {
     const _cambioDiv = document.getElementById('mpc-cambio-banner');
     const _pC = csPreciosDB[config.cod || ''] || {};
     if (_cambioDiv) {
-        if (_pC.cambio && _pC.cambioInfo) {
-            const ci = _pC.cambioInfo;
-            const antes = ci.antes || {};
-            let difStr = '';
-            if (antes.menor > 0 && _pC.menor > 0 && Math.abs(_pC.menor - antes.menor) > 0.01)
-                difStr = ` — S/${antes.menor.toFixed(2)} → S/${_pC.menor.toFixed(2)}`;
-            else if (antes.mayor > 0 && _pC.mayor > 0 && Math.abs(_pC.mayor - antes.mayor) > 0.01)
-                difStr = ` — S/${antes.mayor.toFixed(2)} → S/${_pC.mayor.toFixed(2)}`;
+        const ci = (_pC.cambio && _pC.cambioInfo) ? _pC.cambioInfo : null;
+        const antes = ci ? (ci.antes || {}) : {};
+        // El banner de arriba compara solo UNITARIO/OFERTA (precio por 1 prenda).
+        // El Combo (mayor) es condicional a llevar 2, así que su variación no
+        // debe mostrarse aquí como si fuera "el" cambio de precio del producto.
+        let difStr = '';
+        if (ci && antes.menor > 0 && _pC.menor > 0 && Math.abs(_pC.menor - antes.menor) > 0.01) {
+            difStr = ` — S/${antes.menor.toFixed(2)} → S/${_pC.menor.toFixed(2)}`;
+        } else if (ci && antes.oferta > 0 && _pC.oferta > 0 && Math.abs(_pC.oferta - antes.oferta) > 0.01) {
+            difStr = ` — S/${antes.oferta.toFixed(2)} → S/${_pC.oferta.toFixed(2)}`;
+        }
+        if (difStr) {
             const libroStr = ci.libro ? ` (📖 ${ci.libro})` : '';
             _cambioDiv.innerHTML = `🔔 CAMBIO DE PRECIO${difStr}${libroStr}`;
             _cambioDiv.style.background = '#E65100';
             _cambioDiv.style.display = 'block';
         } else if (_hayVariacionLibros && _itemDestacado) {
             // Variación entre libros sin campo exacto comparable (ej. una Oferta
-            // nueva de Agosto reemplazando a los precios de Julio): mostrar el
-            // precio que ANTES era el más barato → el nuevo más barato.
-            const _otros = _preciosReales.filter(it => it !== _itemDestacado);
+            // nueva de Agosto reemplazando al Unitario de Julio): mostrar el
+            // precio que ANTES era el más barato (solo Unitario/Oferta) → el nuevo.
+            const _otros = _candidatosGanador.filter(it => it !== _itemDestacado);
             const _antesPrecio = _otros.length ? Math.min(...(_otros.map(o => o.precio))) : 0;
-            const difStr = _antesPrecio > 0
+            const difStr2 = _antesPrecio > 0
                 ? ` — S/${_antesPrecio.toFixed(2)} → S/${_itemDestacado.precio.toFixed(2)}`
                 : '';
             const libroStr = _itemDestacado.libro ? ` (📖 ${_itemDestacado.libro})` : '';
-            _cambioDiv.innerHTML = `🔔 CAMBIO DE PRECIO${difStr}${libroStr}`;
+            _cambioDiv.innerHTML = `🔔 CAMBIO DE PRECIO${difStr2}${libroStr}`;
             _cambioDiv.style.background = '#E65100';
             _cambioDiv.style.display = 'block';
         } else {
