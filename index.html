@@ -917,7 +917,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.46 — 12/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.47 — 12/Ago/2026</div>
     </div>
 </div>
 
@@ -1295,7 +1295,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.46 — 12/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.47 — 12/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4768,18 +4768,33 @@ function csModalPromoMostrar(config) {
     lista.innerHTML = '';
     const config_art = config.cod || '';
     const itemsBase = config.items || [];
-    // El tamaño diferenciado (grande/chico) SOLO se aplica cuando de verdad
-    // hubo un cambio de precio (item.cambio, calculado comparando contra el
-    // libro anterior). Si no hay cambio, todo se ve igual que siempre —
-    // por ejemplo Unitario vs Combo del mismo Memorandum NO es un "cambio".
-    const _cambiados = itemsBase.filter(it => it.tipo !== 'color' && it.tipo !== 'sinprecio' && it.cambio && it.precio > 0);
-    const _huboCambioReal = _cambiados.length > 0;
+    const _preciosReales = itemsBase.filter(it => it.tipo !== 'color' && it.tipo !== 'sinprecio' && it.precio > 0);
+
+    // Caso A: el mismo campo (menor/mayor/oferta) tiene un valor distinto al
+    // del libro anterior (comparación exacta vía cambioInfo).
+    const _cambiados = _preciosReales.filter(it => it.cambio);
+    // Caso B: no hay un campo exactamente comparable, pero los precios que se
+    // están mostrando vienen de MÁS DE UN libro distinto (p.ej. Unitario y
+    // Combo de Julio, y una Oferta nueva de Agosto) — también es variación real.
+    const _librosDistintos = new Set(_preciosReales.map(it => it.libro || '').filter(l => l));
+    const _hayVariacionLibros = _librosDistintos.size > 1;
+
+    const _huboCambioReal = _cambiados.length > 0 || _hayVariacionLibros;
     let _itemDestacado = null;
-    if (_huboCambioReal) {
+    let itemsAMostrar = itemsBase;
+    if (_cambiados.length > 0) {
+        // Cambio exacto detectado: se mantienen todos los precios visibles,
+        // solo se resalta el más económico de los que cambiaron.
         _itemDestacado = _cambiados.reduce((a, b) => a.precio <= b.precio ? a : b);
-        csAlertaCambioPrecio();
+    } else if (_hayVariacionLibros) {
+        // Variación entre libros sin campo exacto comparable: mostrar SOLO
+        // el precio más económico, ocultando el resto.
+        _itemDestacado = _preciosReales.reduce((a, b) => a.precio <= b.precio ? a : b);
+        itemsAMostrar = itemsBase.filter(it => it.tipo === 'color' || it.tipo === 'sinprecio' || it === _itemDestacado);
     }
-    itemsBase.forEach(item => {
+    if (_huboCambioReal) csAlertaCambioPrecio();
+
+    itemsAMostrar.forEach(item => {
         const esMasBarato = _huboCambioReal && item === _itemDestacado;
         const bgMap = {color:'linear-gradient(135deg,#E53935,#B71C1C)', promo:'#FFF3E0', combo:'#E3F2FD', oferta:'#E8F5E9', etiqueta:'#FFFDE7', sinprecio:'#F5F5F5'};
         const clrMap= {color:'#fff', promo:'#E65100', combo:'#0288D1', oferta:'#2E7D32', etiqueta:'#F57F17', sinprecio:'#777'};
