@@ -917,7 +917,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.43 — 12/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.44 — 12/Ago/2026</div>
     </div>
 </div>
 
@@ -1295,7 +1295,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.43 — 12/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.44 — 12/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4767,7 +4767,21 @@ function csModalPromoMostrar(config) {
 
     lista.innerHTML = '';
     const config_art = config.cod || '';
-    (config.items || []).forEach(item => {
+    // Ordenar de más barato a más caro — el más económico siempre va primero y más grande;
+    // el resto queda debajo, más chico.
+    const itemsOrdenados = (config.items || []).slice().sort((a, b) => {
+        if (a.tipo === 'color' || b.tipo === 'color') return 0; // no reordenar promo color
+        return (a.precio||0) - (b.precio||0);
+    });
+    const _preciosVisibles = itemsOrdenados.filter(it => it.tipo !== 'color' && it.tipo !== 'sinprecio' && it.precio > 0);
+    const _hayVariacion = _preciosVisibles.length > 1 &&
+        new Set(_preciosVisibles.map(it => it.precio.toFixed(2))).size > 1;
+    // Alerta sonora + vibración: hay más de un libro con precio distinto para
+    // este código, así que vale la pena avisar (no depende de comparar contra
+    // un valor exacto anterior — con que existan precios diferentes alcanza).
+    if (_hayVariacion) csAlertaCambioPrecio();
+    itemsOrdenados.forEach((item, idx) => {
+        const esMasBarato = item.tipo !== 'color' && item.tipo !== 'sinprecio' && idx === 0 && _preciosVisibles.length > 1;
         const bgMap = {color:'linear-gradient(135deg,#E53935,#B71C1C)', promo:'#FFF3E0', combo:'#E3F2FD', oferta:'#E8F5E9', etiqueta:'#FFFDE7', sinprecio:'#F5F5F5'};
         const clrMap= {color:'#fff', promo:'#E65100', combo:'#0288D1', oferta:'#2E7D32', etiqueta:'#F57F17', sinprecio:'#777'};
         const isColor = item.tipo === 'color';
@@ -4783,16 +4797,17 @@ function csModalPromoMostrar(config) {
                 <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:20px;color:#555;text-transform:uppercase;letter-spacing:2px;text-align:center;">${item.nombre}</div>
                 <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:15px;color:#999;text-align:center;margin-top:6px;letter-spacing:1px;">${item.dto||''}</div>
                </div>`
-            : `<div style="background:${bgMap[item.tipo]||'#F5F5F5'};border-radius:16px;padding:14px 16px;
-                    box-shadow:0 6px 16px rgba(0,0,0,0.12),0 2px 4px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.8);
-                    border-left:5px solid ${clrMap[item.tipo]||'#999'};transform:translateZ(0);
-                    ${item.destacar ? 'outline:3px solid #E65100;box-shadow:0 0 0 4px rgba(230,81,0,0.18),0 6px 16px rgba(0,0,0,0.12);' : ''}">
-                <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:16px;color:#555;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">${item.nombre}${item.destacar ? '<span style="background:#E65100;color:#fff;font-size:11px;padding:2px 8px;border-radius:8px;letter-spacing:0.5px;">🔔 CAMBIÓ · MÁS ECONÓMICO</span>' : (item.cambio ? '<span style="background:#E65100;color:#fff;font-size:11px;padding:2px 8px;border-radius:8px;letter-spacing:0.5px;">🔔 CAMBIÓ</span>' : '')}</div>
+            : `<div style="background:${bgMap[item.tipo]||'#F5F5F5'};border-radius:${esMasBarato?'18px':'12px'};padding:${esMasBarato?'16px 18px':'8px 14px'};
+                    box-shadow:${esMasBarato?'0 8px 20px rgba(0,0,0,0.15),0 2px 4px rgba(0,0,0,0.08)':'0 2px 6px rgba(0,0,0,0.06)'};
+                    border-left:${esMasBarato?'6px':'4px'} solid ${clrMap[item.tipo]||'#999'};transform:translateZ(0);
+                    opacity:${esMasBarato?'1':'0.72'};
+                    ${esMasBarato ? 'outline:3px solid #E65100;box-shadow:0 0 0 4px rgba(230,81,0,0.18),0 8px 20px rgba(0,0,0,0.15);' : ''}">
+                <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:${esMasBarato?'16px':'12px'};color:#555;text-transform:uppercase;letter-spacing:2px;margin-bottom:${esMasBarato?'6px':'3px'};display:flex;align-items:center;gap:6px;">${item.nombre}${esMasBarato ? '<span style="background:#E65100;color:#fff;font-size:11px;padding:2px 8px;border-radius:8px;letter-spacing:0.5px;">⭐ MÁS ECONÓMICO</span>' : ''}</div>
                 <div style="display:flex;justify-content:space-between;align-items:flex-end;">
-                    <span style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:${item.destacar?'72px':'52px'};color:#E53935;line-height:1;text-shadow:2px 2px 4px rgba(229,57,53,0.2);">S/ ${Number(item.precio).toFixed(2)}</span>
-                    <span style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:32px;color:#FF6D00;font-weight:900;background:rgba(255,109,0,0.1);padding:2px 8px;border-radius:8px;border:2px solid rgba(255,109,0,0.3);">${item.dto||''}</span>
+                    <span style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:${esMasBarato?'72px':'30px'};color:#E53935;line-height:1;text-shadow:2px 2px 4px rgba(229,57,53,0.2);">S/ ${Number(item.precio).toFixed(2)}</span>
+                    <span style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:${esMasBarato?'32px':'18px'};color:#FF6D00;font-weight:900;background:rgba(255,109,0,0.1);padding:2px 8px;border-radius:8px;border:2px solid rgba(255,109,0,0.3);">${item.dto||''}</span>
                 </div>
-                ${item.libro ? `<div style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;color:#666;margin-top:6px;">📖 ${item.libro}</div>` : ''}
+                ${item.libro ? `<div style="font-family:'Outfit',sans-serif;font-size:${esMasBarato?'11px':'9px'};font-weight:700;color:#666;margin-top:${esMasBarato?'6px':'3px'};">📖 ${item.libro}</div>` : ''}
                </div>`;
     });
 
@@ -4837,7 +4852,6 @@ function csModalPromoMostrar(config) {
             _cambioDiv.innerHTML = `🔔 CAMBIO DE PRECIO${difStr}${libroStr}`;
             _cambioDiv.style.background = '#E65100';
             _cambioDiv.style.display = 'block';
-            csAlertaCambioPrecio();
         } else {
             // Sin cambio → no mostrar nada
             _cambioDiv.style.display = 'none';
