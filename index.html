@@ -917,7 +917,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.41 — 12/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.42 — 12/Ago/2026</div>
     </div>
 </div>
 
@@ -1295,7 +1295,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.41 — 12/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.42 — 12/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4769,6 +4769,7 @@ function csModalPromoMostrar(config) {
                     <span style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:52px;color:#E53935;line-height:1;text-shadow:2px 2px 4px rgba(229,57,53,0.2);">S/ ${Number(item.precio).toFixed(2)}</span>
                     <span style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:32px;color:#FF6D00;font-weight:900;background:rgba(255,109,0,0.1);padding:2px 8px;border-radius:8px;border:2px solid rgba(255,109,0,0.3);">${item.dto||''}</span>
                 </div>
+                ${item.libro ? `<div style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;color:#666;margin-top:6px;">📖 ${item.libro}</div>` : ''}
                </div>`;
     });
 
@@ -4802,7 +4803,8 @@ function csModalPromoMostrar(config) {
                 difStr = ` — S/${antes.menor.toFixed(2)} → S/${_pC.menor.toFixed(2)}`;
             else if (antes.mayor > 0 && _pC.mayor > 0 && Math.abs(_pC.mayor - antes.mayor) > 0.01)
                 difStr = ` — S/${antes.mayor.toFixed(2)} → S/${_pC.mayor.toFixed(2)}`;
-            _cambioDiv.innerHTML = `🔔 CAMBIO DE PRECIO${difStr}`;
+            const libroStr = ci.libro ? ` (📖 ${ci.libro})` : '';
+            _cambioDiv.innerHTML = `🔔 CAMBIO DE PRECIO${difStr}${libroStr}`;
             _cambioDiv.style.background = '#E65100';
             _cambioDiv.style.display = 'block';
         } else {
@@ -4902,17 +4904,17 @@ function csCheckPromoColor(barcode) {
     if (p.menor > 0) {
         const pr = pNom('promo');
         const dto = etiq>0&&p.menor<etiq ? '-'+Math.round((etiq-p.menor)/etiq*100)+'% dto.' : '';
-        items.push({ tipo:'promo', nombre: pr ? pr.nombre : 'PROMO UNITARIO', precio: p.menor, dto });
+        items.push({ tipo:'promo', nombre: pr ? pr.nombre : 'PROMO UNITARIO', precio: p.menor, dto, libro: (pr ? pr.libro : p.menorLibro) || '' });
     }
     if (p.mayor > 0) {
         const pr = pNom('combo') || pNom('ejecutivo');
         const dto = etiq>0&&p.mayor<etiq ? '-'+Math.round((etiq-p.mayor)/etiq*100)+'% dto.' : '';
-        items.push({ tipo:'combo', nombre: pr ? pr.nombre : 'COMBO', precio: p.mayor, dto });
+        items.push({ tipo:'combo', nombre: pr ? pr.nombre : 'COMBO', precio: p.mayor, dto, libro: (pr ? pr.libro : p.mayorLibro) || '' });
     }
     if (p.oferta > 0) {
         const pr = pNom('oferta');
         const dto = etiq>0&&p.oferta<etiq ? '-'+Math.round((etiq-p.oferta)/etiq*100)+'% dto.' : '';
-        items.push({ tipo:'oferta', nombre: pr ? pr.nombre : 'OFERTA', precio: p.oferta, dto });
+        items.push({ tipo:'oferta', nombre: pr ? pr.nombre : 'OFERTA', precio: p.oferta, dto, libro: (pr ? pr.libro : p.ofertaLibro) || '' });
     }
 
     if (items.length > 0) {
@@ -4936,7 +4938,7 @@ function csCheckPromoColor(barcode) {
             tipoLabel: 'PRECIO DE ETIQUETA',
             titulo: '',
             desc, cod: artCod,
-            items: [{ tipo:'etiqueta', nombre: 'PRECIO DE ETIQUETA', precio: etiq, dto: '' }]
+            items: [{ tipo:'etiqueta', nombre: 'PRECIO DE ETIQUETA', precio: etiq, dto: '', libro: (p.libros && p.libros.length) ? p.libros.join(', ') : '' }]
         });
         return;
     }
