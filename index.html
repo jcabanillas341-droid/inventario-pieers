@@ -917,7 +917,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.38 — 09/Jul/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.40 — 12/Ago/2026</div>
     </div>
 </div>
 
@@ -1295,7 +1295,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.38 — 09/Jul/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.40 — 12/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4116,7 +4116,7 @@ function csSavePreciosLocal() {
             libros:        csLibrosCargados,
             promoColor:    csPromoColorDB,
             date:          new Date().toLocaleString('es-PE'),
-            schemaVersion: 5
+            schemaVersion: 6
         }));
     } catch(e) { /* quota: sigue en memoria */ }
 }
@@ -4137,8 +4137,10 @@ function csLoadPreciosLocal() {
         // En versiones anteriores, combo pisaba entry.menor con precio incorrecto.
         // La única forma segura es descartar el caché y pedir recargar el Memorandum.
         const SCHEMA_VERSION = payload.schemaVersion || 1;
-        if (SCHEMA_VERSION < 5) {
-            // Caché de versión anterior — descartarlo completamente
+        if (SCHEMA_VERSION < 6) {
+            // Caché de versión anterior — puede tener precios viejos acumulados
+            // de otros libros (el bug de "el más barato gana entre libros").
+            // Descartarlo completamente para partir de cero con el nuevo criterio.
             try { localStorage.removeItem(CS_PRECIOS_KEY); } catch(e2) {}
             return false; // Forzar que el usuario recargue el Memorandum
         }
@@ -4168,11 +4170,15 @@ function csLoadPreciosLocal() {
 
 // ── PARSER EXCEL DE PRECIOS (Memorandum WAMA) ──
 function csParsePreciosXLSX(wb, nombreLibro) {
-    // NO borrar — acumular sobre los datos existentes
+    // Cada Memorandum cargado REEMPLAZA por completo al anterior (no se acumula
+    // entre libros distintos). Esto evita que un precio viejo/obsoleto de un
+    // Memorandum de un mes anterior "gane" por ser más barato que el precio
+    // vigente del mes actual, lo cual generaba alertas falsas de "CAMBIO DE PRECIO".
     const LOCAL = 'CAJAMARCA';
     const libroId = nombreLibro || 'Memorandum';
     let nuevos = 0, actualizados = 0;
-    // Snapshot de precios ANTES de cargar este libro (para detectar cambios)
+    // Snapshot de precios ANTES de cargar este libro (para detectar cambios reales
+    // frente al Memorandum anterior, aunque ese Memorandum ya se va a descartar)
     const preciosAntes = {};
     Object.keys(csPreciosDB).forEach(k => {
         const e = csPreciosDB[k] || {};
@@ -4183,6 +4189,11 @@ function csParsePreciosXLSX(wb, nombreLibro) {
             etiqueta: typeof e.etiqueta === 'number' ? e.etiqueta : 0
         };
     });
+    // Reemplazo total: se descarta todo lo cargado anteriormente (de cualquier
+    // libro previo) y este Memorandum pasa a ser la única fuente de verdad.
+    csPreciosDB = {};
+    csLibrosCargados = [];
+    csPromoColorDB = {};
 
     const esCodigo = v => { const s=String(v||'').trim(); return s.length===7&&/^[A-Z0-9]+$/i.test(s)&&/\d/.test(s); }; // código WAMA siempre tiene al menos un dígito
 
@@ -4418,7 +4429,18 @@ function csParsePreciosXLSX(wb, nombreLibro) {
             // 3. Filtrar precios: mayor a 1, excluyendo el índice del stock
             const allNums = [];
             for(let i=codIdx+2;i<r.length;i++){
-                const n=parseFloat(r[i]);
+                const raw = r[i];
+                let n = NaN;
+                if (typeof raw === 'number') {
+                    n = raw;
+                } else if (typeof raw === 'string') {
+                    // Solo aceptar texto que sea ÍNTEGRAMENTE numérico (ej. "32.9").
+                    // Esto evita que columnas de texto como "Grupodscto" (ej. "30% a 39%")
+                    // se cuelen como si fueran un precio real: parseFloat("30% a 39%")
+                    // devuelve 30 en JS, contaminando el cálculo del precio mínimo.
+                    const s = raw.trim();
+                    if (/^\d+(\.\d+)?$/.test(s)) n = parseFloat(s);
+                }
                 if(!isNaN(n)&&n>=0) allNums.push({v:n,i});
             }
             if(!allNums.length) return;
