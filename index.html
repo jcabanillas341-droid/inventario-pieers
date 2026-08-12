@@ -917,7 +917,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.47 — 12/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.48 — 12/Ago/2026</div>
     </div>
 </div>
 
@@ -1295,7 +1295,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.47 — 12/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.48 — 12/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4862,6 +4862,19 @@ function csModalPromoMostrar(config) {
             else if (antes.mayor > 0 && _pC.mayor > 0 && Math.abs(_pC.mayor - antes.mayor) > 0.01)
                 difStr = ` — S/${antes.mayor.toFixed(2)} → S/${_pC.mayor.toFixed(2)}`;
             const libroStr = ci.libro ? ` (📖 ${ci.libro})` : '';
+            _cambioDiv.innerHTML = `🔔 CAMBIO DE PRECIO${difStr}${libroStr}`;
+            _cambioDiv.style.background = '#E65100';
+            _cambioDiv.style.display = 'block';
+        } else if (_hayVariacionLibros && _itemDestacado) {
+            // Variación entre libros sin campo exacto comparable (ej. una Oferta
+            // nueva de Agosto reemplazando a los precios de Julio): mostrar el
+            // precio que ANTES era el más barato → el nuevo más barato.
+            const _otros = _preciosReales.filter(it => it !== _itemDestacado);
+            const _antesPrecio = _otros.length ? Math.min(...(_otros.map(o => o.precio))) : 0;
+            const difStr = _antesPrecio > 0
+                ? ` — S/${_antesPrecio.toFixed(2)} → S/${_itemDestacado.precio.toFixed(2)}`
+                : '';
+            const libroStr = _itemDestacado.libro ? ` (📖 ${_itemDestacado.libro})` : '';
             _cambioDiv.innerHTML = `🔔 CAMBIO DE PRECIO${difStr}${libroStr}`;
             _cambioDiv.style.background = '#E65100';
             _cambioDiv.style.display = 'block';
