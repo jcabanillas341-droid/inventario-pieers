@@ -917,7 +917,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.56 — 12/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.57 — 12/Ago/2026</div>
     </div>
 </div>
 
@@ -1318,7 +1318,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.56 — 12/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.57 — 12/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -5942,11 +5942,18 @@ function csOnBarcodeInput(val) {
         window._mpcLastBarcode = bc13;
         window._mpcLastArt = bc13.substring(1, 8);
         csAgregarHistorial(bc13);
-        // Precargar artículo en campo (sin mostrar stock aún)
+        // Precargar artículo en campo
         const artEl2 = document.getElementById('cs-inp-articulo');
         if (artEl2) artEl2.value = window._mpcLastArt;
-        // Mostrar SOLO la ventana flotante
-        csCheckPromoColor(bc13);
+        if (csModoActual === 'stock') {
+            // Solo Stock: no hay ventana flotante de precios que mostrar,
+            // así que se pinta la tabla de stock directamente.
+            csBuscar();
+        } else {
+            // Mostrar SOLO la ventana flotante (con precios); desde ahí
+            // el botón VER STOCK pinta la tabla si el usuario lo pide.
+            csCheckPromoColor(bc13);
+        }
         // Mantener foco en CODBAR
         setTimeout(() => {
             const inp = document.getElementById('cs-inp-codbar');
