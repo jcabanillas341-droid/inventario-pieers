@@ -917,7 +917,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.54 — 12/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.55 — 12/Ago/2026</div>
     </div>
 </div>
 
@@ -1227,13 +1227,12 @@
                 <div id="cs-nombre-texto" style="font-family:'Outfit',sans-serif;font-size:15px;font-weight:900;color:#111111;letter-spacing:0.3px;line-height:1.2;"></div>
                 <div id="cs-codigo-texto" style="font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;color:#555;margin-top:1px;"></div>
             </div>
-            <div class="cs-ctrl-row">
-                <button class="cs-btn cs-btn-upload" onclick="document.getElementById('cs-file-input').click()">📂 Cargar Base</button>
+            <div class="cs-ctrl-row" style="display:none;">
                 <input type="file" id="cs-file-input" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*" onchange="csLoadFile(event)" style="display:none">
                 <input type="file" id="cs-mayorprecios-input" accept=".xlsx,.xls" onchange="csLoadPreciosMayor(event)" style="display:none">
                 <input type="file" id="cs-precio-input" accept=".xlsx,.xls,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onchange="csLoadPrecios(event)" style="display:none">
-                <span id="cs-db-badge" class="empty">SIN BASE</span>
             </div>
+            <span id="cs-db-badge" class="empty" style="position:fixed;bottom:64px;right:8px;z-index:400;box-shadow:0 2px 6px rgba(0,0,0,0.25);">SIN BASE</span>
         </div>
         <div style="display:none;">
             <div id="cs-status-bar">Cargue una base de datos para comenzar.</div>
@@ -1317,7 +1316,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.54 — 12/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.55 — 12/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -1920,6 +1919,9 @@ function abrirSubCarga(modulo) {
             titulo: '☁️ CARGAR BASE DESDE DRIVE',
             desc: '¿Qué tipo de archivo quieres cargar?',
             opciones: [
+                { ico:'📁', titulo:'Base estándar — archivo del celular',
+                  desc:'Selecciona un archivo Excel/CSV con código, descripción y stock',
+                  color:'#2E7D32', accion:`document.getElementById('cs-file-input').click();cerrarSubCarga()` },
                 { ico:'📊', titulo:'Base estándar Excel/CSV',
                   desc:'Archivo de inventario con código, descripción y stock',
                   color:'#1565C0', accion:`driveAbrirModal('cs');cerrarSubCarga()` },
