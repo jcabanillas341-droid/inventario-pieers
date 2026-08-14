@@ -917,7 +917,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.49 — 12/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.50 — 12/Ago/2026</div>
     </div>
 </div>
 
@@ -1065,7 +1065,6 @@
 
     <!-- Botones archivo COMPARATIVO -->
     <div id="comp-file-btns" style="display:none;flex-direction:column;gap:4px;margin:0 8px 2px;flex-shrink:0;">
-        <button class="comp-file-btn" style="background:#0a1a0a;color:#4CAF50;border:2px solid #2E7D32;width:100%;letter-spacing:1px;" onclick="abrirAlmDesdeComp()">📋 COMPARATIVO + STOCK ALMACÉN</button>
     </div>
 
     <!-- BÚSQUEDA COMPARATIVO (5) -->
@@ -1073,21 +1072,28 @@
         <input id="comp-search-inp" type="text" placeholder="🔍 Buscar código o descripción en maestro..." oninput="renderComp(null,this.value.trim())" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     </div>
 
-    <!-- PANEL COMPARATIVO -->
+    <!-- PANEL COMPARATIVO (unificado: #, código, esp, real) -->
     <div class="split-view" id="vista-comp">
-        <div class="panel">
-            <div class="panel-h">MAESTRO (COMPARATIVA)</div>
-            <div class="scroll" id="scroll-maestro">
-                <table><thead><tr><th>CÓDIGO</th><th style="width:38px;">ESP</th><th style="width:38px;">REAL</th></tr></thead>
-                <tbody id="t-maestro"></tbody></table>
+        <div class="panel" style="flex:1;">
+            <div class="panel-h">LECTURA · ESP · REAL</div>
+            <div class="scroll" id="scroll-comp-unif">
+                <table><thead><tr><th style="width:26px;">#</th><th>CÓDIGO</th><th style="width:38px;">ESP</th><th style="width:38px;">REAL</th></tr></thead>
+                <tbody id="t-comp-unif"></tbody></table>
             </div>
         </div>
-        <div class="panel">
-            <div class="panel-h">FLUJO DE LECTURA</div>
-            <div class="scroll">
-                <table><thead><tr><th style="width:28px;">#</th><th>CÓDIGO</th><th style="width:22px;"></th></tr></thead>
-                <tbody id="t-lectura"></tbody></table>
+    </div>
+
+    <!-- MODAL: eliminar una lectura (tap en la fila de la tabla Comparativo) -->
+    <div id="modalCompDel" class="modal" style="align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:16px;padding:22px 20px;max-width:320px;width:100%;text-align:center;margin:auto;">
+            <div style="font-family:'Barlow',sans-serif;font-weight:800;font-size:11px;color:#999;letter-spacing:1px;text-transform:uppercase;">Código escaneado</div>
+            <div id="comp-del-cod" style="font-family:'Barlow',sans-serif;font-weight:900;font-size:22px;color:#111;margin:4px 0 14px;word-break:break-all;"></div>
+            <div style="display:flex;justify-content:center;gap:24px;margin-bottom:18px;">
+                <div><div style="font-size:11px;color:#999;font-weight:700;">ESP</div><div id="comp-del-esp" style="font-size:22px;font-weight:900;color:#111;"></div></div>
+                <div><div style="font-size:11px;color:#999;font-weight:700;">REAL</div><div id="comp-del-real" style="font-size:22px;font-weight:900;color:#111;"></div></div>
             </div>
+            <button onclick="confirmarEliminarLecturaModal()" style="width:100%;background:#c62828;color:#fff;border:none;border-radius:10px;padding:13px;font-weight:800;font-size:14px;letter-spacing:0.5px;margin-bottom:8px;">🗑 ELIMINAR ESTA LECTURA</button>
+            <button onclick="cerrarModalCompDel()" style="width:100%;background:#EEE;color:#333;border:none;border-radius:10px;padding:13px;font-weight:700;font-size:13px;">CANCELAR</button>
         </div>
     </div>
 
@@ -1295,7 +1301,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.49 — 12/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.50 — 12/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -3143,39 +3149,55 @@ function renderComp(ultimoCod=null, filtro='') {
     document.getElementById('stat-avan').textContent = p+'%';
     document.getElementById('bar-fill').style.width  = p+'%';
 
-    const frag1=document.createDocumentFragment();
-    historial.slice(-30).reverse().forEach((c,i)=>{
-        const realIdx = historial.length - 1 - i;
-        const tr=document.createElement('tr');
-        tr.innerHTML=`<td style="color:#111111;padding:2px 3px;">${historial.length-i}</td>
-            <td style="font-size:11px;text-align:left;padding:2px 3px;word-break:break-all;">${c}</td>
-            <td style="padding:2px 1px;">
-                <button onclick="eliminarLectura(${realIdx})" style="background:none;border:none;color:#111111;cursor:pointer;font-size:13px;padding:1px 4px;" title="Eliminar esta lectura">🗑</button>
-            </td>`;
-        frag1.appendChild(tr);
-    });
-    const tL=document.getElementById('t-lectura'); tL.innerHTML=''; tL.appendChild(frag1);
-
     // Mejora 5: función de filtro
     const pasa = (k) => !fUp || k.includes(fUp) || (descripcionMap.get(k)||'').toUpperCase().includes(fUp);
 
-    const frag2=document.createDocumentFragment(); let count=0;
-    if (ultimoCod&&maestroMap.has(ultimoCod)&&pasa(ultimoCod)) { frag2.appendChild(crearFilaComp(ultimoCod,maestroMap.get(ultimoCod),true)); count++; }
-    for (const [k,v] of maestroMap) { if(k===ultimoCod||count>=MAX_FILAS_DOM||!pasa(k)) continue; if(v.real>0&&v.real!==v.exp){frag2.appendChild(crearFilaComp(k,v));count++;} }
-    for (const [k,v] of maestroMap) { if(k===ultimoCod||count>=MAX_FILAS_DOM||!pasa(k)) continue; if(v.real>0&&v.real===v.exp){frag2.appendChild(crearFilaComp(k,v));count++;} }
-    for (const [k,v] of maestroMap) { if(k===ultimoCod||count>=MAX_FILAS_DOM||!pasa(k)) continue; if(v.real===0){frag2.appendChild(crearFilaComp(k,v));count++;} }
-    const tM=document.getElementById('t-maestro'); tM.innerHTML=''; tM.appendChild(frag2);
+    // Tabla unificada: un renglón por CADA lectura escaneada (orden más reciente
+    // primero), mostrando el ESP/REAL acumulado de ese código en ese momento.
+    // Tap en la fila → abre ventana flotante con opción de eliminar esa lectura.
+    const frag1=document.createDocumentFragment();
+    let shown=0;
+    for (let i=historial.length-1; i>=0 && shown<MAX_FILAS_DOM; i--) {
+        const c = historial[i];
+        if (!pasa(c)) continue;
+        const v = maestroMap.get(c) || {exp:0, real:0};
+        const diff=v.real-v.exp;
+        const cls=diff<0?'falta':diff>0?'sobrante':v.real>0?'match':'';
+        const tr=document.createElement('tr');
+        if (cls) tr.className=cls;
+        if (i===historial.length-1) tr.style.outline='3px solid var(--rojo)';
+        tr.style.cursor='pointer';
+        tr.innerHTML=`<td style="color:#111111;padding:2px 3px;">${i+1}</td>
+            <td style="font-size:11px;text-align:left;padding:2px 3px;word-break:break-all;font-weight:bold;">${c}</td>
+            <td>${v.exp}</td>
+            <td style="font-weight:bold;">${v.real}</td>`;
+        tr.addEventListener('click', ()=>{ mostrarDesc(c); abrirModalEliminarLectura(i); });
+        frag1.appendChild(tr);
+        shown++;
+    }
+    const tU=document.getElementById('t-comp-unif'); tU.innerHTML=''; tU.appendChild(frag1);
 }
 
-function crearFilaComp(k,v,resaltar=false) {
-    const tr=document.createElement('tr');
-    const diff=v.real-v.exp;
-    const cls=diff<0?'falta':diff>0?'sobrante':v.real>0?'match':'';
-    if (cls) tr.className=cls;
-    if (resaltar) tr.style.outline='3px solid var(--rojo)';
-    tr.innerHTML=`<td style="font-size:10px;font-weight:bold;word-break:break-all;">${k}</td><td>${v.exp}</td><td style="font-weight:bold;">${v.real}</td>`;
-    tr.addEventListener('click', ()=>mostrarDesc(k));
-    return tr;
+// ── Ventana flotante: eliminar una lectura puntual (tap en la fila) ──
+let _compDelIdx = null;
+function abrirModalEliminarLectura(idx) {
+    const cod = historial[idx];
+    if (!cod) return;
+    _compDelIdx = idx;
+    const v = maestroMap.get(cod) || {exp:0, real:0};
+    document.getElementById('comp-del-cod').textContent = cod;
+    document.getElementById('comp-del-esp').textContent = v.exp;
+    document.getElementById('comp-del-real').textContent = v.real;
+    document.getElementById('modalCompDel').style.display = 'flex';
+}
+function cerrarModalCompDel() {
+    document.getElementById('modalCompDel').style.display = 'none';
+    _compDelIdx = null;
+}
+function confirmarEliminarLecturaModal() {
+    if (_compDelIdx === null) return;
+    eliminarLectura(_compDelIdx);
+    cerrarModalCompDel();
 }
 
 function eliminarLectura(idx) {
