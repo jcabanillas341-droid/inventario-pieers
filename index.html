@@ -917,7 +917,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.52 — 12/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.53 — 12/Ago/2026</div>
     </div>
 </div>
 
@@ -1056,8 +1056,7 @@
     <!-- PANEL COMPARATIVO (unificado: #, código, esp, real) -->
     <div class="split-view" id="vista-comp">
         <div class="panel" style="flex:1;">
-            <div class="panel-h">LECTURA · ESP · REAL</div>
-            <div class="scroll" id="scroll-comp-unif">
+                        <div class="scroll" id="scroll-comp-unif">
                 <table><thead><tr><th style="width:26px;">#</th><th>CÓDIGO</th><th style="width:38px;">ESP</th><th style="width:38px;">REAL</th></tr></thead>
                 <tbody id="t-comp-unif"></tbody></table>
             </div>
@@ -1318,7 +1317,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.52 — 12/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.53 — 12/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -3207,10 +3206,10 @@ function renderComp(ultimoCod=null, filtro='') {
         if (cls) tr.className=cls;
         if (i===historial.length-1) tr.style.outline='3px solid var(--rojo)';
         tr.style.cursor='pointer';
-        tr.innerHTML=`<td style="color:#111111;padding:2px 3px;">${i+1}</td>
-            <td style="font-size:11px;text-align:left;padding:2px 3px;word-break:break-all;font-weight:bold;">${c}</td>
-            <td>${v.exp}</td>
-            <td style="font-weight:bold;">${v.real}</td>`;
+        tr.innerHTML=`<td style="color:#111111;padding:4px 3px;font-size:15px;font-weight:bold;">${i+1}</td>
+            <td style="font-size:19px;text-align:left;padding:4px 3px;word-break:break-all;font-weight:bold;">${c}</td>
+            <td style="font-size:15px;">${v.exp}</td>
+            <td style="font-weight:bold;font-size:15px;">${v.real}</td>`;
         attachLongPress(tr, ()=>{ mostrarDesc(c); abrirModalEliminarLectura(i); });
         frag1.appendChild(tr);
         shown++;
