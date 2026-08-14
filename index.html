@@ -917,7 +917,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.50 — 12/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.51 — 12/Ago/2026</div>
     </div>
 </div>
 
@@ -1044,32 +1044,16 @@
         </div>
     </div>
 
-    <div class="progress-box">
-        <div class="stats-grid">
-            <div style="flex:1" id="blq-esp">
-                <span id="stat-esp"  class="stat-val">0</span>
-                <span class="stat-lab">Maestro</span>
-            </div>
-            <div style="flex:1;border-left:1px solid #2a2a2a;border-right:1px solid #2a2a2a;">
-                <span id="stat-cont" class="stat-val">0</span>
-                <span class="stat-lab">Conteo</span>
-                <span id="stat-skus" class="stat-sku">— SKU</span>
-            </div>
-            <div style="flex:1" id="blq-avan">
-                <span id="stat-avan" class="stat-val">0%</span>
-                <span class="stat-lab">Avance</span>
-            </div>
-        </div>
-        <div class="bar-bg"><div id="bar-fill"></div></div>
-    </div>
-
     <!-- Botones archivo COMPARATIVO -->
     <div id="comp-file-btns" style="display:none;flex-direction:column;gap:4px;margin:0 8px 2px;flex-shrink:0;">
     </div>
 
-    <!-- BÚSQUEDA COMPARATIVO (5) -->
-    <div id="comp-search-wrap">
-        <input id="comp-search-inp" type="text" placeholder="🔍 Buscar código o descripción en maestro..." oninput="renderComp(null,this.value.trim())" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <!-- BÚSQUEDA COMPARATIVO (5) + VER MAESTRO -->
+    <div id="comp-search-wrap" style="gap:6px;">
+        <input id="comp-search-inp" type="text" placeholder="🔍 Buscar código o descripción en maestro..." oninput="renderComp(null,this.value.trim())" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="flex:1;">
+    </div>
+    <div id="comp-ver-maestro-wrap" class="hidden" style="padding:0 10px 5px;flex-shrink:0;">
+        <button onclick="abrirModalVerMaestro()" style="width:100%;background:#111;color:#fff;border:none;border-radius:10px;padding:9px;font-weight:700;font-size:11px;letter-spacing:0.5px;font-family:'Outfit',sans-serif;">👁️ VER MAESTRO — CÓDIGOS, CANT. Y DESCRIPCIÓN</button>
     </div>
 
     <!-- PANEL COMPARATIVO (unificado: #, código, esp, real) -->
@@ -1081,6 +1065,42 @@
                 <tbody id="t-comp-unif"></tbody></table>
             </div>
         </div>
+    </div>
+
+    <div class="progress-box" id="comp-progress-box" style="padding:6px 12px;margin:6px 10px 4px;">
+        <div class="stats-grid" style="margin-bottom:4px;">
+            <div style="flex:1" id="blq-esp">
+                <span id="stat-esp"  class="stat-val" style="font-size:16px;">0</span>
+                <span class="stat-lab" style="font-size:7px;">Maestro</span>
+            </div>
+            <div style="flex:1;border-left:1px solid #2a2a2a;border-right:1px solid #2a2a2a;">
+                <span id="stat-cont" class="stat-val" style="font-size:16px;">0</span>
+                <span class="stat-lab" style="font-size:7px;">Conteo</span>
+                <span id="stat-skus" class="stat-sku" style="font-size:7px;">— SKU</span>
+            </div>
+            <div style="flex:1" id="blq-avan">
+                <span id="stat-avan" class="stat-val" style="font-size:16px;">0%</span>
+                <span class="stat-lab" style="font-size:7px;">Avance</span>
+            </div>
+        </div>
+        <div class="bar-bg" style="height:3px;"><div id="bar-fill"></div></div>
+    </div>
+
+    <!-- MODAL: ver maestro completo (código, cantidad, descripción) -->
+    <div id="modalVerMaestro" class="modal">
+        <div class="modal-title">MAESTRO COMPLETO</div>
+        <div style="padding:0 4px 8px;flex-shrink:0;">
+            <input id="ver-maestro-search" type="text" placeholder="🔍 Buscar código o descripción..." oninput="renderVerMaestro(this.value.trim())" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="width:100%;padding:9px 14px;border-radius:10px;border:2px solid var(--rojo);background:white;color:#111;font-size:13px;font-family:'Barlow',sans-serif;font-weight:700;box-sizing:border-box;">
+        </div>
+        <div class="scroll" style="flex:1;overflow-y:auto;background:#fff;border-radius:10px;">
+            <table style="width:100%;border-collapse:collapse;"><thead><tr>
+                <th style="text-align:left;padding:6px 6px;font-size:10px;">CÓDIGO</th>
+                <th style="width:46px;padding:6px 4px;font-size:10px;">CANT</th>
+                <th style="text-align:left;padding:6px 6px;font-size:10px;">DESCRIPCIÓN</th>
+            </tr></thead>
+            <tbody id="t-ver-maestro"></tbody></table>
+        </div>
+        <button onclick="cerrarModalVerMaestro()" style="margin-top:8px;flex-shrink:0;width:100%;background:#EEE;color:#333;border:none;border-radius:10px;padding:12px;font-weight:700;font-size:13px;">CERRAR</button>
     </div>
 
     <!-- MODAL: eliminar una lectura (tap en la fila de la tabla Comparativo) -->
@@ -1301,7 +1321,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.50 — 12/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.51 — 12/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -1654,6 +1674,7 @@ function seleccionarModo(modo) {
         const compFileBtns = $('comp-file-btns');
         if (compFileBtns) compFileBtns.style.display = 'none';
         ['btn-carga-comp','btn-comp-alm','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
+        $s('comp-ver-maestro-wrap').classList.add('hidden');
         $s('menu-sec-alm').classList.add('hidden');
         $s('menu-sec-comp').classList.add('hidden');
         ['btn-carga-alm','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
@@ -1678,6 +1699,7 @@ function seleccionarModo(modo) {
             
             if (compFileBtns) compFileBtns.style.display = 'flex';
             const csw=document.getElementById('comp-search-wrap'); if(csw) csw.style.display='';
+            $s('comp-ver-maestro-wrap').classList.remove('hidden');
             const bEsp=$('blq-esp'); if(bEsp) bEsp.style.display='';
             const bAv=$('blq-avan'); if(bAv) bAv.style.display='';
             if (scannerEl2) scannerEl2.placeholder = 'ESCANEE CÓDIGO (13 DÍGITOS)';
@@ -3198,6 +3220,38 @@ function confirmarEliminarLecturaModal() {
     if (_compDelIdx === null) return;
     eliminarLectura(_compDelIdx);
     cerrarModalCompDel();
+}
+
+// ── Ventana: ver maestro completo (código, cantidad, descripción) ──
+function abrirModalVerMaestro() {
+    renderVerMaestro('');
+    const el = document.getElementById('modalVerMaestro');
+    if (el) el.style.display = 'flex';
+    const inp = document.getElementById('ver-maestro-search');
+    if (inp) inp.value = '';
+}
+function cerrarModalVerMaestro() {
+    const el = document.getElementById('modalVerMaestro');
+    if (el) el.style.display = 'none';
+}
+function renderVerMaestro(filtro='') {
+    const fUp = (filtro||'').toUpperCase();
+    const frag = document.createDocumentFragment();
+    let n = 0;
+    for (const [k, v] of maestroMap) {
+        const desc = descripcionMap.get(k) || '';
+        if (fUp && !k.includes(fUp) && !desc.toUpperCase().includes(fUp)) continue;
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid #EEE';
+        tr.innerHTML = `<td style="font-size:11px;font-weight:bold;word-break:break-all;padding:5px 6px;">${k}</td>
+            <td style="text-align:center;padding:5px 4px;font-weight:bold;">${v.exp}</td>
+            <td style="font-size:11px;padding:5px 6px;">${desc}</td>`;
+        frag.appendChild(tr);
+        n++;
+        if (n >= 800) break; // límite razonable para no trabar el DOM
+    }
+    const tb = document.getElementById('t-ver-maestro');
+    if (tb) { tb.innerHTML = ''; tb.appendChild(frag); }
 }
 
 function eliminarLectura(idx) {
