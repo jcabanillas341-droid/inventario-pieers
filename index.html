@@ -919,8 +919,16 @@
             </span>
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
+        <button class="btn-modo btn-stock-mod" onclick="abrirStockCamara()" style="width:100%;max-width:360px;">
+            <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">📷</div>
+            <span class="txt">
+                <span class="tit">CONSULTAR STOCK — CÁMARA</span>
+                <span class="desc">Igual que Consultar Stock, pero escaneando con la cámara del celular (sin lectora física).</span>
+            </span>
+            <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
+        </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.60 — 12/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.61 — 12/Ago/2026</div>
     </div>
 </div>
 
@@ -1221,6 +1229,17 @@
                 <input type="text" id="cs-inp-descripcion" style="display:none;">
             </div>
 
+            <!-- ── MODO CÁMARA (Consultar Stock — Cámara) ── -->
+            <div id="cs-panel-camara" style="display:none;padding:6px 10px 2px;">
+                <div style="position:relative;width:100%;max-width:360px;margin:0 auto;background:#000;border-radius:12px;overflow:hidden;aspect-ratio:4/3;">
+                    <video id="cs-cam-video" playsinline autoplay muted style="width:100%;height:100%;object-fit:cover;display:block;"></video>
+                    <div style="position:absolute;inset:0;border:3px solid rgba(255,255,255,0.45);pointer-events:none;box-sizing:border-box;"></div>
+                    <div style="position:absolute;left:8%;right:8%;top:46%;height:2px;background:rgba(229,57,53,0.85);pointer-events:none;"></div>
+                </div>
+                <div id="cs-cam-status" style="text-align:center;font-size:12px;font-weight:700;color:#333;padding:6px 4px;">Iniciando cámara...</div>
+                <button onclick="csSalirCamara()" style="display:block;margin:0 auto 4px;padding:8px 16px;border-radius:10px;border:none;background:#EEE;color:#333;font-weight:700;font-size:11px;letter-spacing:0.5px;">✖ CERRAR CÁMARA / USAR LECTORA FÍSICA</button>
+            </div>
+
             <!-- Nombre del artículo encima de todo, en negro -->
             <div id="cs-nombre-articulo" style="display:none;padding:6px 10px 2px;flex-shrink:0;">
                 <div id="cs-nombre-texto" style="font-family:'Outfit',sans-serif;font-size:15px;font-weight:900;color:#111111;letter-spacing:0.3px;line-height:1.2;"></div>
@@ -1317,7 +1336,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.60 — 12/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.61 — 12/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -1656,6 +1675,8 @@ function seleccionarModo(modo) {
     // Cerrar menú siempre
     const mc = document.getElementById('menuContent');
     if (mc) mc.style.display = 'none';
+    // Apagar la cámara si estaba encendida (Consultar Stock — Cámara) al cambiar de módulo
+    if (typeof csDetenerCamara === 'function') csDetenerCamara();
     try {
         modoActual = modo;
         const $ = id => document.getElementById(id);
@@ -1732,6 +1753,7 @@ function seleccionarModo(modo) {
 function volverSelector() {
     const mc = document.getElementById('menuContent');
     if (mc) mc.style.display = 'none';
+    if (typeof csDetenerCamara === 'function') csDetenerCamara();
     document.getElementById('pantalla-modo').style.display = 'flex';
     document.getElementById('app-principal').classList.add('hidden');
     modoActual = null;
@@ -4707,6 +4729,102 @@ function csModoManual() {
     document.getElementById('btn-modo-manual').style.cssText += ';background:#1565C0;color:#fff;border-color:#1565C0;';
     document.getElementById('btn-modo-lectora').style.cssText += ';background:#F5F5F5;color:#555;border-color:#CCC;';
 }
+
+// ══════════════════════════════════════════════════════
+//  CONSULTAR STOCK — CÁMARA (módulo aparte, misma estructura
+//  que Consultar Stock, pero escaneando con la cámara del
+//  celular en vez de lectora física / pistola)
+// ══════════════════════════════════════════════════════
+function abrirStockCamara() {
+    seleccionarModo('stock');
+    const bt = document.getElementById('badge-txt');
+    if (bt) bt.textContent = 'STOCK · CÁMARA';
+    setTimeout(() => { csModoCamara(); }, 60);
+}
+
+let _csCamStream = null;
+let _csCamDetector = null;
+let _csCamLoopId = null;
+let _csCamLastCode = null;
+let _csCamLastTime = 0;
+
+function csModoCamara() {
+    const lec = document.getElementById('cs-panel-lectora');
+    if (lec) lec.style.display = 'none';
+    const man = document.getElementById('cs-panel-manual');
+    if (man) man.style.display = 'none';
+    const cam = document.getElementById('cs-panel-camara');
+    if (cam) cam.style.display = '';
+    csIniciarCamara();
+}
+
+function csSalirCamara() {
+    csDetenerCamara();
+    const cam = document.getElementById('cs-panel-camara');
+    if (cam) cam.style.display = 'none';
+    const bt = document.getElementById('badge-txt');
+    if (bt) bt.textContent = 'STOCK';
+    document.getElementById('cs-panel-lectora').style.display = '';
+    setTimeout(() => { const ci = document.getElementById('cs-inp-codbar'); if (ci) ci.focus(); }, 100);
+}
+
+async function csIniciarCamara() {
+    const video = document.getElementById('cs-cam-video');
+    const statusEl = document.getElementById('cs-cam-status');
+    if (!video) return;
+    if (!('BarcodeDetector' in window)) {
+        if (statusEl) statusEl.textContent = '⚠ Este dispositivo no soporta escaneo por cámara. Usa "Cerrar cámara" y escanea con la lectora física.';
+        return;
+    }
+    try {
+        _csCamStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } }
+        });
+        video.srcObject = _csCamStream;
+        await video.play();
+        _csCamDetector = new BarcodeDetector({
+            formats: ['code_128', 'ean_13', 'code_39', 'codabar', 'upc_a', 'upc_e']
+        });
+        if (statusEl) statusEl.textContent = '📷 Apunta al código de barras...';
+        csCamLoop();
+    } catch (e) {
+        if (statusEl) statusEl.textContent = '⚠ No se pudo acceder a la cámara. Revisa el permiso de cámara de la app en Ajustes del celular.';
+    }
+}
+
+function csDetenerCamara() {
+    if (_csCamLoopId) { cancelAnimationFrame(_csCamLoopId); _csCamLoopId = null; }
+    if (_csCamStream) { _csCamStream.getTracks().forEach(t => t.stop()); _csCamStream = null; }
+    _csCamDetector = null;
+}
+
+async function csCamLoop() {
+    const video = document.getElementById('cs-cam-video');
+    if (!video || !_csCamDetector) return;
+    try {
+        const codes = await _csCamDetector.detect(video);
+        if (codes && codes.length) {
+            const raw = (codes[0].rawValue || '').trim().toUpperCase();
+            const now = Date.now();
+            if (raw.length >= 13 && (raw !== _csCamLastCode || now - _csCamLastTime > 1500)) {
+                _csCamLastCode = raw;
+                _csCamLastTime = now;
+                csCamCodigoDetectado(raw.substring(0, 13));
+            }
+        }
+    } catch (e) { /* frame no procesable — seguir intentando */ }
+    if (_csCamDetector) _csCamLoopId = requestAnimationFrame(csCamLoop);
+}
+
+function csCamCodigoDetectado(codigo) {
+    try { if (navigator.vibrate) navigator.vibrate(80); } catch (e) {}
+    try { beep(1000, 0.08); } catch (e) {}
+    const statusEl = document.getElementById('cs-cam-status');
+    if (statusEl) statusEl.textContent = '✅ Leído: ' + codigo;
+    csOnBarcodeInput(codigo);
+}
+
+
 
 function csBuscarPorNombreManual(texto) {
     // Usar cs-table-outer como contenedor de resultados en modo manual
