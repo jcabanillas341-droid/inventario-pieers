@@ -920,7 +920,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.60 — 12/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.61 — 12/Ago/2026</div>
     </div>
 </div>
 
@@ -1250,14 +1250,15 @@
             </button>
         </div>
 
+        <!-- Búsqueda por nombre o código — SIEMPRE visible, en cualquier modo (Stock/Ambos/Precios) -->
+        <div id="cs-name-search-wrap" style="display:none;padding:4px 8px 2px;flex-shrink:0;">
+            <input id="cs-name-search" type="text" placeholder="🔍  Buscar por nombre o código (8 dígitos)..."
+                style="width:100%;padding:8px 12px;border-radius:10px;border:1.5px solid #DDD;font-size:13px;font-family:'Inter',sans-serif;background:#FAFAFA;outline:none;"
+                oninput="csBuscarPorNombre(this.value)">
+        </div>
+
         <!-- ── PANEL STOCK ── -->
         <div id="cs-panel-stock" style="display:flex;flex-direction:column;flex:1;overflow:hidden;min-height:0;">
-            <!-- Búsqueda por nombre -->
-            <div id="cs-name-search-wrap" style="display:none;padding:4px 8px 2px;flex-shrink:0;">
-                <input id="cs-name-search" type="text" placeholder="🔍  Buscar por nombre de artículo..."
-                    style="width:100%;padding:8px 12px;border-radius:10px;border:1.5px solid #DDD;font-size:13px;font-family:'Inter',sans-serif;background:#FAFAFA;outline:none;"
-                    oninput="csBuscarPorNombre(this.value)">
-            </div>
             <div id="cs-table-outer">
                 <div class="cs-no-data">📦 Cargue su base de datos<br>luego escanee o ingrese un artículo</div>
             </div>
@@ -1317,7 +1318,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.60 — 12/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.61 — 12/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -2038,27 +2039,39 @@ function csOcultarTabs() {
 function csBuscarPorNombre(texto) {
     const outer = document.getElementById('cs-table-outer');
     if (!outer) return;
-    if (!texto || texto.length < 2) {
-        outer.innerHTML = '<div class="cs-no-data">Escribe al menos 2 letras para buscar por nombre</div>';
+    // El buscador es visible en cualquier modo (Stock/Ambos/Precios). Si el
+    // panel de stock está oculto (modo "Solo Precios"), mostrarlo temporalmente
+    // mientras se busca, para que los resultados sean visibles.
+    const panelStock = document.getElementById('cs-panel-stock');
+    const panelPrec  = document.getElementById('cs-price-panel');
+    if (texto && texto.trim().length >= 2) {
+        if (panelStock) panelStock.style.display = 'flex';
+        if (panelPrec)  panelPrec.style.display  = 'none';
+    }
+    if (!texto || texto.trim().length < 2) {
+        outer.innerHTML = '<div class="cs-no-data">Escribe al menos 2 letras o un código para buscar</div>';
+        csAplicarModo(); // restaurar la vista según el modo seleccionado
         return;
     }
     const q = texto.toUpperCase().trim();
     const resultados = Object.entries(csStockDB)
-        .filter(([cod, data]) => data.desc && data.desc.toUpperCase().includes(q))
+        .filter(([cod, data]) => (data.desc && data.desc.toUpperCase().includes(q)) || cod.toUpperCase().includes(q))
         .slice(0, 40); // máximo 40 resultados
 
     if (!resultados.length) {
-        outer.innerHTML = '<div class="cs-no-data">❌ No se encontraron artículos con ese nombre</div>';
+        outer.innerHTML = '<div class="cs-no-data">❌ No se encontraron artículos con ese nombre o código</div>';
         return;
     }
 
     let html = '';
     resultados.forEach(([cod, data]) => {
         const total = data.colors ? data.colors.reduce((a,c)=>a+c.total,0) : 0;
-        const descHL = data.desc.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'gi'),
+        const descHL = (data.desc||'').replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'gi'),
+                       m => '<strong style="color:var(--rojo)">' + m + '</strong>');
+        const codHL = cod.replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'gi'),
                        m => '<strong style="color:var(--rojo)">' + m + '</strong>');
         html += '<div class="cs-name-result" onclick="csSeleccionarDeNombre(\'' + cod + '\')">'
-            + '<span class="cs-name-result-cod">' + cod + '</span>'
+            + '<span class="cs-name-result-cod">' + codHL + '</span>'
             + '<span class="cs-name-result-desc">' + descHL + '</span>'
             + '<span class="cs-name-result-stock">' + total + ' un.</span>'
             + '</div>';
