@@ -920,7 +920,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.58 — 12/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.59 — 12/Ago/2026</div>
     </div>
 </div>
 
@@ -1197,10 +1197,6 @@
                     style="flex:1;padding:10px 6px;border-radius:10px;border:2px solid #E53935;background:#E53935;color:#fff;font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:0.5px;">
                     📷 LECTORA
                 </button>
-                <button id="btn-modo-manual" onclick="csModoManual()"
-                    style="flex:1;padding:10px 6px;border-radius:10px;border:2px solid #CCC;background:#F5F5F5;color:#555;font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:0.5px;">
-                    ✏️ MANUAL
-                </button>
             </div>
 
             <!-- ── MODO LECTORA (pistola) ── -->
@@ -1321,7 +1317,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.58 — 12/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.59 — 12/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4684,7 +4680,8 @@ function csModoLectora() {
     if (inp) { inp.value=''; inp.oninput = function(){ csBuscarPorNombre(this.value); }; }
     // Estilos botones
     document.getElementById('btn-modo-lectora').style.cssText += ';background:#E53935;color:#fff;border-color:#E53935;';
-    document.getElementById('btn-modo-manual').style.cssText += ';background:#F5F5F5;color:#555;border-color:#CCC;';
+    const _btnMan = document.getElementById('btn-modo-manual');
+    if (_btnMan) _btnMan.style.cssText += ';background:#F5F5F5;color:#555;border-color:#CCC;';
     // Foco en CODBAR
     setTimeout(() => { const ci = document.getElementById('cs-inp-codbar'); if(ci) ci.focus(); }, 100);
 }
