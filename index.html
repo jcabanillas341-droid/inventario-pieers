@@ -920,7 +920,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.61 — 12/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.62 — 15/Ago/2026</div>
     </div>
 </div>
 
@@ -1318,7 +1318,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.61 — 12/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.62 — 15/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -2277,13 +2277,34 @@ function _convertirStockCSV(filas) {
 function _cargarResultadosEnModulo(res, modulo) {
     if (!res.length) { hideLoading(); showToast('⚠️ Sin productos válidos en el archivo','#E65100'); return; }
     if (modulo === 'comp') {
-        maestroMap.clear(); totalEsp = 0;
-        res.forEach(r => { const c=r.codigo.toUpperCase(); maestroMap.set(c,{exp:r.cantidad,real:0}); if(r.descripcion) descripcionMap.set(c,r.descripcion); totalEsp+=r.cantidad; });
-        if (historial.length > 0) syncConteo();
-        localStorage.setItem('p_total_v8', totalEsp);
-        saveComp(); hideLoading(); beep(880,0.1);
-        showToast(`✅ Maestro: ${res.length.toLocaleString()} productos cargados`,'#111');
-        renderComp(); focusScanner();
+        const cargarComp = (modoCarga) => {
+            if (modoCarga === 'replace') { maestroMap.clear(); totalEsp = 0; }
+            res.forEach(r => {
+                const c = r.codigo.toUpperCase();
+                const prev = maestroMap.get(c);
+                const prevExp  = (modoCarga === 'merge' && prev) ? prev.exp  : 0;
+                const prevReal = (modoCarga === 'merge' && prev) ? prev.real : 0;
+                maestroMap.set(c, { exp: prevExp + r.cantidad, real: prevReal });
+                if (r.descripcion) descripcionMap.set(c, r.descripcion);
+            });
+            totalEsp = 0;
+            for (const v of maestroMap.values()) totalEsp += v.exp;
+            if (historial.length > 0) syncConteo();
+            localStorage.setItem('p_total_v8', totalEsp);
+            saveComp(); hideLoading(); beep(880,0.1);
+            showToast(`✅ Maestro: ${res.length.toLocaleString()} productos ${modoCarga==='merge'?'agregados (total '+maestroMap.size.toLocaleString()+')':'cargados'}`,'#111');
+            renderComp(); focusScanner();
+        };
+        if (maestroMap.size > 0) {
+            hideLoading();
+            mostrarConfirmDoble('¿Cómo cargar esta base?',
+                'Ya tienes ' + maestroMap.size.toLocaleString() + ' productos en el maestro.\n\n• REEMPLAZAR: borra el maestro actual y deja solo esta base.\n• AGREGAR: suma esta base a las que ya cargaste (permite combinar varias bases).',
+                '🗑️ REEMPLAZAR', () => cargarComp('replace'),
+                '➕ AGREGAR',    () => cargarComp('merge')
+            );
+        } else {
+            cargarComp('replace');
+        }
     } else if (modulo === 'alm') {
         const nuevos = res.map(r => ({ cod: r.codigo.toUpperCase(), desc: r.descripcion, stock: r.cantidad }));
         if (!nuevos.length) { hideLoading(); showToast('⚠️ Sin productos válidos en el archivo','#E65100'); return; }
