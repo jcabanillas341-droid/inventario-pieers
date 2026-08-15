@@ -920,7 +920,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.62 — 15/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.63 — 15/Ago/2026</div>
     </div>
 </div>
 
@@ -1070,7 +1070,7 @@
         <div class="stats-grid" style="margin-bottom:4px;">
             <div style="flex:1" id="blq-esp">
                 <span id="stat-esp"  class="stat-val" style="font-size:16px;">0</span>
-                <span class="stat-lab" style="font-size:7px;">Maestro <span onclick="abrirModalVerMaestro()" style="cursor:pointer;font-size:10px;">👁️</span></span>
+                <span class="stat-lab" style="font-size:7px;">Maestro <span id="stat-nguias" style="font-size:6px;color:#888;"></span> <span onclick="abrirModalVerMaestro()" style="cursor:pointer;font-size:10px;">👁️</span></span>
             </div>
             <div style="flex:1;border-left:1px solid #2a2a2a;border-right:1px solid #2a2a2a;">
                 <span id="stat-cont" class="stat-val" style="font-size:16px;">0</span>
@@ -1088,6 +1088,7 @@
     <!-- MODAL: ver maestro completo (código, cantidad, descripción) -->
     <div id="modalVerMaestro" class="modal">
         <div class="modal-title">MAESTRO COMPLETO</div>
+        <div id="ver-maestro-guias" style="padding:0 4px 6px;flex-shrink:0;display:flex;flex-wrap:wrap;gap:4px;"></div>
         <div style="padding:0 4px 8px;flex-shrink:0;">
             <input id="ver-maestro-search" type="text" placeholder="🔍 Buscar código o descripción..." oninput="renderVerMaestro(this.value.trim())" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="width:100%;padding:9px 14px;border-radius:10px;border:2px solid var(--rojo);background:white;color:#111;font-size:13px;font-family:'Barlow',sans-serif;font-weight:700;box-sizing:border-box;">
         </div>
@@ -1096,6 +1097,7 @@
                 <th style="text-align:left;padding:6px 6px;font-size:10px;">CÓDIGO</th>
                 <th style="text-align:left;padding:6px 6px;font-size:10px;">DESCRIPCIÓN</th>
                 <th style="width:46px;padding:6px 4px;font-size:10px;">CANT</th>
+                <th style="text-align:left;padding:6px 6px;font-size:10px;">GUÍA</th>
             </tr></thead>
             <tbody id="t-ver-maestro"></tbody></table>
         </div>
@@ -1318,7 +1320,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.62 — 15/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.63 — 15/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -1550,6 +1552,8 @@ const CHUNK_SIZE    = 500;
 let modoActual     = null;
 let descripcionMap = new Map();
 let maestroMap     = new Map();
+let guiaMap        = new Map();  // código -> nombre de la guía/base de donde vino
+let guiasCargadas  = [];         // [{nombre, fecha, cantidad}] historial de guías cargadas al maestro
 let historial      = [];
 let lotes          = [];
 let totalEsp       = 0;
@@ -1804,6 +1808,8 @@ function saveComp() {
         localStorage.setItem('p_hist_v8',    JSON.stringify(historial));
         localStorage.setItem('p_total_v8',   totalEsp);
         if (descripcionMap.size > 0) localStorage.setItem('p_desc_v8', JSON.stringify(Object.fromEntries(descripcionMap)));
+        if (guiaMap.size > 0) localStorage.setItem('p_guiamap_v8', JSON.stringify(Object.fromEntries(guiaMap)));
+        localStorage.setItem('p_guias_v8', JSON.stringify(guiasCargadas));
     } catch(e) { showToast('⚠️ Error al guardar', '#c62828'); }
 }
 function saveLotes() { try { localStorage.setItem('p_lotes_v8', JSON.stringify(lotes)); } catch(e) {} }
@@ -1818,6 +1824,9 @@ function loadStateComp() {
     if (historial.length > 0 && maestroMap.size > 0) syncConteo();
     const d = localStorage.getItem('p_desc_v8');
     if (d) descripcionMap = new Map(Object.entries(JSON.parse(d)));
+    const g = localStorage.getItem('p_guiamap_v8');
+    if (g) guiaMap = new Map(Object.entries(JSON.parse(g)));
+    guiasCargadas = JSON.parse(localStorage.getItem('p_guias_v8') || '[]');
 }
 function syncConteo() {
     maestroMap.forEach(v => v.real = 0);
@@ -2274,11 +2283,12 @@ function _convertirStockCSV(filas) {
     return res;
 }
 
-function _cargarResultadosEnModulo(res, modulo) {
+function _cargarResultadosEnModulo(res, modulo, nombreGuia) {
     if (!res.length) { hideLoading(); showToast('⚠️ Sin productos válidos en el archivo','#E65100'); return; }
     if (modulo === 'comp') {
+        const guiaId = (nombreGuia || 'Guía sin nombre').replace(/\.[^.]+$/, '');
         const cargarComp = (modoCarga) => {
-            if (modoCarga === 'replace') { maestroMap.clear(); totalEsp = 0; }
+            if (modoCarga === 'replace') { maestroMap.clear(); totalEsp = 0; guiaMap.clear(); guiasCargadas = []; }
             res.forEach(r => {
                 const c = r.codigo.toUpperCase();
                 const prev = maestroMap.get(c);
@@ -2286,9 +2296,14 @@ function _cargarResultadosEnModulo(res, modulo) {
                 const prevReal = (modoCarga === 'merge' && prev) ? prev.real : 0;
                 maestroMap.set(c, { exp: prevExp + r.cantidad, real: prevReal });
                 if (r.descripcion) descripcionMap.set(c, r.descripcion);
+                guiaMap.set(c, guiaId);
             });
             totalEsp = 0;
             for (const v of maestroMap.values()) totalEsp += v.exp;
+            // Registrar esta guía en el historial de guías cargadas
+            const idxG = guiasCargadas.findIndex(g => g.nombre === guiaId);
+            const infoG = { nombre: guiaId, fecha: new Date().toLocaleString('es-PE'), cantidad: res.length };
+            if (idxG >= 0) guiasCargadas[idxG] = infoG; else guiasCargadas.push(infoG);
             if (historial.length > 0) syncConteo();
             localStorage.setItem('p_total_v8', totalEsp);
             saveComp(); hideLoading(); beep(880,0.1);
@@ -2379,7 +2394,7 @@ document.getElementById('guiaInput').addEventListener('change', function(e) {
                         res = _convertirStockCSV(lineasFb);
                     }
                 }
-                _cargarResultadosEnModulo(res, _guiaModulo);
+                _cargarResultadosEnModulo(res, _guiaModulo, f.name);
             } catch(err) { hideLoading(); showToast('❌ '+err.message,'#c62828'); }
         }, 30);
     };
@@ -3224,6 +3239,8 @@ function renderComp(ultimoCod=null, filtro='') {
     const p=totalEsp>0?Math.min(Math.round((cont/totalEsp)*100),100):0;
     document.getElementById('stat-avan').textContent = p+'%';
     document.getElementById('bar-fill').style.width  = p+'%';
+    const nguiasEl = document.getElementById('stat-nguias');
+    if (nguiasEl) nguiasEl.textContent = guiasCargadas.length ? '(' + guiasCargadas.length + ' guía' + (guiasCargadas.length>1?'s':'') + ')' : '';
 
     // Mejora 5: función de filtro
     const pasa = (k) => !fUp || k.includes(fUp) || (descripcionMap.get(k)||'').toUpperCase().includes(fUp);
@@ -3277,7 +3294,7 @@ function confirmarEliminarLecturaModal() {
     cerrarModalCompDel();
 }
 
-// ── Ventana: ver maestro completo (código, cantidad, descripción) ──
+// ── Ventana: ver maestro completo (código, cantidad, descripción, guía) ──
 function abrirModalVerMaestro() {
     renderVerMaestro('');
     const el = document.getElementById('modalVerMaestro');
@@ -3291,16 +3308,31 @@ function cerrarModalVerMaestro() {
 }
 function renderVerMaestro(filtro='') {
     const fUp = (filtro||'').toUpperCase();
+
+    // Lista de guías cargadas (resumen arriba del todo)
+    const guiasDiv = document.getElementById('ver-maestro-guias');
+    if (guiasDiv) {
+        if (guiasCargadas.length) {
+            guiasDiv.innerHTML = guiasCargadas.map(g =>
+                `<span style="background:#eef4ff;color:#1a3a6b;border:1px solid #c8d8f0;border-radius:8px;padding:3px 8px;font-size:10px;font-weight:700;">📖 ${g.nombre} · ${g.cantidad} art.</span>`
+            ).join('');
+        } else {
+            guiasDiv.innerHTML = '<span style="font-size:10px;color:#999;">Sin guías registradas todavía</span>';
+        }
+    }
+
     const frag = document.createDocumentFragment();
     let n = 0;
     for (const [k, v] of maestroMap) {
         const desc = descripcionMap.get(k) || '';
-        if (fUp && !k.includes(fUp) && !desc.toUpperCase().includes(fUp)) continue;
+        const guia = guiaMap.get(k) || '—';
+        if (fUp && !k.includes(fUp) && !desc.toUpperCase().includes(fUp) && !guia.toUpperCase().includes(fUp)) continue;
         const tr = document.createElement('tr');
         tr.style.borderBottom = '1px solid #EEE';
         tr.innerHTML = `<td style="font-size:11px;font-weight:bold;word-break:break-all;padding:5px 6px;">${k}</td>
             <td style="font-size:11px;padding:5px 6px;">${desc}</td>
-            <td style="text-align:center;padding:5px 4px;font-weight:bold;">${v.exp}</td>`;
+            <td style="text-align:center;padding:5px 4px;font-weight:bold;">${v.exp}</td>
+            <td style="font-size:10px;padding:5px 6px;color:#555;">${guia}</td>`;
         frag.appendChild(tr);
         n++;
         if (n >= 800) break; // límite razonable para no trabar el DOM
@@ -3360,9 +3392,10 @@ function resetearModulo() {
     mostrarConfirm('🗑️ Reiniciar ' + mod, msg, () => {
         if (modoActual === 'comp') {
             // Borrar TODO lo del comparativo del localStorage
-            ['p_maestro_v8','p_hist_v8','p_total_v8','p_desc_v8','p_lotes_v8'].forEach(k => localStorage.removeItem(k));
+            ['p_maestro_v8','p_hist_v8','p_total_v8','p_desc_v8','p_lotes_v8','p_guiamap_v8','p_guias_v8'].forEach(k => localStorage.removeItem(k));
             // Resetear variables en memoria
             maestroMap = new Map(); descripcionMap = new Map();
+            guiaMap = new Map(); guiasCargadas = [];
             historial = []; lotes = []; totalEsp = 0;
             // Re-renderizar pantalla en blanco
             renderComp();
@@ -3380,9 +3413,9 @@ function resetearModulo() {
 function resetearApp() {
     conPIN(() => mostrarConfirm('⚠️ Resetear TODO','Se eliminarán TODOS los datos. No se puede deshacer.', () => {
         // Borrar TODAS las claves de la app de localStorage
-        ['p_maestro_v8','p_hist_v8','p_total_v8','p_desc_v8','p_lotes_v8',
+        ['p_maestro_v8','p_hist_v8','p_total_v8','p_desc_v8','p_lotes_v8','p_guiamap_v8','p_guias_v8',
          'p_alm_v1','p_alm_movs_v1','p_alm_snaps_v1'].forEach(k=>localStorage.removeItem(k));
-        maestroMap=new Map(); descripcionMap=new Map(); historial=[]; lotes=[]; totalEsp=0;
+        maestroMap=new Map(); descripcionMap=new Map(); guiaMap=new Map(); guiasCargadas=[]; historial=[]; lotes=[]; totalEsp=0;
         almMap=new Map(); almMovs=[]; almSnapshots=[];
         toggleMenu(); showToast('✅ Todo reseteado','#111');
         setTimeout(()=>location.reload(),800);
@@ -6491,11 +6524,11 @@ function driveProcesar(ab, tipo) {
                     // Para Comparativo/Almacén: convertir usando CSV bien parseado
                     var lineasProp = csvTxt.split(/\r?\n/).map(function(l){ return csParseCSVLine(l); });
                     res = _convertirStockCSV(lineasProp);
-                    _cargarResultadosEnModulo(res, modulo);
+                    _cargarResultadosEnModulo(res, modulo, driveArchivoNombre);
                 } else {
                     try { res = _convertirGuiaXLSX(wb); } catch(e2) { res = []; }
                     if (!res.length) { var lineasP2 = csvTxt.split(/\r?\n/).map(function(l){ return csParseCSVLine(l); }); res = _convertirStockCSV(lineasP2); }
-                    _cargarResultadosEnModulo(res, modulo);
+                    _cargarResultadosEnModulo(res, modulo, driveArchivoNombre);
                 }
             }
         } catch(err) {
