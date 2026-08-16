@@ -920,7 +920,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.63 — 15/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.64 — 15/Ago/2026</div>
     </div>
 </div>
 
@@ -1320,7 +1320,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.63 — 15/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.64 — 15/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -5860,14 +5860,43 @@ function csVerLibros() {
             const cambiosTxt = l.actualizados > 0
                 ? '<span style="color:#E65100;font-weight:800;">🔔 ' + l.actualizados + ' cambio(s) de precio</span>'
                 : '<span style="color:#2E7D32;">✓ sin cambios</span>';
-            return '<div style="background:#F8F8F8;border-radius:12px;padding:12px 14px;border-left:4px solid #E65100;">'
-                + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:800;color:#111;">📖 ' + l.nombre + '</div>'
+            const nombreEsc = l.nombre.replace(/'/g, "\\'");
+            return '<div style="background:#F8F8F8;border-radius:12px;padding:12px 14px;border-left:4px solid #E65100;position:relative;">'
+                + '<button onclick="csEliminarLibro(\'' + nombreEsc + '\')" title="Borrar este libro" style="position:absolute;top:8px;right:8px;background:none;border:none;color:#c62828;font-size:16px;cursor:pointer;padding:2px 6px;">🗑️</button>'
+                + '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:800;color:#111;padding-right:26px;">📖 ' + l.nombre + '</div>'
                 + '<div style="font-size:11px;color:#111111;margin-top:3px;">' + l.fecha + ' · ' + l.articulos + ' artículos en base · ' + (l.nuevos||0) + ' nuevos</div>'
                 + '<div style="font-size:11px;margin-top:4px;">' + cambiosTxt + '</div>'
                 + '</div>';
         }).join('');
     }
     document.getElementById('modal-cs-libros').style.display = 'flex';
+}
+
+function csEliminarLibro(nombre) {
+    document.getElementById('modal-cs-libros').style.display = 'none';
+    mostrarConfirmDoble('¿Borrar "' + nombre + '"?',
+        'Se eliminará este libro. Los precios que ganaban desde "' + nombre + '" se pierden, salvo que otro libro cargado también tenga precio para ese código. Esta acción no se puede deshacer.',
+        '🗑️ SÍ, BORRAR', function(){ csEjecutarEliminarLibro(nombre); },
+        'Cancelar', function(){ csVerLibros(); }
+    );
+}
+
+function csEjecutarEliminarLibro(nombre) {
+    csLibrosCargados = csLibrosCargados.filter(l => l.nombre !== nombre);
+    let afectados = 0;
+    Object.keys(csPreciosDB).forEach(cod => {
+        const e = csPreciosDB[cod];
+        let tocado = false;
+        if (e.menorLibro  === nombre) { e.menor  = 0; e.menorLibro  = null; tocado = true; }
+        if (e.mayorLibro  === nombre) { e.mayor  = 0; e.mayorLibro  = null; tocado = true; }
+        if (e.ofertaLibro === nombre) { e.oferta = 0; e.ofertaLibro = null; tocado = true; }
+        if (tocado) afectados++;
+        if (!e.menor && !e.mayor && !e.oferta && !e.etiqueta) delete csPreciosDB[cod];
+    });
+    csSavePreciosLocal();
+    showToast('🗑️ "' + nombre + '" eliminado' + (afectados ? ' (' + afectados + ' precio(s) afectados)' : ''), '#555');
+    csActualizarBadgeLibros();
+    csVerLibros(); // refrescar el modal con la lista actualizada
 }
 
 function csConfirmarLimpiarPrecios() {
