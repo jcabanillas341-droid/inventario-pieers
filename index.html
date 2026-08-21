@@ -620,42 +620,42 @@
         .stat-sku { font-size:9px; color:#111111; text-align:center; letter-spacing:0.3px; margin-top:1px; }
 
         /* ── MODAL DETALLE LOTE GUARDADO (8) ── */
-        #modal-detalle-lote { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:8000; flex-direction:column; overflow:hidden; }
-        .dl-header { display:flex; align-items:center; gap:10px; padding:12px 14px; background:#111; border-bottom:2px solid var(--rojo); flex-shrink:0; }
-        .dl-title  { font-family:'Barlow',sans-serif; font-size:16px; font-weight:900; color:white; letter-spacing:1px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .dl-close  { background:none; border:none; color:#aaa; font-size:22px; cursor:pointer; padding:0 4px; flex-shrink:0; }
-        .dl-resumen { display:flex; gap:6px; padding:8px 12px; background:#0a0a0a; border-bottom:1px solid #1a1a1a; flex-shrink:0; flex-wrap:wrap; }
-        .dl-res-pill { display:flex; flex-direction:column; align-items:center; padding:5px 12px; border-radius:8px; min-width:50px; }
+        #modal-detalle-lote { display:none; position:fixed; inset:0; background:#F2F2F2; z-index:8000; flex-direction:column; overflow:hidden; }
+        .dl-header { display:flex; align-items:center; gap:10px; padding:12px 14px; background:#fff; border-bottom:2px solid var(--rojo); flex-shrink:0; }
+        .dl-title  { font-family:'Barlow',sans-serif; font-size:16px; font-weight:900; color:#111; letter-spacing:1px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .dl-close  { background:none; border:none; color:#555; font-size:22px; cursor:pointer; padding:0 4px; flex-shrink:0; }
+        .dl-resumen { display:flex; gap:6px; padding:8px 12px; background:#fff; border-bottom:1px solid #e0e0e0; flex-shrink:0; flex-wrap:wrap; }
+        .dl-res-pill { display:flex; flex-direction:column; align-items:center; padding:5px 12px; border-radius:8px; min-width:50px; background:#F5F5F5; }
         .dl-res-num  { font-family:'Barlow',sans-serif; font-size:20px; font-weight:900; }
-        .dl-res-lab  { font-size:10px; color:#ddd; text-transform:uppercase; letter-spacing:0.5px; font-weight:700; }
-        .dl-tabs { display:flex; background:#0d0d0d; border-bottom:1px solid #1a1a1a; flex-shrink:0; overflow-x:auto; }
-        .dl-tab  { flex:1; min-width:60px; padding:9px 4px; background:none; border:none; border-bottom:3px solid transparent; color:#aaa; font-family:'Barlow',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.3px; cursor:pointer; white-space:nowrap; }
-        .dl-tab.activo { color:white; border-bottom-color:var(--rojo); }
-        .dl-search { padding:7px 10px; background:#111; flex-shrink:0; }
-        .dl-search input { width:100%; padding:7px 12px; border-radius:8px; border:1px solid #2a2a2a; background:#1a1a1a; color:white; font-size:13px; font-family:'Barlow',sans-serif; box-sizing:border-box; }
+        .dl-res-lab  { font-size:10px; color:#444; text-transform:uppercase; letter-spacing:0.5px; font-weight:700; }
+        .dl-tabs { display:flex; background:#fff; border-bottom:1px solid #e0e0e0; flex-shrink:0; overflow-x:auto; }
+        .dl-tab  { flex:1; min-width:60px; padding:9px 4px; background:none; border:none; border-bottom:3px solid transparent; color:#555; font-family:'Barlow',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.3px; cursor:pointer; white-space:nowrap; }
+        .dl-tab.activo { color:#111; border-bottom-color:var(--rojo); }
+        .dl-search { padding:7px 10px; background:#fff; flex-shrink:0; }
+        .dl-search input { width:100%; padding:7px 12px; border-radius:8px; border:1.5px solid #ccc; background:#fff; color:#111; font-size:13px; font-family:'Barlow',sans-serif; box-sizing:border-box; }
         .dl-search input:focus { outline:none; border-color:var(--rojo); }
-        .dl-list { flex:1; overflow-y:auto; padding:8px 10px; }
-        .dl-item { display:flex; align-items:flex-start; gap:10px; padding:11px 12px; background:#212121; border-radius:10px; margin-bottom:8px; border-left:4px solid #444; }
-        .dl-item.ok       { border-left-color:#4CAF50; }
-        .dl-item.falta    { border-left-color:#FF9800; }
-        .dl-item.sobra    { border-left-color:#42A5F5; }
-        .dl-item.nomaestro{ border-left-color:#BA68C8; }
+        .dl-list { flex:1; overflow-y:auto; padding:8px 10px; background:#F2F2F2; }
+        .dl-item { display:flex; align-items:flex-start; gap:10px; padding:11px 12px; background:#fff; border-radius:10px; margin-bottom:8px; border-left:4px solid #999; box-shadow:0 1px 3px rgba(0,0,0,0.12); }
+        .dl-item.ok       { border-left-color:#2E7D32; }
+        .dl-item.falta    { border-left-color:#E65100; }
+        .dl-item.sobra    { border-left-color:#1565C0; }
+        .dl-item.nomaestro{ border-left-color:#7B1FA2; }
         .dl-item-body { flex:1; min-width:0; }
-        .dl-item-desc { font-family:'Barlow',sans-serif; font-size:14px; font-weight:700; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .dl-item-desc.sin-desc { color:#FFB74D; font-style:italic; font-weight:600; }
-        .dl-item-cod  { font-size:11.5px; color:#bbb; font-family:'Barlow',sans-serif; margin-top:2px; letter-spacing:0.3px; }
+        .dl-item-desc { font-family:'Barlow',sans-serif; font-size:14px; font-weight:700; color:#111; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .dl-item-desc.sin-desc { color:#E65100; font-style:italic; font-weight:600; }
+        .dl-item-cod  { font-size:11.5px; color:#555; font-family:'Barlow',sans-serif; margin-top:2px; letter-spacing:0.3px; }
         .dl-item-cols { display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; }
-        .dl-pill { display:flex; flex-direction:column; align-items:center; padding:4px 9px; border-radius:6px; background:#333; min-width:40px; }
+        .dl-pill { display:flex; flex-direction:column; align-items:center; padding:4px 9px; border-radius:6px; background:#F0F0F0; min-width:40px; }
         .dl-pill-val { font-family:'Barlow',sans-serif; font-size:15px; font-weight:900; }
-        .dl-pill-lab { font-size:9px; color:#ccc; text-transform:uppercase; font-weight:700; letter-spacing:0.3px; }
+        .dl-pill-lab { font-size:9px; color:#555; text-transform:uppercase; font-weight:700; letter-spacing:0.3px; }
         .dl-badge { font-family:'Barlow',sans-serif; font-size:11px; font-weight:900; padding:3px 8px; border-radius:5px; white-space:nowrap; align-self:center; flex-shrink:0; }
         .dl-badge.ok    { background:#2E7D32; color:#fff; }
         .dl-badge.falta { background:#E65100; color:#fff; }
         .dl-badge.sobra { background:#1565C0; color:#fff; }
         .dl-badge.nm    { background:#7B1FA2; color:#fff; }
-        .dl-footer { padding:10px 12px; background:#111; border-top:1px solid #1a1a1a; display:flex; gap:8px; flex-shrink:0; }
+        .dl-footer { padding:10px 12px; background:#fff; border-top:1px solid #e0e0e0; display:flex; gap:8px; flex-shrink:0; }
         .dl-btn-excel { flex:1; padding:13px; border:none; border-radius:8px; background:var(--rojo); color:white; font-family:'Barlow',sans-serif; font-size:13px; font-weight:900; cursor:pointer; letter-spacing:1px; }
-        .dl-btn-close { flex:1; padding:13px; border:1px solid #333; border-radius:8px; background:#222; color:#aaa; font-family:'Barlow',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
+        .dl-btn-close { flex:1; padding:13px; border:1.5px solid #ccc; border-radius:8px; background:#F5F5F5; color:#333; font-family:'Barlow',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
 
 
         /* ══════ MÓDULO CONSULTAR STOCK ══════ */
@@ -921,7 +921,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.65 — 21/Ago/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.66 — 21/Ago/2026</div>
     </div>
 </div>
 
@@ -1321,7 +1321,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.65 — 21/Ago/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.66 — 21/Ago/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -3578,15 +3578,15 @@ function dlRender() {
         div.className = 'dl-item ' + e.cat;
         const catLabel = {ok:'✅ OK', falta:`⚠️ FALTA ${e.exp - e.real}`, sobra:`📦 SOBRA ${e.real - e.exp}`, nomaestro:'❓ SIN MAESTRO'}[e.cat] || '';
         const catBadge = {ok:'ok', falta:'falta', sobra:'sobra', nomaestro:'nm'}[e.cat] || '';
-        const realColor = e.cat==='ok'?'#4CAF50':e.cat==='falta'?'#E65100':e.cat==='sobra'?'#42A5F5':'#CE93D8';
+        const realColor = e.cat==='ok'?'#2E7D32':e.cat==='falta'?'#E65100':e.cat==='sobra'?'#1565C0':'#7B1FA2';
         div.innerHTML = `
             <div class="dl-item-body">
                 <div class="dl-item-desc${e.desc?'':' sin-desc'}" title="${e.desc||e.cod}">${e.desc||'⚠ Sin descripción en el maestro'}</div>
                 <div class="dl-item-cod">${e.cod}</div>
                 <div class="dl-item-cols">
-                    <div class="dl-pill"><span class="dl-pill-val" style="color:#ddd;">${e.exp}</span><span class="dl-pill-lab">ESP</span></div>
+                    <div class="dl-pill"><span class="dl-pill-val" style="color:#333;">${e.exp}</span><span class="dl-pill-lab">ESP</span></div>
                     <div class="dl-pill"><span class="dl-pill-val" style="color:${realColor};">${e.real}</span><span class="dl-pill-lab">REAL</span></div>
-                    <div class="dl-pill"><span class="dl-pill-val" style="color:${e.diff===0?'#4CAF50':e.diff<0?'#FF9800':'#42A5F5'};">${e.diff>0?'+'+e.diff:e.diff}</span><span class="dl-pill-lab">DIFER.</span></div>
+                    <div class="dl-pill"><span class="dl-pill-val" style="color:${e.diff===0?'#2E7D32':e.diff<0?'#E65100':'#1565C0'};">${e.diff>0?'+'+e.diff:e.diff}</span><span class="dl-pill-lab">DIFER.</span></div>
                 </div>
             </div>
             <span class="dl-badge ${catBadge}">${catLabel}</span>`;
@@ -6759,23 +6759,23 @@ function driveProcesar(ab, tipo) {
     </div>
     <!-- Resumen top -->
     <div class="dl-resumen">
-        <div class="dl-res-pill" style="background:#0a1a0a;">
-            <span class="dl-res-num" style="color:#4CAF50;" id="dl-r-ok">0</span>
+        <div class="dl-res-pill" style="background:#E8F5E9;">
+            <span class="dl-res-num" style="color:#2E7D32;" id="dl-r-ok">0</span>
             <span class="dl-res-lab">✅ Exactos</span>
         </div>
-        <div class="dl-res-pill" style="background:#1a0800;">
+        <div class="dl-res-pill" style="background:#FFF3E0;">
             <span class="dl-res-num" style="color:#E65100;" id="dl-r-falta">0</span>
             <span class="dl-res-lab">⚠️ Faltan</span>
         </div>
-        <div class="dl-res-pill" style="background:#00071a;">
-            <span class="dl-res-num" style="color:#42A5F5;" id="dl-r-sobra">0</span>
+        <div class="dl-res-pill" style="background:#E3F2FD;">
+            <span class="dl-res-num" style="color:#1565C0;" id="dl-r-sobra">0</span>
             <span class="dl-res-lab">📦 Sobran</span>
         </div>
-        <div class="dl-res-pill" style="background:#0d000d;">
-            <span class="dl-res-num" style="color:#CE93D8;" id="dl-r-nm">0</span>
+        <div class="dl-res-pill" style="background:#F3E5F5;">
+            <span class="dl-res-num" style="color:#7B1FA2;" id="dl-r-nm">0</span>
             <span class="dl-res-lab">❓ S/Maestro</span>
         </div>
-        <div class="dl-res-pill" style="background:#1a1a1a;">
+        <div class="dl-res-pill" style="background:#F5F5F5;">
             <span class="dl-res-num" style="color:var(--rojo);" id="dl-r-total">0</span>
             <span class="dl-res-lab">🔢 Lecturas</span>
         </div>
