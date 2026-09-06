@@ -931,7 +931,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.75 — 06/Sep/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.76 — 06/Sep/2026</div>
     </div>
 </div>
 
@@ -1331,7 +1331,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.75 — 06/Sep/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.76 — 06/Sep/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -5888,9 +5888,16 @@ let ticketItems = {}; // { modelo(7 car.): cantidad }
 function tkOnBarcodeInput(val) {
     val = (val || '').trim();
     if (val.length >= 13) {
-        const bc = val.toUpperCase();
-        const modelo = bc.substring(1, 8);
-        tkAgregar(modelo);
+        const bc       = val.toUpperCase();
+        const codColor = bc.substring(0, 11); // P + modelo(7) + color(3)
+        const modelo   = bc.substring(1, 8);
+        // La promo por color tiene prioridad sobre unitario/combo/oferta —
+        // igual que en Consultar Stock — así que se revisa primero.
+        if (csPromoColorDB && csPromoColorDB[codColor]) {
+            tkAgregar(codColor);
+        } else {
+            tkAgregar(modelo);
+        }
         setTimeout(() => {
             const inp = document.getElementById('tk-inp-codbar');
             if (inp) { inp.value = ''; inp.focus(); }
@@ -5925,14 +5932,34 @@ function tkAgregarDesdeSearch(modelo) {
     const res = document.getElementById('tk-name-results'); if (res) res.innerHTML = '';
 }
 
-function tkAgregar(modelo) {
-    const tieneStock  = csStockDB   && csStockDB[modelo];
-    const tienePrecio = csPreciosDB && csPreciosDB[modelo];
-    if (!tieneStock && !tienePrecio) {
-        showToast('⚠️ Código no encontrado en la base cargada', '#c62828');
-        return;
+// Una clave de ticket de 11 caracteres es un código de PROMO COLOR
+// (P+modelo(7)+color(3)); una de 7 caracteres es un modelo normal.
+function tkEsPromoColor(key) { return key.length === 11; }
+
+function tkDescripcionItem(key) {
+    if (tkEsPromoColor(key)) {
+        const promo = csPromoColorDB && csPromoColorDB[key];
+        const modelo = key.substring(1, 8);
+        return (promo && promo.desc) || (csStockDB && csStockDB[modelo] && csStockDB[modelo].desc) || key;
     }
-    ticketItems[modelo] = (ticketItems[modelo] || 0) + 1;
+    return (csStockDB && csStockDB[key] && csStockDB[key].desc) || '(sin descripción)';
+}
+
+function tkAgregar(key) {
+    if (tkEsPromoColor(key)) {
+        if (!(csPromoColorDB && csPromoColorDB[key])) {
+            showToast('⚠️ Color no encontrado en la promo cargada', '#c62828');
+            return;
+        }
+    } else {
+        const tieneStock  = csStockDB   && csStockDB[key];
+        const tienePrecio = csPreciosDB && csPreciosDB[key];
+        if (!tieneStock && !tienePrecio) {
+            showToast('⚠️ Código no encontrado en la base cargada', '#c62828');
+            return;
+        }
+    }
+    ticketItems[key] = (ticketItems[key] || 0) + 1;
     try { beep(1000, 0.05); } catch(e) {}
     tkRender();
 }
@@ -5955,7 +5982,10 @@ function tkPrecioUnidad(precios) {
 // - 'umbral' → "COMPRA MAYOR A X" — si el resto de la compra del cliente supera
 //              S/X, ESTE producto puntual baja al precio especial (sin importar
 //              cuántas unidades de él se lleven).
+// La PROMO COLOR (clave de 11 caracteres) nunca entra aquí — tiene prioridad
+// absoluta y se cobra siempre a su propio precio fijo, sin combo ni umbral.
 function tkInfoPromo(modelo) {
+    if (tkEsPromoColor(modelo)) return null;
     const precios = (csPreciosDB && csPreciosDB[modelo]) || {};
     if (!(precios.mayor > 0)) return null;
     const promos = precios.promos || [];
@@ -6039,16 +6069,19 @@ function tkRender() {
     // ── Tarjetas individuales (sin combo o que no llegaron a 2 en su grupo) ──
     individuales.forEach(modelo => {
         const count = ticketItems[modelo];
-        const desc  = (csStockDB && csStockDB[modelo] && csStockDB[modelo].desc) || '(sin descripción)';
-        const unit  = tkPrecioUnidad((csPreciosDB && csPreciosDB[modelo]) || {});
+        const esColor = tkEsPromoColor(modelo);
+        const desc  = tkDescripcionItem(modelo);
+        const unit  = esColor
+            ? (csPromoColorDB[modelo] ? csPromoColorDB[modelo].precio : 0)
+            : tkPrecioUnidad((csPreciosDB && csPreciosDB[modelo]) || {});
         const subtotal = count * unit;
         totalGeneral += subtotal;
         totalItems   += count;
-        html += `<div onclick="abrirModalTkDel('${modelo}')" style="background:#fff;border-radius:12px;padding:11px 13px;margin-bottom:8px;border-left:4px solid #2E7D32;box-shadow:0 1px 3px rgba(0,0,0,0.08);cursor:pointer;">
+        html += `<div onclick="abrirModalTkDel('${modelo}')" style="background:#fff;border-radius:12px;padding:11px 13px;margin-bottom:8px;border-left:4px solid ${esColor ? '#E53935' : '#2E7D32'};box-shadow:0 1px 3px rgba(0,0,0,0.08);cursor:pointer;">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
                 <div style="flex:1;min-width:0;">
                     <div style="font-family:'Barlow',sans-serif;font-weight:800;font-size:14px;color:#111;word-break:break-word;">${desc}</div>
-                    <div style="font-size:10px;color:#999;">${modelo}</div>
+                    <div style="font-size:10px;color:#999;">${modelo}${esColor ? ' · 🎨 promo color' : ''}</div>
                     <div style="font-size:11px;color:#555;margin-top:3px;">${count} unidad${count > 1 ? 'es' : ''} (S/${unit.toFixed(2)} c/u)</div>
                 </div>
                 <div style="text-align:right;flex-shrink:0;">
@@ -6101,7 +6134,7 @@ function tkRender() {
 let _tkModeloActual = null;
 function abrirModalTkDel(modelo) {
     _tkModeloActual = modelo;
-    const desc = (csStockDB && csStockDB[modelo] && csStockDB[modelo].desc) || '(sin descripción)';
+    const desc = tkDescripcionItem(modelo);
     document.getElementById('tk-del-desc').textContent = desc;
     document.getElementById('tk-del-cod').textContent  = modelo;
     document.getElementById('tk-del-cant-inp').value   = ticketItems[modelo];
