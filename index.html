@@ -931,7 +931,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.74 — 06/Sep/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.75 — 06/Sep/2026</div>
     </div>
 </div>
 
@@ -1331,7 +1331,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.74 — 06/Sep/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.75 — 06/Sep/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -1385,9 +1385,16 @@
     <div id="modalTkDel" class="modal" style="align-items:center;justify-content:center;">
         <div style="background:#fff;border-radius:16px;padding:22px 20px;max-width:320px;width:100%;text-align:center;margin:auto;">
             <div id="tk-del-desc" style="font-family:'Barlow',sans-serif;font-weight:900;font-size:16px;color:#111;margin-bottom:2px;"></div>
-            <div id="tk-del-cod" style="font-size:11px;color:#888;margin-bottom:14px;"></div>
-            <div style="font-size:13px;color:#555;margin-bottom:16px;">Cantidad en el ticket: <b id="tk-del-cant"></b></div>
-            <button onclick="tkQuitarUno()" style="width:100%;background:#FF9800;color:#fff;border:none;border-radius:10px;padding:12px;font-weight:800;font-size:13px;margin-bottom:8px;">➖ QUITAR 1 UNIDAD</button>
+            <div id="tk-del-cod" style="font-size:11px;color:#888;margin-bottom:16px;"></div>
+
+            <div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Cantidad</div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:16px;">
+                <button onclick="tkCantDecrementar()" style="width:42px;height:42px;border-radius:10px;border:none;background:#EEE;color:#333;font-size:20px;font-weight:900;cursor:pointer;">−</button>
+                <input id="tk-del-cant-inp" type="number" min="1" inputmode="numeric"
+                    style="width:70px;text-align:center;font-family:'Barlow',sans-serif;font-size:22px;font-weight:900;color:#111;border:2px solid #2E7D32;border-radius:10px;padding:8px 4px;">
+                <button onclick="tkCantIncrementar()" style="width:42px;height:42px;border-radius:10px;border:none;background:#2E7D32;color:#fff;font-size:20px;font-weight:900;cursor:pointer;">+</button>
+            </div>
+            <button onclick="tkGuardarCantidad()" style="width:100%;background:#2E7D32;color:#fff;border:none;border-radius:10px;padding:12px;font-weight:800;font-size:13px;margin-bottom:8px;">✅ GUARDAR CANTIDAD</button>
             <button onclick="tkEliminarLinea()" style="width:100%;background:#c62828;color:#fff;border:none;border-radius:10px;padding:12px;font-weight:800;font-size:13px;margin-bottom:8px;">🗑️ ELIMINAR TODA LA LÍNEA</button>
             <button onclick="cerrarModalTkDel()" style="width:100%;background:#EEE;color:#333;border:none;border-radius:10px;padding:12px;font-weight:700;font-size:13px;">CANCELAR</button>
         </div>
@@ -6097,17 +6104,31 @@ function abrirModalTkDel(modelo) {
     const desc = (csStockDB && csStockDB[modelo] && csStockDB[modelo].desc) || '(sin descripción)';
     document.getElementById('tk-del-desc').textContent = desc;
     document.getElementById('tk-del-cod').textContent  = modelo;
-    document.getElementById('tk-del-cant').textContent = ticketItems[modelo];
+    document.getElementById('tk-del-cant-inp').value   = ticketItems[modelo];
     document.getElementById('modalTkDel').style.display = 'flex';
 }
 function cerrarModalTkDel() {
     document.getElementById('modalTkDel').style.display = 'none';
     _tkModeloActual = null;
 }
-function tkQuitarUno() {
+function tkCantIncrementar() {
+    const inp = document.getElementById('tk-del-cant-inp');
+    inp.value = (parseInt(inp.value, 10) || 0) + 1;
+}
+function tkCantDecrementar() {
+    const inp = document.getElementById('tk-del-cant-inp');
+    const val = (parseInt(inp.value, 10) || 0) - 1;
+    inp.value = val < 1 ? 1 : val;
+}
+function tkGuardarCantidad() {
     if (!_tkModeloActual) return;
-    ticketItems[_tkModeloActual]--;
-    if (ticketItems[_tkModeloActual] <= 0) delete ticketItems[_tkModeloActual];
+    const inp = document.getElementById('tk-del-cant-inp');
+    const cant = parseInt(inp.value, 10);
+    if (!cant || cant < 1) {
+        showToast('⚠️ Ingresa una cantidad válida (mínimo 1)', '#c62828');
+        return;
+    }
+    ticketItems[_tkModeloActual] = cant;
     cerrarModalTkDel();
     tkRender();
 }
