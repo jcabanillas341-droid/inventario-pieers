@@ -931,7 +931,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.76 — 06/Sep/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.77 — 06/Sep/2026</div>
     </div>
 </div>
 
@@ -1331,7 +1331,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.76 — 06/Sep/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.77 — 06/Sep/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -5995,7 +5995,12 @@ function tkInfoPromo(modelo) {
     if (mUmbral) {
         return { tipo: 'umbral', nombre, umbral: parseInt(mUmbral[1], 10), precioEspecial: precios.mayor };
     }
-    return { tipo: 'combo', nombre: nombre || ('__combo_' + modelo) };
+    // Tamaño real del combo: "3x89.9" → 3, "2X109.9" → 2. Por defecto 2 si el
+    // nombre no trae el patrón NxPRECIO (ej. promos por % de descuento adicional).
+    let tamano = 2;
+    const mTam = nombre ? nombre.match(/(\d+)\s*[xX]\s*[\d.,]+/) : null;
+    if (mTam) tamano = parseInt(mTam[1], 10) || 2;
+    return { tipo: 'combo', nombre: nombre || ('__combo_' + modelo), tamano };
 }
 
 function tkRender() {
@@ -6028,31 +6033,42 @@ function tkRender() {
         let countTotal = 0;
         modelosGrupo.forEach(m => countTotal += ticketItems[m]);
         const comboPrecio = (csPreciosDB[modelosGrupo[0]] || {}).mayor || 0;
+        const infoGrupo = tkInfoPromo(modelosGrupo[0]);
+        const tamano = (infoGrupo && infoGrupo.tamano) || 2; // ej. 2 (2x) o 3 (3x)
 
-        if (countTotal >= 2) {
-            const pares = Math.floor(countTotal / 2);
-            const unidadesCombo = pares * 2;
-            const resto = countTotal - unidadesCombo;
-            // La unidad impar (si sobra una) se cobra a su propio precio unitario;
-            // se le asigna al modelo que tenga cantidad impar (o al último si no hay).
-            let modeloResto = resto ? (modelosGrupo.find(m => ticketItems[m] % 2 === 1) || modelosGrupo[modelosGrupo.length - 1]) : null;
-            const unitResto = modeloResto ? tkPrecioUnidad(csPreciosDB[modeloResto] || {}) : 0;
-            const subtotalGrupo = unidadesCombo * comboPrecio + resto * unitResto;
+        if (countTotal >= tamano) {
+            const sets = Math.floor(countTotal / tamano);
+            const unidadesCombo = sets * tamano;
+            let restanteCombo = unidadesCombo;
+            let subtotalGrupo = 0;
+            const detalleSueltos = [];
+            // Reparte las unidades del grupo en orden: primero llena los cupos
+            // de combo (unidadesCombo), lo que sobra por modelo se cobra a su
+            // propio precio unitario. Funciona igual para combos de 2, 3 o más.
+            const filas = modelosGrupo.map(m => {
+                const c = ticketItems[m];
+                const enCombo = Math.min(c, restanteCombo);
+                const suelto  = c - enCombo;
+                restanteCombo -= enCombo;
+                subtotalGrupo += enCombo * comboPrecio;
+                if (suelto > 0) {
+                    const up = tkPrecioUnidad(csPreciosDB[m] || {});
+                    subtotalGrupo += suelto * up;
+                    detalleSueltos.push(suelto + ' de ' + m + ' (S/' + up.toFixed(2) + ')');
+                }
+                const desc = (csStockDB[m] && csStockDB[m].desc) || m;
+                return `<div onclick="abrirModalTkDel('${m}')" style="cursor:pointer;padding:2px 0;font-size:12px;color:#333;">${desc} <span style="color:#999;font-size:10px;">(${m})</span> — x${c}</div>`;
+            }).join('');
 
             totalGeneral += subtotalGrupo;
             totalItems   += countTotal;
-
-            const filas = modelosGrupo.map(m => {
-                const desc = (csStockDB[m] && csStockDB[m].desc) || m;
-                return `<div onclick="abrirModalTkDel('${m}')" style="cursor:pointer;padding:2px 0;font-size:12px;color:#333;">${desc} <span style="color:#999;font-size:10px;">(${m})</span> — x${ticketItems[m]}</div>`;
-            }).join('');
 
             html += `<div style="background:#fff;border-radius:12px;padding:11px 13px;margin-bottom:8px;border-left:4px solid #E65100;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
                     <div style="flex:1;min-width:0;">
                         <div style="font-family:'Barlow',sans-serif;font-weight:800;font-size:13px;color:#E65100;">🔗 ${nombreGrupo}</div>
                         <div style="margin-top:3px;">${filas}</div>
-                        <div style="font-size:11px;color:#555;margin-top:4px;">${unidadesCombo} en combo (S/${comboPrecio.toFixed(2)} c/u)${resto ? ' + 1 unidad (S/' + unitResto.toFixed(2) + ')' : ''}</div>
+                        <div style="font-size:11px;color:#555;margin-top:4px;">${unidadesCombo} en combo de ${tamano} (S/${comboPrecio.toFixed(2)} c/u)${detalleSueltos.length ? ' + ' + detalleSueltos.join(' + ') : ''}</div>
                     </div>
                     <div style="text-align:right;flex-shrink:0;">
                         <div style="font-family:'Barlow',sans-serif;font-size:11px;color:#999;">x${countTotal}</div>
@@ -6061,7 +6077,7 @@ function tkRender() {
                 </div>
             </div>`;
         } else {
-            // Solo 1 unidad en todo el grupo — no alcanza para combo, se cobra unitario
+            // No alcanza el tamaño mínimo del combo — se cobra unitario
             individuales.push(...modelosGrupo);
         }
     });
