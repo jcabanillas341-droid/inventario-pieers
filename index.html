@@ -661,6 +661,8 @@
         /* ══════ MÓDULO CONSULTAR STOCK ══════ */
         .btn-stock-mod { background: linear-gradient(135deg, #1a3a6a, #0d2550); color: white; border: none; box-shadow: 0 2px 10px rgba(13,37,80,0.25); }
         .btn-stock-mod:hover { border-color: #4a8aca; filter: brightness(1.1); }
+        .btn-ticket-mod { background: linear-gradient(135deg, #2E7D32, #1B5E20); color: white; border: none; box-shadow: 0 2px 10px rgba(27,94,32,0.28); }
+        .btn-ticket-mod:hover { filter: brightness(1.1); }
 
         #vista-stock {
             display: none; flex-direction: column; flex: 1; overflow: hidden;
@@ -920,8 +922,16 @@
             </span>
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
+        <button class="btn-modo btn-ticket-mod" onclick="seleccionarModo('ticket')" style="width:100%;max-width:360px;">
+            <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">🧾</div>
+            <span class="txt">
+                <span class="tit">SIMULADOR DE TICKET</span>
+                <span class="desc">Escanea lo que lleva el cliente y calcula el total — aplica precio unitario o combo automáticamente.</span>
+            </span>
+            <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
+        </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.70 — 06/Sep/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.71 — 06/Sep/2026</div>
     </div>
 </div>
 
@@ -1321,7 +1331,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.70 — 06/Sep/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.71 — 06/Sep/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -1343,6 +1353,39 @@
             </div>
         </div>
     </div><!-- fin vista-stock -->
+
+    <!-- ══════════════════════════════════════════════
+         SIMULADOR DE TICKET / BOLETA
+         Reutiliza la misma base de Stock/Precios ya cargada
+         en Consultar Stock (csStockDB / csPreciosDB).
+    ═══════════════════════════════════════════════ -->
+    <div id="vista-ticket" style="display:none;flex-direction:column;flex:1;overflow:hidden;background:#EEF5EE;">
+        <div style="padding:10px 12px;flex-shrink:0;background:linear-gradient(180deg,#c8e6c9,#a5d6a7);border-bottom:2px solid #2E7D32;">
+            <input type="text" id="tk-inp-codbar" placeholder="Escanear / 13 dígitos" maxlength="20"
+                style="width:100%;box-sizing:border-box;padding:12px 14px;border-radius:10px;border:2px solid #2E7D32;font-family:'Courier New',monospace;font-size:16px;background:#fff;color:#111;"
+                oninput="tkOnBarcodeInput(this.value)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:10px 10px 4px;" id="tk-lista"></div>
+        <div style="flex-shrink:0;background:#fff;border-top:2px solid #2E7D32;padding:10px 14px;">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+                <span style="font-family:'Barlow',sans-serif;font-size:12px;font-weight:800;color:#555;text-transform:uppercase;letter-spacing:0.5px;">Total (<span id="tk-total-items">0</span> prenda(s))</span>
+                <span style="font-family:'Barlow',sans-serif;font-size:30px;font-weight:900;color:#2E7D32;">S/ <span id="tk-total">0.00</span></span>
+            </div>
+            <button onclick="tkNuevoTicket()" style="width:100%;padding:12px;border:none;border-radius:10px;background:#c62828;color:#fff;font-family:'Barlow',sans-serif;font-weight:800;font-size:13px;letter-spacing:0.5px;">🗑️ NUEVO TICKET</button>
+        </div>
+    </div>
+
+    <!-- MODAL: ajustar/eliminar una línea del ticket -->
+    <div id="modalTkDel" class="modal" style="align-items:center;justify-content:center;">
+        <div style="background:#fff;border-radius:16px;padding:22px 20px;max-width:320px;width:100%;text-align:center;margin:auto;">
+            <div id="tk-del-desc" style="font-family:'Barlow',sans-serif;font-weight:900;font-size:16px;color:#111;margin-bottom:2px;"></div>
+            <div id="tk-del-cod" style="font-size:11px;color:#888;margin-bottom:14px;"></div>
+            <div style="font-size:13px;color:#555;margin-bottom:16px;">Cantidad en el ticket: <b id="tk-del-cant"></b></div>
+            <button onclick="tkQuitarUno()" style="width:100%;background:#FF9800;color:#fff;border:none;border-radius:10px;padding:12px;font-weight:800;font-size:13px;margin-bottom:8px;">➖ QUITAR 1 UNIDAD</button>
+            <button onclick="tkEliminarLinea()" style="width:100%;background:#c62828;color:#fff;border:none;border-radius:10px;padding:12px;font-weight:800;font-size:13px;margin-bottom:8px;">🗑️ ELIMINAR TODA LA LÍNEA</button>
+            <button onclick="cerrarModalTkDel()" style="width:100%;background:#EEE;color:#333;border:none;border-radius:10px;padding:12px;font-weight:700;font-size:13px;">CANCELAR</button>
+        </div>
+    </div>
 
 
 
@@ -1672,6 +1715,7 @@ function seleccionarModo(modo) {
         $s('vista-comp').classList.add('hidden');
         $s('vista-alm').classList.add('hidden');
         const vistaStock = $('vista-stock'); if(vistaStock) vistaStock.style.display = 'none';
+        const vistaTicket = $('vista-ticket'); if(vistaTicket) vistaTicket.style.display = 'none';
 
         const compFileBtns = $('comp-file-btns');
         if (compFileBtns) compFileBtns.style.display = 'none';
@@ -1684,11 +1728,11 @@ function seleccionarModo(modo) {
         const bgl = $('btn-guardar-lote'); if(bgl) bgl.style.display = 'block';
 
         const scannerEl2 = $('scanner');
-        if (scannerEl2) scannerEl2.style.display = (modo === 'alm' || modo === 'stock') ? 'none' : '';
+        if (scannerEl2) scannerEl2.style.display = (modo === 'alm' || modo === 'stock' || modo === 'ticket') ? 'none' : '';
         const panelDesc = $('panel-desc'); if(panelDesc) panelDesc.style.display = 'none';
         const _badgeC = document.getElementById('comp-archivo-badge');
         if (_badgeC) _badgeC.style.display = 'none';
-        const pbox = document.querySelector('.progress-box'); if(pbox) pbox.style.display = (modo === 'alm' || modo === 'stock') ? 'none' : '';
+        const pbox = document.querySelector('.progress-box'); if(pbox) pbox.style.display = (modo === 'alm' || modo === 'stock' || modo === 'ticket') ? 'none' : '';
         const panelAlmComp=$('panel-alm-comp'); if(panelAlmComp) panelAlmComp.classList.remove('visible');
 
         if (modo === 'comp') {
@@ -1719,7 +1763,14 @@ function seleccionarModo(modo) {
             // Mostrar búsqueda por nombre si hay base
             const nw = document.getElementById('cs-name-search-wrap');
             if (nw) nw.style.display = Object.keys(csStockDB).length > 0 ? 'block' : 'none';
-        } else {
+        } else if (modo === 'ticket') {
+            document.body.className = 'modo-ticket';
+            $s('badge-txt').textContent = 'TICKET';
+            csInit(); // asegura que csStockDB/csPreciosDB estén cargados en memoria
+            $s('vista-ticket').style.display = 'flex';
+            tkRender();
+            setTimeout(() => { const ti=document.getElementById('tk-inp-codbar'); if(ti) ti.focus(); }, 200);
+        } else if (modo === 'alm') {
             document.body.className = 'modo-alm';
             $s('badge-txt').textContent = 'ALMACÉN';
             $s('menu-sec-alm').classList.remove('hidden');
@@ -5811,6 +5862,138 @@ function csBorrarDB() {
 }
 
 /* ── Init (llamado al entrar al módulo) ── */
+// ══════════════════════════════════════════════════════
+//  SIMULADOR DE TICKET / BOLETA
+//  Reutiliza csStockDB (descripciones) y csPreciosDB (precios)
+//  ya cargados por Consultar Stock. La regla de negocio:
+//  - 1 unidad de un modelo  → precio UNITARIO (menor/oferta/etiqueta)
+//  - cada PAR de un modelo con precio COMBO cargado → precio COMBO
+//    (si sobra 1 unidad impar, esa se cobra a precio unitario)
+// ══════════════════════════════════════════════════════
+let ticketItems = {}; // { modelo(7 car.): cantidad }
+
+function tkOnBarcodeInput(val) {
+    val = (val || '').trim();
+    if (val.length >= 13) {
+        const bc = val.toUpperCase();
+        const modelo = bc.substring(1, 8);
+        tkAgregar(modelo);
+        setTimeout(() => {
+            const inp = document.getElementById('tk-inp-codbar');
+            if (inp) { inp.value = ''; inp.focus(); }
+        }, 50);
+    }
+}
+
+function tkAgregar(modelo) {
+    const tieneStock  = csStockDB   && csStockDB[modelo];
+    const tienePrecio = csPreciosDB && csPreciosDB[modelo];
+    if (!tieneStock && !tienePrecio) {
+        showToast('⚠️ Código no encontrado en la base cargada', '#c62828');
+        return;
+    }
+    ticketItems[modelo] = (ticketItems[modelo] || 0) + 1;
+    try { beep(1000, 0.05); } catch(e) {}
+    tkRender();
+}
+
+function tkPrecioUnidad(precios) {
+    if (!precios) return 0;
+    if (precios.oferta > 0) return precios.oferta;
+    if (precios.menor  > 0) return precios.menor;
+    if (precios.etiqueta > 0) return precios.etiqueta;
+    return 0;
+}
+
+// Calcula el subtotal de un modelo aplicando combo por pares cuando corresponde
+function tkCalcularLinea(modelo, count) {
+    const precios = (csPreciosDB && csPreciosDB[modelo]) || {};
+    const unit  = tkPrecioUnidad(precios);
+    const combo = precios.mayor > 0 ? precios.mayor : 0;
+    let subtotal = 0, detalle = '';
+    if (combo > 0 && count >= 2) {
+        const pares = Math.floor(count / 2);
+        const resto = count % 2;
+        subtotal = pares * combo + resto * unit;
+        detalle = pares + ' combo' + (pares > 1 ? 's' : '') + ' (S/' + combo.toFixed(2) + ' c/u)'
+                 + (resto ? ' + ' + resto + ' unidad (S/' + unit.toFixed(2) + ')' : '');
+    } else {
+        subtotal = count * unit;
+        detalle = count + ' unidad' + (count > 1 ? 'es' : '') + ' (S/' + unit.toFixed(2) + ' c/u)';
+    }
+    return { unit, combo, subtotal, detalle };
+}
+
+function tkRender() {
+    const cont = document.getElementById('tk-lista');
+    if (!cont) return;
+    const modelos = Object.keys(ticketItems);
+    if (!modelos.length) {
+        cont.innerHTML = '<div style="text-align:center;padding:50px 15px;color:#4a4a4a;font-size:13px;line-height:1.8;">🧾<br>Escanea el primer producto<br>que lleva el cliente</div>';
+        document.getElementById('tk-total').textContent = '0.00';
+        document.getElementById('tk-total-items').textContent = '0';
+        return;
+    }
+    let totalGeneral = 0, totalItems = 0, html = '';
+    modelos.forEach(modelo => {
+        const count = ticketItems[modelo];
+        const desc  = (csStockDB && csStockDB[modelo] && csStockDB[modelo].desc) || '(sin descripción)';
+        const { subtotal, detalle } = tkCalcularLinea(modelo, count);
+        totalGeneral += subtotal;
+        totalItems   += count;
+        html += `<div onclick="abrirModalTkDel('${modelo}')" style="background:#fff;border-radius:12px;padding:11px 13px;margin-bottom:8px;border-left:4px solid #2E7D32;box-shadow:0 1px 3px rgba(0,0,0,0.08);cursor:pointer;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+                <div style="flex:1;min-width:0;">
+                    <div style="font-family:'Barlow',sans-serif;font-weight:800;font-size:14px;color:#111;word-break:break-word;">${desc}</div>
+                    <div style="font-size:10px;color:#999;">${modelo}</div>
+                    <div style="font-size:11px;color:#555;margin-top:3px;">${detalle}</div>
+                </div>
+                <div style="text-align:right;flex-shrink:0;">
+                    <div style="font-family:'Barlow',sans-serif;font-size:11px;color:#999;">x${count}</div>
+                    <div style="font-family:'Barlow',sans-serif;font-weight:900;font-size:16px;color:#2E7D32;">S/${subtotal.toFixed(2)}</div>
+                </div>
+            </div>
+        </div>`;
+    });
+    cont.innerHTML = html;
+    document.getElementById('tk-total').textContent = totalGeneral.toFixed(2);
+    document.getElementById('tk-total-items').textContent = totalItems;
+}
+
+let _tkModeloActual = null;
+function abrirModalTkDel(modelo) {
+    _tkModeloActual = modelo;
+    const desc = (csStockDB && csStockDB[modelo] && csStockDB[modelo].desc) || '(sin descripción)';
+    document.getElementById('tk-del-desc').textContent = desc;
+    document.getElementById('tk-del-cod').textContent  = modelo;
+    document.getElementById('tk-del-cant').textContent = ticketItems[modelo];
+    document.getElementById('modalTkDel').style.display = 'flex';
+}
+function cerrarModalTkDel() {
+    document.getElementById('modalTkDel').style.display = 'none';
+    _tkModeloActual = null;
+}
+function tkQuitarUno() {
+    if (!_tkModeloActual) return;
+    ticketItems[_tkModeloActual]--;
+    if (ticketItems[_tkModeloActual] <= 0) delete ticketItems[_tkModeloActual];
+    cerrarModalTkDel();
+    tkRender();
+}
+function tkEliminarLinea() {
+    if (!_tkModeloActual) return;
+    delete ticketItems[_tkModeloActual];
+    cerrarModalTkDel();
+    tkRender();
+}
+function tkNuevoTicket() {
+    if (!Object.keys(ticketItems).length) return;
+    mostrarConfirmDoble('¿Nuevo ticket?', 'Se borrará el ticket actual y empiezas de cero.',
+        '🗑️ SÍ, EMPEZAR NUEVO', () => { ticketItems = {}; tkRender(); },
+        'Cancelar', () => {}
+    );
+}
+
 function csInit() {
     // Si ya hay datos en memoria no hace falta recargar
     if (Object.keys(csStockDB).length) {
