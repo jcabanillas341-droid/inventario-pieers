@@ -931,7 +931,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.80 — 06/Sep/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.81 — 06/Sep/2026</div>
     </div>
 </div>
 
@@ -1331,7 +1331,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.80 — 06/Sep/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.81 — 06/Sep/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -2430,12 +2430,14 @@ function _cargarResultadosEnModulo(res, modulo, nombreGuia) {
             const modelo = cod.length===13 ? cod.substring(1,8) : cod;
             const color = cod.length===13 ? cod.substring(8,11) : '';
             const talla = cod.length===13 ? cod.substring(11) : '';
-            if (!csStockDB[modelo]) csStockDB[modelo] = {desc: r.descripcion.split(' ').slice(0,-2).join(' '), sizes: [], colors: []};
+            if (!csStockDB[modelo]) csStockDB[modelo] = {desc: r.descripcion.split(' ').slice(0,-2).join(' '), sizes: [], colors: [], tallaLabels: {}};
             let colorEntry = csStockDB[modelo].colors.find(c=>c.code===color);
             if (!colorEntry) { colorEntry={code:color, name:r.colorNom||color, stocks:{}, total:0}; csStockDB[modelo].colors.push(colorEntry); }
             colorEntry.stocks[talla] = r.cantidad;
             colorEntry.total = (colorEntry.total||0) + r.cantidad;
             if (!csStockDB[modelo].sizes.includes(talla)) csStockDB[modelo].sizes.push(talla);
+            const _tLbl = _extraerTallaLabel(r.descripcion);
+            if (_tLbl && !csStockDB[modelo].tallaLabels[talla]) csStockDB[modelo].tallaLabels[talla] = _tLbl;
         });
         const cnt = Object.keys(csStockDB).length;
         csSaveDB('GUIA_WAMA', cnt);
@@ -4427,6 +4429,16 @@ function csLoadPreciosLocal() {
 }
 
 // ── PARSER EXCEL DE PRECIOS (Memorandum WAMA) ──
+function _extraerTallaLabel(desc) {
+    // La descripción generada por los conversores de GUIA/CSV siempre termina
+    // en "... T/ETIQUETA" (ej. "T/26", "T/M", "T/32"). Extraer esa etiqueta
+    // real, porque la posición del código de barras (01,02...) NO siempre
+    // corresponde a S/M/L — en pantalones son tallas numéricas (26 a 44).
+    const partes = String(desc||'').trim().split(' ');
+    const ultima = partes[partes.length-1] || '';
+    return ultima.indexOf('T/') === 0 ? ultima.substring(2) : '';
+}
+
 function csParsePreciosXLSX(wb, nombreLibro) {
     // Acumula sobre los libros ya cargados — cada código nuevo se compara entre
     // TODOS los libros vigentes y gana el precio MÁS ECONÓMICO; el libro de
@@ -6004,13 +6016,18 @@ function tkDescripcionItem(key) {
         return (promo && promo.desc) || (csStockDB && csStockDB[modelo] && csStockDB[modelo].desc) || key;
     }
     if (tkEsEscaneo13(key)) {
-        const modelo    = key.substring(1, 8);
-        const colorCod  = key.substring(8, 11);
-        const posTalla  = parseInt(key.substring(11, 13), 10);
-        const base      = (csStockDB && csStockDB[modelo] && csStockDB[modelo].desc) || modelo;
-        const colorObj  = csStockDB && csStockDB[modelo] && (csStockDB[modelo].colors || []).find(c => c.code === colorCod);
-        const colorNom  = colorObj ? colorObj.name : colorCod;
-        const tallaNom  = TK_TALLAS_FIJAS[posTalla - 1] || ('#' + key.substring(11, 13));
+        const modelo      = key.substring(1, 8);
+        const colorCod    = key.substring(8, 11);
+        const codTallaPos = key.substring(11, 13); // "01","02"... posición dentro del producto
+        const stockD      = csStockDB && csStockDB[modelo];
+        const base        = (stockD && stockD.desc) || modelo;
+        const colorObj    = stockD && (stockD.colors || []).find(c => c.code === colorCod);
+        const colorNom    = colorObj ? colorObj.name : colorCod;
+        // Preferir la etiqueta REAL de talla guardada al cargar el stock (ej.
+        // "26" para pantalones, "M" para polos) — la tabla fija S/M/L/XL... es
+        // solo un respaldo para bases antiguas que no la tengan guardada.
+        const etiquetaReal = stockD && stockD.tallaLabels && stockD.tallaLabels[codTallaPos];
+        const tallaNom     = etiquetaReal || TK_TALLAS_FIJAS[parseInt(codTallaPos, 10) - 1] || ('#' + codTallaPos);
         return base + ' — Talla: ' + tallaNom + ' · Color: ' + colorNom;
     }
     return (csStockDB && csStockDB[key] && csStockDB[key].desc) || '(sin descripción)';
@@ -6604,12 +6621,14 @@ function csLoadFile(e) {
                 const modelo = cod.length===13 ? cod.substring(1,8) : cod;
                 const color  = cod.length===13 ? cod.substring(8,11) : '';
                 const talla  = cod.length===13 ? cod.substring(11) : '';
-                if (!csStockDB[modelo]) csStockDB[modelo] = {desc: r.descripcion, sizes:[], colors:[]};
+                if (!csStockDB[modelo]) csStockDB[modelo] = {desc: r.descripcion, sizes:[], colors:[], tallaLabels:{}};
                 let ce = csStockDB[modelo].colors.find(x=>x.code===color);
                 if (!ce) { ce={code:color,name:r.colorNom||color,stocks:{},total:0}; csStockDB[modelo].colors.push(ce); }
                 ce.stocks[talla] = (ce.stocks[talla]||0) + r.cantidad;
                 ce.total = (ce.total||0) + r.cantidad;
                 if (!csStockDB[modelo].sizes.includes(talla)) csStockDB[modelo].sizes.push(talla);
+                const _tLbl2 = _extraerTallaLabel(r.descripcion);
+                if (_tLbl2 && !csStockDB[modelo].tallaLabels[talla]) csStockDB[modelo].tallaLabels[talla] = _tLbl2;
             });
             const cnt = Object.keys(csStockDB).length;
             csSetBadge(cnt);
@@ -7121,12 +7140,14 @@ function driveProcesar(ab, tipo) {
                     var modelo = cod.length===13 ? cod.substring(1,8) : cod;
                     var color  = cod.length===13 ? cod.substring(8,11) : '';
                     var talla  = cod.length===13 ? cod.substring(11) : '';
-                    if (!csStockDB[modelo]) csStockDB[modelo] = {desc: r.descripcion, sizes:[], colors:[]};
+                    if (!csStockDB[modelo]) csStockDB[modelo] = {desc: r.descripcion, sizes:[], colors:[], tallaLabels:{}};
                     var ce = csStockDB[modelo].colors.find(function(x){return x.code===color;});
                     if (!ce) { ce={code:color,name:r.colorNom||color,stocks:{},total:0}; csStockDB[modelo].colors.push(ce); }
                     ce.stocks[talla] = (ce.stocks[talla]||0) + r.cantidad;
                     ce.total = (ce.total||0) + r.cantidad;
                     if (csStockDB[modelo].sizes.indexOf(talla) < 0) csStockDB[modelo].sizes.push(talla);
+                    var _tLbl3 = _extraerTallaLabel(r.descripcion);
+                    if (_tLbl3 && !csStockDB[modelo].tallaLabels[talla]) csStockDB[modelo].tallaLabels[talla] = _tLbl3;
                 });
                 var cnt = Object.keys(csStockDB).length;
                 csSetBadge(cnt); csSetStatus('Base cargada desde Drive — ' + cnt + ' artículos.');
