@@ -931,7 +931,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.73 — 06/Sep/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.74 — 06/Sep/2026</div>
     </div>
 </div>
 
@@ -1331,7 +1331,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.73 — 06/Sep/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.74 — 06/Sep/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -5942,12 +5942,23 @@ function tkPrecioUnidad(precios) {
 // Varios códigos DISTINTOS pueden compartir el mismo grupo (ej. "PROMO COMBO POLO
 // BOX 2X109.9" agrupa 3 modelos diferentes) — si el cliente lleva 2 en total
 // entre esos modelos, aplica el precio combo aunque sean prendas distintas.
-function tkGrupoCombo(modelo) {
+// Clasifica la promo cargada (mayor > 0) de un modelo en dos tipos distintos:
+// - 'combo'  → llevar 2 (del mismo grupo, aunque sean modelos distintos) para
+//              que ambas unidades bajen al precio de combo.
+// - 'umbral' → "COMPRA MAYOR A X" — si el resto de la compra del cliente supera
+//              S/X, ESTE producto puntual baja al precio especial (sin importar
+//              cuántas unidades de él se lleven).
+function tkInfoPromo(modelo) {
     const precios = (csPreciosDB && csPreciosDB[modelo]) || {};
     if (!(precios.mayor > 0)) return null;
     const promos = precios.promos || [];
     const comboPromo = promos.find(p => p.tipo === 'combo' && p.nombre && p.nombre.length > 3);
-    return comboPromo ? comboPromo.nombre : ('__combo_' + modelo);
+    const nombre = comboPromo ? comboPromo.nombre : null;
+    const mUmbral = nombre ? nombre.match(/MAYOR\s*A\s*(\d+)/i) : null;
+    if (mUmbral) {
+        return { tipo: 'umbral', nombre, umbral: parseInt(mUmbral[1], 10), precioEspecial: precios.mayor };
+    }
+    return { tipo: 'combo', nombre: nombre || ('__combo_' + modelo) };
 }
 
 function tkRender() {
@@ -5961,12 +5972,14 @@ function tkRender() {
         return;
     }
 
-    // Agrupar los modelos que comparten el mismo grupo de combo
-    const grupos = {};       // nombreGrupo -> [modelos]
-    const individuales = [];
+    // Clasificar cada modelo escaneado en 3 grupos
+    const grupos = {};        // combos por pares -> nombreGrupo: [modelos]
+    const umbralItems = [];   // modelos con promo "COMPRA MAYOR A X"
+    const individuales = [];  // sin promo (o combo con solo 1 unidad)
     modelos.forEach(modelo => {
-        const grupo = tkGrupoCombo(modelo);
-        if (grupo) { (grupos[grupo] = grupos[grupo] || []).push(modelo); }
+        const info = tkInfoPromo(modelo);
+        if (info && info.tipo === 'umbral') umbralItems.push(modelo);
+        else if (info && info.tipo === 'combo') (grupos[info.nombre] = grupos[info.nombre] || []).push(modelo);
         else individuales.push(modelo);
     });
 
@@ -6030,6 +6043,40 @@ function tkRender() {
                     <div style="font-family:'Barlow',sans-serif;font-weight:800;font-size:14px;color:#111;word-break:break-word;">${desc}</div>
                     <div style="font-size:10px;color:#999;">${modelo}</div>
                     <div style="font-size:11px;color:#555;margin-top:3px;">${count} unidad${count > 1 ? 'es' : ''} (S/${unit.toFixed(2)} c/u)</div>
+                </div>
+                <div style="text-align:right;flex-shrink:0;">
+                    <div style="font-family:'Barlow',sans-serif;font-size:11px;color:#999;">x${count}</div>
+                    <div style="font-family:'Barlow',sans-serif;font-weight:900;font-size:16px;color:#2E7D32;">S/${subtotal.toFixed(2)}</div>
+                </div>
+            </div>
+        </div>`;
+    });
+
+    // ── Tarjetas de promo "COMPRA MAYOR A X" ──
+    // Se evalúan DESPUÉS: se activa el precio especial si el resto de la
+    // compra (todo lo de arriba, sin contar estos productos de umbral)
+    // ya alcanza el monto mínimo exigido.
+    const baseParaUmbral = totalGeneral;
+    umbralItems.forEach(modelo => {
+        const info  = tkInfoPromo(modelo);
+        const count = ticketItems[modelo];
+        const desc  = (csStockDB && csStockDB[modelo] && csStockDB[modelo].desc) || '(sin descripción)';
+        const cumple = baseParaUmbral >= info.umbral;
+        const unitNormal = tkPrecioUnidad((csPreciosDB && csPreciosDB[modelo]) || {});
+        const precioAplicado = cumple ? info.precioEspecial : unitNormal;
+        const subtotal = count * precioAplicado;
+        totalGeneral += subtotal;
+        totalItems   += count;
+        const colorBorde = cumple ? '#7B1FA2' : '#999';
+        html += `<div onclick="abrirModalTkDel('${modelo}')" style="background:#fff;border-radius:12px;padding:11px 13px;margin-bottom:8px;border-left:4px solid ${colorBorde};box-shadow:0 1px 3px rgba(0,0,0,0.08);cursor:pointer;">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
+                <div style="flex:1;min-width:0;">
+                    <div style="font-family:'Barlow',sans-serif;font-weight:800;font-size:14px;color:#111;word-break:break-word;">${desc}</div>
+                    <div style="font-size:10px;color:#999;">${modelo}</div>
+                    <div style="font-size:11px;font-weight:700;color:${cumple ? '#7B1FA2' : '#999'};margin-top:3px;">
+                        ${cumple ? '🎁 Promo activada' : '🔒 Promo no activada'} — compra mayor a S/${info.umbral.toFixed(2)} (llevas S/${baseParaUmbral.toFixed(2)} en el resto)
+                    </div>
+                    <div style="font-size:11px;color:#555;margin-top:2px;">${count} unidad${count > 1 ? 'es' : ''} (S/${precioAplicado.toFixed(2)} c/u${cumple ? ' — precio promo' : ' — precio normal'})</div>
                 </div>
                 <div style="text-align:right;flex-shrink:0;">
                     <div style="font-family:'Barlow',sans-serif;font-size:11px;color:#999;">x${count}</div>
