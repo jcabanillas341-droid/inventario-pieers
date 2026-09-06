@@ -931,7 +931,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.77 — 06/Sep/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.78 — 06/Sep/2026</div>
     </div>
 </div>
 
@@ -1331,7 +1331,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.77 — 06/Sep/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.78 — 06/Sep/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4658,8 +4658,15 @@ function csParsePreciosXLSX(wb, nombreLibro) {
                 if(!isNaN(n)&&n>=0) allNums.push({v:n,i});
             }
             if(!allNums.length) return;
-            // Stock = último número de la fila → excluir por posición
-            const stockIdx = allNums[allNums.length-1].i;
+            // Stock = ÚLTIMA COLUMNA de la fila por POSICIÓN real (no por "el
+            // último número que aparezca"). Antes, si la celda de stock venía
+            // vacía (ej. una tienda que no reporta stock en esa fila de combo),
+            // el precio de combo —que quedaba como el último número presente—
+            // se confundía con el stock y se descartaba, dejando el precio
+            // regular en su lugar. Como el archivo se lee con defval:'' y
+            // header:1, todas las filas de la hoja tienen el mismo ancho de
+            // columnas, así que la posición de stock es siempre r.length-1.
+            const stockIdx = r.length - 1;
             // Precios válidos: >1 y que no sean el stock
             const nums = allNums.filter(x => x.v > 1 && x.i !== stockIdx);
             if(!nums.length) return;
