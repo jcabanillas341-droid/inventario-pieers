@@ -931,7 +931,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.81 — 06/Sep/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.82 — 06/Sep/2026</div>
     </div>
 </div>
 
@@ -1331,7 +1331,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.81 — 06/Sep/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.82 — 06/Sep/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -6590,7 +6590,20 @@ function csParseStockCSV(text) {
             if (s && s !== '--' && stocks[i] > 0) stocksObj[s] = stocks[i];
         });
         const sizesLimpias = sizes.filter(s => s && s !== '--');
-        if (!db[article]) db[article] = { desc: desc.replace(/\s+/g,' ').trim(), sizes: sizesLimpias, colors: [] };
+        if (!db[article]) db[article] = { desc: desc.replace(/\s+/g,' ').trim(), sizes: sizesLimpias, colors: [], tallaLabels: {} };
+        if (!db[article].tallaLabels) db[article].tallaLabels = {};
+        // Guardar la etiqueta REAL de cada talla según su POSICIÓN 1-based
+        // (entre los slots no vacíos de esta fila) — así el ticket puede
+        // decodificar el código de barras (P+modelo+color+posición) a la
+        // etiqueta real (ej. "26" en pantalones, "M" en polos), en vez de
+        // adivinar con una tabla fija S/M/L que no aplica a todos los productos.
+        let _posLocal = 1;
+        sizes.forEach(s => {
+            if (!s || s === '--') return;
+            const _codPos = String(_posLocal).padStart(2, '0');
+            if (!db[article].tallaLabels[_codPos]) db[article].tallaLabels[_codPos] = s;
+            _posLocal++;
+        });
         // Unir sizes: agregar las que no estén aún
         sizesLimpias.forEach(s => { if (!db[article].sizes.includes(s)) db[article].sizes.push(s); });
         db[article].colors.push({ code: colorCode, name: colorName, stocks: stocksObj, total });
