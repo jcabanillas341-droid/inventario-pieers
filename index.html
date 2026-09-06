@@ -921,7 +921,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.69 — 06/Sep/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.70 — 06/Sep/2026</div>
     </div>
 </div>
 
@@ -1321,7 +1321,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.69 — 06/Sep/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.70 — 06/Sep/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -1907,7 +1907,7 @@ function abrirSubCarga(modulo) {
             titulo: '☁️ CARGAR MAESTRO DESDE DRIVE',
             desc: '¿Qué tipo de archivo quieres cargar?',
             opciones: [
-                { ico:'📄', titulo:'GUIA de movimientos / Stock WAMA',
+                { ico:'📄', titulo:'Cargar Guías',
                   desc:'Archivo GUIA.xlsx de traslado o CSV de Detalle de Stock WAMA — se convierte automáticamente',
                   color:'#2E7D32', accion:`driveAbrirModal('guia-comp');cerrarSubCarga()` },
             ]
@@ -1928,13 +1928,13 @@ function abrirSubCarga(modulo) {
             titulo: '☁️ CARGAR BASE DESDE DRIVE',
             desc: '¿Qué tipo de archivo quieres cargar?',
             opciones: [
-                { ico:'📄', titulo:'GUIA de movimientos / Stock WAMA',
+                { ico:'📄', titulo:'Cargar Stock',
                   desc:'Archivo GUIA.xlsx o CSV de Detalle de Stock WAMA — se convierte automáticamente',
                   color:'#2E7D32', accion:`driveAbrirModal('guia-cs');cerrarSubCarga()` },
-                { ico:'☁️', titulo:'Desde Drive — Precios Memorandum',
+                { ico:'☁️', titulo:'Cargar Memorandum',
                   desc:'Carga el Memorandum de precios WAMA directo desde Google Drive',
                   color:'#BF360C', accion:`driveAbrirModal('precios');cerrarSubCarga()` },
-                { ico:'☁️', titulo:'Desde Drive — Precios por Mayor',
+                { ico:'☁️', titulo:'Cargar Precios por Mayor',
                   desc:'Carga el Excel de precios por mayor directo desde Google Drive',
                   color:'#283593', accion:`driveAbrirModal('preciosMayor');cerrarSubCarga()` },
             ]
