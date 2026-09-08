@@ -873,6 +873,104 @@
             background: #006600; color: white;
             font-size: 14px; font-weight: bold;
         }
+
+        /* ══════════════════════════════════════════════════════════════
+           ✨ CAPA DE DISEÑO PREMIUM — bloque CSS puramente aditivo.
+           No modifica ninguna estructura, id, clase existente ni lógica JS;
+           solo se apoya en selectores que ya existen en el HTML/JS de arriba.
+           ══════════════════════════════════════════════════════════════ */
+
+        /* Pantalla de selector: malla degradada animada + retícula con máscara radial */
+        #pantalla-modo { position: relative; overflow: hidden; }
+        #pantalla-modo::before {
+            content: ''; position: absolute; inset: -20%;
+            background:
+                radial-gradient(circle at 20% 30%, rgba(229,57,53,0.12), transparent 42%),
+                radial-gradient(circle at 80% 70%, rgba(46,125,50,0.10), transparent 42%),
+                radial-gradient(circle at 50% 50%, rgba(21,101,192,0.08), transparent 55%);
+            background-size: 200% 200%;
+            pointer-events: none; z-index: 0;
+        }
+        #pantalla-modo::after {
+            content: ''; position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 34px 34px;
+            -webkit-mask-image: radial-gradient(circle at 50% 38%, black 0%, transparent 68%);
+                    mask-image: radial-gradient(circle at 50% 38%, black 0%, transparent 68%);
+            pointer-events: none; z-index: 0;
+        }
+        #pantalla-modo > * { position: relative; z-index: 1; }
+
+        /* Botones de módulo: lift al hover + barrido de brillo (shine sweep) */
+        .btn-modo { position: relative; overflow: hidden; transition: transform 0.18s ease, box-shadow 0.18s ease; }
+        .btn-modo::after {
+            content: ''; position: absolute; top: 0; left: -60%; width: 35%; height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255,255,255,0.25), transparent);
+            transform: skewX(-20deg); transition: left 0.65s ease; pointer-events: none;
+        }
+        .btn-modo:hover::after, .btn-modo:active::after { left: 130%; }
+        .btn-modo:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.28); }
+        .btn-modo:active { transform: scale(0.97); }
+
+        /* Logo con flotación suave en la pantalla de selector */
+        #pantalla-modo .logo-icono { display: inline-block; animation: pFloat 4.2s ease-in-out infinite; }
+
+        /* Glassmorphism sutil en menú desplegable, sin perder legibilidad */
+        .menu-dropdown { backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); background: rgba(255,255,255,0.92) !important; }
+        body.modo-oscuro .menu-dropdown { background: rgba(30,30,30,0.88) !important; }
+
+        /* Modales centrados: entrada animada (pop) — no afecta modales de lista/pantalla completa */
+        .modal[style*="align-items:center"] > div { animation: pPop 0.22s cubic-bezier(.34,1.56,.64,1); }
+
+        /* Toast con leve desenfoque de fondo detrás */
+        #toast { backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); animation: pToastIn 0.25s ease; }
+
+        /* Barra de progreso con brillo deslizante */
+        #bar-fill { position: relative; overflow: hidden; }
+        #bar-fill::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+            animation: pShine 1.8s linear infinite;
+        }
+
+        /* Números de stats con gradiente rojo (funciona en modo claro y oscuro) */
+        .stat-val {
+            background: linear-gradient(135deg, #ff7a68, var(--rojo));
+            -webkit-background-clip: text; background-clip: text;
+            -webkit-text-fill-color: transparent; color: transparent;
+        }
+
+        /* Halo de foco en los campos de escaneo (lectora / ticket) */
+        #cs-inp-codbar:focus, #tk-inp-codbar:focus {
+            box-shadow: 0 0 0 4px rgba(229,57,53,0.15), 0 0 26px rgba(229,57,53,0.28);
+            transition: box-shadow 0.2s ease;
+        }
+
+        /* Scrollbars rediseñados (navegadores WebKit / Chromium) */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.04); }
+        ::-webkit-scrollbar-thumb { background: rgba(229,57,53,0.45); border-radius: 8px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(229,57,53,0.65); }
+
+        /* Filas de tabla / tarjetas con hover sutil */
+        #cs-table-outer tbody tr:hover, .dl-item:hover, .cs-name-result:hover { filter: brightness(0.97); }
+
+        @keyframes pFloat  { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        @keyframes pPop    { from { opacity:0; transform: scale(0.92) translateY(8px); } to { opacity:1; transform: scale(1) translateY(0); } }
+        @keyframes pShine  { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        @keyframes pToastIn{ from { opacity:0; transform: translate(-50%, 8px); } to { opacity:1; transform: translate(-50%, 0); } }
+
+        /* Accesibilidad: respeta la preferencia del sistema de reducir movimiento */
+        @media (prefers-reduced-motion: reduce) {
+            #pantalla-modo .logo-icono,
+            #bar-fill::after,
+            .modal[style*="align-items:center"] > div,
+            #toast,
+            .btn-modo::after,
+            .btn-modo { animation: none !important; transition: none !important; }
+        }
     </style>
 </head>
 <body class="modo-comp">
@@ -931,7 +1029,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.82 — 06/Sep/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.83 — 06/Sep/2026</div>
     </div>
 </div>
 
@@ -1331,7 +1429,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.82 — 06/Sep/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.83 — 06/Sep/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
