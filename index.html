@@ -1029,7 +1029,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.84 — 06/Sep/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.85 — 06/Sep/2026</div>
     </div>
 </div>
 
@@ -1429,7 +1429,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.84 — 06/Sep/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.85 — 06/Sep/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4665,40 +4665,63 @@ function csParsePreciosXLSX(wb, nombreLibro) {
         const shU  = sheetName.toUpperCase();
 
         // ── Parser hoja 'promo color' ──────────────────────────────────
-        // Prioridad: CAJAMARCA pisa otras tiendas (igual que promos normales)
+        // Hay DOS formatos de hoja distintos según WAMA:
+        //  - "Promocolor" (nacional, sin tienda): Articulo_old|Articulo|ArticuloDesc|
+        //    colorname|PromocionDesc|tiendalist|PromoId|PromoFin|PrecPromo
+        //  - "Promocolortda" (por tienda): zona|local|promcolor|linea|genero|marca|
+        //    articidold|Product_id11|articname|prec_etiq|color|estadoid|color(precio)|stock
+        // Prioridad: CAJAMARCA (de Promocolortda) pisa todo lo demás.
         if (shU.includes('PROMO COLOR') || shU.includes('PROMOCOLOR')) {
-            const _cajaCodes = new Set(); // códigos que ya tienen dato de Cajamarca
-            // Pasada 1: registrar CAJAMARCA primero
-            rows.forEach(r => {
-                if (!r || r.length < 7) return;
-                const local = String(r[0]||'').trim().toUpperCase();
-                if (!local.includes('CAJAMARCA')) return;
-                const codColor = String(r[3]||'').trim().toUpperCase();
-                const precio   = parseFloat(r[6]);
-                if (!codColor || codColor.length < 10 || codColor.length > 12 || isNaN(precio) || precio <= 0) return;
-                csPromoColorDB[codColor] = {
-                    precio, desc: String(r[4]||'').trim(),
-                    color: String(r[5]||'').trim(), modelo: String(r[2]||'').trim()
-                };
-                _cajaCodes.add(codColor);
-            });
-            // Pasada 2: otras tiendas como respaldo (solo si no hay dato de Cajamarca)
-            rows.forEach(r => {
-                if (!r || r.length < 7) return;
-                const local = String(r[0]||'').trim().toUpperCase();
-                if (local.includes('CAJAMARCA')) return; // ya procesado
-                const codColor = String(r[3]||'').trim().toUpperCase();
-                if (_cajaCodes.has(codColor)) return; // Cajamarca tiene prioridad
-                const precio = parseFloat(r[6]);
-                if (!codColor || codColor.length < 10 || codColor.length > 12 || isNaN(precio) || precio <= 0) return;
-                // Solo agregar si no existe ya
-                if (!csPromoColorDB[codColor]) {
+            const esTienda = shU.includes('TDA') || shU.includes('TIENDA');
+            if (esTienda) {
+                const _cajaCodes = new Set();
+                // Pasada 1: registrar CAJAMARCA primero
+                rows.forEach(r => {
+                    if (!r || r.length < 13) return;
+                    const tienda = String(r[1]||'').trim().toUpperCase();
+                    if (!tienda.includes('CAJAMARCA')) return;
+                    const codColor = String(r[7]||'').trim().toUpperCase();
+                    const precio   = parseFloat(r[12]);
+                    if (!codColor || codColor.length < 10 || codColor.length > 12 || isNaN(precio) || precio <= 0) return;
                     csPromoColorDB[codColor] = {
-                        precio, desc: String(r[4]||'').trim(),
-                        color: String(r[5]||'').trim(), modelo: String(r[2]||'').trim()
+                        precio, desc: String(r[8]||'').trim(),
+                        color: String(r[10]||'').trim(), modelo: String(r[6]||'').trim()
                     };
-                }
-            });
+                    _cajaCodes.add(codColor);
+                });
+                // Pasada 2: otras tiendas como respaldo (solo si no hay dato de Cajamarca)
+                rows.forEach(r => {
+                    if (!r || r.length < 13) return;
+                    const tienda = String(r[1]||'').trim().toUpperCase();
+                    if (tienda.includes('CAJAMARCA')) return; // ya procesado
+                    const codColor = String(r[7]||'').trim().toUpperCase();
+                    if (_cajaCodes.has(codColor)) return; // Cajamarca tiene prioridad
+                    const precio = parseFloat(r[12]);
+                    if (!codColor || codColor.length < 10 || codColor.length > 12 || isNaN(precio) || precio <= 0) return;
+                    if (!csPromoColorDB[codColor]) {
+                        csPromoColorDB[codColor] = {
+                            precio, desc: String(r[8]||'').trim(),
+                            color: String(r[10]||'').trim(), modelo: String(r[6]||'').trim()
+                        };
+                    }
+                });
+            } else {
+                // Hoja nacional sin columna de tienda — aplica igual para todas
+                // las tiendas. Solo rellena si Promocolortda (Cajamarca) no dio
+                // ya un precio más específico para ese código.
+                rows.forEach(r => {
+                    if (!r || r.length < 9) return;
+                    const codColor = String(r[1]||'').trim().toUpperCase();
+                    const precio   = parseFloat(r[8]);
+                    if (!codColor || codColor.length < 10 || codColor.length > 12 || isNaN(precio) || precio <= 0) return;
+                    if (!csPromoColorDB[codColor]) {
+                        csPromoColorDB[codColor] = {
+                            precio, desc: String(r[2]||'').trim(),
+                            color: String(r[3]||'').trim(), modelo: String(r[0]||'').trim()
+                        };
+                    }
+                });
+            }
             return; // No procesar esta hoja como precios normales
         }
 
