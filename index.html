@@ -1029,7 +1029,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.86 — 06/Sep/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.87 — 06/Sep/2026</div>
     </div>
 </div>
 
@@ -1429,7 +1429,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.86 — 06/Sep/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.87 — 06/Sep/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -1464,6 +1464,7 @@
                 oninput="tkOnBarcodeInput(this.value)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
         </div>
         <div id="tk-hoy-resumen" onclick="abrirModalTkVentas()" style="padding:6px 12px;flex-shrink:0;font-size:11px;font-weight:800;color:#2E7D32;text-align:right;cursor:pointer;background:#fff;border-bottom:1px solid #cde5cd;">📊 Hoy: S/0.00 en 0 tickets · toca para ver</div>
+        <button id="tk-btn-50off" onclick="tkToggle50Off()" style="margin:6px 12px 0;flex-shrink:0;padding:9px;border:1.5px solid #2E7D32;border-radius:10px;background:#EEE;color:#333;font-family:'Barlow',sans-serif;font-weight:800;font-size:11.5px;letter-spacing:0.3px;">🏷️ Activar día 50% en todo</button>
         <div style="padding:6px 12px 0;flex-shrink:0;position:relative;">
             <input type="text" id="tk-name-search" placeholder="🔍 Buscar por nombre o código..."
                 style="width:100%;box-sizing:border-box;padding:9px 12px;border-radius:10px;border:1.5px solid #2E7D32;font-size:13px;font-family:'Inter',sans-serif;background:#fff;color:#111;outline:none;"
@@ -1917,6 +1918,7 @@ function seleccionarModo(modo) {
             $s('badge-txt').textContent = 'TICKET';
             csInit(); // asegura que csStockDB/csPreciosDB estén cargados en memoria
             tkCargarTickets();
+            tkCargar50Off();
             $s('vista-ticket').style.display = 'flex';
             tkRender();
             setTimeout(() => { const ti=document.getElementById('tk-inp-codbar'); if(ti) ti.focus(); }, 200);
@@ -6201,12 +6203,51 @@ function tkAgregar(key) {
     tkRender();
 }
 
+// ══════════════════════════════════════════════════════
+//  DÍA "50% EN TODO" — botón manual para días de liquidación total.
+//  Regla: el precio final nunca supera la mitad del precio de etiqueta,
+//  EXCEPTO si el producto ya tiene un descuento mayor cargado (oferta,
+//  unitario o combo) — en ese caso se respeta el precio más barato ya
+//  existente, sin subirlo a la mitad de etiqueta.
+// ══════════════════════════════════════════════════════
+let tk50OffActivo = false;
+function tkCargar50Off() {
+    try { tk50OffActivo = localStorage.getItem('tk_50off_v1') === '1'; } catch(e) { tk50OffActivo = false; }
+    tkActualizarBoton50Off();
+}
+function tkGuardar50Off() {
+    try { localStorage.setItem('tk_50off_v1', tk50OffActivo ? '1' : '0'); } catch(e) {}
+}
+function tkToggle50Off() {
+    tk50OffActivo = !tk50OffActivo;
+    tkGuardar50Off();
+    tkActualizarBoton50Off();
+    showToast(tk50OffActivo ? '🏷️ Día 50% activado — se aplica a todo lo que no tenga ya más descuento' : '🏷️ Día 50% desactivado', tk50OffActivo ? '#2E7D32' : '#555');
+    tkRender();
+}
+function tkActualizarBoton50Off() {
+    const btn = document.getElementById('tk-btn-50off');
+    if (!btn) return;
+    btn.style.background = tk50OffActivo ? '#2E7D32' : '#EEE';
+    btn.style.color = tk50OffActivo ? '#fff' : '#333';
+    btn.textContent = tk50OffActivo ? '🏷️ DÍA 50% ACTIVADO (toca para apagar)' : '🏷️ Activar día 50% en todo';
+}
+// Aplica el tope de "mitad de etiqueta" a un precio ya calculado, solo si
+// el día 50% está activo y el precio actual NO es ya más barato.
+function tk50OffAplicar(precio, etiqueta) {
+    if (!tk50OffActivo || !(etiqueta > 0) || !(precio > 0)) return precio;
+    const mitad = etiqueta / 2;
+    return Math.min(precio, mitad);
+}
+
 function tkPrecioUnidad(precios) {
     if (!precios) return 0;
-    if (precios.oferta > 0) return precios.oferta;
-    if (precios.menor  > 0) return precios.menor;
-    if (precios.etiqueta > 0) return precios.etiqueta;
-    return 0;
+    let p = 0;
+    if (precios.oferta > 0) p = precios.oferta;
+    else if (precios.menor  > 0) p = precios.menor;
+    else if (precios.etiqueta > 0) p = precios.etiqueta;
+    if (!p) return 0;
+    return tk50OffAplicar(p, precios.etiqueta);
 }
 
 // Nombre del grupo de combo al que pertenece un modelo (si tiene combo cargado).
@@ -6271,7 +6312,8 @@ function tkRender() {
         const modelosGrupo = grupos[nombreGrupo];
         let countTotal = 0;
         modelosGrupo.forEach(m => countTotal += ticketItems[m]);
-        const comboPrecio = (csPreciosDB[tkModeloBase(modelosGrupo[0])] || {}).mayor || 0;
+        const _preciosGrupo0 = csPreciosDB[tkModeloBase(modelosGrupo[0])] || {};
+        const comboPrecio = tk50OffAplicar(_preciosGrupo0.mayor || 0, _preciosGrupo0.etiqueta);
         const infoGrupo = tkInfoPromo(modelosGrupo[0]);
         const tamano = (infoGrupo && infoGrupo.tamano) || 2; // ej. 2 (2x) o 3 (3x)
 
@@ -6357,8 +6399,9 @@ function tkRender() {
         const count = ticketItems[modelo];
         const desc  = tkDescripcionItem(modelo);
         const cumple = baseParaUmbral >= info.umbral;
-        const unitNormal = tkPrecioUnidad((csPreciosDB && csPreciosDB[tkModeloBase(modelo)]) || {});
-        const precioAplicado = cumple ? info.precioEspecial : unitNormal;
+        const _preciosUmbral = (csPreciosDB && csPreciosDB[tkModeloBase(modelo)]) || {};
+        const unitNormal = tkPrecioUnidad(_preciosUmbral);
+        const precioAplicado = cumple ? tk50OffAplicar(info.precioEspecial, _preciosUmbral.etiqueta) : unitNormal;
         const subtotal = count * precioAplicado;
         totalGeneral += subtotal;
         totalItems   += count;
