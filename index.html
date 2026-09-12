@@ -1029,7 +1029,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.89 — 12/Sep/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.90 — 12/Sep/2026</div>
     </div>
 </div>
 
@@ -1429,7 +1429,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.89 — 12/Sep/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.90 — 12/Sep/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -3602,13 +3602,29 @@ function resetearModulo() {
 }
 
 function resetearApp() {
-    conPIN(() => mostrarConfirm('⚠️ Resetear TODO','Se eliminarán TODOS los datos. No se puede deshacer.', () => {
-        // Borrar TODAS las claves de la app de localStorage
-        ['p_maestro_v8','p_hist_v8','p_total_v8','p_desc_v8','p_lotes_v8','p_guiamap_v8','p_guias_v8',
-         'p_alm_v1','p_alm_movs_v1','p_alm_snaps_v1'].forEach(k=>localStorage.removeItem(k));
+    conPIN(() => mostrarConfirm('⚠️ Resetear TODO','Se eliminarán TODOS los datos de TODOS los módulos (Comparativo, Almacén, Consultar Stock, Ticket): bases, precios, promo color, ventas guardadas, etc. No se puede deshacer.', () => {
+        // Borrar TODAS las claves de la app de localStorage (los 4 módulos)
+        [
+            // Comparativo
+            'p_maestro_v8','p_hist_v8','p_total_v8','p_desc_v8','p_lotes_v8','p_guiamap_v8','p_guias_v8',
+            // Almacén
+            'p_alm_v1','p_alm_movs_v1','p_alm_snaps_v1',
+            // Consultar Stock: base de artículos, precios (Memorandum), precios por mayor
+            CS_STORAGE_KEY, CS_PRECIOS_KEY, CS_MAYOR_KEY,
+            // Ticket: ventas guardadas y estado del "día 50%"
+            'tk_tickets_v1', 'tk_50off_v1'
+        ].forEach(k => { try { localStorage.removeItem(k); } catch(e) {} });
+
+        // Resetear variables en memoria — Comparativo
         maestroMap=new Map(); descripcionMap=new Map(); guiaMap=new Map(); guiasCargadas=[]; historial=[]; lotes=[]; totalEsp=0;
+        // Almacén
         almMap=new Map(); almMovs=[]; almSnapshots=[];
-        toggleMenu(); showToast('✅ Todo reseteado','#111');
+        // Consultar Stock
+        csStockDB = {}; csPreciosDB = {}; csLibrosCargados = []; csPromoColorDB = {}; csPreciosMayorDB = {};
+        // Ticket
+        ticketItems = {}; tkTickets = []; tk50OffActivo = false;
+
+        toggleMenu(); showToast('✅ Todo reseteado (los 4 módulos)','#111');
         setTimeout(()=>location.reload(),800);
     }));
 }
