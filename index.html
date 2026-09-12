@@ -1029,7 +1029,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.87 — 06/Sep/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.88 — 12/Sep/2026</div>
     </div>
 </div>
 
@@ -1429,7 +1429,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.87 — 06/Sep/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.88 — 12/Sep/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -6240,6 +6240,14 @@ function tk50OffAplicar(precio, etiqueta) {
     return Math.min(precio, mitad);
 }
 
+// Calcula el % de descuento de un precio final frente a la etiqueta, para
+// mostrarlo junto al precio (ej. "-40% DTO."). Devuelve '' si no aplica.
+function tkPctDescuento(precioFinal, etiqueta) {
+    if (!(etiqueta > 0) || !(precioFinal > 0) || precioFinal >= etiqueta) return '';
+    const pct = Math.round((etiqueta - precioFinal) / etiqueta * 100);
+    return pct > 0 ? '-' + pct + '%' : '';
+}
+
 function tkPrecioUnidad(precios) {
     if (!precios) return 0;
     let p = 0;
@@ -6344,6 +6352,7 @@ function tkRender() {
             totalGeneral += subtotalGrupo;
             totalItems   += countTotal;
 
+            const _pctCombo = tkPctDescuento(comboPrecio, _preciosGrupo0.etiqueta);
             html += `<div style="background:#fff;border-radius:12px;padding:11px 13px;margin-bottom:8px;border-left:4px solid #E65100;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
                 <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
                     <div style="flex:1;min-width:0;">
@@ -6354,6 +6363,7 @@ function tkRender() {
                     <div style="text-align:right;flex-shrink:0;">
                         <div style="font-family:'Barlow',sans-serif;font-size:11px;color:#999;">x${countTotal}</div>
                         <div style="font-family:'Barlow',sans-serif;font-weight:900;font-size:16px;color:#2E7D32;">S/${subtotalGrupo.toFixed(2)}</div>
+                        ${_pctCombo ? `<div style="font-family:'Barlow',sans-serif;font-size:11px;font-weight:800;color:#E65100;">${_pctCombo} DTO.</div>` : ''}
                     </div>
                 </div>
             </div>`;
@@ -6368,12 +6378,22 @@ function tkRender() {
         const count = ticketItems[modelo];
         const esColor = tkEsPromoColor(modelo);
         const desc  = tkDescripcionItem(modelo);
-        const unit  = esColor
-            ? (csPromoColorDB[modelo] ? csPromoColorDB[modelo].precio : 0)
-            : tkPrecioUnidad((csPreciosDB && csPreciosDB[tkModeloBase(modelo)]) || {});
+        const _preciosBase = (csPreciosDB && csPreciosDB[tkModeloBase(modelo)]) || {};
+        let unit, etiquetaRef;
+        if (esColor) {
+            const precioColor  = csPromoColorDB[modelo] ? csPromoColorDB[modelo].precio : 0;
+            const precioNormal = tkPrecioUnidad(_preciosBase); // ya incluye el tope de "día 50%" si aplica
+            // Respetar el precio más barato entre la promo color y el precio normal
+            unit = (precioNormal > 0) ? Math.min(precioColor, precioNormal) : precioColor;
+            etiquetaRef = _preciosBase.etiqueta;
+        } else {
+            unit = tkPrecioUnidad(_preciosBase);
+            etiquetaRef = _preciosBase.etiqueta;
+        }
         const subtotal = count * unit;
         totalGeneral += subtotal;
         totalItems   += count;
+        const _pctInd = tkPctDescuento(unit, etiquetaRef);
         html += `<div onclick="abrirModalTkDel('${modelo}')" style="background:#fff;border-radius:12px;padding:11px 13px;margin-bottom:8px;border-left:4px solid ${esColor ? '#E53935' : '#2E7D32'};box-shadow:0 1px 3px rgba(0,0,0,0.08);cursor:pointer;">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
                 <div style="flex:1;min-width:0;">
@@ -6384,6 +6404,7 @@ function tkRender() {
                 <div style="text-align:right;flex-shrink:0;">
                     <div style="font-family:'Barlow',sans-serif;font-size:11px;color:#999;">x${count}</div>
                     <div style="font-family:'Barlow',sans-serif;font-weight:900;font-size:16px;color:#2E7D32;">S/${subtotal.toFixed(2)}</div>
+                    ${_pctInd ? `<div style="font-family:'Barlow',sans-serif;font-size:11px;font-weight:800;color:#E65100;">${_pctInd} DTO.</div>` : ''}
                 </div>
             </div>
         </div>`;
@@ -6406,6 +6427,7 @@ function tkRender() {
         totalGeneral += subtotal;
         totalItems   += count;
         const colorBorde = cumple ? '#7B1FA2' : '#999';
+        const _pctUmbral = tkPctDescuento(precioAplicado, _preciosUmbral.etiqueta);
         html += `<div onclick="abrirModalTkDel('${modelo}')" style="background:#fff;border-radius:12px;padding:11px 13px;margin-bottom:8px;border-left:4px solid ${colorBorde};box-shadow:0 1px 3px rgba(0,0,0,0.08);cursor:pointer;">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
                 <div style="flex:1;min-width:0;">
@@ -6419,6 +6441,7 @@ function tkRender() {
                 <div style="text-align:right;flex-shrink:0;">
                     <div style="font-family:'Barlow',sans-serif;font-size:11px;color:#999;">x${count}</div>
                     <div style="font-family:'Barlow',sans-serif;font-weight:900;font-size:16px;color:#2E7D32;">S/${subtotal.toFixed(2)}</div>
+                    ${_pctUmbral ? `<div style="font-family:'Barlow',sans-serif;font-size:11px;font-weight:800;color:#E65100;">${_pctUmbral} DTO.</div>` : ''}
                 </div>
             </div>
         </div>`;
