@@ -971,6 +971,258 @@
             .btn-modo::after,
             .btn-modo { animation: none !important; transition: none !important; }
         }
+
+        /* ══════════════════════════════════════════════════════════════
+           🎨 v26.91 — CAPA VISUAL ESTILO CATÁLOGO (negro + rojo PIEERS)
+           100% aditiva: solo CSS. No cambia ids, clases, textos ni lógica.
+           Bebas Neue en títulos · Inter en textos · tarjetas limpias.
+           ══════════════════════════════════════════════════════════════ */
+        :root {
+            --cat-negro: #0E0E0E;
+            --cat-negro-2: #171717;
+            --cat-negro-3: #232323;
+            --cat-rojo: #E53935;
+            --cat-rojo-2: #C62828;
+            --cat-bg: #F3F3F5;
+            --cat-card: #FFFFFF;
+            --cat-line: #E7E7EA;
+            --cat-radius: 14px;
+        }
+
+        /* ── Selector de módulos: fondo negro con brillo rojo ── */
+        #pantalla-modo {
+            background: radial-gradient(120% 70% at 50% -10%, #3a0d0d 0%, #140707 38%, var(--cat-negro) 70%) !important;
+        }
+        #pantalla-modo::before {
+            background:
+                radial-gradient(circle at 15% 20%, rgba(229,57,53,0.22), transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(229,57,53,0.12), transparent 45%) !important;
+        }
+        #pantalla-modo .logo-icono {
+            background: linear-gradient(135deg, #FF5A4E, var(--cat-rojo-2));
+            border-radius: 20px;
+            font-family: 'Bebas Neue', 'Barlow', sans-serif; font-weight: 400; font-size: 46px; letter-spacing: 0;
+            box-shadow: 0 10px 30px rgba(229,57,53,0.45), 0 0 0 4px rgba(229,57,53,0.12);
+        }
+        #pantalla-modo .logo-modo {
+            font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400;
+            font-size: 42px; letter-spacing: 4px; color: #FFFFFF !important; line-height: 1;
+        }
+        #pantalla-modo .logo-acento { color: var(--cat-rojo) !important; }
+        #pantalla-modo .logo-sub { color: #FF8A80 !important; font-family: 'Inter', sans-serif; font-weight: 700; }
+        #pantalla-modo .logo-sub::before, #pantalla-modo .logo-sub::after { background: #FF8A80; }
+        #pantalla-modo .logo-selector { color: #9A9A9A !important; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 10px; }
+        #pantalla-modo .logo-v { color: #8A8A8A !important; }
+        #pantalla-modo [style*="height:1px"] { background: rgba(255,255,255,0.12) !important; }
+
+        /* Tarjetas de módulo: negro limpio + franja de color + ícono destacado */
+        #pantalla-modo .btn-modo {
+            background: linear-gradient(135deg, #1B1B1B 0%, #121212 100%) !important;
+            border: 1px solid #2A2A2A !important;
+            border-left: 5px solid var(--acc, var(--cat-rojo)) !important;
+            border-radius: var(--cat-radius) !important;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.45) !important;
+            padding: 16px 16px !important; color: #fff !important;
+        }
+        #pantalla-modo .btn-comp       { --acc: #FFFFFF; --acc-bg: linear-gradient(135deg,#3A3A3A,#1F1F1F); }
+        #pantalla-modo .btn-alm        { --acc: #E53935; --acc-bg: linear-gradient(135deg,#FF5A4E,#C62828); }
+        #pantalla-modo .btn-stock-mod  { --acc: #42A5F5; --acc-bg: linear-gradient(135deg,#42A5F5,#1565C0); }
+        #pantalla-modo .btn-ticket-mod { --acc: #66BB6A; --acc-bg: linear-gradient(135deg,#66BB6A,#2E7D32); }
+        #pantalla-modo .btn-modo > div:first-child {
+            background: var(--acc-bg) !important; border-radius: 12px !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.18);
+        }
+        #pantalla-modo .btn-modo .tit {
+            font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important;
+            font-size: 22px !important; letter-spacing: 1.5px !important; color: #FFFFFF !important; line-height: 1.05;
+        }
+        #pantalla-modo .btn-modo .desc { color: #A8A8A8 !important; opacity: 1 !important; font-family: 'Inter', sans-serif; font-size: 11.5px !important; }
+        #pantalla-modo .btn-modo > span:last-child { color: var(--acc) !important; font-size: 26px !important; opacity: 0.9; }
+        #pantalla-modo .btn-modo:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(0,0,0,0.6), 0 0 0 1px rgba(229,57,53,0.25) !important; }
+
+        /* ── Cabecera de la app: barra negra tipo catálogo ── */
+        .header-app {
+            background: var(--cat-negro) !important;
+            border-bottom: 3px solid var(--cat-rojo) !important;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.25) !important;
+            padding: 10px 12px !important;
+        }
+        .header-logo {
+            font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important;
+            font-size: 24px !important; letter-spacing: 1.5px !important; color: #FFFFFF !important; line-height: 1; white-space: nowrap;
+        }
+        .header-logo .logo-red { color: var(--cat-rojo) !important; }
+        .badge-modo {
+            font-family: 'Inter', sans-serif !important; font-weight: 800 !important; font-size: 9px !important;
+            letter-spacing: 1px !important; padding: 4px 10px !important; border-radius: 20px !important;
+            background: var(--cat-rojo) !important; color: #fff !important; box-shadow: 0 2px 8px rgba(229,57,53,0.45) !important;
+        }
+        .header-app button { white-space: nowrap; }
+        .header-app > div:first-child { min-width: 0; overflow: hidden; }
+        .header-app .btn-cambio { padding: 7px 9px !important; }
+        .header-app .btn-menu { padding: 8px 11px !important; }
+        .header-app .btn-modo-luz { padding: 7px 8px !important; }
+        .header-app .badge-modo { white-space: nowrap; }
+        .header-app .btn-cambio, .header-app .btn-modo-luz {
+            background: #1F1F1F !important; color: #EEE !important; border: 1px solid #333 !important;
+            border-radius: 10px !important; font-family: 'Inter', sans-serif; font-weight: 700; min-height: 36px;
+        }
+        .header-app .btn-menu {
+            background: linear-gradient(135deg, #FF5A4E, var(--cat-rojo-2)) !important; border-radius: 10px !important;
+            font-family: 'Inter', sans-serif !important; font-weight: 800 !important; letter-spacing: 0.5px; min-height: 36px;
+            box-shadow: 0 3px 10px rgba(229,57,53,0.45) !important;
+        }
+
+        /* Menú de opciones: secciones más claras */
+        .menu-dropdown { border-radius: 16px !important; border-top: 3px solid var(--cat-rojo) !important; }
+        .menu-section {
+            font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important;
+            font-size: 15px !important; letter-spacing: 1.5px !important; color: var(--cat-rojo) !important;
+            background: rgba(229,57,53,0.05);
+        }
+        .menu-dropdown button { font-weight: 600 !important; }
+
+        /* ── Fondo general más limpio ── */
+        body:not(.modo-oscuro) { background: var(--cat-bg) !important; }
+
+        /* ── Títulos de modales / paneles en Bebas Neue ── */
+        .modal-title, .confirm-title, .busq-title, .mov-title, .pin-title, .asc-title, .res-title {
+            font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important;
+            letter-spacing: 2px !important;
+        }
+        .modal-title { font-size: 28px !important; color: #fff !important; text-shadow: 0 2px 10px rgba(0,0,0,0.4); }
+        .modal-title::after { content: ''; display: block; width: 44px; height: 3px; background: var(--cat-rojo); border-radius: 3px; margin: 6px auto 0; }
+        .confirm-title { font-size: 26px !important; }
+        .panel-h {
+            font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important;
+            font-size: 15px !important; letter-spacing: 2px !important; color: #FFF !important;
+            background: var(--cat-negro) !important; border-bottom: 3px solid var(--cat-rojo) !important; padding: 8px 10px !important;
+        }
+        .confirm-card { border-radius: 20px !important; border-top: 4px solid var(--cat-rojo); }
+
+        /* ── Paneles y tablas: tarjetas limpias ── */
+        .panel { border-radius: var(--cat-radius) !important; border: 1px solid var(--cat-line) !important; box-shadow: 0 4px 14px rgba(0,0,0,0.06) !important; }
+        th:not([class*="cs-th"]) {
+            background: var(--cat-negro-2) !important; color: #F2F2F2 !important;
+            font-family: 'Inter', sans-serif !important; font-weight: 800 !important; letter-spacing: 1px !important;
+            border-bottom: 2px solid var(--cat-rojo) !important;
+        }
+        td { border-bottom: 1px solid #EFEFF2 !important; }
+        body:not(.modo-oscuro) .panel tbody tr:nth-child(even):not(.match):not(.falta):not(.sobrante):not(.fila-nueva) { background: #FAFAFB; }
+        .match    { box-shadow: inset 4px 0 0 #2E7D32; }
+        .falta    { box-shadow: inset 4px 0 0 #EF6C00; }
+        .sobrante { box-shadow: inset 4px 0 0 var(--cat-rojo); }
+
+        /* ── Tarjeta de avance (stats) ── */
+        .progress-box { border-radius: var(--cat-radius) !important; border: 1px solid var(--cat-line) !important; }
+        .stat-val { font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important; font-size: 24px !important; letter-spacing: 1px; line-height: 1; }
+        .stat-lab { font-family: 'Inter', sans-serif !important; font-weight: 700 !important; font-size: 9px !important; letter-spacing: 1px; }
+        .bar-bg { height: 5px !important; border-radius: 6px !important; }
+
+        /* ── Botones: más grandes, redondeados y claros al tacto ── */
+        .btn-modulo, .alm-btn-buscar, .alm-btn-retiro, .alm-load-btn, .alm-footer-btn,
+        .btn-confirm-yes, .btn-confirm-no, .busq-btn-ok, .mov-btn-aplicar, .mov-btn-cancelar,
+        .asc-btn-ok, .asc-btn-cancel, .comp-file-btn {
+            border-radius: 12px !important; min-height: 44px;
+            font-family: 'Inter', sans-serif !important; font-weight: 800 !important; letter-spacing: 0.5px !important;
+        }
+        .alm-btn-buscar { background: var(--cat-negro-2) !important; box-shadow: 0 4px 12px rgba(0,0,0,0.25) !important; }
+        .btn-confirm-yes, .btn-guardar-mod, .busq-btn-ok { background: linear-gradient(135deg, #FF5A4E, var(--cat-rojo-2)) !important; }
+        .btn-confirm-no { color: #333 !important; background: #F1F1F3 !important; }
+        .btn-reportes-mod { background: var(--cat-negro-2) !important; color: #FFF !important; }
+
+        /* Botones de modales con estilo en línea (gris "CERRAR/CANCELAR") */
+        .modal button[style*="background:#EEE"] { background: #F1F1F3 !important; color: #222 !important; border: 1px solid #E2E2E6 !important; border-radius: 12px !important; }
+        .modal button[style*="border-radius:10px"] { border-radius: 12px !important; }
+
+        /* ── Campos de texto: redondeados con foco rojo ── */
+        #scanner, #comp-search-inp, #alm-filtro-rapido, #busq-input, #ver-maestro-search, #cs-name-search, #tk-name-search, #tk-obs-inp {
+            border-radius: 12px !important; font-family: 'Inter', sans-serif !important;
+        }
+        #scanner { border-width: 2px !important; box-shadow: 0 4px 14px rgba(229,57,53,0.12); font-weight: 700; letter-spacing: 1px; }
+        input[type="text"]:focus, input[type="number"]:focus, input[type="search"]:focus {
+            outline: none; box-shadow: 0 0 0 4px rgba(229,57,53,0.15) !important; border-color: var(--cat-rojo) !important;
+        }
+
+        /* ── CONSULTAR STOCK: de look "Windows clásico" a tarjeta moderna ── */
+        body:not(.modo-oscuro) #vista-stock { background: var(--cat-bg) !important; font-family: 'Inter', sans-serif !important; }
+        body:not(.modo-oscuro) #vista-stock .cs-top-panel {
+            background: #FFFFFF !important; border-bottom: 1px solid var(--cat-line) !important;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        body:not(.modo-oscuro) #vista-stock .cs-field-label { color: var(--cat-negro) !important; font-family: 'Bebas Neue', sans-serif; font-weight: 400; font-size: 17px; letter-spacing: 1.5px; }
+        body:not(.modo-oscuro) #vista-stock input[type="text"].cs-inp {
+            border: 2px solid var(--cat-rojo) !important; border-radius: 12px !important; height: 44px !important;
+            color: var(--cat-negro) !important; padding: 6px 12px !important; letter-spacing: 1px;
+        }
+        #btn-modo-lectora { border-radius: 12px !important; font-family: 'Inter', sans-serif !important; letter-spacing: 1px !important; }
+        #cs-db-badge { border-radius: 20px !important; padding: 4px 10px !important; font-family: 'Inter', sans-serif; font-size: 10px !important; letter-spacing: 0.5px; }
+        body:not(.modo-oscuro) #cs-db-badge.ok    { background: #2E7D32 !important; color: #fff !important; }
+        body:not(.modo-oscuro) #cs-db-badge.empty { background: var(--cat-rojo) !important; color: #fff !important; }
+        body:not(.modo-oscuro) #cs-table-outer { background: var(--cat-bg) !important; }
+        body:not(.modo-oscuro) #cs-table-outer .cs-no-data { color: #777 !important; font-family: 'Inter', sans-serif; font-size: 14px !important; }
+        #cs-nombre-texto { font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important; font-size: 22px !important; letter-spacing: 1px !important; }
+
+        /* Tabla de tallas: encabezados negros, tallas en rojo, total verde (celdas opacas para el congelado) */
+        body:not(.modo-oscuro) .cs-th-color, body:not(.modo-oscuro) .cs-th-size { background: var(--cat-negro-2) !important; color: #FFF !important; border-color: #000 !important; font-family: 'Inter', sans-serif; }
+        body:not(.modo-oscuro) .cs-th-size { border-bottom: 2px solid var(--cat-rojo) !important; }
+        body:not(.modo-oscuro) .cs-th-total { background: #1B5E20 !important; color: #FFF !important; border-color: #0f3d12 !important; }
+        body:not(.modo-oscuro) .cs-th-tp-label, body:not(.modo-oscuro) .cs-th-tp, body:not(.modo-oscuro) .cs-th-tp-tot { background: #ECECEF !important; border-color: #DADADF !important; }
+        body:not(.modo-oscuro) .cs-th-tp { color: var(--cat-negro) !important; }
+        body:not(.modo-oscuro) .cs-th-tp-label { color: var(--cat-rojo-2) !important; }
+        body:not(.modo-oscuro) #cs-table-outer tbody tr:nth-child(odd) .cs-td-color,
+        body:not(.modo-oscuro) #cr-table-outer tbody tr:nth-child(odd) .cs-td-color { background: #F4F4F6 !important; }
+        body:not(.modo-oscuro) #cs-table-outer tbody tr:nth-child(even) .cs-td-color,
+        body:not(.modo-oscuro) #cr-table-outer tbody tr:nth-child(even) .cs-td-color { background: #FFFFFF !important; }
+        body:not(.modo-oscuro) .cs-td-color { color: var(--cat-negro) !important; border-color: #E4E4E8 !important; box-shadow: inset 3px 0 0 var(--cat-rojo); }
+        body:not(.modo-oscuro) .cs-td-pos { color: var(--cat-rojo-2) !important; border-color: #EBEBEF !important; font-size: 12px !important; }
+        body:not(.modo-oscuro) .cs-td-zero { color: #C4C4C8 !important; border-color: #F0F0F2 !important; background: #FCFCFD !important; }
+        body:not(.modo-oscuro) .cs-tr-grand .cs-td-color { background: var(--cat-negro) !important; color: #FFF !important; }
+        body:not(.modo-oscuro) .cs-tr-grand .cs-td-sum { background: #FDECEA !important; color: var(--cat-rojo-2) !important; border-color: #F5C6C2 !important; }
+        body:not(.modo-oscuro) .cs-tr-grand .cs-td-total { background: #2E7D32 !important; color: #FFF !important; }
+
+        /* Precios: tarjetas limpias con cifras grandes (como en el catálogo) */
+        .cs-price-box { border-radius: 14px !important; box-shadow: 0 6px 16px rgba(0,0,0,0.14) !important; }
+        .cs-price-val { font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important; font-size: 30px !important; letter-spacing: 0.5px !important; }
+        .cs-price-label { font-family: 'Inter', sans-serif !important; font-size: 9.5px !important; letter-spacing: 0.8px !important; }
+        .cs-promo-row, .cs-promo-activa-row { border-radius: 12px !important; box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important; }
+        .cs-promo-precio { font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important; font-size: 22px !important; letter-spacing: 0.5px; }
+        .cs-pa-nombre { font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important; font-size: 19px !important; letter-spacing: 1px !important; }
+        #mpc-desc { font-size: 22px !important; }
+        #mpc-card { border-bottom: 4px solid var(--cat-rojo); }
+
+        /* ── SIMULADOR DE TICKET: cabecera negra, total grande tipo precio ── */
+        body:not(.modo-oscuro) #vista-ticket { background: var(--cat-bg) !important; }
+        #vista-ticket > div:first-child {
+            background: var(--cat-negro) !important; border-bottom: 3px solid #43A047 !important;
+        }
+        #tk-inp-codbar { border-radius: 12px !important; border-color: #43A047 !important; font-weight: 700; letter-spacing: 1px; }
+        #tk-hoy-resumen { font-family: 'Inter', sans-serif; letter-spacing: 0.3px; }
+        #tk-btn-50off { border-radius: 12px !important; min-height: 42px; font-family: 'Inter', sans-serif !important; font-weight: 800 !important; }
+        #vista-ticket > div:last-child {
+            border-top: none !important; border-radius: 18px 18px 0 0;
+            box-shadow: 0 -8px 24px rgba(0,0,0,0.10);
+        }
+        #tk-total { font-family: 'Bebas Neue', 'Barlow', sans-serif; font-weight: 400; font-size: 40px; letter-spacing: 1px; }
+        #vista-ticket > div:last-child button { border-radius: 12px !important; min-height: 46px; font-family: 'Inter', sans-serif !important; letter-spacing: 0.5px; }
+        #tk-detalle-total { font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important; font-size: 30px !important; letter-spacing: 1px; }
+
+        /* ── Almacén ── */
+        #alm-estado-badge { border-radius: 12px !important; border-left: 4px solid var(--cat-rojo) !important; text-align: left !important; font-weight: 600; }
+        #alm-filtro-rapido { border-radius: 12px !important; }
+
+        /* ── Modales tipo hoja: tarjetas con esquinas suaves ── */
+        .busq-card, .mov-card, .asc-card, .res-card, .pin-card { border-radius: 20px !important; overflow: hidden; }
+        .busq-header, .mov-header { border-bottom: 3px solid var(--cat-rojo); }
+        .card-lote { border-radius: 14px !important; border-left: 4px solid var(--cat-rojo) !important; }
+
+        /* ── Toast estilo píldora negra con acento rojo ── */
+        #toast { background: rgba(14,14,14,0.94) !important; border-left: 4px solid var(--cat-rojo); border-radius: 14px !important; font-family: 'Inter', sans-serif !important; font-weight: 600; box-shadow: 0 10px 28px rgba(0,0,0,0.35); }
+
+        /* ── Modo oscuro: mantener legibles los nuevos acentos ── */
+        body.modo-oscuro .menu-section { color: #FF8A80 !important; background: rgba(229,57,53,0.10) !important; }
+        body.modo-oscuro th:not([class*="cs-th"]) { background: #0A0A0A !important; }
+        body.modo-oscuro #vista-ticket > div:first-child { background: #0A0A0A !important; }
     </style>
 </head>
 <body class="modo-comp">
@@ -1029,7 +1281,7 @@
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
-        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.90 — 12/Sep/2026</div>
+        <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;margin-top:3px;">v26.92 — 29/Sep/2026</div>
     </div>
 </div>
 
@@ -1429,7 +1681,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.90 — 12/Sep/2026</span>
+                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.92 — 29/Sep/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -2048,7 +2300,8 @@ document.getElementById('fileInput').addEventListener('change', function(e) {
             setTimeout(() => {
                 try {
                     const wb  = XLSX.read(new Uint8Array(evt.target.result), {type:'array'});
-                    const csv = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+                    let csv = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+                    const _detCmp = _detalleStockXLSXaCSV(wb); if (_detCmp) csv = _detCmp;
                     const esStock = csv.includes(',LINEA,') || csv.includes('"LINEA"') || csv.includes(',OFERTA,');
                     const esGuia  = csv.includes('DESCRIPCION') || csv.includes('DESCRIPCIÓN');
 
@@ -2111,7 +2364,7 @@ function abrirSubCarga(modulo) {
             desc: '¿Qué tipo de archivo quieres cargar?',
             opciones: [
                 { ico:'📄', titulo:'Cargar Guías',
-                  desc:'Archivo GUIA.xlsx de traslado o CSV de Detalle de Stock WAMA — se convierte automáticamente',
+                  desc:'Archivo GUIA.xlsx de traslado o CSV o Excel de Detalle de Stock WAMA — se convierte automáticamente',
                   color:'#2E7D32', accion:`driveAbrirModal('guia-comp');cerrarSubCarga()` },
             ]
         },
@@ -2120,10 +2373,10 @@ function abrirSubCarga(modulo) {
             desc: '¿Qué tipo de archivo quieres cargar?',
             opciones: [
                 { ico:'📊', titulo:'Inventario estándar',
-                  desc:'Archivo Excel/CSV con CODIGO, DESCRIPCION, STOCK',
+                  desc:'Archivo Excel/CSV con CODIGO, DESCRIPCION, STOCK — o Excel de Detalle de Stock WAMA',
                   color:'#1565C0', accion:`driveAbrirModal('almacen');cerrarSubCarga()` },
                 { ico:'📄', titulo:'GUIA de movimientos / Stock WAMA',
-                  desc:'Archivo GUIA.xlsx de traslado o CSV de Detalle de Stock WAMA — se convierte automáticamente',
+                  desc:'Archivo GUIA.xlsx de traslado o CSV o Excel de Detalle de Stock WAMA — se convierte automáticamente',
                   color:'#2E7D32', accion:`driveAbrirModal('guia-alm');cerrarSubCarga()` },
             ]
         },
@@ -2132,7 +2385,7 @@ function abrirSubCarga(modulo) {
             desc: '¿Qué tipo de archivo quieres cargar?',
             opciones: [
                 { ico:'📄', titulo:'Cargar Stock',
-                  desc:'Archivo GUIA.xlsx o CSV de Detalle de Stock WAMA — se convierte automáticamente',
+                  desc:'Archivo GUIA.xlsx o CSV o Excel de Detalle de Stock WAMA — se convierte automáticamente',
                   color:'#2E7D32', accion:`driveAbrirModal('guia-cs');cerrarSubCarga()` },
                 { ico:'☁️', titulo:'Cargar Memorandum',
                   desc:'Carga el Memorandum de precios WAMA directo desde Google Drive',
@@ -2436,6 +2689,96 @@ function _convertirGuiaXLSX(wb) {
     return res;
 }
 
+// ── v26.92: "DETALLE DE STOCK" en Excel (formato por bloques: fila MODELO,
+//    fila de tallas y filas por color, ej. PR0B7T4.xlsx). Se convierte al
+//    MISMO formato del CSV de Stock WAMA (una fila por color con LINEA) para
+//    que todos los módulos usen exactamente la misma conversión de siempre.
+//    Devuelve el texto CSV equivalente, o '' si el libro no es de este tipo.
+function _detalleStockXLSXaCSV(wb) {
+    try {
+        const TALLAS_TXT = new Set(['XXS','XS','S','M','L','XL','XXL','XXXL','2X','3X','4X','5X','ST','STD','U','UNI','UNICA','ÚNICA','TU']);
+        const esTalla = v => {
+            v = String(v == null ? '' : v).trim().toUpperCase();
+            if (!v) return false;
+            if (TALLAS_TXT.has(v)) return true;
+            return /^\d{1,2}(\.5)?$/.test(v) || /^\d{1,2}\/\d{1,2}$/.test(v);
+        };
+        const esModelo = v => /^[A-Z0-9]{5,8}$/i.test(String(v||'').trim()) && /[A-Z]/i.test(String(v||'')) && /\d/.test(String(v||''));
+        const esc = v => { v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v; };
+        const lineas = [];
+        let esDetalle = false;
+        for (const nombreHoja of wb.SheetNames) {
+            const data = XLSX.utils.sheet_to_json(wb.Sheets[nombreHoja], {header:1, defval:''});
+            const plano = data.slice(0, 40).map(r => r.join(' ')).join(' ').toUpperCase();
+            if (!/DISTRIBU[I]?CION DE TALLAS|DETALLE DE STOCK/.test(plano)) continue;
+            // Si ya es el CSV clásico (todo en una fila con LINEA), no tocarlo
+            const yaEsCSV = data.some(r => {
+                const li = r.findIndex(v => /^(LINEA|OFERTA|SALDO)$/.test(String(v == null ? '' : v).trim()));
+                return li >= 0 && r.length >= li + 30 && esModelo(r[li + 1]);
+            });
+            if (yaEsCSV) continue;
+            esDetalle = true;
+            let estado = 'LINEA', modelo = '', desc = '', tallas = null; // tallas: [{col,label}]
+            for (const row of data) {
+                const c0 = String(row[0] == null ? '' : row[0]).trim();
+                const celdas = [];
+                row.forEach((v, j) => { const s = String(v == null ? '' : v).trim(); if (s) celdas.push({ j, s }); });
+                if (!celdas.length) continue;
+                // Estado del bloque (LINEA / OFERTA / SALDO)
+                const est = celdas.find(c => /^(LINEA|OFERTA|SALDO)$/i.test(c.s));
+                if (est && /^ESTADO/i.test(c0)) { estado = est.s.toUpperCase(); continue; }
+                if (/^(TOTAL|MODELO|UBICACI|OBSERVACI|TIENDA|STOCK)/i.test(c0) || celdas.some(c => /^Total /i.test(c.s))) continue;
+                // Fila de tallas: sin col A y todas sus celdas son tallas
+                if (!c0 && celdas.length >= 1 && celdas.every(c => esTalla(c.s)) && celdas[0].j >= 5) {
+                    tallas = celdas.map(c => ({ col: c.j, label: c.s }));
+                    continue;
+                }
+                if (!esModelo(c0)) continue;
+                const resto = celdas.filter(c => c.j > 0);
+                const numericas = resto.filter(c => /^-?\d+(\.\d+)?$/.test(c.s));
+                // Fila de modelo: código + descripción, sin cantidades
+                if (!numericas.length) {
+                    modelo = c0.toUpperCase();
+                    desc = resto.map(c => c.s).join(' ').replace(/\s+/g, ' ').trim();
+                    tallas = null;
+                    continue;
+                }
+                // Fila de color: código de color (3) + nombre + cantidades bajo cada talla
+                if (!tallas || !tallas.length) continue;
+                const primCant = tallas[0].col - 1;
+                const textos = resto.filter(c => c.j < primCant && !/^-?\d+(\.\d+)?$/.test(c.s));
+                const ci = textos.findIndex(c => /^[A-Z0-9]{3}$/i.test(c.s));
+                if (ci < 0) continue;
+                const colorCod = textos[ci].s.toUpperCase();
+                const colorNom = textos.slice(ci + 1).map(c => c.s).join(' ').trim() || colorCod;
+                const mod = c0.toUpperCase();
+                const valor = col => {
+                    const n = parseInt(row[col]);
+                    return isNaN(n) ? null : n;
+                };
+                const cants = tallas.map((t, k) => {
+                    let n = valor(t.col);
+                    if (n === null) {
+                        // tolera un corrimiento de ±1 columna, sin invadir la talla vecina
+                        const ant = k > 0 ? tallas[k-1].col : -1, sig = k < tallas.length-1 ? tallas[k+1].col : 1e9;
+                        if (t.col - 1 > ant && valor(t.col - 1) !== null) n = valor(t.col - 1);
+                        else if (t.col + 1 < sig && valor(t.col + 1) !== null) n = valor(t.col + 1);
+                    }
+                    return n || 0;
+                });
+                const labels = tallas.map(t => t.label);
+                while (labels.length < 12) { labels.push('--'); cants.push(0); }
+                const total = cants.reduce((a, b) => a + b, 0);
+                const fila = ['', estado, mod, (mod === modelo ? desc : desc || mod)]
+                    .concat(labels.slice(0, 12)).concat([''], [colorCod, colorNom])
+                    .concat(cants.slice(0, 12)).concat([total, '', '']);
+                lineas.push(fila.map(esc).join(','));
+            }
+        }
+        return (esDetalle && lineas.length) ? lineas.join('\n') : '';
+    } catch (e) { return ''; }
+}
+
 function _convertirStockCSV(filas) {
     // Parser para archivos CSV de Detalle de Stock (WAMA)
     // Usa indexOf('LINEA') para encontrar las columnas correctas dinámicamente
@@ -2560,7 +2903,8 @@ document.getElementById('guiaInput').addEventListener('change', function(e) {
                 let res;
                 if (isXlsx) {
                     const wb = XLSX.read(new Uint8Array(evt.target.result),{type:'array'});
-                    const csvTxt = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+                    let csvTxt = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+                    const _detGuia = _detalleStockXLSXaCSV(wb); if (_detGuia) csvTxt = _detGuia;
                     const esStock  = csvTxt.indexOf(',LINEA,') >= 0 || csvTxt.indexOf('"LINEA"') >= 0;
                     const esOferta = csvTxt.indexOf(',OFERTA,') >= 0;
                     const esGuia   = csvTxt.indexOf('DESCRIPCION') >= 0 || csvTxt.indexOf('DESCRIPCIÓN') >= 0;
@@ -6869,6 +7213,7 @@ function csLoadFile(e) {
             else {
                 const wb = XLSX.read(ev.target.result, { type: 'array' });
                 csv = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+                const _detCsF = _detalleStockXLSXaCSV(wb); if (_detCsF) csv = _detCsF;
             }
             const lineasCs = parsearCSV(csv);
             const resCs = _convertirStockCSV(lineasCs);
@@ -7316,6 +7661,7 @@ function driveProcesar(ab, tipo) {
             var wb = XLSX.read(new Uint8Array(ab), {type:'array', dense:true});
             if (tipo === 'maestro') {
                 var csvTxtD = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+                var _detD = _detalleStockXLSXaCSV(wb); if (_detD) csvTxtD = _detD;
                 var esStockD  = csvTxtD.indexOf(',LINEA,') >= 0 || csvTxtD.indexOf('"LINEA"') >= 0 || csvTxtD.indexOf(',OFERTA,') >= 0;
                 var esGuiaD   = csvTxtD.indexOf('DESCRIPCION') >= 0 || csvTxtD.indexOf('DESCRIPCIÓN') >= 0;
                 var resD = [];
@@ -7350,6 +7696,10 @@ function driveProcesar(ab, tipo) {
             } else if (tipo === 'stock') {
                 var rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:'', header:1});
                 convertirStockDesdeFilas(rows);
+            } else if (tipo === 'almacen' && _detalleStockXLSXaCSV(wb)) {
+                // v26.92: Detalle de Stock en Excel → misma conversión que Stock WAMA
+                var _lnAlm = _detalleStockXLSXaCSV(wb).split(/\r?\n/).map(function(l){ return csParseCSVLine(l); });
+                _cargarResultadosEnModulo(_convertirStockCSV(_lnAlm), 'alm', driveArchivoNombre);
             } else if (tipo === 'almacen') {
                 var rows2 = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:''});
                 var nuevos = [];
@@ -7391,6 +7741,7 @@ function driveProcesar(ab, tipo) {
                 if (csvDriveTxt.indexOf('LINEA') < 0) {
                     csvDriveTxt = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
                 }
+                var _detDrv = _detalleStockXLSXaCSV(wb); if (_detDrv) csvDriveTxt = _detDrv;
                 var resDrive = _convertirStockCSV(parsearCSV(csvDriveTxt));
                 csStockDB = {};
                 resDrive.forEach(function(r) {
@@ -7432,6 +7783,7 @@ function driveProcesar(ab, tipo) {
                 var res = [];
                 // Detectar formato: si tiene columna 'LINEA' es CSV de Stock WAMA
                 var csvTxt = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
+                var _detG = _detalleStockXLSXaCSV(wb); if (_detG) csvTxt = _detG;
                 var esStockCSV = csvTxt.indexOf(',LINEA,') >= 0 || csvTxt.indexOf('"LINEA"') >= 0;
                 if (esStockCSV && modulo === 'cs') {
                     // Para Consultar Stock: usar csParseStockCSV directamente (más fiable)
