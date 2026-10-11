@@ -1470,6 +1470,33 @@
         .header-app .btn-cambio { padding: 7px 7px !important; font-size: 10.5px !important; }
         .header-app .btn-menu { padding: 8px 9px !important; font-size: 11.5px !important; }
         @media (max-width: 380px) { .header-logo { font-size: 19px !important; letter-spacing: 0.3px !important; } .badge-modo { padding: 3px 6px !important; font-size: 9.5px !important; margin-left: 5px !important; } .header-app .btn-modo-luz { padding: 6px 6px !important; } .header-app .btn-cambio { padding: 7px 5px !important; } .header-app .btn-menu { padding: 8px 7px !important; } .header-app > div:last-child { gap: 4px !important; } }
+
+        /* ══ v26.99 — Detalle del reporte (Inventario): color y talla visibles + tocar para ver todo ══ */
+        .dl-badge.falta { background: #E65100 !important; color: #fff !important; box-shadow: none !important; }
+        .dl-badge.sobra { background: #1565C0 !important; color: #fff !important; box-shadow: none !important; }
+        .dl-badge.ok    { background: #2E7D32 !important; color: #fff !important; box-shadow: none !important; }
+        .dl-badge.nm    { background: #7B1FA2 !important; color: #fff !important; }
+        .dl-item.falta, .dl-item.sobra, .dl-item.ok, .dl-item.nomaestro { background: #FFFFFF !important; box-shadow: 0 1px 3px rgba(0,0,0,0.12) !important; color: inherit !important; }
+        .dl-item { cursor: pointer; align-items: flex-start !important; position: relative; }
+        .dl-badge { align-self: flex-start !important; font-family: 'Inter', sans-serif !important; font-size: 10.5px !important; padding: 3px 7px !important; border-radius: 6px !important; }
+        .dl-item-desc { white-space: normal !important; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-family: 'Inter', sans-serif !important; font-size: 13px !important; line-height: 1.3 !important; }
+        .dl-ct { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+        .dl-ct span { display: inline-flex; align-items: baseline; gap: 5px; padding: 4px 9px; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 800; line-height: 1.2; }
+        .dl-ct b { font-size: 9.5px; font-weight: 800; letter-spacing: 0.6px; opacity: 0.75; }
+        .dl-ct-color { background: #1B1D22; color: #fff; max-width: 100%; }
+        .dl-ct-talla { background: #FDECEA; color: #C62828; border: 1px solid #F5C6C2; }
+        .dl-item-full { display: none; margin-top: 8px; padding: 8px 10px; border-radius: 8px; background: #F6F7F9; border: 1px solid #E6E8EC; }
+        .dl-item.abierto .dl-item-full { display: block; }
+        .dl-item.abierto .dl-item-desc { -webkit-line-clamp: unset; display: block; }
+        .dl-full-desc { font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700; color: #1B1D22; line-height: 1.35; margin-bottom: 6px; word-break: break-word; }
+        .dl-full-row { display: flex; justify-content: space-between; gap: 10px; font-family: 'Inter', sans-serif; font-size: 12px; padding: 3px 0; border-top: 1px dashed #DADDE3; }
+        .dl-full-row span { color: #6B6F7A; }
+        .dl-full-row b { color: #1B1D22; text-align: right; }
+        .dl-item::after { content: '▾'; position: absolute; right: 12px; bottom: 8px; font-size: 13px; color: #9AA0AA; }
+        .dl-item.abierto::after { content: '▴'; }
+        body.modo-oscuro .dl-item.falta, body.modo-oscuro .dl-item.sobra, body.modo-oscuro .dl-item.ok, body.modo-oscuro .dl-item.nomaestro { background: #1E1E1E !important; }
+        body.modo-oscuro .dl-item-full { background: #262626 !important; border-color: #333 !important; }
+        body.modo-oscuro .dl-ct-talla { background: #3A1515 !important; border-color: #5A2A2A !important; }
     </style>
 </head>
 <body class="modo-comp">
@@ -1483,7 +1510,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v26.98 — 11/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v26.99 — 11/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -1929,7 +1956,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.98 — 11/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.99 — 11/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4389,6 +4416,53 @@ function dlFiltrar(tipo) {
     dlRender();
 }
 
+// v26.99 — Separa COLOR y TALLA de la descripción para el detalle del reporte.
+// La descripción del maestro es "<descripción del modelo> <color> T/<talla>".
+let _dlPrefCache = null, _dlPrefRef = null;
+function dlColorTalla(e) {
+    const cod = String(e.cod || '').toUpperCase();
+    const modelo = cod.length === 13 ? cod.substring(1, 8) : '';
+    const colorCod = cod.length === 13 ? cod.substring(8, 11) : '';
+    const desc = String(e.desc || '').replace(/\s+/g, ' ').trim();
+    const talla = (typeof _extraerTallaLabel === 'function' && _extraerTallaLabel(desc)) || (cod.length === 13 ? cod.substring(11) : '—');
+    const sinTalla = desc.replace(/\s*T\/\S+$/, '').trim();
+    // prefijo común (descripción del modelo) entre los colores del mismo modelo
+    if (_dlPrefRef !== dlEntriesCache) {
+        _dlPrefRef = dlEntriesCache; _dlPrefCache = {};
+        const grupos = {};
+        (dlEntriesCache || []).forEach(x => {
+            const c = String(x.cod || '').toUpperCase(); if (c.length !== 13 || !x.desc) return;
+            const m = c.substring(1, 8), d = String(x.desc).replace(/\s+/g, ' ').trim().replace(/\s*T\/\S+$/, '').trim();
+            (grupos[m] = grupos[m] || new Set()).add(d);
+        });
+        Object.keys(grupos).forEach(m => {
+            const arr = [...grupos[m]].map(d => d.split(' '));
+            if (arr.length < 2) return;
+            let n = 0; const min = Math.min(...arr.map(a => a.length));
+            while (n < min - 1 && arr.every(a => a[n] === arr[0][n])) n++;
+            if (n > 0) _dlPrefCache[m] = arr[0].slice(0, n).join(' ');
+        });
+    }
+    let base = '', color = '';
+    const pref = _dlPrefCache[modelo];
+    if (pref && sinTalla.indexOf(pref) === 0) { base = pref; color = sinTalla.substring(pref.length).trim(); }
+    if (!color && typeof csStockDB !== 'undefined' && csStockDB && csStockDB[modelo]) {
+        const ce = (csStockDB[modelo].colors || []).find(c => c.code === colorCod);
+        if (ce && ce.name) { color = ce.name; if (sinTalla.endsWith(ce.name)) base = sinTalla.slice(0, -ce.name.length).trim(); }
+    }
+    if (!color) {
+        // Respaldo: en WAMA la descripción del modelo termina con el público (CAB, DAM, NÑA, NÑO, JR…)
+        // y lo que sigue es el color. Ej.: "PIEERS LEGGIN BRIAH NÑA | NAVY"
+        const pal = sinTalla.split(' ');
+        const PUB = /^(CAB|CABALLERO|DAM|DAMA|NÑA|NÑO|NIÑA|NIÑO|NNA|NNO|JR|JUNIOR|UNISEX|UNI|BEBE|BB|MUJ|HOM|BOY|GIRL)$/i;
+        for (let k = pal.length - 2; k >= 1; k--) {
+            if (PUB.test(pal[k])) { base = pal.slice(0, k + 1).join(' '); color = pal.slice(k + 1).join(' '); break; }
+        }
+    }
+    if (!color) color = colorCod || '—';
+    return { base: base || sinTalla, color, colorCod, talla, modelo: modelo || '—' };
+}
+
 function dlRender() {
     const cont = document.getElementById('dl-list');
     if (!cont || !dlEntriesCache.length) return;
@@ -4415,9 +4489,21 @@ function dlRender() {
         const catLabel = {ok:'✅ OK', falta:`⚠️ FALTA ${e.exp - e.real}`, sobra:`📦 SOBRA ${e.real - e.exp}`, nomaestro:'❓ SIN MAESTRO'}[e.cat] || '';
         const catBadge = {ok:'ok', falta:'falta', sobra:'sobra', nomaestro:'nm'}[e.cat] || '';
         const realColor = e.cat==='ok'?'#2E7D32':e.cat==='falta'?'#E65100':e.cat==='sobra'?'#1565C0':'#7B1FA2';
+        const _ct = dlColorTalla(e);
+        div.onclick = function(ev){ if (ev.target.closest('button')) return; div.classList.toggle('abierto'); };
         div.innerHTML = `
             <div class="dl-item-body">
-                <div class="dl-item-desc${e.desc?'':' sin-desc'}" title="${e.desc||e.cod}">${e.desc||'⚠ Sin descripción en el maestro'}</div>
+                <div class="dl-item-desc${e.desc?'':' sin-desc'}" title="${e.desc||e.cod}">${_ct.base || e.desc || '⚠ Sin descripción en el maestro'}</div>
+                <div class="dl-ct">
+                    <span class="dl-ct-color"><b>COLOR</b> ${_ct.color}</span>
+                    <span class="dl-ct-talla"><b>TALLA</b> ${_ct.talla}</span>
+                </div>
+                <div class="dl-item-full">
+                    <div class="dl-full-desc">${e.desc || 'Sin descripción en el maestro'}</div>
+                    <div class="dl-full-row"><span>Modelo</span><b>${_ct.modelo}</b></div>
+                    <div class="dl-full-row"><span>Color</span><b>${_ct.color}${_ct.colorCod && _ct.color !== _ct.colorCod ? ' · ' + _ct.colorCod : ''}</b></div>
+                    <div class="dl-full-row"><span>Talla</span><b>${_ct.talla}</b></div>
+                </div>
                 <div class="dl-item-cod">${e.cod}</div>
                 <div class="dl-item-cols">
                     <div class="dl-pill"><span class="dl-pill-val" style="color:#333;">${e.exp}</span><span class="dl-pill-lab">ESP</span></div>
