@@ -1526,6 +1526,15 @@
         body.modo-oscuro .im-prev, body.modo-oscuro .im-prev-row { border-color: #333 !important; }
         body.modo-oscuro .dl-item.dl-pulsando { background: #14301A !important; }
         .dl-hint { font-family: 'Inter', sans-serif; font-size: 11.5px; color: #6B6F7A; text-align: center; padding: 2px 6px 8px; }
+        /* v27.01: un toque = ingreso manual; sin flecha de expandir ni barra de pulsación */
+        .dl-item::after, .dl-item::before { display: none !important; content: none !important; }
+        .dl-item:active { background: #F3FAF3 !important; }
+        body.modo-oscuro .dl-item:active { background: #14301A !important; }
+        /* v27.02: campo de escaneo en el detalle del reporte */
+        .dl-search-doble { display: flex; flex-direction: column; gap: 6px; }
+        #dl-scan { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 2px solid #2E7D32; border-radius: 12px; font-size: 14px; font-weight: 700; font-family: 'Inter', sans-serif; text-align: center; background: #F3FAF3; letter-spacing: 0.5px; }
+        #dl-scan:focus { outline: none; box-shadow: 0 0 0 4px rgba(46,125,50,0.18) !important; border-color: #2E7D32 !important; }
+        body.modo-oscuro #dl-scan { background: #14301A !important; border-color: #2E7D32 !important; }
     </style>
 </head>
 <body class="modo-comp">
@@ -1539,7 +1548,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.00 — 11/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.02 — 11/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -1985,7 +1994,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.00 — 11/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.02 — 11/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4377,6 +4386,7 @@ function verDetalleLote(idx) {
     _dlActivarTab('todos');
     _dlCargarDatos();
     document.getElementById('modal-detalle-lote').style.display = 'flex';
+    setTimeout(() => { const sc = document.getElementById('dl-scan'); if (sc) { sc.value = ''; sc.focus(); } }, 150);
     // Si venimos desde modalLotes, cerrarlo
     const ml = document.getElementById('modalLotes');
     if (ml) ml.style.display = 'none';
@@ -4514,7 +4524,7 @@ function dlRender() {
         cont.innerHTML = `<p style="color:#111111;text-align:center;margin-top:30px;font-family:'Barlow',sans-serif;font-size:13px;">Sin resultados${q?' para "'+q+'"':''}</p>`;
         return;
     }
-    cont.innerHTML = '<div class="dl-hint">👆 Toca una prenda para ver todo · ✋ mantenla pulsada 2 s para ingresarla a mano</div>';
+    cont.innerHTML = '<div class="dl-hint">📷 Escanea o 👆 toca una prenda para ingresarla a mano</div>';
     const frag = document.createDocumentFragment();
     entries.slice(0,200).forEach(e => {
         const div = document.createElement('div');
@@ -4523,8 +4533,8 @@ function dlRender() {
         const catBadge = {ok:'ok', falta:'falta', sobra:'sobra', nomaestro:'nm'}[e.cat] || '';
         const realColor = e.cat==='ok'?'#2E7D32':e.cat==='falta'?'#E65100':e.cat==='sobra'?'#1565C0':'#7B1FA2';
         const _ct = dlColorTalla(e);
-        div.onclick = function(ev){ if (ev.target.closest('button')) return; if (div._lpFired) { div._lpFired = false; return; } div.classList.toggle('abierto'); };
-        dlActivarPulsacionLarga(div, e);
+        // v27.01: un solo toque abre el ingreso manual (ahí también se ve la descripción completa)
+        div.onclick = function(ev){ if (ev.target.closest('button')) return; dlAbrirIngresoManual(e); };
         const _man = dlManualDe(e.cod);
         div.innerHTML = `
             <div class="dl-item-body">
@@ -4598,6 +4608,14 @@ function focusScanner() { setTimeout(()=>{ try{document.getElementById('scanner'
 document.addEventListener('click', (e) => {
     const tag=e.target.tagName;
     if (e.target.closest && e.target.closest('#modal-pedir-texto')) return; // v26.95: no robar el foco al escribir un nombre
+    if (e.target.closest && e.target.closest('#modal-ingreso-manual')) return;
+    // v27.02: con el detalle del reporte abierto, la lectora escribe en su propio campo (no en el conteo en vivo)
+    const _mdl = document.getElementById('modal-detalle-lote');
+    if (_mdl && _mdl.style.display !== 'none' && _mdl.style.display !== '') {
+        const tg = e.target.tagName;
+        if (tg !== 'INPUT' && tg !== 'BUTTON' && tg !== 'SELECT') { const sc = document.getElementById('dl-scan'); if (sc) setTimeout(() => sc.focus(), 60); }
+        return;
+    }
     if (!bloqueado&&modoActual&&modoActual!=='alm'&&tag!=='BUTTON'&&tag!=='INPUT'&&tag!=='SELECT') focusScanner();
 });
 
@@ -8526,7 +8544,8 @@ function driveProcesar(ab, tipo) {
         <button class="dl-tab"        id="dl-tab-nomaestro" onclick="dlFiltrar('nomaestro')">❓ S/MAES <span id="dl-c-nm">0</span></button>
     </div>
     <!-- Buscador -->
-    <div class="dl-search">
+    <div class="dl-search dl-search-doble">
+        <input type="text" id="dl-scan" placeholder="📷 Escanear prenda encontrada" inputmode="none" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
         <input type="text" id="dl-input" placeholder="🔍 Buscar código o descripción..." oninput="dlRender()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     </div>
     <!-- Lista -->
@@ -8645,7 +8664,7 @@ function dlActivarPulsacionLarga(div, e) {
     ['pointerup', 'pointerleave', 'pointercancel'].forEach(n => div.addEventListener(n, cancelar));
     div.addEventListener('contextmenu', ev => ev.preventDefault());
 }
-function dlAbrirIngresoManual(e) {
+function dlAbrirIngresoManual(e, porEscaneo) {
     const lote = lotes[dlIdxActual]; if (!lote) return;
     const ct = dlColorTalla(e);
     let m = document.getElementById('modal-ingreso-manual');
@@ -8655,7 +8674,7 @@ function dlAbrirIngresoManual(e) {
         m.style.cssText = 'display:none;position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,0.6);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);padding:18px;align-items:center;justify-content:center;';
         document.body.appendChild(m);
     }
-    const falta = Math.max(1, e.exp - e.real);
+    const falta = porEscaneo ? 1 : Math.max(1, e.exp - e.real);
     const previos = dlManualDe(e.cod);
     const esc = v => String(v == null ? '' : v).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     m.innerHTML = `
@@ -8673,7 +8692,6 @@ function dlAbrirIngresoManual(e) {
           <button type="button" id="im-mas">+</button>
         </div>
         <div class="im-lab">¿Dónde lo encontraste?</div>
-        <div class="im-chips">${['Almacén','Probadores','Vitrina','Maniquí','Mesa','Caja','Colgador'].map(c=>`<button type="button" class="im-chip">${c}</button>`).join('')}</div>
         <input id="im-obs" type="text" maxlength="120" placeholder="Ej.: almacén, caja 3, segundo estante" autocomplete="off">
         ${previos.length ? `<div class="im-lab" style="margin-top:12px;">Ingresos anteriores</div>
           <div class="im-prev">${previos.map((p,i)=>`<div class="im-prev-row"><span>+${p.cant} · ${esc(p.obs || 'sin observación')}<br><small>${esc(p.fecha)}</small></span><button type="button" data-i="${i}" class="im-quitar">Quitar</button></div>`).join('')}</div>` : ''}
@@ -8685,9 +8703,6 @@ function dlAbrirIngresoManual(e) {
     const cant = m.querySelector('#im-cant'), obs = m.querySelector('#im-obs');
     m.querySelector('#im-menos').onclick = () => { cant.value = Math.max(1, (parseInt(cant.value) || 1) - 1); };
     m.querySelector('#im-mas').onclick = () => { cant.value = (parseInt(cant.value) || 0) + 1; };
-    m.querySelectorAll('.im-chip').forEach(b => b.onclick = () => {
-        const v = obs.value.trim(); obs.value = v ? (v.toLowerCase().includes(b.textContent.toLowerCase()) ? v : v + ', ' + b.textContent) : b.textContent; obs.focus();
-    });
     m.querySelectorAll('.im-quitar').forEach(b => b.onclick = () => {
         const i = +b.dataset.i, p = previos[i]; if (!p) return;
         mostrarConfirm('¿Quitar ingreso manual?', 'Se restarán ' + p.cant + ' unidad(es) de ' + e.cod + '.', () => {
@@ -8696,21 +8711,55 @@ function dlAbrirIngresoManual(e) {
             saveLotes(); m.style.display = 'none'; dlRefrescar(); showToast('↩️ Ingreso manual quitado', '#111');
         });
     });
-    m.querySelector('#im-cancelar').onclick = () => { m.style.display = 'none'; };
+    const volverEscaner = () => setTimeout(() => { const sc = document.getElementById('dl-scan'); if (sc && document.getElementById('modal-detalle-lote').style.display !== 'none') { sc.value = ''; sc.focus(); } }, 120);
+    m.querySelector('#im-cancelar').onclick = () => { m.style.display = 'none'; volverEscaner(); };
+    obs.onkeydown = ev => { if (ev.key === 'Enter') { ev.preventDefault(); m.querySelector('#im-guardar').click(); } };
     m.querySelector('#im-guardar').onclick = () => {
         const n = parseInt(cant.value) || 0;
         if (n < 1) { showToast('⚠️ Ingresa una cantidad', '#E65100'); return; }
         for (let k = 0; k < n; k++) lote.datosLectura.push(e.cod);
         if (!lote.manual) lote.manual = {};
         (lote.manual[e.cod] = lote.manual[e.cod] || []).push({ cant: n, obs: obs.value.trim(), fecha: new Date().toLocaleString('es-PE') });
-        saveLotes(); m.style.display = 'none'; beepOK(); dlRefrescar();
+        saveLotes(); m.style.display = 'none'; beepOK(); dlRefrescar(); volverEscaner();
         showToast('✅ +' + n + ' ingresado' + (obs.value.trim() ? ' · ' + obs.value.trim() : ''), '#2E7D32');
     };
     m.style.display = 'flex';
+    if (porEscaneo) setTimeout(() => obs.focus(), 150);
 }
 function dlRefrescar() {
     const lista = document.getElementById('dl-list'); const y = lista ? lista.scrollTop : 0;
     _dlCargarDatos();
     if (lista) lista.scrollTop = y;
 }
+
+// ══ v27.02 — Escanear dentro del detalle del reporte: abre el ingreso manual de esa prenda ══
+(function dlEscaner() {
+    function procesar(cod) {
+        cod = String(cod || '').replace(/[\r\n\t\s]/g, '').toUpperCase();
+        if (!cod) return;
+        if (cod.length !== 13) { beepError(); showToast('⚠️ Código de ' + cod.length + ' caracteres — se esperan 13', '#E65100'); return; }
+        const lote = lotes[dlIdxActual]; if (!lote) return;
+        let e = (dlEntriesCache || []).find(x => x.cod === cod);
+        if (!e) {
+            const real = lote.datosLectura.filter(c => c === cod).length;
+            const desc = (lote.descSnapshot && lote.descSnapshot[cod]) || (typeof descripcionMap !== 'undefined' && descripcionMap.get(cod)) || '';
+            e = { cod, desc, exp: 0, real, diff: real, cat: 'nomaestro' };
+            showToast('❓ ' + cod + ' no está en el maestro de este reporte', '#7B1FA2');
+        }
+        vibrar(35);
+        dlAbrirIngresoManual(e, true);
+    }
+    function iniciar() {
+        const sc = document.getElementById('dl-scan'); if (!sc) return;
+        let t = null;
+        sc.addEventListener('keydown', ev => { if (ev.key === 'Enter') { ev.preventDefault(); clearTimeout(t); const v = sc.value; sc.value = ''; procesar(v); } });
+        sc.addEventListener('input', () => {
+            clearTimeout(t);
+            const v = sc.value.replace(/[\r\n\t\s]/g, '');
+            if (v.length >= 13) { sc.value = ''; procesar(v); return; }
+            t = setTimeout(() => { if (sc.value.replace(/\s/g, '').length && sc.value.replace(/\s/g, '').length < 13) { sc.value = ''; } }, 600);
+        });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar); else iniciar();
+})();
 </script>
