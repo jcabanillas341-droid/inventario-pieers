@@ -8,7 +8,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="PIEERS PRO">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -99,7 +99,7 @@
         .header-app { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: var(--blanco); border-bottom: 1px solid rgba(0,0,0,0.07); flex-shrink: 0; position: relative; box-shadow: 0 1px 8px rgba(0,0,0,0.07); }
         .header-logo { font-family: 'Barlow', sans-serif; font-size: 18px; font-weight: 900; color: var(--negro); letter-spacing: 1.5px; }
         .logo-red { color: var(--rojo); }
-        .badge-modo { font-size: 9px; padding: 2px 9px; border-radius: 20px; color: white; background: var(--rojo); margin-left: 7px; letter-spacing: 0.5px; font-family: 'Barlow', sans-serif; font-weight: 700; box-shadow: 0 1px 4px var(--rojo-glow); }
+        .badge-modo { font-size: 11px; padding: 2px 9px; border-radius: 20px; color: white; background: var(--rojo); margin-left: 7px; letter-spacing: 0.5px; font-family: 'Barlow', sans-serif; font-weight: 700; box-shadow: 0 1px 4px var(--rojo-glow); }
         .btn-menu { background: linear-gradient(135deg, var(--rojo), var(--rojo-dark)); color: white; border: none; padding: 8px 14px; border-radius: 9px; font-size: 12px; cursor: pointer; font-family: 'Barlow', sans-serif; font-weight: 700; letter-spacing: 1px; box-shadow: 0 2px 8px var(--rojo-glow); transition: filter var(--transition); }
         .btn-menu:active { filter: brightness(0.88); }
         .btn-cambio { background: #F5F5F7; color: #111111; border: 1px solid #E0E0E0; padding: 7px 11px; border-radius: 9px; font-size: 10px; cursor: pointer; transition: background var(--transition); }
@@ -121,7 +121,7 @@
         .progress-box { background: var(--blanco); padding: 10px 14px; margin: 0 10px 8px; border-radius: 14px; border: 1px solid rgba(0,0,0,0.06); flex-shrink: 0; box-shadow: var(--shadow-sm); }
         .stats-grid   { display: flex; justify-content: space-between; margin-bottom: 8px; }
         .stat-val     { display: block; font-size: 24px; color: var(--rojo); text-align: center; font-family: 'Barlow', sans-serif; font-weight: 900; }
-        .stat-lab     { font-size: 8px; color: #111111; text-transform: uppercase; text-align: center; letter-spacing: 0.8px; font-family: 'Inter', sans-serif; }
+        .stat-lab     { font-size: 11px; color: #111111; text-transform: uppercase; text-align: center; letter-spacing: 0.8px; font-family: 'Inter', sans-serif; }
         .bar-bg       { background: #EBEBEB; height: 5px; border-radius: 10px; overflow: hidden; }
         #bar-fill     { background: linear-gradient(90deg, var(--rojo-dark), var(--rojo-light)); height: 100%; width: 0%; transition: width 0.4s cubic-bezier(.4,0,.2,1); border-radius: 10px; }
 
@@ -135,7 +135,7 @@
         .scroll     { flex: 1; overflow-y: auto; background: white; -webkit-overflow-scrolling: touch; }
 
         table  { width: 100%; border-collapse: collapse; color: var(--texto); table-layout: fixed; }
-        th     { background: #1A1A1A; color: #BBB; padding: 7px 4px; font-size: 9px; position: sticky; top: 0; z-index: 10; text-transform: uppercase; letter-spacing: 0.8px; font-family: 'Inter', sans-serif; }
+        th     { background: #1A1A1A; color: #BBB; padding: 7px 4px; font-size: 11px; position: sticky; top: 0; z-index: 10; text-transform: uppercase; letter-spacing: 0.8px; font-family: 'Inter', sans-serif; }
         td     { padding: 10px 4px; border-bottom: 1px solid #F2F2F2; text-align: center; font-size: 12px; font-weight: 600; }
 
         .match    { background: #F0FAF1 !important; color: #1B5E20; }
@@ -176,7 +176,7 @@
         .busq-item:active { background: #FFCDD2; }
         .busq-item-desc { font-size: 12px; color: var(--texto); font-weight: 600; flex: 1; margin-right: 8px; line-height: 1.3; }
         .busq-item-stock { font-family: 'Barlow', sans-serif; font-size: 20px; font-weight: 900; min-width: 32px; text-align: right; }
-        .busq-item-cod { font-size: 9px; color: var(--gris-mid); display: block; margin-top: 1px; }
+        .busq-item-cod { font-size: 11px; color: var(--gris-mid); display: block; margin-top: 1px; }
         .busq-empty { padding: 20px; text-align: center; color: var(--gris-mid); font-size: 12px; }
         .busq-footer { padding: 10px 14px; background: var(--gris-bg); border-top: 1px solid var(--gris-borde); display: flex; justify-content: space-between; align-items: center; }
         .busq-total-label { font-size: 10px; color: var(--gris-mid); text-transform: uppercase; letter-spacing: 1px; }
@@ -194,7 +194,7 @@
         .mov-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
         .mov-tab { flex: 1; padding: 9px 6px; border: 2px solid var(--gris-borde); border-radius: 8px; background: var(--gris-bg); color: var(--gris-mid); cursor: pointer; font-family: 'Barlow', sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.15s; }
         .mov-tab.activo { background: var(--negro); color: var(--blanco); border-color: var(--negro); }
-        .mov-scanner-label { font-size: 9px; color: var(--gris-mid); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 3px; }
+        .mov-scanner-label { font-size: 11px; color: var(--gris-mid); text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 3px; }
         #mov-scanner { width: 100%; padding: 11px 12px; border-radius: 8px; font-size: 16px; border: 2px solid var(--gris-borde); background: var(--gris-bg); color: var(--texto); text-align: center; font-family: 'Barlow', sans-serif; font-weight: 700; letter-spacing: 2px; margin-bottom: 0; }
         #mov-scanner:focus { outline: none; border-color: var(--rojo); }
         #mov-scanner::placeholder { color: #bbb; font-weight: 400; font-size: 13px; letter-spacing: 0; }
@@ -232,7 +232,7 @@
         .pac-stock-badge { background: #1B5E20; color: white; font-family: 'Barlow', sans-serif; font-size: 18px; font-weight: 900; padding: 3px 12px; border-radius: 6px; letter-spacing: 1px; flex-shrink: 0; }
         .pac-stock-badge.cero { background: #B71C1C; }
         .pac-stock-badge.bajo { background: #E65100; }
-        .pac-label { font-size: 9px; color: #4CAF50; text-transform: uppercase; letter-spacing: 1px; font-family: 'Barlow', sans-serif; }
+        .pac-label { font-size: 11px; color: #4CAF50; text-transform: uppercase; letter-spacing: 1px; font-family: 'Barlow', sans-serif; }
 
         /* ── MINI MODAL ALMACÉN DESDE COMPARATIVO ── */
 #modal-alm-desde-comp {
@@ -322,7 +322,7 @@
 .madc-item-cod { font-family: 'Barlow', sans-serif; font-size: 12px; color: #888; letter-spacing: 1px; }
 .madc-item-desc { font-size: 12px; color: var(--texto); line-height: 1.3; margin-top: 1px; }
 .madc-item-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
-.madc-tag { font-family: 'Barlow', sans-serif; font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.madc-tag { font-family: 'Barlow', sans-serif; font-size: 11px; font-weight: 700; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
 .madc-tag.en-conteo { background: #E8F5E9; color: #1B5E20; }
 .madc-tag.faltante   { background: #FFF3E0; color: #E65100; }
 .madc-tag.sobrante   { background: #FFEBEE; color: #B71C1C; }
@@ -331,7 +331,7 @@
 .madc-item-stock { font-family: 'Barlow', sans-serif; font-size: 26px; font-weight: 900; color: #2E7D32; }
 .madc-item-stock.cero { color: #B71C1C; }
 .madc-item-stock.bajo { color: #E65100; }
-.madc-item-stock-label { font-size: 9px; color: #888; }
+.madc-item-stock-label { font-size: 11px; color: #888; }
 .madc-bulk-float {
     position: absolute; bottom: 0; left: 0; right: 0;
     background: #0a1a0a; border-top: 2px solid #1B5E20;
@@ -357,7 +357,7 @@
     background: rgba(0,0,0,0.06); border-radius: 6px; padding: 3px 8px; min-width: 44px;
 }
 .madc-col-val { font-family: 'Barlow', sans-serif; font-size: 15px; font-weight: 900; }
-.madc-col-lab { font-size: 8px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+.madc-col-lab { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
 .madc-col-pill.alm  { background: #0a1a0a; }
 .madc-col-pill.alm .madc-col-val  { color: #4CAF50; }
 .madc-col-pill.esp  { background: #111; }
@@ -473,7 +473,7 @@
             .btn-modulo { font-size: 10px; padding: 11px 4px; min-height: 44px; }
             .comp-file-btn { font-size: 10px; }
             td { font-size: 11px; padding: 9px 3px; }
-            th { font-size: 8px; padding: 6px 3px; }
+            th { font-size: 11px; padding: 6px 3px; }
             #scanner { font-size: 16px; }
         }
 
@@ -617,7 +617,7 @@
         .res-cancel { flex:1; padding:13px; background:#222; color:#888; border:1px solid #333; border-radius:8px; font-family:'Barlow',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
 
         /* ── SKU ÚNICO SUB-LABEL (3) ── */
-        .stat-sku { font-size:9px; color:#111111; text-align:center; letter-spacing:0.3px; margin-top:1px; }
+        .stat-sku { font-size:11px; color:#111111; text-align:center; letter-spacing:0.3px; margin-top:1px; }
 
         /* ── MODAL DETALLE LOTE GUARDADO (8) ── */
         #modal-detalle-lote { display:none; position:fixed; inset:0; background:#F2F2F2; z-index:8000; flex-direction:column; overflow:hidden; }
@@ -647,7 +647,7 @@
         .dl-item-cols { display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; }
         .dl-pill { display:flex; flex-direction:column; align-items:center; padding:4px 9px; border-radius:6px; background:#F0F0F0; min-width:40px; }
         .dl-pill-val { font-family:'Barlow',sans-serif; font-size:15px; font-weight:900; }
-        .dl-pill-lab { font-size:9px; color:#555; text-transform:uppercase; font-weight:700; letter-spacing:0.3px; }
+        .dl-pill-lab { font-size:11px; color:#555; text-transform:uppercase; font-weight:700; letter-spacing:0.3px; }
         .dl-badge { font-family:'Barlow',sans-serif; font-size:11px; font-weight:900; padding:3px 8px; border-radius:5px; white-space:nowrap; align-self:center; flex-shrink:0; }
         .dl-badge.ok    { background:#2E7D32; color:#fff; }
         .dl-badge.falta { background:#E65100; color:#fff; }
@@ -724,7 +724,7 @@
             box-shadow: 0 3px 10px rgba(0,0,0,0.18); min-width: 0;
         }
         .cs-price-label {
-            font-size: 9px; font-weight: 800; color: #111;
+            font-size: 11px; font-weight: 800; color: #111;
             text-align: center; letter-spacing: 0.5px; line-height: 1.2; margin-bottom: 3px;
             font-family: 'Barlow', sans-serif; text-transform: uppercase;
         }
@@ -733,7 +733,7 @@
             color: #000; letter-spacing: -0.5px; line-height: 1;
         }
         .cs-price-pct {
-            font-family: 'Inter', sans-serif; font-size: 9px; font-weight: 800;
+            font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 800;
             color: #111; margin-top: 4px; letter-spacing: 0.2px;
             background: rgba(0,0,0,0.15); border-radius: 8px; padding: 2px 7px;
             white-space: nowrap;
@@ -789,7 +789,7 @@
             color: #111111; font-weight: 700; letter-spacing: 0.3px;
         }
         .cs-badge-precios {
-            background: #FF6D00; color: white; font-size: 8px; font-weight: 700;
+            background: #FF6D00; color: white; font-size: 11px; font-weight: 700;
             padding: 1px 6px; border-radius: 10px; margin-left: 8px;
             font-family: 'Barlow', sans-serif; letter-spacing: 0.5px;
         }
@@ -801,7 +801,7 @@
         .cs-th-color {
             position: relative; z-index: 15; will-change: transform;
             background: #2b4a6a; color: #c8e0f8;
-            font-size: 9px; font-weight: bold;
+            font-size: 11px; font-weight: bold;
             padding: 4px 5px; border: 1px solid #1a3050;
             text-align: left; white-space: nowrap; min-width: 70px;
         }
@@ -820,20 +820,20 @@
         .cs-th-tp-label {
             position: relative; z-index: 15; will-change: transform;
             background: #9ab8d0; color: #cc2200;
-            font-size: 7px; font-weight: bold;
+            font-size: 11px; font-weight: bold;
             padding: 2px 5px; border: 1px solid #7a9ab8; text-align: left; white-space: nowrap;
         }
         .cs-th-tp {
             position: relative; z-index: 12; will-change: transform;
             background: #c0d8ee; color: #003366;
-            font-size: 7px; font-weight: bold;
+            font-size: 11px; font-weight: bold;
             text-align: center; padding: 2px 2px; border: 1px solid #9ab8d0;
         }
         .cs-th-tp-tot { position: relative; z-index: 12; will-change: transform; background: #c0d8ee; padding: 2px 2px; border: 1px solid #9ab8d0; }
         .cs-td-color {
             position: relative; z-index: 5; will-change: transform;
             background: #eaf2fc; color: #0a2244;
-            font-weight: bold; font-size: 9px;
+            font-weight: bold; font-size: 11px;
             padding: 5px 5px; border: 1px solid #c0d4e8;
             text-align: left; white-space: nowrap;
         }
@@ -862,7 +862,7 @@
         #cs-table-outer tbody tr:nth-child(even) .cs-td-pos   { background: #ffffff; }
         .cs-tr-grand .cs-td-color {
             background: #1a3a5a; color: #88ccff;
-            font-size: 9px; text-align: right; white-space: nowrap;
+            font-size: 11px; text-align: right; white-space: nowrap;
         }
         .cs-tr-grand .cs-td-sum {
             background: #cce0ff; color: #001155;
@@ -1053,7 +1053,7 @@
         }
         .header-logo .logo-red { color: var(--cat-rojo) !important; }
         .badge-modo {
-            font-family: 'Inter', sans-serif !important; font-weight: 800 !important; font-size: 9px !important;
+            font-family: 'Inter', sans-serif !important; font-weight: 800 !important; font-size: 11px !important;
             letter-spacing: 1px !important; padding: 4px 10px !important; border-radius: 20px !important;
             background: var(--cat-rojo) !important; color: #fff !important; box-shadow: 0 2px 8px rgba(229,57,53,0.45) !important;
         }
@@ -1116,7 +1116,7 @@
         /* ── Tarjeta de avance (stats) ── */
         .progress-box { border-radius: var(--cat-radius) !important; border: 1px solid var(--cat-line) !important; }
         .stat-val { font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important; font-size: 24px !important; letter-spacing: 1px; line-height: 1; }
-        .stat-lab { font-family: 'Inter', sans-serif !important; font-weight: 700 !important; font-size: 9px !important; letter-spacing: 1px; }
+        .stat-lab { font-family: 'Inter', sans-serif !important; font-weight: 700 !important; font-size: 11px !important; letter-spacing: 1px; }
         .bar-bg { height: 5px !important; border-radius: 6px !important; }
 
         /* ── Botones: más grandes, redondeados y claros al tacto ── */
@@ -1184,7 +1184,7 @@
         /* Precios: tarjetas limpias con cifras grandes (como en el catálogo) */
         .cs-price-box { border-radius: 14px !important; box-shadow: 0 6px 16px rgba(0,0,0,0.14) !important; }
         .cs-price-val { font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important; font-size: 30px !important; letter-spacing: 0.5px !important; }
-        .cs-price-label { font-family: 'Inter', sans-serif !important; font-size: 9.5px !important; letter-spacing: 0.8px !important; }
+        .cs-price-label { font-family: 'Inter', sans-serif !important; font-size: 11px !important; letter-spacing: 0.8px !important; }
         .cs-promo-row, .cs-promo-activa-row { border-radius: 12px !important; box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important; }
         .cs-promo-precio { font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important; font-size: 22px !important; letter-spacing: 0.5px; }
         .cs-pa-nombre { font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important; font-size: 19px !important; letter-spacing: 1px !important; }
@@ -1241,6 +1241,151 @@
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         }
         #pantalla-modo .btn-modo > span:last-child { font-size: 22px !important; }
+
+        /* ── v26.95: modo oscuro completo — fondos claros escritos en línea pasan a tonos oscuros
+              (se conserva el matiz: verdes, azules, naranjas siguen reconocibles) ── */
+        body.modo-oscuro [style*="background:#DDD" i], body.modo-oscuro [style*="background: #DDD" i], body.modo-oscuro [style*="background-color:#DDD" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#fff" i], body.modo-oscuro [style*="background: #fff" i], body.modo-oscuro [style*="background-color:#fff" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#EEE" i], body.modo-oscuro [style*="background: #EEE" i], body.modo-oscuro [style*="background-color:#EEE" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#FFF" i], body.modo-oscuro [style*="background: #FFF" i], body.modo-oscuro [style*="background-color:#FFF" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:white" i], body.modo-oscuro [style*="background: white" i], body.modo-oscuro [style*="background-color:white" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#f0f7ff" i], body.modo-oscuro [style*="background: #f0f7ff" i], body.modo-oscuro [style*="background-color:#f0f7ff" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#FFEBEE" i], body.modo-oscuro [style*="background: #FFEBEE" i], body.modo-oscuro [style*="background-color:#FFEBEE" i] { background: #33181C !important; }
+        body.modo-oscuro [style*="background:#EAEAEA" i], body.modo-oscuro [style*="background: #EAEAEA" i], body.modo-oscuro [style*="background-color:#EAEAEA" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#EBEBEB" i], body.modo-oscuro [style*="background: #EBEBEB" i], body.modo-oscuro [style*="background-color:#EBEBEB" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#F0F0F0" i], body.modo-oscuro [style*="background: #F0F0F0" i], body.modo-oscuro [style*="background-color:#F0F0F0" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#FFFFFF" i], body.modo-oscuro [style*="background: #FFFFFF" i], body.modo-oscuro [style*="background-color:#FFFFFF" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#f8f8f8" i], body.modo-oscuro [style*="background: #f8f8f8" i], body.modo-oscuro [style*="background-color:#f8f8f8" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#FAFAFB" i], body.modo-oscuro [style*="background: #FAFAFB" i], body.modo-oscuro [style*="background-color:#FAFAFB" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#DEDEDE" i], body.modo-oscuro [style*="background: #DEDEDE" i], body.modo-oscuro [style*="background-color:#DEDEDE" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#F0FAF1" i], body.modo-oscuro [style*="background: #F0FAF1" i], body.modo-oscuro [style*="background-color:#F0FAF1" i] { background: #18331B !important; }
+        body.modo-oscuro [style*="background:#F3E5F5" i], body.modo-oscuro [style*="background: #F3E5F5" i], body.modo-oscuro [style*="background-color:#F3E5F5" i] { background: #301833 !important; }
+        body.modo-oscuro [style*="background:#E8EAF6" i], body.modo-oscuro [style*="background: #E8EAF6" i], body.modo-oscuro [style*="background-color:#E8EAF6" i] { background: #181C33 !important; }
+        body.modo-oscuro [style*="background:#cce0ff" i], body.modo-oscuro [style*="background: #cce0ff" i], body.modo-oscuro [style*="background-color:#cce0ff" i] { background: #182333 !important; }
+        body.modo-oscuro [style*="background:#fff5f5" i], body.modo-oscuro [style*="background: #fff5f5" i], body.modo-oscuro [style*="background-color:#fff5f5" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#eef4f8" i], body.modo-oscuro [style*="background: #eef4f8" i], body.modo-oscuro [style*="background-color:#eef4f8" i] { background: #182833 !important; }
+        body.modo-oscuro [style*="background:#eef4ff" i], body.modo-oscuro [style*="background: #eef4ff" i], body.modo-oscuro [style*="background-color:#eef4ff" i] { background: #182233 !important; }
+        body.modo-oscuro [style*="background:#FFF2F2" i], body.modo-oscuro [style*="background: #FFF2F2" i], body.modo-oscuro [style*="background-color:#FFF2F2" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#E3F2FD" i], body.modo-oscuro [style*="background: #E3F2FD" i], body.modo-oscuro [style*="background-color:#E3F2FD" i] { background: #182833 !important; }
+        body.modo-oscuro [style*="background:#FFF0F0" i], body.modo-oscuro [style*="background: #FFF0F0" i], body.modo-oscuro [style*="background-color:#FFF0F0" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#F8F8FA" i], body.modo-oscuro [style*="background: #F8F8FA" i], body.modo-oscuro [style*="background-color:#F8F8FA" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#FFCDD2" i], body.modo-oscuro [style*="background: #FFCDD2" i], body.modo-oscuro [style*="background-color:#FFCDD2" i] { background: #33181B !important; }
+        body.modo-oscuro [style*="background:#fffbf2" i], body.modo-oscuro [style*="background: #fffbf2" i], body.modo-oscuro [style*="background-color:#fffbf2" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#FFF3E0" i], body.modo-oscuro [style*="background: #FFF3E0" i], body.modo-oscuro [style*="background-color:#FFF3E0" i] { background: #332918 !important; }
+        body.modo-oscuro [style*="background:#E0E0E0" i], body.modo-oscuro [style*="background: #E0E0E0" i], body.modo-oscuro [style*="background-color:#E0E0E0" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#eaf2fc" i], body.modo-oscuro [style*="background: #eaf2fc" i], body.modo-oscuro [style*="background-color:#eaf2fc" i] { background: #182433 !important; }
+        body.modo-oscuro [style*="background:#FDECEA" i], body.modo-oscuro [style*="background: #FDECEA" i], body.modo-oscuro [style*="background-color:#FDECEA" i] { background: #331B18 !important; }
+        body.modo-oscuro [style*="background:#F5F5F5" i], body.modo-oscuro [style*="background: #F5F5F5" i], body.modo-oscuro [style*="background-color:#F5F5F5" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#FFFBF0" i], body.modo-oscuro [style*="background: #FFFBF0" i], body.modo-oscuro [style*="background-color:#FFFBF0" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#F8F8F8" i], body.modo-oscuro [style*="background: #F8F8F8" i], body.modo-oscuro [style*="background-color:#F8F8F8" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#f0f0f0" i], body.modo-oscuro [style*="background: #f0f0f0" i], body.modo-oscuro [style*="background-color:#f0f0f0" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#F2F2F2" i], body.modo-oscuro [style*="background: #F2F2F2" i], body.modo-oscuro [style*="background-color:#F2F2F2" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#F0F0F2" i], body.modo-oscuro [style*="background: #F0F0F2" i], body.modo-oscuro [style*="background-color:#F0F0F2" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#e2eefc" i], body.modo-oscuro [style*="background: #e2eefc" i], body.modo-oscuro [style*="background-color:#e2eefc" i] { background: #182533 !important; }
+        body.modo-oscuro [style*="background:#fafcff" i], body.modo-oscuro [style*="background: #fafcff" i], body.modo-oscuro [style*="background-color:#fafcff" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#F4F4F6" i], body.modo-oscuro [style*="background: #F4F4F6" i], body.modo-oscuro [style*="background-color:#F4F4F6" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#E8F5E9" i], body.modo-oscuro [style*="background: #E8F5E9" i], body.modo-oscuro [style*="background-color:#E8F5E9" i] { background: #18331A !important; }
+        body.modo-oscuro [style*="background:#ffffff" i], body.modo-oscuro [style*="background: #ffffff" i], body.modo-oscuro [style*="background-color:#ffffff" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#F1F1F3" i], body.modo-oscuro [style*="background: #F1F1F3" i], body.modo-oscuro [style*="background-color:#F1F1F3" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#fdf5ff" i], body.modo-oscuro [style*="background: #fdf5ff" i], body.modo-oscuro [style*="background-color:#fdf5ff" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#E0F7FA" i], body.modo-oscuro [style*="background: #E0F7FA" i], body.modo-oscuro [style*="background-color:#E0F7FA" i] { background: #183033 !important; }
+        body.modo-oscuro [style*="background:#ECECEF" i], body.modo-oscuro [style*="background: #ECECEF" i], body.modo-oscuro [style*="background-color:#ECECEF" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#FCFCFD" i], body.modo-oscuro [style*="background: #FCFCFD" i], body.modo-oscuro [style*="background-color:#FCFCFD" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#ffffc0" i], body.modo-oscuro [style*="background: #ffffc0" i], body.modo-oscuro [style*="background-color:#ffffc0" i] { background: #333318 !important; }
+        body.modo-oscuro [style*="background:#EDEDF0" i], body.modo-oscuro [style*="background: #EDEDF0" i], body.modo-oscuro [style*="background-color:#EDEDF0" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#F5F5F7" i], body.modo-oscuro [style*="background: #F5F5F7" i], body.modo-oscuro [style*="background-color:#F5F5F7" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#f0f4f8" i], body.modo-oscuro [style*="background: #f0f4f8" i], body.modo-oscuro [style*="background-color:#f0f4f8" i] { background: #182633 !important; }
+        body.modo-oscuro [style*="background:#FAFAFA" i], body.modo-oscuro [style*="background: #FAFAFA" i], body.modo-oscuro [style*="background-color:#FAFAFA" i] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background:#e0f4e0" i], body.modo-oscuro [style*="background: #e0f4e0" i], body.modo-oscuro [style*="background-color:#e0f4e0" i] { background: #183318 !important; }
+        body.modo-oscuro [style*="background:#EEF5EE" i], body.modo-oscuro [style*="background: #EEF5EE" i], body.modo-oscuro [style*="background-color:#EEF5EE" i] { background: #183318 !important; }
+        body.modo-oscuro [style*="background:#FFF5F5" i], body.modo-oscuro [style*="background: #FFF5F5" i], body.modo-oscuro [style*="background-color:#FFF5F5" i] { background: #1E1E1E !important; }
+        body.modo-oscuro .confirm-card, body.modo-oscuro .busq-card, body.modo-oscuro .mov-card,
+        body.modo-oscuro .asc-card, body.modo-oscuro .res-card, body.modo-oscuro .card-lote,
+        body.modo-oscuro .panel, body.modo-oscuro .scroll, body.modo-oscuro .progress-box,
+        body.modo-oscuro #alm-estado-badge, body.modo-oscuro .cs-promo-row, body.modo-oscuro .busq-body,
+        body.modo-oscuro .mov-body, body.modo-oscuro .asc-body, body.modo-oscuro .res-body,
+        body.modo-oscuro .madc-item, body.modo-oscuro .madc-results, body.modo-oscuro #busq-resultados,
+        body.modo-oscuro #mpc-card, body.modo-oscuro #cs-tabs { background: #1E1E1E !important; border-color: #333 !important; }
+        body.modo-oscuro input, body.modo-oscuro textarea, body.modo-oscuro select { background: #2A2A2A !important; border-color: #444 !important; }
+        body.modo-oscuro .btn-confirm-no { background: #2A2A2A !important; }
+        body.modo-oscuro td { border-bottom-color: #2C2C2C !important; }
+        body.modo-oscuro #vista-ticket, body.modo-oscuro #vista-alm { background: #121212 !important; }
+        body.modo-oscuro .cs-th-tp-label, body.modo-oscuro .cs-th-tp, body.modo-oscuro .cs-th-tp-tot { background: #262626 !important; }
+        body.modo-oscuro .cs-td-zero { background: #181818 !important; color: #555 !important; }
+        body.modo-oscuro .cs-td-pos { background: #1E1E1E !important; color: #FF8A80 !important; }
+
+        /* ── v26.95: comodidad táctil y pantallas vacías ── */
+        html, body { touch-action: manipulation; }
+        .p-vacio {
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+            padding: 36px 20px; text-align: center; color: #666; font-family: 'Inter', sans-serif; font-size: 14px; line-height: 1.5;
+        }
+        .p-vacio .p-vacio-ico { font-size: 40px; opacity: 0.85; }
+        .p-vacio .p-vacio-tit { font-family: 'Bebas Neue', 'Barlow', sans-serif; font-size: 22px; letter-spacing: 1.5px; color: #111; }
+        .p-vacio button {
+            margin-top: 6px; padding: 13px 22px; min-height: 46px; border: none; border-radius: 12px; cursor: pointer;
+            background: linear-gradient(135deg, #FF5A4E, #C62828); color: #fff; font-family: 'Inter', sans-serif;
+            font-weight: 800; font-size: 14px; letter-spacing: 0.5px; box-shadow: 0 6px 16px rgba(229,57,53,0.35);
+        }
+        body.modo-oscuro .p-vacio .p-vacio-tit { color: #F0F0F0 !important; }
+        /* Tablas de tallas: los rótulos pequeños quedan en 10px para no ensanchar la tabla */
+        .cs-th-tp, .cs-th-tp-label { font-size: 10px !important; }
+        body.modo-oscuro .match    { background: #14301A !important; }
+        body.modo-oscuro .falta    { background: #33260F !important; }
+        body.modo-oscuro .sobrante { background: #3A1515 !important; }
+        /* v26.95: mismos fondos cuando el navegador los reescribe como rgb() */
+        body.modo-oscuro [style*="background: rgb(221, 221, 221)"], body.modo-oscuro [style*="background-color: rgb(221, 221, 221)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(255, 255, 255)"], body.modo-oscuro [style*="background-color: rgb(255, 255, 255)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(238, 238, 238)"], body.modo-oscuro [style*="background-color: rgb(238, 238, 238)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(240, 247, 255)"], body.modo-oscuro [style*="background-color: rgb(240, 247, 255)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(255, 235, 238)"], body.modo-oscuro [style*="background-color: rgb(255, 235, 238)"] { background: #33181C !important; }
+        body.modo-oscuro [style*="background: rgb(234, 234, 234)"], body.modo-oscuro [style*="background-color: rgb(234, 234, 234)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(235, 235, 235)"], body.modo-oscuro [style*="background-color: rgb(235, 235, 235)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(240, 240, 240)"], body.modo-oscuro [style*="background-color: rgb(240, 240, 240)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(248, 248, 248)"], body.modo-oscuro [style*="background-color: rgb(248, 248, 248)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(250, 250, 251)"], body.modo-oscuro [style*="background-color: rgb(250, 250, 251)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(222, 222, 222)"], body.modo-oscuro [style*="background-color: rgb(222, 222, 222)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(240, 250, 241)"], body.modo-oscuro [style*="background-color: rgb(240, 250, 241)"] { background: #18331B !important; }
+        body.modo-oscuro [style*="background: rgb(243, 229, 245)"], body.modo-oscuro [style*="background-color: rgb(243, 229, 245)"] { background: #301833 !important; }
+        body.modo-oscuro [style*="background: rgb(232, 234, 246)"], body.modo-oscuro [style*="background-color: rgb(232, 234, 246)"] { background: #181C33 !important; }
+        body.modo-oscuro [style*="background: rgb(204, 224, 255)"], body.modo-oscuro [style*="background-color: rgb(204, 224, 255)"] { background: #182333 !important; }
+        body.modo-oscuro [style*="background: rgb(255, 245, 245)"], body.modo-oscuro [style*="background-color: rgb(255, 245, 245)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(238, 244, 248)"], body.modo-oscuro [style*="background-color: rgb(238, 244, 248)"] { background: #182833 !important; }
+        body.modo-oscuro [style*="background: rgb(238, 244, 255)"], body.modo-oscuro [style*="background-color: rgb(238, 244, 255)"] { background: #182233 !important; }
+        body.modo-oscuro [style*="background: rgb(255, 242, 242)"], body.modo-oscuro [style*="background-color: rgb(255, 242, 242)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(227, 242, 253)"], body.modo-oscuro [style*="background-color: rgb(227, 242, 253)"] { background: #182833 !important; }
+        body.modo-oscuro [style*="background: rgb(255, 240, 240)"], body.modo-oscuro [style*="background-color: rgb(255, 240, 240)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(248, 248, 250)"], body.modo-oscuro [style*="background-color: rgb(248, 248, 250)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(255, 205, 210)"], body.modo-oscuro [style*="background-color: rgb(255, 205, 210)"] { background: #33181B !important; }
+        body.modo-oscuro [style*="background: rgb(255, 251, 242)"], body.modo-oscuro [style*="background-color: rgb(255, 251, 242)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(255, 243, 224)"], body.modo-oscuro [style*="background-color: rgb(255, 243, 224)"] { background: #332918 !important; }
+        body.modo-oscuro [style*="background: rgb(224, 224, 224)"], body.modo-oscuro [style*="background-color: rgb(224, 224, 224)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(234, 242, 252)"], body.modo-oscuro [style*="background-color: rgb(234, 242, 252)"] { background: #182433 !important; }
+        body.modo-oscuro [style*="background: rgb(253, 236, 234)"], body.modo-oscuro [style*="background-color: rgb(253, 236, 234)"] { background: #331B18 !important; }
+        body.modo-oscuro [style*="background: rgb(245, 245, 245)"], body.modo-oscuro [style*="background-color: rgb(245, 245, 245)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(255, 251, 240)"], body.modo-oscuro [style*="background-color: rgb(255, 251, 240)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(242, 242, 242)"], body.modo-oscuro [style*="background-color: rgb(242, 242, 242)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(240, 240, 242)"], body.modo-oscuro [style*="background-color: rgb(240, 240, 242)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(226, 238, 252)"], body.modo-oscuro [style*="background-color: rgb(226, 238, 252)"] { background: #182533 !important; }
+        body.modo-oscuro [style*="background: rgb(250, 252, 255)"], body.modo-oscuro [style*="background-color: rgb(250, 252, 255)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(244, 244, 246)"], body.modo-oscuro [style*="background-color: rgb(244, 244, 246)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(232, 245, 233)"], body.modo-oscuro [style*="background-color: rgb(232, 245, 233)"] { background: #18331A !important; }
+        body.modo-oscuro [style*="background: rgb(241, 241, 243)"], body.modo-oscuro [style*="background-color: rgb(241, 241, 243)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(253, 245, 255)"], body.modo-oscuro [style*="background-color: rgb(253, 245, 255)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(224, 247, 250)"], body.modo-oscuro [style*="background-color: rgb(224, 247, 250)"] { background: #183033 !important; }
+        body.modo-oscuro [style*="background: rgb(236, 236, 239)"], body.modo-oscuro [style*="background-color: rgb(236, 236, 239)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(252, 252, 253)"], body.modo-oscuro [style*="background-color: rgb(252, 252, 253)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(255, 255, 192)"], body.modo-oscuro [style*="background-color: rgb(255, 255, 192)"] { background: #333318 !important; }
+        body.modo-oscuro [style*="background: rgb(237, 237, 240)"], body.modo-oscuro [style*="background-color: rgb(237, 237, 240)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(245, 245, 247)"], body.modo-oscuro [style*="background-color: rgb(245, 245, 247)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(240, 244, 248)"], body.modo-oscuro [style*="background-color: rgb(240, 244, 248)"] { background: #182633 !important; }
+        body.modo-oscuro [style*="background: rgb(250, 250, 250)"], body.modo-oscuro [style*="background-color: rgb(250, 250, 250)"] { background: #1E1E1E !important; }
+        body.modo-oscuro [style*="background: rgb(224, 244, 224)"], body.modo-oscuro [style*="background-color: rgb(224, 244, 224)"] { background: #183318 !important; }
+        body.modo-oscuro [style*="background: rgb(238, 245, 238)"], body.modo-oscuro [style*="background-color: rgb(238, 245, 238)"] { background: #183318 !important; }
+        body.modo-oscuro #cs-table-outer tbody tr .cs-td-color, body.modo-oscuro #cr-table-outer tbody tr .cs-td-color { background: #1E1E1E !important; }
+        body.modo-oscuro .cs-td-total { background: #14301A !important; }
+        body.modo-oscuro #cs-table-outer, body.modo-oscuro #cs-panel-stock { background: #121212 !important; }
+        body.modo-oscuro .cs-price-box[style*="#FFD600" i] *, body.modo-oscuro .cs-price-box[style*="rgb(255, 214, 0)"] * { color: #111 !important; }
     </style>
 </head>
 <body class="modo-comp">
@@ -1254,7 +1399,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v26.94 — 30/Sep/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v26.95 — 11/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -1338,15 +1483,15 @@
             <!-- Botones de modo: STOCK+PRECIOS, SOLO STOCK, SOLO PRECIOS -->
             <div id="btn-modos-cs" class="hidden" style="display:none;gap:6px;padding:6px 14px 2px;">
                 <button onclick="csSetModo('ambos');toggleMenu()" id="cs-menu-modo-ambos"
-                    style="flex:1;padding:7px 4px;border:2px solid #1565C0;border-radius:8px;background:#E3F2FD;color:#0D47A1;font-size:10px;font-weight:800;cursor:pointer;font-family:'Outfit',sans-serif;text-align:center;">
+                    style="flex:1;padding:7px 4px;border:2px solid #1565C0;border-radius:8px;background:#E3F2FD;color:#0D47A1;font-size:10px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;text-align:center;">
                     📦💰<br>STOCK+PRECIOS
                 </button>
                 <button onclick="csSetModo('stock');toggleMenu()" id="cs-menu-modo-stock"
-                    style="flex:1;padding:7px 4px;border:2px solid #2E7D32;border-radius:8px;background:#E8F5E9;color:#1B5E20;font-size:10px;font-weight:800;cursor:pointer;font-family:'Outfit',sans-serif;text-align:center;">
+                    style="flex:1;padding:7px 4px;border:2px solid #2E7D32;border-radius:8px;background:#E8F5E9;color:#1B5E20;font-size:10px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;text-align:center;">
                     📦<br>SOLO STOCK
                 </button>
                 <button onclick="csSetModo('precios');toggleMenu()" id="cs-menu-modo-precios"
-                    style="flex:1;padding:7px 4px;border:2px solid #E65100;border-radius:8px;background:#FFF3E0;color:#BF360C;font-size:10px;font-weight:800;cursor:pointer;font-family:'Outfit',sans-serif;text-align:center;">
+                    style="flex:1;padding:7px 4px;border:2px solid #E65100;border-radius:8px;background:#FFF3E0;color:#BF360C;font-size:10px;font-weight:800;cursor:pointer;font-family:'Inter',sans-serif;text-align:center;">
                     💰<br>SOLO PRECIOS
                 </button>
             </div>
@@ -1373,7 +1518,7 @@
             <!-- Botón VER STOCK fijo arriba de todo -->
             <div id="mpc-btn-stock-top" style="padding:8px 14px 0;">
                 <button id="mpc-btn-stock-fijo"
-                    style="width:100%;padding:12px;background:#1565C0;border:none;border-radius:12px;color:#fff;font-family:'Bebas Neue','Outfit',sans-serif;font-size:20px;letter-spacing:3px;cursor:pointer;box-shadow:0 3px 10px rgba(21,101,192,0.35);">
+                    style="width:100%;padding:12px;background:#1565C0;border:none;border-radius:12px;color:#fff;font-family:'Bebas Neue','Inter',sans-serif;font-size:20px;letter-spacing:3px;cursor:pointer;box-shadow:0 3px 10px rgba(21,101,192,0.35);">
                     📦 VER STOCK
                 </button>
             </div>
@@ -1381,16 +1526,16 @@
             <button onclick="csModalPromoCerrar()" style="position:absolute;top:10px;right:12px;z-index:10;background:rgba(0,0,0,0.12);border:none;color:#555;width:30px;height:30px;border-radius:50%;font-size:15px;cursor:pointer;">✕</button>
             <!-- Descripción artículo -->
             <div style="padding:10px 18px 4px;border-bottom:1px solid #F0F0F0;">
-                <div id="mpc-desc" style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:20px;color:#111;line-height:1.2;letter-spacing:1px;"></div>
-                <div id="mpc-cod" style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:14px;color:#888;margin-top:2px;letter-spacing:2px;"></div>
+                <div id="mpc-desc" style="font-family:'Bebas Neue','Inter',sans-serif;font-size:20px;color:#111;line-height:1.2;letter-spacing:1px;"></div>
+                <div id="mpc-cod" style="font-family:'Bebas Neue','Inter',sans-serif;font-size:14px;color:#888;margin-top:2px;letter-spacing:2px;"></div>
             </div>
             <!-- Contenido promos -->
             <!-- Banner cambio de precio -->
-            <div id="mpc-cambio-banner" style="display:none;background:#E65100;color:#fff;font-family:'Outfit',sans-serif;font-size:11px;font-weight:800;padding:6px 18px;letter-spacing:0.5px;"></div>
+            <div id="mpc-cambio-banner" style="display:none;background:#E65100;color:#fff;font-family:'Inter',sans-serif;font-size:11px;font-weight:800;padding:6px 18px;letter-spacing:0.5px;"></div>
             <div id="mpc-lista" style="padding:10px 18px 8px;display:flex;flex-direction:column;gap:8px;"></div>
             <!-- Temporizador visible + barra de progreso -->
             <div style="display:flex;align-items:center;gap:8px;padding:6px 14px 8px;background:#F8F8F8;">
-                <span id="mpc-timer-txt" style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:13px;color:#888;letter-spacing:1px;min-width:32px;">2:00</span>
+                <span id="mpc-timer-txt" style="font-family:'Bebas Neue','Inter',sans-serif;font-size:13px;color:#888;letter-spacing:1px;min-width:32px;">2:00</span>
                 <div style="flex:1;height:4px;background:#E0E0E0;border-radius:2px;overflow:hidden;">
                     <div id="mpc-progress" style="height:4px;background:linear-gradient(90deg,#E53935,#FF6D00);width:100%;transform-origin:left;transition:transform 120s linear;"></div>
                 </div>
@@ -1404,13 +1549,13 @@
 
     <!-- Nombre archivo cargado — visible bajo el scanner -->
     <div id="comp-archivo-badge" style="display:none;padding:2px 10px 0;">
-        <span id="comp-archivo-txt" style="font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;color:#555;background:#F0F0F0;padding:3px 10px;border-radius:8px;letter-spacing:0.5px;border:1px solid #DDD;display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+        <span id="comp-archivo-txt" style="font-family:'Inter',sans-serif;font-size:10px;font-weight:700;color:#555;background:#F0F0F0;padding:3px 10px;border-radius:8px;letter-spacing:0.5px;border:1px solid #DDD;display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
     </div>
 
     <!-- PANEL DESCRIPCIÓN -->
     <div id="panel-desc">
-        <span style="font-size:9px;color:#111111;text-transform:uppercase;">Descripción — </span>
-        <span id="desc-cod" style="font-size:9px;color:#111111;"></span>
+        <span style="font-size:11px;color:#111111;text-transform:uppercase;">Descripción — </span>
+        <span id="desc-cod" style="font-size:11px;color:#111111;"></span>
         <span id="desc-txt" style="font-size:13px;color:var(--rojo);font-weight:bold;display:block;margin-top:1px;"></span>
     </div>
 
@@ -1450,16 +1595,16 @@
         <div class="stats-grid" style="margin-bottom:4px;">
             <div style="flex:1" id="blq-esp">
                 <span id="stat-esp"  class="stat-val" style="font-size:16px;">0</span>
-                <span class="stat-lab" style="font-size:7px;">Maestro <span id="stat-nguias" style="font-size:6px;color:#888;"></span> <span onclick="abrirModalVerMaestro()" style="cursor:pointer;font-size:10px;">👁️</span></span>
+                <span class="stat-lab" style="font-size:11px;">Maestro <span id="stat-nguias" style="font-size:11px;color:#888;"></span> <span onclick="abrirModalVerMaestro()" style="cursor:pointer;font-size:10px;">👁️</span></span>
             </div>
             <div style="flex:1;border-left:1px solid #2a2a2a;border-right:1px solid #2a2a2a;">
                 <span id="stat-cont" class="stat-val" style="font-size:16px;">0</span>
-                <span class="stat-lab" style="font-size:7px;">Conteo</span>
-                <span id="stat-skus" class="stat-sku" style="font-size:7px;">— SKU</span>
+                <span class="stat-lab" style="font-size:11px;">Conteo</span>
+                <span id="stat-skus" class="stat-sku" style="font-size:11px;">— SKU</span>
             </div>
             <div style="flex:1" id="blq-avan">
                 <span id="stat-avan" class="stat-val" style="font-size:16px;">0%</span>
-                <span class="stat-lab" style="font-size:7px;">Avance</span>
+                <span class="stat-lab" style="font-size:11px;">Avance</span>
             </div>
         </div>
         <div class="bar-bg" style="height:3px;"><div id="bar-fill"></div></div>
@@ -1576,7 +1721,7 @@
             <!-- ── SELECTOR DE MODO DE BÚSQUEDA ── -->
             <div style="display:flex;gap:6px;padding:8px 10px 4px;">
                 <button id="btn-modo-lectora" onclick="csModoLectora()"
-                    style="flex:1;padding:10px 6px;border-radius:10px;border:2px solid #E53935;background:#E53935;color:#fff;font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:0.5px;">
+                    style="flex:1;padding:10px 6px;border-radius:10px;border:2px solid #E53935;background:#E53935;color:#fff;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:0.5px;">
                     📷 LECTORA
                 </button>
             </div>
@@ -1605,8 +1750,8 @@
 
             <!-- Nombre del artículo encima de todo, en negro -->
             <div id="cs-nombre-articulo" style="display:none;padding:6px 10px 2px;flex-shrink:0;">
-                <div id="cs-nombre-texto" style="font-family:'Outfit',sans-serif;font-size:15px;font-weight:900;color:#111111;letter-spacing:0.3px;line-height:1.2;"></div>
-                <div id="cs-codigo-texto" style="font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;color:#555;margin-top:1px;"></div>
+                <div id="cs-nombre-texto" style="font-family:'Inter',sans-serif;font-size:15px;font-weight:900;color:#111111;letter-spacing:0.3px;line-height:1.2;"></div>
+                <div id="cs-codigo-texto" style="font-family:'Inter',sans-serif;font-size:10px;font-weight:600;color:#555;margin-top:1px;"></div>
             </div>
             <div class="cs-ctrl-row" style="display:none;">
                 <input type="file" id="cs-file-input" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*" onchange="csLoadFile(event)" style="display:none">
@@ -1660,14 +1805,14 @@
                     <div class="cs-price-label">UNITARIO</div>
                     <div class="cs-price-val" id="cs-p-menor">0.00</div>
                     <div class="cs-price-pct" id="cs-pct-menor">—</div>
-                    <div id="cs-pf-libro" style="font-size:8px;font-weight:800;color:#fff;background:rgba(0,0,0,0.22);border-radius:8px;padding:2px 6px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">📖 —</div>
+                    <div id="cs-pf-libro" style="font-size:11px;font-weight:800;color:#fff;background:rgba(0,0,0,0.22);border-radius:8px;padding:2px 6px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">📖 —</div>
 
                 </div>
                 <div class="cs-price-box" style="background:#00B8D4;flex:1;" data-tipo="combo" id="cs-box-combo">
                     <div class="cs-price-label">COMBO</div>
                     <div class="cs-price-val" id="cs-p-mayor">0.00</div>
                     <div class="cs-price-pct" id="cs-pct-mayor">—</div>
-                    <div id="cs-pf-libro-combo" style="font-size:8px;font-weight:800;color:#fff;background:rgba(0,0,0,0.22);border-radius:8px;padding:2px 6px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">📖 —</div>
+                    <div id="cs-pf-libro-combo" style="font-size:11px;font-weight:800;color:#fff;background:rgba(0,0,0,0.22);border-radius:8px;padding:2px 6px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">📖 —</div>
 
                 </div>
             </div>
@@ -1679,45 +1824,45 @@
                     <div class="cs-price-pct" id="cs-pct-oferta">—</div>
                 </div>
                 <div style="flex:1;background:#E8EAF6;border-radius:10px;padding:7px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #C5CAE9;">
-                    <div style="font-size:8px;font-weight:800;color:#111111;font-family:'Barlow',sans-serif;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px;">x MAYOR</div>
+                    <div style="font-size:11px;font-weight:800;color:#111111;font-family:'Barlow',sans-serif;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px;">x MAYOR</div>
                     <div id="cs-p-mayor-val" style="font-family:'Barlow',sans-serif;font-size:16px;font-weight:900;color:#1A237E;line-height:1;">0.00</div>
-                    <div id="cs-pct-mayor-val" style="font-size:8px;color:#111111;margin-top:3px;font-family:'Inter',sans-serif;font-weight:700;">—</div>
+                    <div id="cs-pct-mayor-val" style="font-size:11px;color:#111111;margin-top:3px;font-family:'Inter',sans-serif;font-weight:700;">—</div>
                 </div>
             </div>
             <!-- Alerta: producto sin precio en ningún libro -->
             <div id="cs-sin-precio-alert" style="display:none;align-items:center;gap:10px;background:#FFF3E0;border:2px solid #FF6D00;border-radius:12px;padding:12px 16px;margin-bottom:6px;">
                 <span style="font-size:22px;">⚠️</span>
                 <div>
-                    <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:800;color:#E65100;text-transform:uppercase;letter-spacing:0.5px;">Sin precio en libros cargados</div>
-                    <div style="font-family:'Outfit',sans-serif;font-size:11px;color:#BF360C;margin-top:2px;">Este artículo no aparece en el Memorandum ni en Precios por Mayor</div>
+                    <div style="font-family:'Inter',sans-serif;font-size:13px;font-weight:800;color:#E65100;text-transform:uppercase;letter-spacing:0.5px;">Sin precio en libros cargados</div>
+                    <div style="font-family:'Inter',sans-serif;font-size:11px;color:#BF360C;margin-top:2px;">Este artículo no aparece en el Memorandum ni en Precios por Mayor</div>
                 </div>
             </div>
             <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
             <!-- Versión -->
             <!-- Historial de lecturas -->
             <div id="cs-historial-wrap" style="display:none;padding:6px 10px 2px;flex-shrink:0;">
-                <div style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">📋 Últimas lecturas</div>
+                <div style="font-family:'Inter',sans-serif;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">📋 Últimas lecturas</div>
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.94 — 30/Sep/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.95 — 11/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
                 <div id="cs-promo-info-unitario" style="display:none;background:#FFF3E0;border-left:4px solid #FF6D00;border-radius:8px;padding:6px 12px;margin-bottom:4px;">
                     <div style="font-size:10px;font-weight:700;color:#E65100;font-family:'Barlow',sans-serif;letter-spacing:0.5px;text-transform:uppercase;">🏷 PROMO UNITARIO</div>
                     <div id="cs-promo-nombre-unitario" style="font-size:13px;font-weight:900;color:#BF360C;font-family:'Barlow',sans-serif;letter-spacing:0.5px;"></div>
-                    <div id="cs-promo-libro-unitario" style="font-size:9px;color:#111111;margin-top:2px;font-family:'Inter',sans-serif;">📖 —</div>
+                    <div id="cs-promo-libro-unitario" style="font-size:11px;color:#111111;margin-top:2px;font-family:'Inter',sans-serif;">📖 —</div>
                 </div>
                 <div id="cs-promo-info-combo" style="display:none;background:#E0F7FA;border-left:4px solid #00B8D4;border-radius:8px;padding:6px 12px;margin-bottom:4px;">
                     <div style="font-size:10px;font-weight:700;color:#00838F;font-family:'Barlow',sans-serif;letter-spacing:0.5px;text-transform:uppercase;">🏷 COMBO</div>
                     <div id="cs-promo-nombre-combo" style="font-size:13px;font-weight:900;color:#006064;font-family:'Barlow',sans-serif;letter-spacing:0.5px;"></div>
-                    <div id="cs-promo-libro-combo-abajo" style="font-size:9px;color:#111111;margin-top:2px;font-family:'Inter',sans-serif;">📖 —</div>
+                    <div id="cs-promo-libro-combo-abajo" style="font-size:11px;color:#111111;margin-top:2px;font-family:'Inter',sans-serif;">📖 —</div>
                 </div>
                 <div id="cs-promo-info-oferta" style="display:none;background:#E8F5E9;border-left:4px solid #00C853;border-radius:8px;padding:6px 12px;margin-bottom:4px;">
                     <div style="font-size:10px;font-weight:700;color:#2E7D32;font-family:'Barlow',sans-serif;letter-spacing:0.5px;text-transform:uppercase;">🏷 OFERTA</div>
                     <div id="cs-promo-nombre-oferta" style="font-size:13px;font-weight:900;color:#1B5E20;font-family:'Barlow',sans-serif;letter-spacing:0.5px;"></div>
-                    <div id="cs-promo-libro-oferta" style="font-size:9px;color:#111111;margin-top:2px;font-family:'Inter',sans-serif;">📖 —</div>
+                    <div id="cs-promo-libro-oferta" style="font-size:11px;color:#111111;margin-top:2px;font-family:'Inter',sans-serif;">📖 —</div>
                 </div>
             </div>
         </div>
@@ -2095,8 +2240,36 @@ function beep(freq, dur, type='square') {
         o.start(); o.stop(ctx.currentTime + dur);
     } catch(e) {}
 }
-function beepOK()    { beep(1046, 0.07); }
-function beepError() { beep(220, 0.45, 'sawtooth'); }
+function beepOK()    { beep(1046, 0.07); vibrar(35); }
+function beepError() { beep(220, 0.45, 'sawtooth'); vibrar([90, 60, 90]); }
+// v26.95 — vibración al pistolear (corta = OK, doble = error). Si el celular no la soporta, no pasa nada.
+function vibrar(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch(e) {} }
+
+// v26.95 — Ventana PIEERS para pedir un texto (reemplaza el prompt() nativo del navegador)
+function pPedirTexto(titulo, mensaje, valorDef, cb) {
+    let m = document.getElementById('modal-pedir-texto');
+    if (!m) {
+        m = document.createElement('div');
+        m.id = 'modal-pedir-texto';
+        m.style.cssText = 'display:none;position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,0.65);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:24px;align-items:center;justify-content:center;';
+        m.innerHTML = '<div class="confirm-card" style="max-width:360px;">' +
+            '<div class="confirm-title" id="mpt-titulo"></div>' +
+            '<div class="confirm-msg" id="mpt-msg" style="margin-bottom:10px;"></div>' +
+            '<input id="mpt-inp" type="text" autocomplete="off" style="width:100%;box-sizing:border-box;padding:13px 14px;border-radius:12px;border:2px solid var(--rojo);font-size:15px;font-family:Inter,sans-serif;margin-bottom:16px;">' +
+            '<div class="confirm-btns"><button class="btn-confirm-no" id="mpt-no">CANCELAR</button><button class="btn-confirm-yes" id="mpt-ok">GUARDAR</button></div></div>';
+        document.body.appendChild(m);
+    }
+    document.getElementById('mpt-titulo').textContent = titulo || '';
+    document.getElementById('mpt-msg').textContent = mensaje || '';
+    const inp = document.getElementById('mpt-inp');
+    inp.value = valorDef || '';
+    const cerrar = (val) => { m.style.display = 'none'; inp.onkeydown = null; try { cb(val); } catch(e) { console.error(e); } };
+    document.getElementById('mpt-ok').onclick = () => cerrar(inp.value.trim() || null);
+    document.getElementById('mpt-no').onclick = () => cerrar(null);
+    inp.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); cerrar(inp.value.trim() || null); } };
+    m.style.display = 'flex';
+    setTimeout(() => { inp.focus(); inp.select(); }, 120);
+}
 
 // ── TOAST ──
 let toastTimer = null;
@@ -2157,7 +2330,7 @@ function seleccionarModo(modo) {
         const panelAlmComp=$('panel-alm-comp'); if(panelAlmComp) panelAlmComp.classList.remove('visible');
 
         if (modo === 'comp') {
-            document.body.className = 'modo-comp';
+            document.body.className = 'modo-comp' + (localStorage.getItem('pieers_luz') === 'oscuro' ? ' modo-oscuro' : '');
             $s('badge-txt').textContent = 'COMPARATIVO';
             $s('menu-sec-comp').classList.remove('hidden');
             ['btn-carga-comp','btn-comp-alm','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
@@ -2170,7 +2343,7 @@ function seleccionarModo(modo) {
             if (scannerEl2) scannerEl2.placeholder = 'ESCANEE CÓDIGO (13 DÍGITOS)';
             loadStateComp(); renderComp(); focusScanner();
         } else if (modo === 'stock') {
-            document.body.className = 'modo-stock';
+            document.body.className = 'modo-stock' + (localStorage.getItem('pieers_luz') === 'oscuro' ? ' modo-oscuro' : '');
             $s('badge-txt').textContent = 'STOCK';
             const secSt=$('menu-sec-stock'); if(secSt) secSt.classList.remove('hidden');
             ['btn-modos-cs','btn-carga-cs','btn-stock-buscar','btn-cs-libros','btn-stock-export','btn-stock-borrar'].forEach(id => {
@@ -2185,7 +2358,7 @@ function seleccionarModo(modo) {
             const nw = document.getElementById('cs-name-search-wrap');
             if (nw) nw.style.display = Object.keys(csStockDB).length > 0 ? 'block' : 'none';
         } else if (modo === 'ticket') {
-            document.body.className = 'modo-ticket';
+            document.body.className = 'modo-ticket' + (localStorage.getItem('pieers_luz') === 'oscuro' ? ' modo-oscuro' : '');
             $s('badge-txt').textContent = 'TICKET';
             csInit(); // asegura que csStockDB/csPreciosDB estén cargados en memoria
             tkCargarTickets();
@@ -2194,7 +2367,7 @@ function seleccionarModo(modo) {
             tkRender();
             setTimeout(() => { const ti=document.getElementById('tk-inp-codbar'); if(ti) ti.focus(); }, 200);
         } else if (modo === 'alm') {
-            document.body.className = 'modo-alm';
+            document.body.className = 'modo-alm' + (localStorage.getItem('pieers_luz') === 'oscuro' ? ' modo-oscuro' : '');
             $s('badge-txt').textContent = 'ALMACÉN';
             $s('menu-sec-alm').classList.remove('hidden');
             ['btn-carga-alm','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
@@ -2205,7 +2378,7 @@ function seleccionarModo(modo) {
         }
     } catch(err) {
         console.error('seleccionarModo error:', err);
-        alert('Error al abrir módulo: ' + err.message);
+        showToast('❌ Error al abrir módulo: ' + err.message, '#c62828', 4000);
     }
 }
 
@@ -2235,7 +2408,10 @@ scannerEl.addEventListener('input', function() {
     if (bloqueado) { scannerEl.value=''; return; }
     bufferBT = scannerEl.value;
     clearTimeout(flushTimer);
-    flushTimer = setTimeout(() => { if (bufferBT.replace(/[\r\n\t\s]/g,'').length >= 13) flushBuffer(); else { bufferBT=''; scannerEl.value=''; } }, 150);
+    // v26.95: si ya llegaron los 13 caracteres se procesa AL INSTANTE (sin esperar);
+    // si la lectora BT envía lento, se espera hasta 600 ms antes de descartar un código incompleto.
+    if (bufferBT.replace(/[\r\n\t\s]/g,'').length >= 13) { flushBuffer(); return; }
+    flushTimer = setTimeout(() => { if (bufferBT.replace(/[\r\n\t\s]/g,'').length >= 13) flushBuffer(); else { bufferBT=''; scannerEl.value=''; } }, 600);
 });
 
 function procesarCodigo(cod) {
@@ -3059,7 +3235,7 @@ function renderAlm(filtro='') {
             const signo = mv.tipo === 'RETIRO' ? '−' : '+';
             const desc = almMap.has(mv.cod) ? almMap.get(mv.cod).desc : (mv.desc || '');
             tr.innerHTML = `
-                <td style="font-size:9px;text-align:left;padding:3px 2px;word-break:break-all;">${mv.cod}</td>
+                <td style="font-size:11px;text-align:left;padding:3px 2px;word-break:break-all;">${mv.cod}</td>
                 <td style="color:${color};font-size:13px;font-weight:900;text-align:center;">${signo}${mv.cant}</td>
                 <td style="font-weight:bold;font-size:11px;">${mv.stockPost}</td>
                 <td style="padding:2px;">
@@ -3143,7 +3319,7 @@ function almGuardarSnapshot() {
 function almGuardarYVerInformes() {
     if (!almMap.size) { showToast('⚠️ Sin inventario', '#E65100'); toggleMenu(); return; }
     const def = 'ALMACÉN_'+new Date().toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'2-digit'}).replace(/\//g,'-')+'_'+(almSnapshots.length+1);
-    const n = prompt('Nombre del informe:', def);
+    pPedirTexto('💾 Guardar informe', 'Nombre del informe:', def, function(n) {
     if (!n) return;
     const snap = {
         nombre: n,
@@ -3159,6 +3335,7 @@ function almGuardarYVerInformes() {
     saveAlm(); beep(880,0.1); toggleMenu();
     showToast('✅ Guardado: '+n, '#111');
     setTimeout(()=>abrirModalAlmInformes(), 400);
+    });
 }
 
 function abrirModalAlmInformes() {
@@ -3928,7 +4105,7 @@ function guardarLote() {
     toggleMenu();
     mostrarResumen(() => {
         const def='COMPARATIVO_'+new Date().toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'2-digit'}).replace(/\//g,'-')+'_'+(lotes.length+1);
-        const n=prompt('Nombre del reporte:', def);
+        pPedirTexto('💾 Guardar reporte', 'Nombre del reporte:', def, function(n) {
         if (!n) return;
         lotes.push({nombre:n, fecha:new Date().toLocaleString(), tipo:'comp', datosLectura:[...historial], maestroSnapshot:Object.fromEntries(maestroMap), descSnapshot:Object.fromEntries(descripcionMap)});
         historial=[]; maestroMap.forEach(v=>v.real=0);
@@ -3936,6 +4113,7 @@ function guardarLote() {
         showToast('✅ Guardado: '+n,'#111');
         // Abrir detalle del lote recién guardado
         verDetalleLote(lotes.length - 1);
+        });
     });
 }
 
@@ -3977,8 +4155,11 @@ function resetearApp() {
             // Consultar Stock: base de artículos, precios (Memorandum), precios por mayor
             CS_STORAGE_KEY, CS_PRECIOS_KEY, CS_MAYOR_KEY,
             // Ticket: ventas guardadas y estado del "día 50%"
-            'tk_tickets_v1', 'tk_50off_v1'
+            'tk_tickets_v1', 'tk_50off_v1',
+            // Nube: lista y memoria de archivos descargados (v26.95)
+            'pieers_drive_lista', 'pieers_cache_keys'
         ].forEach(k => { try { localStorage.removeItem(k); } catch(e) {} });
+        try { if (_pDB) { _pDB.close(); _pDB = null; } indexedDB.deleteDatabase('pieers_cache'); } catch(e) {}
 
         // Resetear variables en memoria — Comparativo
         maestroMap=new Map(); descripcionMap=new Map(); guiaMap=new Map(); guiasCargadas=[]; historial=[]; lotes=[]; totalEsp=0;
@@ -4194,7 +4375,7 @@ function descargar(texto,nombre) {
     setTimeout(()=>URL.revokeObjectURL(a.href),5000);
 }
 
-function eliminarLote(i) { if(confirm('¿Eliminar reporte?')) { lotes.splice(i,1); saveLotes(); renderLotes(); } }
+function eliminarLote(i) { mostrarConfirm('¿Eliminar reporte?', 'Se borrará este reporte guardado. No se puede deshacer.', () => { lotes.splice(i,1); saveLotes(); renderLotes(); }); }
 
 // ── UTILIDADES ──
 function toggleMenu() { const m=document.getElementById('menuContent'); m.style.display=m.style.display==='block'?'none':'block'; }
@@ -4210,6 +4391,7 @@ function focusScanner() { setTimeout(()=>{ try{document.getElementById('scanner'
 
 document.addEventListener('click', (e) => {
     const tag=e.target.tagName;
+    if (e.target.closest && e.target.closest('#modal-pedir-texto')) return; // v26.95: no robar el foco al escribir un nombre
     if (!bloqueado&&modoActual&&modoActual!=='alm'&&tag!=='BUTTON'&&tag!=='INPUT'&&tag!=='SELECT') focusScanner();
 });
 
@@ -5381,7 +5563,7 @@ function csRenderHistorial() {
     wrap.style.display = 'block';
     lista.innerHTML = _csHistorial.map((h, i) =>
         `<button onclick="csSeleccionarHistorial('${h.art}')"
-            style="background:${i===0?'#1565C0':'#F0F0F0'};color:${i===0?'#fff':'#333'};border:none;border-radius:8px;padding:4px 8px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;">
+            style="background:${i===0?'#1565C0':'#F0F0F0'};color:${i===0?'#fff':'#333'};border:none;border-radius:8px;padding:4px 8px;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;">
             ${h.desc}
         </button>`
     ).join('');
@@ -5455,10 +5637,10 @@ function csBuscarPorNombreManual(texto) {
         return `<div onclick="csSeleccionarManual('${k}')"
             style="padding:12px 16px;border-bottom:1px solid #E8E8E8;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:#fff;">
             <div>
-                <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:#111;">${d.desc || k}</div>
-                <div style="font-family:'Outfit',sans-serif;font-size:10px;color:#888;margin-top:2px;">${k}</div>
+                <div style="font-family:'Inter',sans-serif;font-size:13px;font-weight:700;color:#111;">${d.desc || k}</div>
+                <div style="font-family:'Inter',sans-serif;font-size:10px;color:#888;margin-top:2px;">${k}</div>
             </div>
-            <span style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:18px;color:#1565C0;font-weight:900;">${tot}</span>
+            <span style="font-family:'Bebas Neue','Inter',sans-serif;font-size:18px;color:#1565C0;font-weight:900;">${tot}</span>
         </div>`;
     }).join('');
 }
@@ -5630,26 +5812,26 @@ function csModalPromoMostrar(config) {
         const isColor = item.tipo === 'color';
         lista.innerHTML += isColor
             ? `<div style="background:${bgMap.color};border-radius:16px;padding:20px 18px;text-align:center;">
-                <div style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:800;color:rgba(255,255,255,0.8);letter-spacing:2px;text-transform:uppercase;">PRECIO PROMO COLOR</div>
-                <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:20px;color:#fff;margin:4px 0;">🎨 ${item.color||''}</div>
-                <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:64px;color:#fff;line-height:1;">S/ ${Number(item.precio).toFixed(2)}</div>
-                <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:28px;color:rgba(255,255,255,0.95);margin-top:4px;">${item.dto||''}</div>
+                <div style="font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:rgba(255,255,255,0.8);letter-spacing:2px;text-transform:uppercase;">PRECIO PROMO COLOR</div>
+                <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:20px;color:#fff;margin:4px 0;">🎨 ${item.color||''}</div>
+                <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:64px;color:#fff;line-height:1;">S/ ${Number(item.precio).toFixed(2)}</div>
+                <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:28px;color:rgba(255,255,255,0.95);margin-top:4px;">${item.dto||''}</div>
                </div>`
             : item.tipo === 'sinprecio'
             ? `<div style="background:#F5F5F5;border-left:6px solid #999;border-radius:14px;padding:16px;">
-                <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:20px;color:#555;text-transform:uppercase;letter-spacing:2px;text-align:center;">${item.nombre}</div>
-                <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:15px;color:#999;text-align:center;margin-top:6px;letter-spacing:1px;">${item.dto||''}</div>
+                <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:20px;color:#555;text-transform:uppercase;letter-spacing:2px;text-align:center;">${item.nombre}</div>
+                <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:15px;color:#999;text-align:center;margin-top:6px;letter-spacing:1px;">${item.dto||''}</div>
                </div>`
             : `<div style="background:${bgMap[item.tipo]||'#F5F5F5'};border-radius:16px;padding:14px 16px;
                     box-shadow:0 6px 16px rgba(0,0,0,0.12),0 2px 4px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.8);
                     border-left:5px solid ${clrMap[item.tipo]||'#999'};transform:translateZ(0);
                     ${esMasBarato ? 'outline:3px solid #E65100;box-shadow:0 0 0 4px rgba(230,81,0,0.18),0 6px 16px rgba(0,0,0,0.12);' : ''}">
-                <div style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:16px;color:#555;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">${item.nombre}${esMasBarato ? '<span style="background:#E65100;color:#fff;font-size:11px;padding:2px 8px;border-radius:8px;letter-spacing:0.5px;">🔔 CAMBIÓ · MÁS ECONÓMICO</span>' : (item.cambio ? '<span style="background:#E65100;color:#fff;font-size:11px;padding:2px 8px;border-radius:8px;letter-spacing:0.5px;">🔔 CAMBIÓ</span>' : '')}</div>
+                <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:16px;color:#555;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">${item.nombre}${esMasBarato ? '<span style="background:#E65100;color:#fff;font-size:11px;padding:2px 8px;border-radius:8px;letter-spacing:0.5px;">🔔 CAMBIÓ · MÁS ECONÓMICO</span>' : (item.cambio ? '<span style="background:#E65100;color:#fff;font-size:11px;padding:2px 8px;border-radius:8px;letter-spacing:0.5px;">🔔 CAMBIÓ</span>' : '')}</div>
                 <div style="display:flex;justify-content:space-between;align-items:flex-end;">
-                    <span style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:${esMasBarato?'72px':'52px'};color:#E53935;line-height:1;text-shadow:2px 2px 4px rgba(229,57,53,0.2);">S/ ${Number(item.precio).toFixed(2)}</span>
-                    <span style="font-family:'Bebas Neue','Outfit',sans-serif;font-size:32px;color:#FF6D00;font-weight:900;background:rgba(255,109,0,0.1);padding:2px 8px;border-radius:8px;border:2px solid rgba(255,109,0,0.3);">${item.dto||''}</span>
+                    <span style="font-family:'Bebas Neue','Inter',sans-serif;font-size:${esMasBarato?'72px':'52px'};color:#E53935;line-height:1;text-shadow:2px 2px 4px rgba(229,57,53,0.2);">S/ ${Number(item.precio).toFixed(2)}</span>
+                    <span style="font-family:'Bebas Neue','Inter',sans-serif;font-size:32px;color:#FF6D00;font-weight:900;background:rgba(255,109,0,0.1);padding:2px 8px;border-radius:8px;border:2px solid rgba(255,109,0,0.3);">${item.dto||''}</span>
                 </div>
-                ${item.libro ? `<div style="font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;color:#666;margin-top:6px;">📖 ${item.libro}</div>` : ''}
+                ${item.libro ? `<div style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#666;margin-top:6px;">📖 ${item.libro}</div>` : ''}
                </div>`;
     });
 
@@ -5885,7 +6067,8 @@ function csLoadPrecios(event) {
     // Nombre sugerido = nombre del archivo sin extensión (el usuario puede ajustarlo,
     // p.ej. "Memorandum Junio", "Memorandum Casacas")
     const sugerido = f.name.replace(/\.[^.]+$/, '');
-    const nombreLibro = (prompt('¿Cómo quieres llamar a este libro de precios?\n(p.ej. "Memorandum Junio", "Casacas")', sugerido) || '').trim();
+    pPedirTexto('💰 Libro de precios', '¿Cómo quieres llamar a este libro de precios? (p.ej. "Memorandum Junio", "Casacas")', sugerido, function(_nb) {
+    const nombreLibro = (_nb || '').trim();
     if (!nombreLibro) { showToast('⚠️ Carga cancelada — falta el nombre del libro', '#E65100'); return; }
 
     showLoading('Cargando precios: ' + nombreLibro + '...', true);
@@ -5915,6 +6098,7 @@ function csLoadPrecios(event) {
     };
     reader.onerror = function() { hideLoading(); showToast('❌ No se pudo leer el archivo', '#c62828'); };
     reader.readAsArrayBuffer(f);
+    });
 }
 
 // ── Precio más económico entre UNITARIO y OFERTA, mostrado en el cuadro UNITARIO + libro de origen ──
@@ -6184,7 +6368,7 @@ function csRenderPrecios(modelCode) {
                 ? ' (-'+((etiq-precioMostrar)/etiq*100).toFixed(0)+'%)'
                 : '';
             const libroTag = libroMostrar
-                ? '<span style="font-size:9px;color:#111111;font-family:Inter,sans-serif;display:block;margin-top:1px;">📖 '+libroMostrar+'</span>'
+                ? '<span style="font-size:11px;color:#111111;font-family:Inter,sans-serif;display:block;margin-top:1px;">📖 '+libroMostrar+'</span>'
                 : '';
             return '<div class="cs-promo-activa-row cs-pa-'+tipo+'">'
                 + '<span class="cs-pa-ico">'+ico+'</span>'
@@ -6595,6 +6779,7 @@ function tkAgregar(key) {
     }
     ticketItems[key] = (ticketItems[key] || 0) + 1;
     try { beep(1000, 0.05); } catch(e) {}
+    vibrar(35);
     tkRender();
 }
 
@@ -7291,6 +7476,7 @@ function csOnBarcodeInput(val) {
         if (_mp) _mp.style.display = 'none';
         // Guardar barcode y artículo para botón VER STOCK
         window._mpcLastBarcode = bc13;
+        vibrar(35);
         window._mpcLastArt = bc13.substring(1, 8);
         csAgregarHistorial(bc13);
         // Precargar artículo en campo
@@ -7461,7 +7647,7 @@ function csRenderTable(data, outer, art) {
         const _nameCell = _promoC
             ? `<td class="cs-td-color"${_trStyle}>`
               + `<span style="font-weight:900;color:#E53935;">🎨 ${c.name}</span>`
-              + `<span style="font-size:9px;font-weight:800;color:#E53935;margin-left:4px;">S/${_promoC.precio.toFixed(2)}</span>`
+              + `<span style="font-size:11px;font-weight:800;color:#E53935;margin-left:4px;">S/${_promoC.precio.toFixed(2)}</span>`
               + `</td>`
             : `<td class="cs-td-color">${c.name}</td>`;
         h += `<tr${_trStyle}>${_nameCell}`;
@@ -7530,6 +7716,43 @@ var driveCurrentTipo = null;
 var drivePass = null;
 var driveArchivoNombre = null;
 
+// ── v26.95: memoria local (IndexedDB) de archivos descargados de la nube ──
+var _pDB = null;
+function pIdb() {
+    return new Promise(function(res, rej){
+        if (_pDB) return res(_pDB);
+        try {
+            var r = indexedDB.open('pieers_cache', 1);
+            r.onupgradeneeded = function(){ r.result.createObjectStore('files'); };
+            r.onsuccess = function(){ _pDB = r.result; res(_pDB); };
+            r.onerror = function(){ rej(r.error); };
+        } catch(e) { rej(e); }
+    });
+}
+function pCacheGet(key) {
+    if (!key) return Promise.resolve(null);
+    return pIdb().then(function(db){ return new Promise(function(res){
+        try { var q = db.transaction('files','readonly').objectStore('files').get(key);
+              q.onsuccess = function(){ res(q.result || null); }; q.onerror = function(){ res(null); };
+        } catch(e) { res(null); }
+    }); }).catch(function(){ return null; });
+}
+function pCachePut(key, ab) {
+    if (!key) return Promise.resolve(false);
+    return pIdb().then(function(db){ return new Promise(function(res){
+        try {
+            // Se guardan solo los últimos 6 archivos para no llenar el celular
+            var lista = []; try { lista = JSON.parse(localStorage.getItem('pieers_cache_keys') || '[]'); } catch(e) {}
+            lista = lista.filter(function(k){ return k !== key; }); lista.push(key);
+            var tx = db.transaction('files','readwrite'), st = tx.objectStore('files');
+            while (lista.length > 6) st.delete(lista.shift());
+            st.put(ab, key);
+            tx.oncomplete = function(){ try { localStorage.setItem('pieers_cache_keys', JSON.stringify(lista)); } catch(e) {} res(true); };
+            tx.onerror = function(){ res(false); };
+        } catch(e) { res(false); }
+    }); }).catch(function(){ return false; });
+}
+
 function gasRequest(params, callback) {
     var qs = Object.keys(params).map(function(k){
         return k + '=' + encodeURIComponent(params[k]);
@@ -7537,7 +7760,20 @@ function gasRequest(params, callback) {
     var url = GAS_URL + '?' + qs;
     var xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
-    xhr.timeout = 15000;
+    // v26.95: los archivos grandes (Memorandum) necesitan más tiempo; la lista sigue siendo rápida
+    xhr.timeout = params.action === 'get' ? 120000 : 20000;
+    if (params.action === 'get') {
+        xhr.onprogress = function(ev) {
+            try {
+                var txt = document.getElementById('loading-txt');
+                var mb = (ev.loaded / 1048576).toFixed(1);
+                if (ev.lengthComputable && ev.total) {
+                    var pct = Math.min(99, Math.round(ev.loaded / ev.total * 100));
+                    updateProgress('Descargando… ' + mb + ' MB', pct);
+                } else if (txt) txt.textContent = 'Descargando… ' + mb + ' MB';
+            } catch(e) {}
+        };
+    }
     xhr.onreadystatechange = function() {
         if (xhr.readyState !== 4) return;
         if (xhr.status === 200 && xhr.responseText) {
@@ -7607,7 +7843,12 @@ function driveMostrarLista() {
     document.getElementById('drive-vista-login').style.display = 'none';
     document.getElementById('drive-vista-lista').style.display = 'block';
     document.getElementById('drive-lista-archivos').innerHTML = '<div style="text-align:center;padding:24px;color:#aaa;font-size:13px;">⏳ Cargando archivos...</div>';
+    // v26.95: muestra al instante la última lista conocida mientras se actualiza desde la nube
+    var _listaPrev = null;
+    try { _listaPrev = JSON.parse(localStorage.getItem('pieers_drive_lista') || 'null'); } catch(e) {}
+    if (_listaPrev && _listaPrev.length) driveRenderLista(_listaPrev, true);
     gasRequest({action:'list', pass: drivePass}, function(err, data){
+        if (err && _listaPrev && _listaPrev.length) { driveRenderLista(_listaPrev, false, '⚠️ Sin conexión — lista guardada'); return; }
         if (err) {
             document.getElementById('drive-lista-archivos').innerHTML = '<div style="text-align:center;padding:20px;color:#e57373;font-size:13px;">❌ ' + err.message + '</div>';
             return;
@@ -7626,11 +7867,22 @@ function driveMostrarLista() {
             return;
         }
         var files = data.files;
+        try { localStorage.setItem('pieers_drive_lista', JSON.stringify(files || [])); } catch(e) {}
         if (!files || !files.length) {
             document.getElementById('drive-lista-archivos').innerHTML = '<div style="text-align:center;padding:24px;color:#aaa;font-size:13px;">📂 Carpeta vacía.<br>Sube archivos Excel desde tu PC a la carpeta<br><b style="color:#4FC3F7;">PIEERS BASES</b> en Google Drive.</div>';
             return;
         }
+        driveRenderLista(files, false);
+    });
+}
+
+// v26.95: pinta la lista de archivos de la nube (también desde la lista guardada)
+function driveRenderLista(files, actualizando, aviso) {
+        window._driveFilesMeta = {};
+        files.forEach(function(f){ window._driveFilesMeta[f.id] = f; });
         var html = '';
+        if (actualizando) html += '<div style="text-align:center;color:#888;font-size:11px;margin-bottom:8px;">🔄 Actualizando lista…</div>';
+        if (aviso) html += '<div style="text-align:center;color:#FFB74D;font-size:11px;margin-bottom:8px;">' + aviso + '</div>';
         files.forEach(function(f){
             var kb = f.size ? (f.size > 1048576 ? (f.size/1048576).toFixed(1)+' MB' : (f.size/1024).toFixed(0)+' KB') : '';
             var ext = f.name.split('.').pop().toLowerCase();
@@ -7642,7 +7894,6 @@ function driveMostrarLista() {
             html += '</div><span style="color:#4FC3F7;font-size:20px;font-weight:bold;">›</span></div>';
         });
         document.getElementById('drive-lista-archivos').innerHTML = html;
-    });
 }
 
 function driveCerrarSesion() {
@@ -7656,7 +7907,24 @@ function driveSeleccionarArchivo(fileId, fileName) {
     driveArchivoNombre = fileName;
     var tipo = driveCurrentTipo;
     closeDriveModal();
-    showLoading('Descargando ' + fileName + '...');
+    // v26.95: si este mismo archivo (mismo id y mismo tamaño) ya se descargó antes,
+    // se toma de la memoria del celular al instante en vez de bajarlo otra vez.
+    var _meta = (window._driveFilesMeta || {})[fileId] || {};
+    var _cacheKey = _meta.size ? (fileId + '|' + _meta.size + '|' + (_meta.modified || _meta.modifiedTime || _meta.updated || _meta.lastUpdated || _meta.date || '')) : null;
+    showLoading('Buscando ' + fileName + '...');
+    pCacheGet(_cacheKey).then(function(cached){
+        if (cached) {
+            hideLoading();
+            showToast('⚡ ' + fileName + ' sin cambios — cargado al instante', '#111', 2200);
+            driveProcesar(cached.slice(0), tipo);
+            return;
+        }
+        driveDescargar(fileId, fileName, tipo, _cacheKey);
+    });
+}
+
+function driveDescargar(fileId, fileName, tipo, _cacheKey) {
+    showLoading('Descargando ' + fileName + '...', true);
     gasRequest({action:'get', pass: drivePass, id: fileId}, function(err, data){
         if (err) { hideLoading(); showToast('❌ ' + err.message, '#c62828'); return; }
         if (!data.ok) { hideLoading(); showToast('❌ ' + (data.error||'Error'), '#c62828'); return; }
@@ -7666,6 +7934,7 @@ function driveSeleccionarArchivo(fileId, fileName) {
             var ab = new ArrayBuffer(bin.length);
             var view = new Uint8Array(ab);
             for (var i = 0; i < bin.length; i++) view[i] = bin.charCodeAt(i);
+            if (_cacheKey) pCachePut(_cacheKey, ab.slice(0));
             hideLoading();
             driveProcesar(ab, tipo);
         } catch(e) {
@@ -8103,4 +8372,52 @@ if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/inventario-pieers/sw.js');
     });
 }
+
+// ══ v26.95 — Pantallas vacías con botón para cargar (Comparativo, Almacén, Stock) ══
+(function pVacios() {
+    function vacioHTML(ico, tit, txt, btn, fn) {
+        return '<div class="p-vacio-ico">' + ico + '</div><div class="p-vacio-tit">' + tit + '</div><div>' + txt + '</div>' +
+               '<button type="button" onclick="' + fn + '">' + btn + '</button>';
+    }
+    function asegurar(idTbody, id, html) {
+        const tb = document.getElementById(idTbody); if (!tb) return null;
+        const sc = tb.closest('.scroll'); if (!sc) return null;
+        let d = document.getElementById(id);
+        if (!d) { d = document.createElement('div'); d.id = id; d.className = 'p-vacio'; d.style.display = 'none'; d.innerHTML = html; sc.appendChild(d); }
+        return d;
+    }
+    function revisar() {
+        try {
+            const dc = asegurar('t-comp-unif', 'p-vacio-comp', vacioHTML('📋', 'Sin maestro cargado', 'Carga tu guía o el Detalle de Stock para empezar el conteo.', '📂 CARGAR MAESTRO', "abrirSubCarga('comp')"));
+            if (dc) {
+                const vacio = (typeof maestroMap === 'undefined' || maestroMap.size === 0) && (typeof historial === 'undefined' || historial.length === 0) && !document.getElementById('t-comp-unif').children.length;
+                dc.style.display = vacio ? 'flex' : 'none';
+            }
+            const da = asegurar('t-alm', 'p-vacio-alm', vacioHTML('🏪', 'Almacén vacío', 'Carga tu inventario para buscar prendas y registrar retiros.', '📂 CARGAR INVENTARIO', "abrirSubCarga('alm')"));
+            if (da) da.style.display = ((typeof almMap === 'undefined' || almMap.size === 0) && !document.getElementById('t-alm').children.length) ? 'flex' : 'none';
+            const out = document.getElementById('cs-table-outer');
+            if (out) {
+                const nd = out.querySelector('.cs-no-data');
+                const sinBase = typeof csStockDB === 'undefined' || !csStockDB || Object.keys(csStockDB).length === 0;
+                if (nd && sinBase && !nd.querySelector('.p-vacio-btn')) {
+                    const b = document.createElement('div');
+                    b.className = 'p-vacio p-vacio-btn'; b.style.padding = '12px 0 0';
+                    b.innerHTML = '<button type="button" onclick="abrirSubCarga(\'cs\')">📂 CARGAR BASE</button>';
+                    nd.appendChild(b);
+                }
+                if (nd && !sinBase) { const b = nd.querySelector('.p-vacio-btn'); if (b) b.remove(); }
+            }
+        } catch(e) {}
+    }
+    function iniciar() {
+        revisar();
+        ['t-comp-unif', 't-alm', 'cs-table-outer'].forEach(function(id) {
+            const el = document.getElementById(id);
+            if (el && window.MutationObserver) new MutationObserver(revisar).observe(el, { childList: true });
+        });
+        // también al cambiar de módulo o al terminar una carga
+        setInterval(revisar, 1500);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar); else iniciar();
+})();
 </script>
