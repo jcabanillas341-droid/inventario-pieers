@@ -1497,6 +1497,35 @@
         body.modo-oscuro .dl-item.falta, body.modo-oscuro .dl-item.sobra, body.modo-oscuro .dl-item.ok, body.modo-oscuro .dl-item.nomaestro { background: #1E1E1E !important; }
         body.modo-oscuro .dl-item-full { background: #262626 !important; border-color: #333 !important; }
         body.modo-oscuro .dl-ct-talla { background: #3A1515 !important; border-color: #5A2A2A !important; }
+
+        /* ══ v27.00 — Ingreso manual (mantener pulsado) ══ */
+        .dl-item { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; overflow: hidden; }
+        .dl-item::before { content: ''; position: absolute; left: 0; bottom: 0; height: 3px; width: 0; background: #2E7D32; }
+        .dl-item.dl-pulsando::before { width: 100%; transition: width 2s linear; }
+        .dl-item.dl-pulsando { background: #F3FAF3 !important; }
+        .dl-man { margin-top: 5px; font-family: 'Inter', sans-serif; font-size: 12px; color: #2E7D32; font-weight: 600; line-height: 1.35; }
+        .dl-man b { font-weight: 900; }
+        .im-card { max-width: 380px !important; max-height: 92vh; overflow-y: auto; padding: 20px 18px !important; }
+        .im-desc { font-family: 'Inter', sans-serif; font-weight: 700; font-size: 13.5px; text-align: center; color: #1B1D22; line-height: 1.35; }
+        .im-cod { text-align: center; font-family: 'Inter', sans-serif; font-size: 11.5px; color: #6B6F7A; margin-top: 4px; }
+        .im-lab { font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.6px; color: #6B6F7A; margin: 12px 0 6px; text-transform: uppercase; }
+        .im-qty { display: flex; align-items: center; gap: 8px; }
+        .im-qty button { flex: 0 0 52px; width: 52px; height: 48px; border: none; border-radius: 12px; background: #1B1D22; color: #fff; font-size: 24px; font-weight: 800; cursor: pointer; }
+        .im-qty input { flex: 1; min-width: 0; width: 100%; height: 48px; text-align: center; font-size: 24px; font-weight: 800; border: 2px solid #2E7D32; border-radius: 12px; font-family: 'Inter', sans-serif; }
+        .im-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+        .im-chip { padding: 7px 11px; border: 1px solid #DADDE3; border-radius: 20px; background: #F6F7F9; font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 700; color: #1B1D22; cursor: pointer; }
+        .im-chip:active { background: #E8F5E9; border-color: #2E7D32; }
+        #im-obs { width: 100%; box-sizing: border-box; padding: 12px; border: 2px solid #DADDE3; border-radius: 12px; font-size: 14px; font-family: 'Inter', sans-serif; }
+        .im-prev { border: 1px solid #E6E8EC; border-radius: 10px; overflow: hidden; }
+        .im-prev-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 10px; font-family: 'Inter', sans-serif; font-size: 12.5px; border-top: 1px solid #EEF0F3; }
+        .im-prev-row:first-child { border-top: none; }
+        .im-prev-row small { color: #8A8E99; font-size: 11px; }
+        .im-quitar { border: 1px solid #F5C6C2; background: #FDECEA; color: #C62828; border-radius: 8px; padding: 6px 10px; font-weight: 800; font-size: 11.5px; cursor: pointer; }
+        #modal-ingreso-manual .btn-confirm-yes { background: linear-gradient(135deg, #43A047, #2E7D32) !important; }
+        body.modo-oscuro .im-chip { background: #2A2A2A !important; border-color: #444 !important; }
+        body.modo-oscuro .im-prev, body.modo-oscuro .im-prev-row { border-color: #333 !important; }
+        body.modo-oscuro .dl-item.dl-pulsando { background: #14301A !important; }
+        .dl-hint { font-family: 'Inter', sans-serif; font-size: 11.5px; color: #6B6F7A; text-align: center; padding: 2px 6px 8px; }
     </style>
 </head>
 <body class="modo-comp">
@@ -1510,7 +1539,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v26.99 — 11/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.00 — 11/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -1956,7 +1985,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.99 — 11/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.00 — 11/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4295,12 +4324,13 @@ function exportarExcel(idx) {
     Object.entries(lote.maestroSnapshot).forEach(([cod,v])=>{
         const leido=cA[cod]||0, diff=leido-v.exp, est=diff<0?'FALTA':diff>0?'SOBRA':'OK';
         const desc=(lote.descSnapshot&&lote.descSnapshot[cod])||descripcionMap.get(cod)||'';
-        concilia.push({'A - CODIGO':cod,'B - DESCRIPCION':desc,'C - STOCK_ESPERADO':v.exp,'D - CONTEO_REAL':leido,'E - ESTADO':est,'F - DIFERENCIA':Math.abs(diff)});
+        const _mn=(lote.manual&&lote.manual[cod])||[];
+        concilia.push({'A - CODIGO':cod,'B - DESCRIPCION':desc,'C - STOCK_ESPERADO':v.exp,'D - CONTEO_REAL':leido,'E - ESTADO':est,'F - DIFERENCIA':Math.abs(diff),'G - INGRESO_MANUAL':_mn.reduce((a,m)=>a+m.cant,0)||'','H - OBSERVACION':_mn.map(m=>m.obs).filter(Boolean).join(' | ')});
     });
     Object.entries(cA).forEach(([cod,cant])=>{ if(!lote.maestroSnapshot.hasOwnProperty(cod)) concilia.push({'A - CODIGO':cod,'B - DESCRIPCION':descripcionMap.get(cod)||'','C - STOCK_ESPERADO':0,'D - CONTEO_REAL':cant,'E - ESTADO':'SOBRA','F - DIFERENCIA':cant}); });
     const agrupad=Object.entries(cA).map(([cod,cant])=>({CODIGO:cod,DESCRIPCION:(lote.descSnapshot&&lote.descSnapshot[cod])||descripcionMap.get(cod)||'',CANTIDAD_TOTAL:cant}));
     const wb=XLSX.utils.book_new();
-    const ws1=XLSX.utils.json_to_sheet(concilia); ws1['!cols']=[{wch:18},{wch:55},{wch:14},{wch:12},{wch:10},{wch:12}];
+    const ws1=XLSX.utils.json_to_sheet(concilia); ws1['!cols']=[{wch:18},{wch:55},{wch:14},{wch:12},{wch:10},{wch:12},{wch:14},{wch:40}];
     const ws2=XLSX.utils.json_to_sheet(agrupad);   ws2['!cols']=[{wch:18},{wch:55},{wch:14}];
     XLSX.utils.book_append_sheet(wb,ws1,'CONCILIACION');
     XLSX.utils.book_append_sheet(wb,ws2,'LECTURAS_CONSOLIDADAS');
@@ -4475,13 +4505,16 @@ function dlRender() {
     entries = [...entries].sort((a,b) => {
         const pa=prio[a.cat]??4, pb=prio[b.cat]??4;
         if (pa!==pb) return pa-pb;
+        // v27.00: los ingresados a mano aparecen primero dentro de su grupo
+        const ma = dlManualDe(a.cod).length ? 0 : 1, mb = dlManualDe(b.cod).length ? 0 : 1;
+        if (ma!==mb) return ma-mb;
         return Math.abs(b.diff) - Math.abs(a.diff);
     });
     if (!entries.length) {
         cont.innerHTML = `<p style="color:#111111;text-align:center;margin-top:30px;font-family:'Barlow',sans-serif;font-size:13px;">Sin resultados${q?' para "'+q+'"':''}</p>`;
         return;
     }
-    cont.innerHTML = '';
+    cont.innerHTML = '<div class="dl-hint">👆 Toca una prenda para ver todo · ✋ mantenla pulsada 2 s para ingresarla a mano</div>';
     const frag = document.createDocumentFragment();
     entries.slice(0,200).forEach(e => {
         const div = document.createElement('div');
@@ -4490,7 +4523,9 @@ function dlRender() {
         const catBadge = {ok:'ok', falta:'falta', sobra:'sobra', nomaestro:'nm'}[e.cat] || '';
         const realColor = e.cat==='ok'?'#2E7D32':e.cat==='falta'?'#E65100':e.cat==='sobra'?'#1565C0':'#7B1FA2';
         const _ct = dlColorTalla(e);
-        div.onclick = function(ev){ if (ev.target.closest('button')) return; div.classList.toggle('abierto'); };
+        div.onclick = function(ev){ if (ev.target.closest('button')) return; if (div._lpFired) { div._lpFired = false; return; } div.classList.toggle('abierto'); };
+        dlActivarPulsacionLarga(div, e);
+        const _man = dlManualDe(e.cod);
         div.innerHTML = `
             <div class="dl-item-body">
                 <div class="dl-item-desc${e.desc?'':' sin-desc'}" title="${e.desc||e.cod}">${_ct.base || e.desc || '⚠ Sin descripción en el maestro'}</div>
@@ -4505,6 +4540,7 @@ function dlRender() {
                     <div class="dl-full-row"><span>Talla</span><b>${_ct.talla}</b></div>
                 </div>
                 <div class="dl-item-cod">${e.cod}</div>
+                ${_man.length ? `<div class="dl-man">✋ Ingreso manual: <b>+${_man.reduce((a,m)=>a+m.cant,0)}</b>${_man.map(m=>m.obs?` · 📍 ${m.obs.replace(/</g,'&lt;')}`:'').join('')}</div>` : ''}
                 <div class="dl-item-cols">
                     <div class="dl-pill"><span class="dl-pill-val" style="color:#333;">${e.exp}</span><span class="dl-pill-lab">ESP</span></div>
                     <div class="dl-pill"><span class="dl-pill-val" style="color:${realColor};">${e.real}</span><span class="dl-pill-lab">REAL</span></div>
@@ -8590,4 +8626,91 @@ if ('serviceWorker' in navigator) {
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar); else iniciar();
 })();
+
+// ══ v27.00 — Ingreso MANUAL en el detalle del reporte (mantener pulsado 2 s) ══
+function dlManualDe(cod) {
+    const lote = lotes[dlIdxActual];
+    return (lote && lote.manual && lote.manual[cod]) || [];
+}
+function dlActivarPulsacionLarga(div, e) {
+    let t = null, x0 = 0, y0 = 0;
+    const cancelar = () => { if (t) { clearTimeout(t); t = null; } div.classList.remove('dl-pulsando'); };
+    div.addEventListener('pointerdown', ev => {
+        if (ev.target.closest('button')) return;
+        x0 = ev.clientX; y0 = ev.clientY; div._lpFired = false;
+        div.classList.add('dl-pulsando');
+        t = setTimeout(() => { t = null; div.classList.remove('dl-pulsando'); div._lpFired = true; vibrar(40); dlAbrirIngresoManual(e); }, 2000);
+    });
+    div.addEventListener('pointermove', ev => { if (t && (Math.abs(ev.clientX - x0) > 10 || Math.abs(ev.clientY - y0) > 10)) cancelar(); });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(n => div.addEventListener(n, cancelar));
+    div.addEventListener('contextmenu', ev => ev.preventDefault());
+}
+function dlAbrirIngresoManual(e) {
+    const lote = lotes[dlIdxActual]; if (!lote) return;
+    const ct = dlColorTalla(e);
+    let m = document.getElementById('modal-ingreso-manual');
+    if (!m) {
+        m = document.createElement('div');
+        m.id = 'modal-ingreso-manual';
+        m.style.cssText = 'display:none;position:fixed;inset:0;z-index:9990;background:rgba(0,0,0,0.6);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);padding:18px;align-items:center;justify-content:center;';
+        document.body.appendChild(m);
+    }
+    const falta = Math.max(1, e.exp - e.real);
+    const previos = dlManualDe(e.cod);
+    const esc = v => String(v == null ? '' : v).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    m.innerHTML = `
+      <div class="confirm-card im-card">
+        <div class="confirm-title" style="margin-bottom:6px;">✋ Ingreso manual</div>
+        <div class="im-desc">${esc(e.desc || e.cod)}</div>
+        <div class="dl-ct" style="justify-content:center;margin:6px 0 2px;">
+          <span class="dl-ct-color"><b>COLOR</b> ${esc(ct.color)}</span><span class="dl-ct-talla"><b>TALLA</b> ${esc(ct.talla)}</span>
+        </div>
+        <div class="im-cod">${esc(e.cod)} · Esp ${e.exp} · Real ${e.real}</div>
+        <div class="im-lab">Cantidad encontrada</div>
+        <div class="im-qty">
+          <button type="button" id="im-menos">−</button>
+          <input id="im-cant" type="number" inputmode="numeric" min="1" value="${falta}">
+          <button type="button" id="im-mas">+</button>
+        </div>
+        <div class="im-lab">¿Dónde lo encontraste?</div>
+        <div class="im-chips">${['Almacén','Probadores','Vitrina','Maniquí','Mesa','Caja','Colgador'].map(c=>`<button type="button" class="im-chip">${c}</button>`).join('')}</div>
+        <input id="im-obs" type="text" maxlength="120" placeholder="Ej.: almacén, caja 3, segundo estante" autocomplete="off">
+        ${previos.length ? `<div class="im-lab" style="margin-top:12px;">Ingresos anteriores</div>
+          <div class="im-prev">${previos.map((p,i)=>`<div class="im-prev-row"><span>+${p.cant} · ${esc(p.obs || 'sin observación')}<br><small>${esc(p.fecha)}</small></span><button type="button" data-i="${i}" class="im-quitar">Quitar</button></div>`).join('')}</div>` : ''}
+        <div class="confirm-btns" style="margin-top:14px;">
+          <button class="btn-confirm-no" id="im-cancelar">CANCELAR</button>
+          <button class="btn-confirm-yes" id="im-guardar">INGRESAR</button>
+        </div>
+      </div>`;
+    const cant = m.querySelector('#im-cant'), obs = m.querySelector('#im-obs');
+    m.querySelector('#im-menos').onclick = () => { cant.value = Math.max(1, (parseInt(cant.value) || 1) - 1); };
+    m.querySelector('#im-mas').onclick = () => { cant.value = (parseInt(cant.value) || 0) + 1; };
+    m.querySelectorAll('.im-chip').forEach(b => b.onclick = () => {
+        const v = obs.value.trim(); obs.value = v ? (v.toLowerCase().includes(b.textContent.toLowerCase()) ? v : v + ', ' + b.textContent) : b.textContent; obs.focus();
+    });
+    m.querySelectorAll('.im-quitar').forEach(b => b.onclick = () => {
+        const i = +b.dataset.i, p = previos[i]; if (!p) return;
+        mostrarConfirm('¿Quitar ingreso manual?', 'Se restarán ' + p.cant + ' unidad(es) de ' + e.cod + '.', () => {
+            for (let k = 0; k < p.cant; k++) { const j = lote.datosLectura.lastIndexOf(e.cod); if (j >= 0) lote.datosLectura.splice(j, 1); }
+            lote.manual[e.cod].splice(i, 1); if (!lote.manual[e.cod].length) delete lote.manual[e.cod];
+            saveLotes(); m.style.display = 'none'; dlRefrescar(); showToast('↩️ Ingreso manual quitado', '#111');
+        });
+    });
+    m.querySelector('#im-cancelar').onclick = () => { m.style.display = 'none'; };
+    m.querySelector('#im-guardar').onclick = () => {
+        const n = parseInt(cant.value) || 0;
+        if (n < 1) { showToast('⚠️ Ingresa una cantidad', '#E65100'); return; }
+        for (let k = 0; k < n; k++) lote.datosLectura.push(e.cod);
+        if (!lote.manual) lote.manual = {};
+        (lote.manual[e.cod] = lote.manual[e.cod] || []).push({ cant: n, obs: obs.value.trim(), fecha: new Date().toLocaleString('es-PE') });
+        saveLotes(); m.style.display = 'none'; beepOK(); dlRefrescar();
+        showToast('✅ +' + n + ' ingresado' + (obs.value.trim() ? ' · ' + obs.value.trim() : ''), '#2E7D32');
+    };
+    m.style.display = 'flex';
+}
+function dlRefrescar() {
+    const lista = document.getElementById('dl-list'); const y = lista ? lista.scrollTop : 0;
+    _dlCargarDatos();
+    if (lista) lista.scrollTop = y;
+}
 </script>
