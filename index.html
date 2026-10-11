@@ -1386,6 +1386,90 @@
         body.modo-oscuro .cs-td-total { background: #14301A !important; }
         body.modo-oscuro #cs-table-outer, body.modo-oscuro #cs-panel-stock { background: #121212 !important; }
         body.modo-oscuro .cs-price-box[style*="#FFD600" i] *, body.modo-oscuro .cs-price-box[style*="rgb(255, 214, 0)"] * { color: #111 !important; }
+
+        /* ══ v26.96 — Pantalla de inicio clara (pedido de Jorge: el negro se veía muy oscuro) ══
+           Fondo gris porcelana luminoso, tarjetas blancas tipo etiqueta de prenda,
+           marca roja PIEERS y textos en tinta oscura. Solo cambia el selector de módulos. */
+        #pantalla-modo {
+            background:
+                radial-gradient(120% 55% at 50% -8%, rgba(229,57,53,0.16) 0%, rgba(229,57,53,0.05) 45%, transparent 70%),
+                linear-gradient(180deg, #FBFBFC 0%, #F1F2F5 100%) !important;
+        }
+        #pantalla-modo::before { background: none !important; }
+        #pantalla-modo::after {
+            /* trama fina tipo tela (twill) muy suave, solo arriba */
+            background-image: repeating-linear-gradient(135deg, rgba(20,22,30,0.035) 0 1px, transparent 1px 7px) !important;
+            background-size: auto !important;
+            -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 42%) !important;
+                    mask-image: linear-gradient(180deg, #000 0%, transparent 42%) !important;
+        }
+        #pantalla-modo > div:first-child > div { background: #E53935 !important; }
+        #pantalla-modo .logo-modo { color: #1B1D22 !important; }
+        #pantalla-modo .logo-acento { color: #D32F2F !important; }
+        #pantalla-modo .logo-sub { color: #C62828 !important; }
+        #pantalla-modo .logo-sub::before, #pantalla-modo .logo-sub::after { background: #C62828 !important; opacity: 0.45; }
+        #pantalla-modo .logo-selector { color: #6B6F7A !important; }
+        #pantalla-modo .logo-v { color: #8A8E99 !important; }
+        #pantalla-modo [style*="height:1px"], #pantalla-modo [style*="height: 1px"] { background: rgba(27,29,34,0.12) !important; }
+        #sel-version { background: #FFFFFF !important; border: 1px solid #E3E5EA !important; color: #4A4E58 !important; box-shadow: 0 2px 8px rgba(27,29,34,0.06); }
+        #pantalla-modo .logo-icono { box-shadow: 0 10px 24px rgba(211,47,47,0.30), 0 0 0 5px rgba(229,57,53,0.10) !important; }
+
+        /* Tarjetas de módulo: blancas, con la franja de color del módulo y una sombra cálida baja */
+        #pantalla-modo .btn-modo {
+            background: #FFFFFF !important;
+            border: 1px solid #E6E8EC !important;
+            border-left: 5px solid var(--acc, #E53935) !important;
+            box-shadow: 0 1px 2px rgba(27,29,34,0.05), 0 8px 20px -10px rgba(27,29,34,0.22) !important;
+            color: #1B1D22 !important;
+        }
+        #pantalla-modo .btn-comp { --acc: #1B1D22; --acc-bg: linear-gradient(135deg,#3A3D45,#1B1D22); }
+        #pantalla-modo .btn-modo .tit { color: #1B1D22 !important; }
+        #pantalla-modo .btn-modo .desc { color: #5F636D !important; }
+        #pantalla-modo .btn-modo > span:last-child { color: var(--acc) !important; }
+        #pantalla-modo .btn-modo::after { background: linear-gradient(120deg, transparent, rgba(229,57,53,0.08), transparent) !important; }
+        #pantalla-modo .btn-modo:hover, #pantalla-modo .btn-modo:active {
+            box-shadow: 0 2px 4px rgba(27,29,34,0.06), 0 14px 28px -12px rgba(27,29,34,0.30) !important;
+        }
+        /* Modo oscuro activado por el usuario: gris grafito (no negro) para que se lea bien */
+        body.modo-oscuro #pantalla-modo { background: radial-gradient(120% 55% at 50% -8%, rgba(229,57,53,0.18), transparent 65%), linear-gradient(180deg, #24262C, #1C1E23) !important; }
+        body.modo-oscuro #pantalla-modo .btn-modo { background: #2A2D34 !important; border-color: #383C45 !important; }
+        body.modo-oscuro #sel-version { background: #2A2D34 !important; border-color: #383C45 !important; }
+
+        /* ══ v26.97 — Zona de escaneo más compacta → más espacio para el detalle ══ */
+        /* Comparativo */
+        #scanner { padding: 7px 12px !important; font-size: 15px !important; margin: 5px auto 4px !important; border-radius: 10px !important; min-height: 0 !important; }
+        /* Consultar Stock */
+        #vista-stock .cs-top-panel { padding: 4px 10px 2px !important; }
+        #vista-stock .cs-top-panel > div:first-child { padding: 2px 0 4px !important; }
+        #btn-modo-lectora { padding: 5px 6px !important; font-size: 11px !important; border-radius: 8px !important; min-height: 0 !important; box-shadow: none !important; }
+        #vista-stock .cs-ctrl-row { margin-bottom: 0 !important; gap: 6px !important; }
+        #vista-stock .cs-field-label { font-size: 14px !important; min-width: 0 !important; }
+        body:not(.modo-oscuro) #vista-stock input[type="text"].cs-inp, #vista-stock input[type="text"].cs-inp { height: 36px !important; padding: 4px 10px !important; font-size: 14px !important; border-radius: 10px !important; }
+        #vista-stock .cs-top-panel > div[style*="text-align:right"] { margin-top: -2px; padding: 0 !important; line-height: 1; }
+        #cs-db-badge { font-size: 9.5px !important; padding: 2px 8px !important; }
+        #cs-nombre-articulo { padding: 2px 10px 0 !important; }
+        #cs-nombre-texto { font-size: 19px !important; line-height: 1.1 !important; }
+        #cs-name-search-wrap { padding: 3px 8px 2px !important; }
+        #cs-name-search { padding: 6px 10px !important; font-size: 12.5px !important; }
+        /* Ticket */
+        #vista-ticket > div:first-child { padding: 6px 10px !important; }
+        #tk-inp-codbar { padding: 8px 12px !important; font-size: 15px !important; border-radius: 10px !important; }
+        #tk-hoy-resumen { padding: 4px 12px !important; }
+        #tk-btn-50off { margin: 4px 10px 0 !important; padding: 6px !important; min-height: 34px !important; font-size: 12px !important; }
+        #tk-name-search { padding: 7px 10px !important; font-size: 12.5px !important; }
+        #vista-ticket > div:nth-child(4) { padding: 4px 10px 0 !important; }
+
+        /* v26.98 — Consultar Precio y Stock: se quita la barra "LECTORA" (la lectora ya queda activa) */
+        #cs-barra-lectora { display: none !important; }
+        .badge-modo { max-width: 128px; overflow: hidden; text-overflow: ellipsis; font-size: 10px !important; letter-spacing: 0.5px !important; padding: 4px 8px !important; flex-shrink: 0; }
+        .header-logo { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+        /* v26.98: cabecera que entra completa en celulares angostos */
+        .header-logo { font-size: 22px !important; letter-spacing: 1px !important; }
+        .header-app { padding: 9px 10px !important; }
+        .header-app > div:last-child { gap: 5px !important; }
+        .header-app .btn-cambio { padding: 7px 7px !important; font-size: 10.5px !important; }
+        .header-app .btn-menu { padding: 8px 9px !important; font-size: 11.5px !important; }
+        @media (max-width: 380px) { .header-logo { font-size: 19px !important; letter-spacing: 0.3px !important; } .badge-modo { padding: 3px 6px !important; font-size: 9.5px !important; margin-left: 5px !important; } .header-app .btn-modo-luz { padding: 6px 6px !important; } .header-app .btn-cambio { padding: 7px 5px !important; } .header-app .btn-menu { padding: 8px 7px !important; } .header-app > div:last-child { gap: 4px !important; } }
     </style>
 </head>
 <body class="modo-comp">
@@ -1399,7 +1483,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v26.95 — 11/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v26.98 — 11/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -1416,7 +1500,7 @@
         <button class="btn-modo btn-comp" onclick="seleccionarModo('comp')" style="width:100%;max-width:360px;">
             <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">📋</div>
             <span class="txt">
-                <span class="tit">AUDITORÍA / COMPARATIVO</span>
+                <span class="tit">INVENTARIO / GUÍAS / TIENDA</span>
                 <span class="desc">Compara inventario esperado vs físico escaneado. Detecta faltantes y sobrantes.</span>
             </span>
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
@@ -1432,7 +1516,7 @@
         <button class="btn-modo btn-stock-mod" onclick="seleccionarModo('stock')" style="width:100%;max-width:360px;">
             <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">📦</div>
             <span class="txt">
-                <span class="tit">CONSULTAR STOCK</span>
+                <span class="tit">CONSULTAR PRECIO Y STOCK</span>
                 <span class="desc">Escanea o ingresa código. Ve stock por color/talla y precios con descuentos.</span>
             </span>
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
@@ -1464,7 +1548,7 @@
             <button class="btn-menu"   onclick="toggleMenu()">☰ OPC.</button>
         </div>
         <div id="menuContent" class="menu-dropdown">
-            <div id="menu-sec-comp" class="menu-section hidden">📋 Comparativo</div>
+            <div id="menu-sec-comp" class="menu-section hidden">📋 Inventario / Guías / Tienda</div>
             <button id="btn-carga-comp"    class="hidden" onclick="abrirSubCarga('comp');toggleMenu()">📂 CARGAR MAESTRO</button>
             <button id="btn-comp-alm"      class="hidden" onclick="abrirAlmDesdeComp();toggleMenu()">📋 Comparativo + Stock Almacén</button>
             <button id="btn-comp-guardar"  class="hidden" onclick="guardarLote();toggleMenu()">💾 Guardar Lote</button>
@@ -1479,7 +1563,7 @@
             <button id="btn-alm-exportar"  class="hidden" onclick="almExportar();toggleMenu()">📊 Exportar a Excel</button>
             <button id="btn-alm-informes"  class="hidden" onclick="abrirModalAlmInformes();toggleMenu()">📋 Ver Informes</button>
             <button id="btn-alm-reiniciar" class="hidden" onclick="resetearModulo();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Reiniciar almacén</button>
-            <div id="menu-sec-stock" class="menu-section hidden">📦 Consultar Stock</div>
+            <div id="menu-sec-stock" class="menu-section hidden">📦 Consultar Precio y Stock</div>
             <!-- Botones de modo: STOCK+PRECIOS, SOLO STOCK, SOLO PRECIOS -->
             <div id="btn-modos-cs" class="hidden" style="display:none;gap:6px;padding:6px 14px 2px;">
                 <button onclick="csSetModo('ambos');toggleMenu()" id="cs-menu-modo-ambos"
@@ -1718,8 +1802,8 @@
         <!-- ── SELECTOR MODO CONSULTA (movido a OPC.) ── -->
         <div id="cs-modo-selector" style="display:none;"></div>
         <div class="cs-top-panel">
-            <!-- ── SELECTOR DE MODO DE BÚSQUEDA ── -->
-            <div style="display:flex;gap:6px;padding:8px 10px 4px;">
+            <!-- ── SELECTOR DE MODO DE BÚSQUEDA (oculto desde v26.98: la lectora siempre está activa) ── -->
+            <div id="cs-barra-lectora" style="display:none;gap:6px;padding:8px 10px 4px;">
                 <button id="btn-modo-lectora" onclick="csModoLectora()"
                     style="flex:1;padding:10px 6px;border-radius:10px;border:2px solid #E53935;background:#E53935;color:#fff;font-family:'Inter',sans-serif;font-size:12px;font-weight:800;cursor:pointer;letter-spacing:0.5px;">
                     📷 LECTORA
@@ -1845,7 +1929,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.95 — 11/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v26.98 — 11/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -2331,7 +2415,7 @@ function seleccionarModo(modo) {
 
         if (modo === 'comp') {
             document.body.className = 'modo-comp' + (localStorage.getItem('pieers_luz') === 'oscuro' ? ' modo-oscuro' : '');
-            $s('badge-txt').textContent = 'COMPARATIVO';
+            $s('badge-txt').textContent = 'INVENTARIO';
             $s('menu-sec-comp').classList.remove('hidden');
             ['btn-carga-comp','btn-comp-alm','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
             $s('vista-comp').classList.remove('hidden');
@@ -2344,7 +2428,7 @@ function seleccionarModo(modo) {
             loadStateComp(); renderComp(); focusScanner();
         } else if (modo === 'stock') {
             document.body.className = 'modo-stock' + (localStorage.getItem('pieers_luz') === 'oscuro' ? ' modo-oscuro' : '');
-            $s('badge-txt').textContent = 'STOCK';
+            $s('badge-txt').textContent = 'PRECIO/STOCK';
             const secSt=$('menu-sec-stock'); if(secSt) secSt.classList.remove('hidden');
             ['btn-modos-cs','btn-carga-cs','btn-stock-buscar','btn-cs-libros','btn-stock-export','btn-stock-borrar'].forEach(id => {
                 const el=$(id); if(el) { el.classList.remove('hidden'); el.style.display = id==='btn-modos-cs' ? 'flex' : ''; }
