@@ -1596,7 +1596,7 @@
         html.rol-vendedor #btn-carga-comp, html.rol-vendedor #btn-comp-guardar, html.rol-vendedor #btn-comp-reiniciar,
         html.rol-vendedor #btn-carga-alm, html.rol-vendedor #btn-alm-guardar, html.rol-vendedor #btn-alm-exportar, html.rol-vendedor #btn-alm-reiniciar,
         html.rol-vendedor #btn-carga-cs, html.rol-vendedor #btn-stock-export, html.rol-vendedor #btn-stock-borrar,
-        html.rol-vendedor #comp-file-btns,
+        html.rol-vendedor #comp-file-btns, html.rol-vendedor #btn-sy-carpetas,
         html.rol-vendedor button[onclick^="resetearApp"], html.rol-vendedor button[onclick^="abrirConfigPIN"],
         html.rol-supervisor button[onclick^="resetearApp"], html.rol-supervisor button[onclick^="abrirConfigPIN"] { display:none !important; }
         /* Modo oscuro */
@@ -1623,7 +1623,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.15 — 18/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.16 — 18/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -2070,7 +2070,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.15 — 18/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.16 — 18/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -10766,6 +10766,7 @@ function _syTam(n) { return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Ma
 
 function syAbrirCarpetas() {
     try { const mc = document.getElementById('menuContent'); if (mc) mc.style.display = 'none'; } catch(e) {}
+    if (syActivo() && !pPuede('cargar')) return syDenegar();   // v27.16: solo admin y supervisor
     if (!syActivo()) {
         mostrarConfirm('📁 Bases compartidas', 'Para compartir carpetas de bases entre celulares primero activa la nube: Inicio → ☁️ Nube y usuarios.', null);
         return;
@@ -10781,7 +10782,8 @@ async function syVistaCarpetas(recargar) {
     const q = ((document.getElementById('sy-cq') || {}).value || '').trim().toUpperCase();
     const lista = Object.entries(syCarpetas || {}).sort((a, b) => (b[1].ts || 0) - (a[1].ts || 0));
     const fh = ts => ts ? new Date(ts).toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' }) + ' · ' + new Date(ts).toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' }) : '';
-    let h = '<div class="sy-p">Escoge la base que te toca contar y tócala para cargarla en tu INVENTARIO.</div>';
+    const _modNom = { comp:'INVENTARIO', alm:'ALMACÉN', stock:'CONSULTAR PRECIO Y STOCK' }[modoActual] || 'INVENTARIO';
+    let h = '<div class="sy-p">Toca <b>CARGAR</b> en el archivo para usarlo en <b>' + _modNom + '</b>. Las mismas carpetas se ven en todos los módulos.</div>';
     if (puede) h += '<div class="sy-card"><div class="sy-h">📤 Subir bases para el equipo</div><div class="sy-grid2">'
         + '<button class="sy-btn" onclick="sySubirCarpeta(true)">📁 Subir carpeta</button>'
         + '<button class="sy-btn sy-dark" onclick="sySubirCarpeta(false)">📄 Subir archivos</button></div>'
@@ -10921,8 +10923,29 @@ async function _sySubirArchivos(nombre, files, reemplazar) {
         syVistaCarpetas(true);
     } catch(e) { hideLoading(); showToast('❌ No se pudo subir: ' + e.message, '#B71C1C', 4000); }
 }
-async function syCargarDeCarpeta(cid, fid) {
-    if (syConteoId) return showToast('☁️ Estás en un conteo compartido. Sal del conteo para cargar otra base.', '#1565C0', 3500);
+// v27.16: el archivo se carga en el módulo donde estás (inventario, almacén o consultar precio/stock)
+const _SY_TIPOS_MOD = {
+    comp:  [['guia-comp', '📄 Guía / Stock WAMA → maestro de inventario']],
+    alm:   [['almacen', '📊 Inventario de almacén'], ['guia-alm', '📄 Guía de movimientos / Stock WAMA']],
+    stock: [['guia-cs', '📦 Base de stock'], ['precios', '💰 Memorándum de precios'], ['preciosMayor', '🏷️ Precios por mayor']]
+};
+function syCargarDeCarpeta(cid, fid) {
+    if (!pPuede('cargar')) return syDenegar();
+    const f = ((syCarpetas[cid] || {}).files || {})[fid]; if (!f) return;
+    const mod = _SY_TIPOS_MOD[modoActual] ? modoActual : 'comp';
+    const tipos = _SY_TIPOS_MOD[mod];
+    if (tipos.length === 1) return _syCargarDeCarpetaTipo(cid, fid, tipos[0][0]);
+    // Sugerir el tipo según el nombre del archivo
+    const N = String(f.n).toUpperCase();
+    const sug = mod === 'stock' ? (/MEMO/.test(N) ? 'precios' : /MAYOR/.test(N) ? 'preciosMayor' : 'guia-cs') : (/GUIA|MOV/.test(N) ? 'guia-alm' : 'almacen');
+    syModal('carpetas', '<div class="sy-card"><div class="sy-h">📄 ' + syEsc((f.p ? f.p + ' / ' : '') + f.n) + '</div><div class="sy-p">¿Qué es este archivo?</div>'
+        + tipos.map(([t, lbl]) => '<button class="sy-btn' + (t === sug ? '' : ' sy-dark') + '" onclick="_syCargarDeCarpetaTipo(\'' + cid + '\',\'' + fid + '\',\'' + t + '\')">' + lbl + (t === sug ? ' ✓' : '') + '</button>').join('')
+        + '<button class="sy-btn sy-sec" onclick="syVistaCarpetas(false)">← Volver</button></div>');
+}
+async function _syCargarDeCarpetaTipo(cid, fid, tipo) {
+    if (!pPuede('cargar')) return syDenegar();
+    const esComp = tipo === 'guia-comp';
+    if (esComp && syConteoId) return showToast('☁️ Estás en un conteo compartido. Sal del conteo para cargar otra base.', '#1565C0', 3500);
     const f = ((syCarpetas[cid] || {}).files || {})[fid]; if (!f) return;
     const go = async () => {
         showLoading('Descargando ' + f.n + '…');
@@ -10931,13 +10954,14 @@ async function syCargarDeCarpeta(cid, fid) {
             if (!b64) throw new Error('El archivo ya no está en la nube');
             const ab = _syB64ToAb(b64);
             hideLoading(); syCerrarModal();
-            if (modoActual !== 'comp') seleccionarModo('comp');
+            const _modDe = esComp ? 'comp' : (tipo === 'almacen' || tipo === 'guia-alm') ? 'alm' : 'stock';
+            if (modoActual !== _modDe) seleccionarModo(_modDe);
             _syNoAutoHasta = Date.now() + 120000;   // es TU base: no se reenvía a los demás
-            driveArchivoNombre = f.n; driveCurrentTipo = 'guia-comp';
-            driveProcesar(ab, 'guia-comp');
+            driveArchivoNombre = f.n; driveCurrentTipo = tipo;
+            driveProcesar(ab, tipo);
         } catch(e) { hideLoading(); showToast('❌ ' + e.message, '#B71C1C', 4000); }
     };
-    if (historial.length) mostrarConfirm('Cargar base', 'Vas a cargar "' + (f.p ? f.p + ' / ' : '') + f.n + '". Tienes ' + historial.length + ' lecturas en tu conteo actual (se mantienen). ¿Continuar?', go);
+    if (esComp && historial.length) mostrarConfirm('Cargar base', 'Vas a cargar "' + (f.p ? f.p + ' / ' : '') + f.n + '". Tienes ' + historial.length + ' lecturas en tu conteo actual (se mantienen). ¿Continuar?', go);
     else go();
 }
 function syBorrarCarpeta(cid) {
@@ -10966,7 +10990,7 @@ let _syCarpAvisado = null;
         if (_syCarpAvisado === null) { _syCarpAvisado = v; return; }   // primera lectura: no avisar lo viejo
         if (v > _syCarpAvisado) {
             _syCarpAvisado = v;
-            if (syMeta.carpetasPorN && sySes && syMeta.carpetasPorN !== sySes.n) showToast('📁 ' + syMeta.carpetasPorN + ' subió bases a "' + (syMeta.carpetasN || '') + '". Ábrelas en INVENTARIO → ☁️ Bases compartidas.', '#1565C0', 5000);
+            if (syMeta.carpetasPorN && sySes && syMeta.carpetasPorN !== sySes.n) { if (pPuede('cargar')) showToast('📁 ' + syMeta.carpetasPorN + ' subió bases a "' + (syMeta.carpetasN || '') + '". Ábrelas en ☰ OPC. → 📁 Bases compartidas.', '#1565C0', 5000); }
             const m = document.getElementById('sy-modal'); if (m && m.style.display === 'flex' && m.dataset.vista === 'carpetas') syVistaCarpetas(true);
         }
     };
@@ -10978,11 +11002,15 @@ let _syCarpAvisado = null;
         let b = document.getElementById('btn-sy-carpetas');
         if (!b) {
             b = document.createElement('button'); b.id = 'btn-sy-carpetas'; b.className = 'sy-menu-btn';
-            b.innerHTML = '📁 Bases compartidas (escoger mi base)'; b.onclick = syAbrirCarpetas;
+            b.innerHTML = '📁 Bases compartidas (carpetas)'; b.onclick = syAbrirCarpetas;
             const ref = document.getElementById('btn-sy-conteo') || document.getElementById('menu-sec-alm');
             if (ref && ref.parentNode === mc) mc.insertBefore(b, ref); else mc.appendChild(b);
         }
-        b.style.display = (typeof modoActual !== 'undefined' && modoActual === 'comp') ? '' : 'none';
+        // v27.16: en INVENTARIO, ALMACÉN y CONSULTAR PRECIO/STOCK; se ubica dentro de la sección del módulo
+        const m = (typeof modoActual !== 'undefined') ? modoActual : null;
+        const ancla = { comp: document.getElementById('btn-sy-conteo') || document.getElementById('menu-sec-alm'), alm: document.getElementById('btn-sy-alm') || document.getElementById('menu-sec-stock'), stock: document.getElementById('btn-sy-bases') || document.getElementById('btn-stock-borrar') }[m];
+        if (ancla && ancla.parentNode === mc && b.nextSibling !== ancla) mc.insertBefore(b, ancla);
+        b.style.display = (m === 'comp' || m === 'alm' || m === 'stock') ? '' : 'none';
     };
     const _sm = window.seleccionarModo;
     if (typeof _sm === 'function') window.seleccionarModo = function() { const r = _sm.apply(this, arguments); ponerBoton(); return r; };
