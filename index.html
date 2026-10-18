@@ -1535,7 +1535,82 @@
         #dl-scan { width: 100%; box-sizing: border-box; padding: 10px 12px; border: 2px solid #2E7D32; border-radius: 12px; font-size: 14px; font-weight: 700; font-family: 'Inter', sans-serif; text-align: center; background: #F3FAF3; letter-spacing: 0.5px; }
         #dl-scan:focus { outline: none; box-shadow: 0 0 0 4px rgba(46,125,50,0.18) !important; border-color: #2E7D32 !important; }
         body.modo-oscuro #dl-scan { background: #14301A !important; border-color: #2E7D32 !important; }
-    </style>
+    
+        /* v27.04: modal cambios de precio */
+        body.modo-oscuro #modal-cs-cambios .cs-cmb-box { background:#1E2126 !important; }
+        body.modo-oscuro #modal-cs-cambios .cs-cmb-box > div:first-child > div { color:#F3F4F6 !important; }
+        body.modo-oscuro #modal-cs-cambios select, body.modo-oscuro #modal-cs-cambios input { background:#2A2D34 !important; color:#F3F4F6 !important; border-color:#383C45 !important; }
+        body.modo-oscuro #modal-cs-cambios .cs-cmb-item { background:#2A2D34 !important; }
+        body.modo-oscuro #modal-cs-cambios .cs-cmb-item div { color:#E6E8EC; }
+        body.modo-oscuro #modal-cs-cambios .cs-cmb-item s { color:#8A8F99 !important; }
+
+        /* ══ v27.06: NUBE Y USUARIOS ══ */
+        #sy-chip { display:block; margin:10px auto 0; padding:8px 14px; border-radius:999px; border:1px solid #E3E5EA; background:#fff; color:#1B1D22; font-family:'Inter',sans-serif; font-size:12px; cursor:pointer; box-shadow:0 2px 8px rgba(27,29,34,0.06); max-width:92%; }
+        #sy-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.72); z-index:9870; align-items:flex-end; justify-content:center; }
+        #sy-modal .sy-box { background:#fff; border-radius:20px 20px 0 0; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; padding:16px 14px 26px; box-shadow:0 -8px 32px rgba(0,0,0,0.2); font-family:'Inter',sans-serif; color:#1B1D22; }
+        .sy-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+        #sy-tit { font-family:'Barlow',sans-serif; font-size:18px; font-weight:900; letter-spacing:1px; }
+        .sy-x { background:#F0F0F0; border:none; width:32px; height:32px; border-radius:50%; font-size:16px; cursor:pointer; color:#111; }
+        .sy-card { background:#F7F8FA; border:1px solid #E3E5EA; border-radius:14px; padding:12px; margin-bottom:10px; }
+        .sy-card summary { font-weight:800; font-size:13px; cursor:pointer; }
+        .sy-h { font-weight:800; font-size:13px; margin-bottom:6px; }
+        .sy-p { font-size:12px; color:#4A4E58; line-height:1.45; margin-bottom:6px; }
+        .sy-ol { font-size:12px; color:#1B1D22; padding-left:18px; line-height:1.5; margin:8px 0; }
+        .sy-pre { background:#1B1D22; color:#E6E8EC; border-radius:10px; padding:10px; font-family:Consolas,monospace; font-size:11px; white-space:pre-wrap; word-break:break-all; margin:6px 0; }
+        .sy-cod { font-size:10px; max-height:70px; overflow:auto; }
+        .sy-in { width:100%; box-sizing:border-box; padding:11px 12px; border:1.5px solid #D9DCE1; border-radius:10px; font-family:'Inter',sans-serif; font-size:14px; margin-bottom:8px; background:#fff; color:#111; }
+        .sy-btn { width:100%; padding:12px; border:none; border-radius:10px; background:#C62828; color:#fff; font-family:'Barlow',sans-serif; font-size:14px; font-weight:800; letter-spacing:0.5px; cursor:pointer; margin-bottom:8px; }
+        .sy-btn[disabled] { opacity:0.45; cursor:not-allowed; }
+        .sy-btn.sy-dark { background:#1B1D22; }
+        .sy-btn.sy-sec { background:transparent; color:#1B1D22; border:1.5px solid #1B1D22; }
+        .sy-btn.sy-wa { background:#25D366; }
+        .sy-btn.sy-mini { width:auto; padding:8px 12px; font-size:12px; margin:0; white-space:nowrap; }
+        .sy-row { display:flex; gap:10px; align-items:center; justify-content:space-between; }
+        .sy-grid { display:grid; grid-template-columns:1fr; gap:0; }
+        .sy-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+        .sy-urow { display:flex; align-items:center; gap:6px; padding:8px 0; border-bottom:1px solid #E3E5EA; }
+        .sy-urow:last-child { border-bottom:none; }
+        .sy-uname { flex:1; min-width:0; font-size:13px; }
+        .sy-sel { padding:6px; border:1.5px solid #D9DCE1; border-radius:8px; font-size:12px; background:#fff; color:#111; }
+        .sy-ib { background:none; border:none; font-size:16px; cursor:pointer; padding:4px; }
+        .sy-tag { font-size:10px; font-weight:800; background:#C62828; color:#fff; border-radius:6px; padding:1px 5px; }
+        .sy-cnt { font-family:'Barlow Condensed',sans-serif; font-size:20px; font-weight:800; color:#C62828; }
+        .sy-kpis { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; margin-top:6px; }
+        .sy-kpis div { background:#fff; border:1px solid #E3E5EA; border-radius:10px; padding:8px; text-align:center; }
+        .sy-kpis b { display:block; font-family:'Barlow Condensed',sans-serif; font-size:22px; color:#C62828; }
+        .sy-kpis span { font-size:10px; color:#4A4E58; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; }
+        .sy-add { margin-top:10px; padding-top:10px; border-top:1px dashed #D9DCE1; }
+        .sy-menu-btn { }
+        #sy-login { display:none; position:fixed; inset:0; z-index:99990; background:linear-gradient(160deg,#FDECEA,#F3F4F6 55%); align-items:center; justify-content:center; padding:16px; font-family:'Inter',sans-serif; }
+        .sy-lbox { background:#fff; border-radius:20px; padding:22px 18px; width:100%; max-width:380px; box-shadow:0 10px 40px rgba(0,0,0,0.12); }
+        .sy-ltit { font-family:'Bebas Neue','Barlow',sans-serif; font-size:34px; text-align:center; letter-spacing:1px; color:#1B1D22; }
+        .sy-lsub { text-align:center; font-size:12px; color:#4A4E58; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin:4px 0 14px; }
+        .sy-lus { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; max-height:46vh; overflow:auto; }
+        .sy-lu { border:2px solid #E3E5EA; background:#fff; border-radius:12px; padding:10px 8px; cursor:pointer; text-align:center; font-family:'Inter',sans-serif; color:#1B1D22; }
+        .sy-lu b { display:block; font-size:14px; }
+        .sy-lu span { font-size:10px; color:#8A8F99; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
+        .sy-lu.sel { border-color:#C62828; background:#FDECEA; }
+        .sy-lfoot { text-align:center; font-size:11px; color:#8A8F99; margin-top:6px; }
+        .sy-lfoot a { color:#1565C0; cursor:pointer; text-decoration:underline; }
+        /* Permisos por rol (clase en <html>) */
+        html.rol-vendedor #btn-carga-comp, html.rol-vendedor #btn-comp-guardar, html.rol-vendedor #btn-comp-reiniciar,
+        html.rol-vendedor #btn-carga-alm, html.rol-vendedor #btn-alm-guardar, html.rol-vendedor #btn-alm-exportar, html.rol-vendedor #btn-alm-reiniciar,
+        html.rol-vendedor #btn-carga-cs, html.rol-vendedor #btn-stock-export, html.rol-vendedor #btn-stock-borrar,
+        html.rol-vendedor #comp-file-btns,
+        html.rol-vendedor button[onclick^="resetearApp"], html.rol-vendedor button[onclick^="abrirConfigPIN"],
+        html.rol-supervisor button[onclick^="resetearApp"], html.rol-supervisor button[onclick^="abrirConfigPIN"] { display:none !important; }
+        /* Modo oscuro */
+        body.modo-oscuro #sy-chip { background:#2A2D34; border-color:#383C45; color:#E6E8EC; }
+        body.modo-oscuro #sy-modal .sy-box, body.modo-oscuro .sy-lbox { background:#1E2126; color:#E6E8EC; }
+        body.modo-oscuro .sy-card, body.modo-oscuro .sy-kpis div { background:#2A2D34; border-color:#383C45; }
+        body.modo-oscuro .sy-p { color:#B8BCC4; }
+        body.modo-oscuro .sy-in, body.modo-oscuro .sy-sel { background:#1E2126; color:#E6E8EC; border-color:#383C45; }
+        body.modo-oscuro .sy-btn.sy-sec { color:#E6E8EC; border-color:#E6E8EC; }
+        body.modo-oscuro .sy-urow { border-color:#383C45; }
+        body.modo-oscuro .sy-lu { background:#2A2D34; border-color:#383C45; color:#E6E8EC; }
+        body.modo-oscuro .sy-x { background:#383C45; color:#fff; }
+        body.modo-oscuro #sy-tit, body.modo-oscuro .sy-ltit { color:#F3F4F6; }
+</style>
 </head>
 <body class="modo-comp">
 
@@ -1548,7 +1623,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.02 — 11/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.06 — 18/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -1648,6 +1723,7 @@
             <button id="btn-stock-buscar"  class="hidden" onclick="csBuscar();toggleMenu()">🔍 Buscar Artículo</button>
             <button id="btn-stock-export" class="hidden" onclick="csExportarExcel();toggleMenu()">📊 Exportar stock a Excel</button>
             <button id="btn-cs-libros"     class="hidden" onclick="csVerLibros();toggleMenu()">📚 Libros de precios cargados</button>
+            <button id="btn-cs-cambios"    class="hidden" onclick="csVerCambiosPrecio();toggleMenu()">🔔 Cambios de precio (antes / ahora)</button>
             <button id="btn-stock-borrar"  class="hidden" onclick="csBorrarDB();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Borrar base guardada</button>
             <div class="menu-section">⚙️ App</div>
             <button onclick="abrirConfigPIN();toggleMenu()">🔐 Configurar PIN de seguridad</button>
@@ -1994,7 +2070,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.02 — 11/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.06 — 18/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -2210,7 +2286,7 @@ function descargarExcel(wb, nombre, resumen='') {
         const baseName   = nombre.replace(/\.xlsx?$/i, '');
         const fileNombre = baseName + '.xlsx';
         const mimeXlsx   = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-        const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const wbout = (wb && wb._bytes) ? wb._bytes : XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
         const file  = new File([new Uint8Array(wbout)], fileNombre, { type: mimeXlsx });
 
         // Guardar en caché para poder compartir por WhatsApp después
@@ -2467,7 +2543,7 @@ function seleccionarModo(modo) {
         $s('menu-sec-comp').classList.add('hidden');
         ['btn-carga-alm','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
         const secStock=$('menu-sec-stock'); if(secStock) secStock.classList.add('hidden');
-        ['btn-modos-cs','btn-carga-cs','btn-stock-buscar','btn-cs-libros','btn-stock-export','btn-stock-borrar'].forEach(id => { const el=$(id); if(el) { el.classList.add('hidden'); el.style.display='none'; } });
+        ['btn-modos-cs','btn-carga-cs','btn-stock-buscar','btn-cs-libros','btn-cs-cambios','btn-stock-export','btn-stock-borrar'].forEach(id => { const el=$(id); if(el) { el.classList.add('hidden'); el.style.display='none'; } });
         const bgl = $('btn-guardar-lote'); if(bgl) bgl.style.display = 'block';
 
         const scannerEl2 = $('scanner');
@@ -2495,7 +2571,7 @@ function seleccionarModo(modo) {
             document.body.className = 'modo-stock' + (localStorage.getItem('pieers_luz') === 'oscuro' ? ' modo-oscuro' : '');
             $s('badge-txt').textContent = 'PRECIO/STOCK';
             const secSt=$('menu-sec-stock'); if(secSt) secSt.classList.remove('hidden');
-            ['btn-modos-cs','btn-carga-cs','btn-stock-buscar','btn-cs-libros','btn-stock-export','btn-stock-borrar'].forEach(id => {
+            ['btn-modos-cs','btn-carga-cs','btn-stock-buscar','btn-cs-libros','btn-cs-cambios','btn-stock-export','btn-stock-borrar'].forEach(id => {
                 const el=$(id); if(el) { el.classList.remove('hidden'); el.style.display = id==='btn-modos-cs' ? 'flex' : ''; }
             });
             const vs=$('vista-stock'); if(vs) vs.style.display='flex';
@@ -3626,21 +3702,14 @@ function almRestaurarSnap(idx) { almReanudarSnap(idx); }
 function almExportarSnap(idx) {
     const snap = almSnapshots[idx];
     const data = snap.data || {};
-    const ws1Data = [['CODIGO','DESCRIPCION','STOCK']];
-    Object.entries(data).sort((a,b)=>b[1].stock-a[1].stock).forEach(([c,v])=>ws1Data.push([c,v.desc||'',v.stock]));
-    const ws2Data = [['#','CODIGO','TIPO','CANTIDAD','STOCK_POST']];
-    (snap.movs||[]).forEach((mv,i)=>ws2Data.push([i+1,mv.cod,mv.tipo,mv.cant,mv.stockPost]));
-    const wb = XLSX.utils.book_new();
-    const ws1 = XLSX.utils.aoa_to_sheet(ws1Data); ws1['!cols']=[{wch:18},{wch:55},{wch:12}];
-    const ws2 = XLSX.utils.aoa_to_sheet(ws2Data); ws2['!cols']=[{wch:6},{wch:18},{wch:10},{wch:10},{wch:12}];
-    XLSX.utils.book_append_sheet(wb,ws1,'STOCK');
-    XLSX.utils.book_append_sheet(wb,ws2,'MOVIMIENTOS');
+    const entries = Object.entries(data).sort((a,b)=>b[1].stock-a[1].stock).map(([c,v])=>[c,v.desc||'',v.stock]);
+    const spec = xlSpecAlmacen('Almacén — '+snap.nombre, 'Informe guardado: '+snap.fecha, entries, (snap.movs||[]), 'STOCK');
     const resSnap = `📦 ALMACÉN: ${snap.nombre}\n` +
         `• Códigos: ${(snap.totalCodigos||0).toLocaleString()}\n` +
         `• Unidades: ${(snap.totalUnidades||0).toLocaleString()}\n` +
         `• Movimientos: ${(snap.totalMovimientos||0).toLocaleString()}\n` +
         `• Fecha: ${snap.fecha}`;
-    descargarExcel(wb, snap.nombre.replace(/[^a-zA-Z0-9_\-]/g,'_')+'.xlsx', resSnap);
+    xlExportar(spec, snap.nombre.replace(/[^a-zA-Z0-9_\-]/g,'_')+'.xlsx', resSnap);
 }
 
 function almEliminarSnap(idx) {
@@ -3654,22 +3723,15 @@ function almEliminarSnap(idx) {
 
 function almExportar() {
     if (!almMap.size) { showToast('⚠️ Sin inventario', '#E65100'); toggleMenu(); return; }
-    const ws1Data = [['CODIGO 13 DIGITOS','DESCRIPCION','STOCK ACTUAL']];
-    [...almMap.entries()].sort((a,b)=>b[1].stock-a[1].stock).forEach(([c,v])=>ws1Data.push([c,v.desc||'',v.stock]));
-    const ws2Data = [['#','CODIGO','TIPO','CANTIDAD','STOCK RESULTANTE']];
-    almMovs.forEach((mv,i)=>ws2Data.push([i+1,mv.cod,mv.tipo,mv.cant,mv.stockPost]));
-    const wb = XLSX.utils.book_new();
-    const ws1 = XLSX.utils.aoa_to_sheet(ws1Data); ws1['!cols']=[{wch:18},{wch:55},{wch:14}];
-    const ws2 = XLSX.utils.aoa_to_sheet(ws2Data); ws2['!cols']=[{wch:6},{wch:18},{wch:10},{wch:10},{wch:16}];
-    XLSX.utils.book_append_sheet(wb,ws1,'STOCK ACTUAL');
-    XLSX.utils.book_append_sheet(wb,ws2,'MOVIMIENTOS');
+    const entries = [...almMap.entries()].sort((a,b)=>b[1].stock-a[1].stock).map(([c,v])=>[c,v.desc||'',v.stock]);
+    const spec = xlSpecAlmacen('Almacén PIEERS PRO', 'Generado: '+new Date().toLocaleString('es-PE'), entries, almMovs, 'STOCK ACTUAL');
     const total2 = [...almMap.values()].reduce((a,v)=>a+v.stock,0);
     const resAlm = `📦 ALMACÉN PIEERS PRO\n` +
         `• Códigos: ${almMap.size.toLocaleString()}\n` +
         `• Unidades totales: ${total2.toLocaleString()}\n` +
         `• Movimientos: ${almMovs.length.toLocaleString()}\n` +
         `• Fecha: ${new Date().toLocaleDateString('es')}`;
-    descargarExcel(wb,'almacen_pieers_'+new Date().toISOString().slice(0,10)+'.xlsx', resAlm);
+    xlExportar(spec,'almacen_pieers_'+new Date().toISOString().slice(0,10)+'.xlsx', resAlm);
     toggleMenu(); showToast('✅ Excel exportado','#111');
 }
 
@@ -4038,13 +4100,9 @@ function convertirStockAResultados(filas) {
 function convertirStockDesdeFilas(filas) {
     const res=convertirStockAResultados(filas);
     if (!res.length) { hideLoading(); showToast('⚠️ Sin productos válidos','#E65100'); return; }
-    const wsData=[['CODIGO 13 DIGITOS','DESCRIPCION','TOTAL']];
-    res.forEach(r=>wsData.push([r.codigoUnico,r.descripcion,r.cantidad]));
-    const wb=XLSX.utils.book_new();
-    const ws=XLSX.utils.aoa_to_sheet(wsData); ws['!cols']=[{wch:18},{wch:55},{wch:8}];
-    XLSX.utils.book_append_sheet(wb,ws,'INVENTARIO PIEERS');
+    const spec = xlSpecInventario(res);
     const resInv = `📊 INVENTARIO PIEERS\n• ${res.length.toLocaleString()} líneas generadas\n• Fecha: ${new Date().toLocaleDateString('es')}`;
-    descargarExcel(wb,'inventario_pieers_'+new Date().toISOString().slice(0,10)+'.xlsx', resInv);
+    xlExportar(spec,'inventario_pieers_'+new Date().toISOString().slice(0,10)+'.xlsx', resInv);
     hideLoading(); toggleMenu(); beep(880,0.1);
     showToast(`✅ ${res.length.toLocaleString()} líneas → descargado`,'#111');
 }
@@ -4306,7 +4364,9 @@ function resetearApp() {
             // Ticket: ventas guardadas y estado del "día 50%"
             'tk_tickets_v1', 'tk_50off_v1',
             // Nube: lista y memoria de archivos descargados (v26.95)
-            'pieers_drive_lista', 'pieers_cache_keys'
+            'pieers_drive_lista', 'pieers_cache_keys',
+            // Cambios de precio entre libros (v27.04)
+            'pieers_cs_libros_raw', 'pieers_cs_tda_keys'
         ].forEach(k => { try { localStorage.removeItem(k); } catch(e) {} });
         try { if (_pDB) { _pDB.close(); _pDB = null; } indexedDB.deleteDatabase('pieers_cache'); } catch(e) {}
 
@@ -4329,20 +4389,7 @@ function exportarExcel(idx) {
     const lote=lotes[idx];
     const cA={};
     lote.datosLectura.forEach(c=>{cA[c]=(cA[c]||0)+1;});
-    const concilia=[];
-    Object.entries(lote.maestroSnapshot).forEach(([cod,v])=>{
-        const leido=cA[cod]||0, diff=leido-v.exp, est=diff<0?'FALTA':diff>0?'SOBRA':'OK';
-        const desc=(lote.descSnapshot&&lote.descSnapshot[cod])||descripcionMap.get(cod)||'';
-        const _mn=(lote.manual&&lote.manual[cod])||[];
-        concilia.push({'A - CODIGO':cod,'B - DESCRIPCION':desc,'C - STOCK_ESPERADO':v.exp,'D - CONTEO_REAL':leido,'E - ESTADO':est,'F - DIFERENCIA':Math.abs(diff),'G - INGRESO_MANUAL':_mn.reduce((a,m)=>a+m.cant,0)||'','H - OBSERVACION':_mn.map(m=>m.obs).filter(Boolean).join(' | ')});
-    });
-    Object.entries(cA).forEach(([cod,cant])=>{ if(!lote.maestroSnapshot.hasOwnProperty(cod)) concilia.push({'A - CODIGO':cod,'B - DESCRIPCION':descripcionMap.get(cod)||'','C - STOCK_ESPERADO':0,'D - CONTEO_REAL':cant,'E - ESTADO':'SOBRA','F - DIFERENCIA':cant}); });
-    const agrupad=Object.entries(cA).map(([cod,cant])=>({CODIGO:cod,DESCRIPCION:(lote.descSnapshot&&lote.descSnapshot[cod])||descripcionMap.get(cod)||'',CANTIDAD_TOTAL:cant}));
-    const wb=XLSX.utils.book_new();
-    const ws1=XLSX.utils.json_to_sheet(concilia); ws1['!cols']=[{wch:18},{wch:55},{wch:14},{wch:12},{wch:10},{wch:12},{wch:14},{wch:40}];
-    const ws2=XLSX.utils.json_to_sheet(agrupad);   ws2['!cols']=[{wch:18},{wch:55},{wch:14}];
-    XLSX.utils.book_append_sheet(wb,ws1,'CONCILIACION');
-    XLSX.utils.book_append_sheet(wb,ws2,'LECTURAS_CONSOLIDADAS');
+    const spec = xlSpecComparativo(lote, cA);
     const cAkeys = Object.keys(cA);
     let exOk=0, exFalta=0, exSobra=0;
     Object.entries(lote.maestroSnapshot).forEach(([c,v])=>{ const r=cA[c]||0; if(r===v.exp&&r>0) exOk++; else if(r<v.exp) exFalta++; else if(r>v.exp&&v.exp>0) exSobra++; });
@@ -4350,7 +4397,7 @@ function exportarExcel(idx) {
         `• Total lecturas: ${lote.datosLectura.length.toLocaleString()}\n` +
         `• Exactos ✅: ${exOk} | Faltantes ⚠️: ${exFalta} | Sobrantes 📦: ${exSobra}\n` +
         `• Fecha: ${lote.fecha}`;
-    descargarExcel(wb,`${lote.nombre}_CONCILIADO.xlsx`, resComp);
+    xlExportar(spec,`${lote.nombre}_CONCILIADO.xlsx`, resComp);
 }
 
 // ── MODAL LOTES ──
@@ -5335,6 +5382,8 @@ function csParsePreciosXLSX(wb, nombreLibro) {
     const LOCAL = 'CAJAMARCA';
     const libroId = nombreLibro || 'Memorandum';
     let nuevos = 0, actualizados = 0;
+    _csRawActual = {}; // v27.04: precios propios de este libro (para comparar antes/ahora)
+    _csTdaActual = {}; // v27.05: precios por tienda de este libro
     // Snapshot de precios ANTES de cargar este libro (para detectar cambios)
     const preciosAntes = {};
     Object.keys(csPreciosDB).forEach(k => {
@@ -5378,6 +5427,7 @@ function csParsePreciosXLSX(wb, nombreLibro) {
         if (typeof entry.mayorLibro  !== 'string') entry.mayorLibro  = null;
         if (typeof entry.ofertaLibro !== 'string') entry.ofertaLibro = null;
         const antes = preciosAntes[cod] || {menor:0,mayor:0,oferta:0,etiqueta:0};
+        _csRawReg(cod, etiq, menor, mayor, oferta, tiendas); // v27.04
 
         // Registrar libro de origen (uno solo por libro, sin duplicar)
         if (!entry.libros.includes(libroId)) entry.libros.push(libroId);
@@ -5564,6 +5614,7 @@ function csParsePreciosXLSX(wb, nombreLibro) {
                          sheetName.includes('tiendas') || sheetName.includes('Tda') ||
                          shU.includes('OFERTA') || shU.includes('EJEC') ||
                          (shU.includes('COMBO') && sheetName.toLowerCase().includes('tda'));
+        _csTdaHoja(rows, sheetName, baseTipo); // v27.05: precios por tienda
 
         // Pasada única: separar filas de Cajamarca y filas nacionales
         // Usar Map para acceso O(1) en vez de dos forEach sobre 55k filas
@@ -5714,7 +5765,9 @@ function csParsePreciosXLSX(wb, nombreLibro) {
                 _pMayor = 0;
                 _pOferta = pMin; // precio oferta = el precio más bajo de la fila
             }
+            _csRawDescTmp = String(r[codIdx+1]||'').trim(); // v27.04: descripción del artículo (articname)
             reg(cod, _tipo, etiq, _pMenor, _pMayor, _pOferta, nombre, esTienda && !esRespaldoNacional);
+            _csRawDescTmp = '';
             // Marcar el entry como oferta para que la UI solo muestre cuadro OFERTA
             if (esEstadoOF && csPreciosDB[cod]) {
                 csPreciosDB[cod].esOferta = true;
@@ -5756,6 +5809,8 @@ function csParsePreciosXLSX(wb, nombreLibro) {
                        articulos: totalActual, nuevos, actualizados};
     if (idx >= 0) csLibrosCargados[idx] = infoLibro;
     else csLibrosCargados.push(infoLibro);
+    _csRawFin(libroId); // v27.04
+    _csTdaFin(libroId); // v27.05
 
     return {total: totalActual, nuevos, actualizados};
 }
@@ -6148,26 +6203,10 @@ function csExportarExcel() {
     if (!csStockDB || !Object.keys(csStockDB).length) {
         showToast('⚠️ No hay base cargada', '#E65100'); return;
     }
-    // Construir datos para Excel
-    const rows = [['CÓDIGO','DESCRIPCIÓN','COLOR','S','M','L','XL','XS','2X','4X','3X','ST','TOTAL']];
-    Object.keys(csStockDB).forEach(art => {
-        const d = csStockDB[art];
-        const sizes = d.sizes || [];
-        (d.colors || []).forEach(col => {
-            const fila = [art, d.desc||'', col.name||col.code];
-            ['S','M','L','XL','XS','2X','4X','3X','ST'].forEach(t => {
-                fila.push(col.stocks[t] || 0);
-            });
-            fila.push(col.total || 0);
-            rows.push(fila);
-        });
-    });
-    // Generar Excel con XLSX
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet(rows);
-    XLSX.utils.book_append_sheet(wb, ws, 'Stock');
-    XLSX.writeFile(wb, 'PIEERS_Stock_' + new Date().toLocaleDateString('es-PE').replace(/\//g,'-') + '.xlsx');
-    showToast('✅ Excel exportado', '#1B5E20');
+    const spec = xlSpecStockCS();
+    xlExportar(spec, 'PIEERS_Stock_' + new Date().toLocaleDateString('es-PE').replace(/\//g,'-') + '.xlsx',
+        '📦 CONSULTAR STOCK PIEERS\n• Fecha: ' + new Date().toLocaleDateString('es'));
+
 }
 
 function csCheckPromoColor(barcode) {
@@ -7529,6 +7568,7 @@ function csEliminarLibro(nombre) {
 
 function csEjecutarEliminarLibro(nombre) {
     csLibrosCargados = csLibrosCargados.filter(l => l.nombre !== nombre);
+    delete csLibrosRaw[nombre]; csRawGuardar(); _csTdaPodar(); // v27.04/27.05
     let afectados = 0;
     Object.keys(csPreciosDB).forEach(cod => {
         const e = csPreciosDB[cod];
@@ -7559,6 +7599,7 @@ function csLimpiarPrecios() {
     csPreciosDB = {};
     csLibrosCargados = [];
     csPromoColorDB = {};
+    csLibrosRaw = {}; try { localStorage.removeItem(CS_RAW_KEY); } catch(e) {} _csTdaPodar(); // v27.04/27.05
     csSavePreciosLocal();
     showToast('🗑️ Precios eliminados', '#555');
     csSetStatus('Precios eliminados. Carga uno o más Memorandums.');
@@ -8334,7 +8375,30 @@ function driveProcesar(ab, tipo) {
     <div style="font-size:11px;color:#111111;margin-bottom:14px;letter-spacing:0.3px;">Cada Excel que cargas (Memorandum Junio, Casacas, etc.) se acumula aquí. El sistema siempre muestra el precio más bajo entre todos los libros y avisa si un precio cambió.</div>
     <div id="cs-libros-lista" style="display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1;"></div>
     <button onclick="document.getElementById('cs-precio-input').click();document.getElementById('modal-cs-libros').style.display='none'" style="margin-top:14px;background:#E65100;color:#fff;border:none;border-radius:10px;padding:13px;font-family:'Barlow',sans-serif;font-size:14px;font-weight:800;letter-spacing:0.5px;cursor:pointer;flex-shrink:0;">➕ CARGAR OTRO LIBRO DE PRECIOS</button>
+    <button onclick="document.getElementById('modal-cs-libros').style.display='none';csVerCambiosPrecio()" style="margin-top:8px;background:#1B1D22;color:#fff;border:none;border-radius:10px;padding:12px;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;letter-spacing:0.5px;cursor:pointer;flex-shrink:0;">🔔 VER CAMBIOS DE PRECIO (ANTES / AHORA)</button>
     <button onclick="csConfirmarLimpiarPrecios()" style="margin-top:8px;background:transparent;color:#c62828;border:1.5px solid #c62828;border-radius:10px;padding:10px;font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.5px;cursor:pointer;flex-shrink:0;">🗑️ Borrar todos los libros de precios</button>
+  </div>
+</div>
+
+<div id="modal-cs-cambios" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9850;align-items:flex-end;justify-content:center;padding:0;">
+  <div class="cs-cmb-box" style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:18px 14px 28px;box-shadow:0 -8px 32px rgba(0,0,0,0.2);height:88vh;display:flex;flex-direction:column;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-shrink:0;">
+      <div style="font-family:'Barlow',sans-serif;font-size:18px;font-weight:900;color:#111;letter-spacing:1px;">🔔 CAMBIOS DE PRECIO</div>
+      <button onclick="document.getElementById('modal-cs-cambios').style.display='none'" style="background:#F0F0F0;border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:#111111;">✕</button>
+    </div>
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-shrink:0;">
+      <div style="flex:1;min-width:0;"><div style="font-size:9px;font-weight:800;color:#8A8F99;letter-spacing:1px;margin-bottom:2px;">ANTES</div>
+        <select id="cs-cmb-antes" onchange="csCambiosRefrescar()" style="width:100%;padding:8px 6px;border:1.5px solid #D9DCE1;border-radius:9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;background:#fff;color:#111;"></select></div>
+      <div style="font-size:18px;color:#C62828;padding-top:12px;">→</div>
+      <div style="flex:1;min-width:0;"><div style="font-size:9px;font-weight:800;color:#8A8F99;letter-spacing:1px;margin-bottom:2px;">AHORA</div>
+        <select id="cs-cmb-ahora" onchange="csCambiosRefrescar()" style="width:100%;padding:8px 6px;border:1.5px solid #D9DCE1;border-radius:9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;background:#fff;color:#111;"></select></div>
+    </div>
+    <div style="margin-bottom:8px;flex-shrink:0;"><div style="font-size:9px;font-weight:800;color:#8A8F99;letter-spacing:1px;margin-bottom:2px;">🏬 TIENDA</div>
+      <select id="cs-cmb-tienda" onchange="csCambiosRefrescar()" style="width:100%;padding:8px 6px;border:1.5px solid #D9DCE1;border-radius:9px;font-family:'Inter',sans-serif;font-size:12px;font-weight:700;background:#fff;color:#111;"><option value="">⭐ Mi tienda (Cajamarca + nacional)</option></select></div>
+    <div id="cs-cmb-resumen" style="display:flex;gap:5px;margin-bottom:8px;flex-shrink:0;"></div>
+    <input id="cs-cmb-buscar" type="text" placeholder="🔍 Buscar código o descripción" oninput="csRenderCambios()" autocomplete="off" style="width:100%;box-sizing:border-box;padding:9px 10px;border:1.5px solid #D9DCE1;border-radius:9px;font-family:'Inter',sans-serif;font-size:12px;margin-bottom:8px;flex-shrink:0;background:#fff;color:#111;">
+    <div id="cs-cmb-lista" style="display:flex;flex-direction:column;gap:6px;overflow-y:auto;flex:1;min-height:0;"></div>
+    <button onclick="csExportarCambiosExcel()" style="margin-top:10px;background:#1B1D22;color:#fff;border:none;border-radius:10px;padding:12px;font-family:'Barlow',sans-serif;font-size:14px;font-weight:800;letter-spacing:0.5px;cursor:pointer;flex-shrink:0;">📊 EXPORTAR CAMBIOS A EXCEL</button>
   </div>
 </div>
 
@@ -8762,4 +8826,1580 @@ function dlRefrescar() {
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar); else iniciar();
 })();
+
+
+// ══ v27.03 — EXCEL PROFESIONAL: colores, fórmulas vivas, filtros, formato condicional ══
+// Una sola "especificación" (hojas + celdas) se dibuja con ExcelJS (con estilos).
+// Si ExcelJS no carga (sin internet), se dibuja con SheetJS (sin colores pero con fórmulas).
+const XL_C = { rojo:'C62828', negro:'1B1D22', gris:'F3F4F6', borde:'D9DCE1', blanco:'FFFFFF' };
+const XL_EXCELJS_URLS = [
+    'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js',
+    'https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js'
+];
+
+function xlCargarExcelJS() {
+    if (window.ExcelJS) return Promise.resolve(true);
+    if (window._xlPromesa) return window._xlPromesa;
+    window._xlPromesa = new Promise(resolve => {
+        let i = 0;
+        const probar = () => {
+            if (window.ExcelJS) return resolve(true);
+            if (i >= XL_EXCELJS_URLS.length) return resolve(false);
+            const s = document.createElement('script');
+            s.src = XL_EXCELJS_URLS[i++];
+            s.onload = () => resolve(!!window.ExcelJS);
+            s.onerror = () => { s.remove(); probar(); };
+            document.head.appendChild(s);
+        };
+        probar();
+        setTimeout(() => resolve(!!window.ExcelJS), 20000);
+    }).then(ok => { if (!ok) window._xlPromesa = null; return ok; });
+    return window._xlPromesa;
+}
+
+// Estilos por nombre (ExcelJS)
+function _xlEstilo(nombre) {
+    const brd = { style:'thin', color:{ argb:'FF'+XL_C.borde } };
+    const bordes = { top:brd, left:brd, bottom:brd, right:brd };
+    const sol = c => ({ type:'pattern', pattern:'solid', fgColor:{ argb:'FF'+c } });
+    const F = (o) => Object.assign({ name:'Calibri', size:11 }, o || {});
+    switch (nombre) {
+        case 'title': return { font:F({ bold:true, size:16, color:{argb:'FFFFFFFF'} }), fill:sol(XL_C.rojo), alignment:{ vertical:'middle', horizontal:'left', indent:1 } };
+        case 'sub':   return { font:F({ italic:true, size:10, color:{argb:'FF4A4E58'} }), fill:sol('FDECEA'), alignment:{ vertical:'middle', horizontal:'left', indent:1 } };
+        case 'h':     return { font:F({ bold:true, color:{argb:'FFFFFFFF'} }), fill:sol(XL_C.negro), alignment:{ vertical:'middle', horizontal:'center', wrapText:true }, border:bordes };
+        case 'hr':    return { font:F({ bold:true, color:{argb:'FFFFFFFF'} }), fill:sol(XL_C.rojo), alignment:{ vertical:'middle', horizontal:'center', wrapText:true }, border:bordes };
+        case 'cod':   return { font:F({ name:'Consolas', size:10 }), alignment:{ vertical:'middle' }, border:bordes, numFmt:'@' };
+        case 't':     return { font:F(), alignment:{ vertical:'middle', wrapText:false }, border:bordes };
+        case 'obs':   return { font:F({ italic:true, color:{argb:'FF4A4E58'} }), alignment:{ vertical:'middle', wrapText:true }, border:bordes };
+        case 'n':     return { font:F(), alignment:{ vertical:'middle', horizontal:'right' }, border:bordes, numFmt:'#,##0;-#,##0;"·"' };
+        case 'n0':    return { font:F(), alignment:{ vertical:'middle', horizontal:'right' }, border:bordes, numFmt:'#,##0' };
+        case 'dif':   return { font:F({ bold:true }), alignment:{ vertical:'middle', horizontal:'right' }, border:bordes, numFmt:'+#,##0;[Red]-#,##0;0' };
+        case 'pct':   return { font:F({ bold:true }), alignment:{ vertical:'middle', horizontal:'right' }, border:bordes, numFmt:'0.0%' };
+        case 'c':     return { font:F(), alignment:{ vertical:'middle', horizontal:'center' }, border:bordes };
+        case 'est':   return { font:F({ bold:true }), alignment:{ vertical:'middle', horizontal:'center' }, border:bordes };
+        case 'k':     return { font:F({ bold:true }), fill:sol(XL_C.gris), alignment:{ vertical:'middle' }, border:bordes };
+        case 'big':   return { font:F({ bold:true, size:14, color:{argb:'FF'+XL_C.rojo} }), alignment:{ vertical:'middle', horizontal:'right' }, border:bordes, numFmt:'#,##0' };
+        case 'bigp':  return { font:F({ bold:true, size:14, color:{argb:'FF'+XL_C.rojo} }), alignment:{ vertical:'middle', horizontal:'right' }, border:bordes, numFmt:'0.0%' };
+        case 'tot':   return { font:F({ bold:true, color:{argb:'FFFFFFFF'} }), fill:sol(XL_C.negro), alignment:{ vertical:'middle', horizontal:'right' }, border:bordes, numFmt:'#,##0;-#,##0;0' };
+        case 'totl':  return { font:F({ bold:true, color:{argb:'FFFFFFFF'} }), fill:sol(XL_C.negro), alignment:{ vertical:'middle', horizontal:'left' }, border:bordes };
+    }
+    return { font:F(), border:bordes };
+}
+
+const _XL_CF = {
+    verde:  { f:'C8E6C9', t:'1B5E20' }, rojo:  { f:'FFCDD2', t:'9B1C1C' },
+    ambar:  { f:'FFE0B2', t:'E65100' }, azul:  { f:'BBDEFB', t:'0D47A1' },
+    gris:   { f:'F3F4F6', t:'111111' }, verdeS:{ f:'E8F5E9', t:'1B5E20' },
+    rojoS:  { f:'FDECEA', t:'9B1C1C' }, ambarS:{ f:'FFF3E0', t:'E65100' }
+};
+function _xlCfEstilo(k, bold) {
+    const c = _XL_CF[k];
+    return { fill:{ type:'pattern', pattern:'solid', bgColor:{ argb:'FF'+c.f }, fgColor:{ argb:'FF'+c.f } }, font:{ color:{ argb:'FF'+c.t }, bold:!!bold } };
+}
+
+function _xlColLetra(n) { let s=''; n++; while (n>0) { const m=(n-1)%26; s=String.fromCharCode(65+m)+s; n=Math.floor((n-1)/26); } return s; }
+
+// spec: { hojas:[ { name, tab, titulo, sub, plano, widths[], header[], hstyle[], rows[][], total[], filter, cf[] } ] }
+// celda = valor | { v, f, s, n }  (v=valor/resultado, f=fórmula sin "=", s=estilo, n=formato)
+// Fila de datos empieza en: plano ? 2 : 4   (ver xlR0)
+function xlR0(plano) { return plano ? 2 : 4; }
+
+async function xlRenderExcelJS(spec) {
+    const wb = new ExcelJS.Workbook();
+    wb.creator = 'PIEERS PRO'; wb.created = new Date();
+    const cache = {};
+    const est = n => cache[n] || (cache[n] = _xlEstilo(n));
+    spec.hojas.forEach(h => {
+        const nCols = h.header.length;
+        const ws = wb.addWorksheet(h.name, {
+            properties:{ tabColor:{ argb:'FF'+(h.tab||XL_C.rojo) } },
+            views:[{ state:'frozen', ySplit: h.plano ? 1 : 3, showGridLines:false }]
+        });
+        ws.columns = h.widths.map(w => ({ width:w }));
+        const aplica = (cell, c, estiloDef) => {
+            let o = (c !== null && typeof c === 'object') ? c : { v:c };
+            const e = est(o.s || estiloDef);
+            if (o.f) cell.value = { formula:o.f, result:(o.v === undefined ? 0 : o.v) };
+            else cell.value = (o.v === undefined ? null : o.v);
+            if (e.font) cell.font = e.font;
+            if (e.fill) cell.fill = e.fill;
+            if (e.alignment) cell.alignment = e.alignment;
+            if (e.border) cell.border = e.border;
+            const nf = o.n || e.numFmt; if (nf) cell.numFmt = nf;
+        };
+        let r = 1;
+        if (!h.plano) {
+            ws.mergeCells(1,1,1,nCols); aplica(ws.getCell(1,1), h.titulo || h.name, 'title'); ws.getRow(1).height = 30;
+            ws.mergeCells(2,1,2,nCols); aplica(ws.getCell(2,1), h.sub || '', 'sub'); ws.getRow(2).height = 18;
+            r = 3;
+        }
+        const hr = ws.getRow(r); hr.height = 24;
+        h.header.forEach((t,i) => aplica(hr.getCell(i+1), t, (h.hstyle && h.hstyle[i]) || 'h'));
+        const r0 = r + 1;
+        h.rows.forEach((fila, i) => {
+            const row = ws.getRow(r0 + i);
+            fila.forEach((c, j) => aplica(row.getCell(j+1), c, 't'));
+        });
+        const ultima = r0 + h.rows.length - 1;
+        if (h.total) {
+            const rt = ws.getRow(ultima + 1); rt.height = 22;
+            h.total.forEach((c, j) => aplica(rt.getCell(j+1), c, j === 0 ? 'totl' : 'tot'));
+        }
+        if (h.filter && h.rows.length) ws.autoFilter = { from:{ row:r, column:1 }, to:{ row:ultima, column:nCols } };
+        if (h.zebra !== false && h.rows.length) {
+            ws.addConditionalFormatting({ ref:`A${r0}:${_xlColLetra(nCols-1)}${ultima}`, rules:[{
+                type:'expression', formulae:['MOD(ROW(),2)=0'], priority:50,
+                style:{ fill:{ type:'pattern', pattern:'solid', bgColor:{ argb:'FFF7F8FA' }, fgColor:{ argb:'FFF7F8FA' } } } }] });
+        }
+        (h.cf || []).forEach(g => {
+            ws.addConditionalFormatting({ ref:g.ref, rules:g.rules.map((rl, k) => {
+                const o = { type:rl.type, priority:k+1, style:_xlCfEstilo(rl.color, rl.bold) };
+                if (rl.operator) o.operator = rl.operator;
+                o.formulae = rl.formulae;
+                return o;
+            }) });
+        });
+        ws.pageSetup = { orientation:'landscape', fitToPage:true, fitToWidth:1, fitToHeight:0 };
+    });
+    const buf = await wb.xlsx.writeBuffer();
+    return new Uint8Array(buf);
+}
+
+// Plan B: SheetJS (sin colores; conserva fórmulas, anchos y filtro)
+function xlRenderSheetJS(spec) {
+    const wb = XLSX.utils.book_new();
+    spec.hojas.forEach(h => {
+        const aoa = [];
+        if (!h.plano) { aoa.push([h.titulo || h.name]); aoa.push([h.sub || '']); }
+        aoa.push(h.header.slice());
+        const cel = c => {
+            if (c !== null && typeof c === 'object') {
+                const o = { v: c.v === undefined ? '' : c.v, t: typeof c.v === 'number' ? 'n' : 's' };
+                if (c.f) { o.f = c.f; if (o.v === '') { o.v = 0; o.t = 'n'; } }
+                return o;
+            }
+            return c;
+        };
+        h.rows.forEach(f => aoa.push(f.map(cel)));
+        if (h.total) aoa.push(h.total.map(cel));
+        const ws = XLSX.utils.aoa_to_sheet(aoa);
+        ws['!cols'] = h.widths.map(w => ({ wch:w }));
+        if (h.filter && h.rows.length) {
+            const hr = h.plano ? 1 : 3;
+            ws['!autofilter'] = { ref:`A${hr}:${_xlColLetra(h.header.length-1)}${hr + h.rows.length}` };
+        }
+        XLSX.utils.book_append_sheet(wb, ws, h.name);
+    });
+    return wb;
+}
+
+// Punto de entrada: genera y descarga con el panel de WhatsApp de siempre
+async function xlExportar(spec, nombre, resumen) {
+    try {
+        showToast('⏳ Preparando Excel…', '#111');
+        let ok = false;
+        try { ok = await xlCargarExcelJS(); } catch(e) {}
+        if (ok) {
+            try {
+                const bytes = await xlRenderExcelJS(spec);
+                descargarExcel({ _bytes:bytes }, nombre, resumen);
+                return true;
+            } catch(e) { console.warn('ExcelJS falló, usando modo simple', e); }
+        }
+        descargarExcel(xlRenderSheetJS(spec), nombre, resumen);
+        return true;
+    } catch(e) {
+        showToast('❌ Error al generar Excel: ' + e.message, '#c62828');
+        return false;
+    }
+}
+
+// ── Constructores de hojas ──
+function xlHojaStock(nombreHoja, titulo, sub, entries, hdrs, plano) {
+    // entries: [[codigo, desc, stock]]
+    const r0 = xlR0(plano), n = entries.length, rf = r0 + n - 1, rr = n ? rf : r0;
+    const total = entries.reduce((a,e) => a + (+e[2] || 0), 0);
+    const rows = entries.map((e, i) => {
+        const r = r0 + i;
+        const base = [ { v:String(e[0]), s:'cod' }, { v:e[1] || '', s:'t' }, { v:+e[2] || 0, s:'n0' } ];
+        if (plano) return base;
+        return base.concat([ { v: total ? (+e[2] || 0) / total : 0, f:`IF(SUM(C$${r0}:C$${rr})=0,0,C${r}/SUM(C$${r0}:C$${rr}))`, s:'pct', n:'0.00%' } ]);
+    });
+    const hoja = {
+        name:nombreHoja, tab:XL_C.rojo, titulo, sub, plano:!!plano, widths: plano ? [20,58,14] : [20,58,14,12],
+        header: plano ? [hdrs[0], hdrs[1], hdrs[2]] : [hdrs[0], hdrs[1], hdrs[2], '% DEL TOTAL'], hstyle:['hr','hr','hr','h'], rows, filter:true,
+        cf:[{ ref:`C${r0}:C${rr}`, rules:[
+            { type:'cellIs', operator:'equal', formulae:['0'], color:'rojo', bold:true },
+            { type:'cellIs', operator:'between', formulae:['1','2'], color:'ambar', bold:true },
+            { type:'cellIs', operator:'greaterThan', formulae:['2'], color:'verdeS' } ] }]
+    };
+    if (!plano) hoja.total = [ 'TOTAL', { v:n, f:`SUBTOTAL(103,A${r0}:A${rr})`, s:'tot', n:'#,##0" códigos"' }, { v:total, f:`SUBTOTAL(109,C${r0}:C${rr})`, s:'tot' }, { v:1, f:`SUBTOTAL(109,D${r0}:D${rr})`, s:'tot', n:'0%' } ];
+    return hoja;
+}
+
+function xlHojaMovs(titulo, sub, movs, plano) {
+    const r0 = xlR0(plano), n = movs.length, rr = n ? r0 + n - 1 : r0;
+    const rows = movs.map((mv, i) => [
+        { v:i+1, s:'c' }, { v:String(mv.cod), s:'cod' }, { v:mv.tipo, s:'est' },
+        { v:+mv.cant || 0, s:'n0' }, { v:+mv.stockPost || 0, s:'n0' },
+        { v: mv.ts ? new Date(mv.ts).toLocaleString('es-PE') : '', s:'c' }
+    ]);
+    const hoja = {
+        name:'MOVIMIENTOS', tab:XL_C.negro, titulo, sub, plano:!!plano, widths:[7,20,13,12,18,20],
+        header:['#','CÓDIGO','TIPO','CANTIDAD','STOCK RESULTANTE','FECHA / HORA'], rows, filter:true,
+        cf:[{ ref:`C${r0}:C${rr}`, rules:[
+            { type:'cellIs', operator:'equal', formulae:['"INGRESO"'], color:'verde', bold:true },
+            { type:'cellIs', operator:'equal', formulae:['"RETIRO"'], color:'rojo', bold:true } ] }]
+    };
+    if (!plano) hoja.total = [ 'TOTAL', '', '', { v:movs.reduce((a,m)=>a+(+m.cant||0),0), f:`SUBTOTAL(109,D${r0}:D${rr})`, s:'tot' }, '', '' ];
+    return hoja;
+}
+
+
+// Hoja RESUMEN: items = [ [etiqueta, celda, detalle] ]
+function xlHojaResumen(titulo, sub, items, cf) {
+    return {
+        name:'RESUMEN', tab:XL_C.rojo, titulo, sub, widths:[38,20,60], zebra:false,
+        header:['INDICADOR','VALOR','DETALLE'], hstyle:['hr','hr','hr'],
+        rows: items.map(it => [ { v:it[0], s:'k' }, it[1], (it[2] !== null && typeof it[2] === 'object') ? it[2] : { v:it[2] || '', s:'obs' } ]), cf: cf || []
+    };
+}
+
+// ── Almacén (actual o informe guardado) ──
+function xlSpecAlmacen(titulo, sub, entries, movs, nomStock) {
+    // Hojas de datos "planas" (fila 1 = encabezado) para poder volver a cargarlas en la app
+    const hs = xlHojaStock(nomStock, titulo, sub, entries, ['CODIGO 13 DIGITOS','DESCRIPCION', nomStock === 'STOCK' ? 'STOCK' : 'STOCK ACTUAL'], true);
+    const hm = xlHojaMovs(titulo, sub, movs, true);
+    const r0 = 2, ns = Math.max(entries.length,1), nm = Math.max(movs.length,1);
+    const q = "'" + nomStock + "'";
+    const rS = `${q}!C${r0}:C${r0+ns-1}`, rA = `${q}!A${r0}:A${r0+ns-1}`;
+    const mT = `MOVIMIENTOS!C${r0}:C${r0+nm-1}`, mC = `MOVIMIENTOS!D${r0}:D${r0+nm-1}`;
+    const tot = entries.reduce((a,e)=>a+(+e[2]||0),0);
+    const ing = movs.filter(m=>m.tipo==='INGRESO').reduce((a,m)=>a+(+m.cant||0),0);
+    const ret = movs.filter(m=>m.tipo==='RETIRO').reduce((a,m)=>a+(+m.cant||0),0);
+    const sin0 = entries.filter(e=>(+e[2]||0)===0).length, bajo = entries.filter(e=>(+e[2]||0)>=1 && (+e[2]||0)<=2).length;
+    const hr = xlHojaResumen(titulo, sub, [
+        ['Códigos en almacén',        { v:entries.length, f:`COUNTA(${rA})`, s:'big' }, 'Cantidad de códigos distintos'],
+        ['Unidades en stock',         { v:tot, f:`SUM(${rS})`, s:'big' }, 'Suma de todo el stock actual'],
+        ['Códigos sin stock (0)',     { v:sin0, f:`COUNTIF(${rS},0)`, s:'big' }, 'En rojo en la hoja de stock'],
+        ['Códigos con stock bajo (1-2)', { v:bajo, f:`COUNTIFS(${rS},">=1",${rS},"<=2")`, s:'big' }, 'En naranja en la hoja de stock'],
+        ['Movimientos registrados',   { v:movs.length, f:`COUNTA(${mT})`, s:'big' }, 'Ingresos + retiros'],
+        ['Unidades ingresadas',       { v:ing, f:`SUMIF(${mT},"INGRESO",${mC})`, s:'big' }, 'Total de INGRESO'],
+        ['Unidades retiradas',        { v:ret, f:`SUMIF(${mT},"RETIRO",${mC})`, s:'big' }, 'Total de RETIRO'],
+        ['Neto (ingresos − retiros)', { v:ing-ret, f:`SUMIF(${mT},"INGRESO",${mC})-SUMIF(${mT},"RETIRO",${mC})`, s:'big', n:'+#,##0;-#,##0;0' }, 'Positivo = entró más de lo que salió']
+    ]);
+    return { hojas:[hs, hm, hr] };
+}
+
+// ── Inventario convertido (3 columnas, re-importable) ──
+function xlSpecInventario(res) {
+    const entries = res.map(r => [r.codigoUnico, r.descripcion, r.cantidad]);
+    const hs = xlHojaStock('INVENTARIO PIEERS', '', '', entries, ['CODIGO 13 DIGITOS','DESCRIPCION','TOTAL'], true);
+    const n = Math.max(entries.length,1);
+    const tot = entries.reduce((a,e)=>a+e[2],0);
+    const hr = xlHojaResumen('Inventario PIEERS — resumen', new Date().toLocaleDateString('es'), [
+        ['Líneas (códigos)', { v:entries.length, f:`COUNTA('INVENTARIO PIEERS'!A2:A${n+1})`, s:'big' }, 'Una línea por código de 13 dígitos'],
+        ['Unidades totales', { v:tot, f:`SUM('INVENTARIO PIEERS'!C2:C${n+1})`, s:'big' }, 'Suma de la columna TOTAL'],
+        ['Promedio por código', { v:entries.length?tot/entries.length:0, f:`IFERROR(AVERAGE('INVENTARIO PIEERS'!C2:C${n+1}),0)`, s:'big', n:'0.0' }, 'Unidades / códigos']
+    ]);
+    return { hojas:[hs, hr] };
+}
+
+// ── Comparativo (lote) ──
+function xlSpecComparativo(lote, cA) {
+    const filas = [];
+    Object.entries(lote.maestroSnapshot).forEach(([cod,v]) => {
+        const leido = cA[cod]||0;
+        const desc = (lote.descSnapshot&&lote.descSnapshot[cod])||descripcionMap.get(cod)||'';
+        const mn = (lote.manual&&lote.manual[cod])||[];
+        filas.push({ cod, desc, exp:v.exp, leido, man:mn.reduce((a,m)=>a+m.cant,0), obs:mn.map(m=>m.obs).filter(Boolean).join(' | ') });
+    });
+    Object.entries(cA).forEach(([cod,cant]) => { if(!lote.maestroSnapshot.hasOwnProperty(cod)) filas.push({ cod, desc:descripcionMap.get(cod)||'', exp:0, leido:cant, man:0, obs:'' }); });
+    const r0 = 4, n = filas.length, rf = Math.max(r0 + n - 1, r0);
+    const rows = filas.map((f,i) => {
+        const r = r0 + i, d = f.leido - f.exp, est = d<0?'FALTA':d>0?'SOBRA':'OK';
+        return [ {v:f.cod,s:'cod'}, {v:f.desc,s:'t'}, {v:f.exp,s:'n0'}, {v:f.leido,s:'n0'},
+                 {v:est, f:`IF(D${r}<C${r},"FALTA",IF(D${r}>C${r},"SOBRA","OK"))`, s:'est'},
+                 {v:d, f:`D${r}-C${r}`, s:'dif'}, {v:f.man||0, s:'n'}, {v:f.obs,s:'obs'} ];
+    });
+    const sum = k => filas.reduce((a,f)=>a+(k==='d'?f.leido-f.exp:f[k]),0);
+    const cnt = e => filas.filter(f => (f.leido<f.exp?'FALTA':f.leido>f.exp?'SOBRA':'OK')===e).length;
+    const hc = {
+        name:'CONCILIACION', tab:XL_C.rojo, titulo:`Conciliación — ${lote.nombre}`, sub:`Fecha: ${lote.fecha}  ·  ESTADO y DIFERENCIA se recalculan solos si cambias CONTEO REAL`,
+        widths:[20,56,14,14,12,14,14,42], header:['CÓDIGO','DESCRIPCIÓN','STOCK ESPERADO','CONTEO REAL','ESTADO','DIFERENCIA','INGRESO MANUAL','OBSERVACIÓN'],
+        hstyle:['hr','hr','h','h','hr','hr','h','h'], rows, filter:true,
+        total:['TOTAL', {v:n,f:`SUBTOTAL(103,A${r0}:A${rf})`,s:'tot',n:'#,##0" códigos"'}, {v:sum('exp'),f:`SUBTOTAL(109,C${r0}:C${rf})`,s:'tot'}, {v:sum('leido'),f:`SUBTOTAL(109,D${r0}:D${rf})`,s:'tot'}, '', {v:sum('d'),f:`SUBTOTAL(109,F${r0}:F${rf})`,s:'tot',n:'+#,##0;-#,##0;0'}, {v:sum('man'),f:`SUBTOTAL(109,G${r0}:G${rf})`,s:'tot'}, ''],
+        cf:[
+            { ref:`E${r0}:E${rf}`, rules:[
+                { type:'cellIs', operator:'equal', formulae:['"FALTA"'], color:'rojo', bold:true },
+                { type:'cellIs', operator:'equal', formulae:['"SOBRA"'], color:'ambar', bold:true },
+                { type:'cellIs', operator:'equal', formulae:['"OK"'], color:'verde', bold:true } ] },
+            { ref:`A${r0}:D${rf}`, rules:[
+                { type:'expression', formulae:[`$E${r0}="FALTA"`], color:'rojoS' },
+                { type:'expression', formulae:[`$E${r0}="SOBRA"`], color:'ambarS' } ] }
+        ]
+    };
+    const cons = Object.entries(cA).map(([cod,c]) => [cod, (lote.descSnapshot&&lote.descSnapshot[cod])||descripcionMap.get(cod)||'', c]).sort((a,b)=>b[2]-a[2]);
+    const hl = xlHojaStock('LECTURAS_CONSOLIDADAS', `Lecturas consolidadas — ${lote.nombre}`, `Fecha: ${lote.fecha}`, cons, ['CÓDIGO','DESCRIPCIÓN','CANTIDAD'], false);
+    hl.tab = XL_C.negro;
+    const E = `CONCILIACION!E${r0}:E${rf}`, F = `CONCILIACION!F${r0}:F${rf}`, C = `CONCILIACION!C${r0}:C${rf}`, D = `CONCILIACION!D${r0}:D${rf}`, G = `CONCILIACION!G${r0}:G${rf}`;
+    const A = `CONCILIACION!A${r0}:A${rf}`;
+    const exp = sum('exp'), falt = -filas.reduce((a,f)=>a+Math.min(f.leido-f.exp,0),0), sob = filas.reduce((a,f)=>a+Math.max(f.leido-f.exp,0),0);
+    const hr = xlHojaResumen(`Resumen — ${lote.nombre}`, `Fecha: ${lote.fecha}`, [
+        ['Códigos revisados',        { v:n, f:`COUNTA(${A})`, s:'big' }, 'Maestro + códigos leídos que no estaban'],
+        ['✅ Códigos OK',            { v:cnt('OK'), f:`COUNTIF(${E},"OK")`, s:'big' }, 'Conteo = esperado'],
+        ['⚠️ Códigos con FALTA',     { v:cnt('FALTA'), f:`COUNTIF(${E},"FALTA")`, s:'big' }, 'Conteo menor al esperado'],
+        ['📦 Códigos con SOBRA',     { v:cnt('SOBRA'), f:`COUNTIF(${E},"SOBRA")`, s:'big' }, 'Conteo mayor al esperado'],
+        ['Unidades esperadas',       { v:exp, f:`SUM(${C})`, s:'big' }, 'Según el maestro del lote'],
+        ['Unidades contadas',        { v:sum('leido'), f:`SUM(${D})`, s:'big' }, 'Lecturas del escáner'],
+        ['Unidades faltantes',       { v:falt, f:`-SUMIF(${F},"<0")`, s:'big' }, 'Suma de las diferencias negativas'],
+        ['Unidades sobrantes',       { v:sob, f:`SUMIF(${F},">0")`, s:'big' }, 'Suma de las diferencias positivas'],
+        ['Ingresos manuales',        { v:sum('man'), f:`SUM(${G})`, s:'big' }, 'Prendas encontradas e ingresadas a mano'],
+        ['% de cumplimiento (unid.)',{ v:exp?(exp-falt)/exp:0, f:`IF(SUM(${C})=0,0,(SUM(${C})+SUMIF(${F},"<0"))/SUM(${C}))`, s:'bigp' }, '(esperadas − faltantes) / esperadas'],
+        ['% de códigos exactos',     { v:n?cnt('OK')/n:0, f:`IF(COUNTA(${A})=0,0,COUNTIF(${E},"OK")/COUNTA(${A}))`, s:'bigp' }, 'Códigos OK / códigos revisados']
+    ], [{ ref:'B13:B14', rules:[
+        { type:'cellIs', operator:'greaterThanOrEqual', formulae:['0.95'], color:'verde', bold:true },
+        { type:'cellIs', operator:'lessThan', formulae:['0.8'], color:'rojo', bold:true },
+        { type:'cellIs', operator:'between', formulae:['0.8','0.9499'], color:'ambar', bold:true } ] }]);
+    return { hojas:[hr, hc, hl] };
+}
+
+// ── Consultar Stock (por color y talla) ──
+function xlSpecStockCS() {
+    // Tallas dinámicas: letras (XS,S,M,L,XL…) y números (26,28,30…) según lo que haya en la base
+    const ORD = ['XXS','XS','S','M','L','XL','2X','XXL','3X','XXXL','4X','ST'];
+    const set = new Set();
+    Object.keys(csStockDB).forEach(art => {
+        const d = csStockDB[art];
+        (d.sizes || []).forEach(t => set.add(String(t)));
+        (d.colors || []).forEach(col => Object.keys(col.stocks || {}).forEach(t => set.add(String(t))));
+    });
+    const peso = t => { const i = ORD.indexOf(t); if (i >= 0) return [0, i, t]; const n = parseFloat(t); return isNaN(n) ? [2, 0, t] : [1, n, t]; };
+    const TALLAS = [...set].sort((a,b) => { const x=peso(a), y=peso(b); return x[0]-y[0] || x[1]-y[1] || (x[2]<y[2]?-1:1); });
+    const NT = TALLAS.length, cT = _xlColLetra(3+NT);                    // columna TOTAL
+    const filas = [];
+    Object.keys(csStockDB).forEach(art => {
+        const d = csStockDB[art];
+        (d.colors || []).forEach(col => filas.push({ art, desc:d.desc||'', color:col.name||col.code, t:TALLAS.map(x => +(col.stocks&&col.stocks[x])||0) }));
+    });
+    const r0 = 4, n = filas.length, rf = Math.max(r0 + n - 1, r0);
+    const L = j => _xlColLetra(3+j), ult = L(NT-1);
+    const rows = filas.map((f,i) => {
+        const r = r0 + i, tot = f.t.reduce((a,b)=>a+b,0);
+        return [ {v:f.art,s:'cod'}, {v:f.desc,s:'t'}, {v:f.color,s:'t'} ].concat(f.t.map(x => ({v:x,s:'n'}))).concat([ {v:tot, f:`SUM(D${r}:${ult}${r})`, s:'n0'} ]);
+    });
+    const sumT = j => filas.reduce((a,f)=>a+f.t[j],0), sumAll = filas.reduce((a,f)=>a+f.t.reduce((x,y)=>x+y,0),0);
+    const hoja = {
+        name:'STOCK', tab:XL_C.rojo, titulo:'Consultar Stock — por color y talla', sub:`Generado: ${new Date().toLocaleString('es-PE')}  ·  TOTAL se calcula con fórmula`,
+        widths:[18,46,18].concat(TALLAS.map(()=>7), [10]), header:['CÓDIGO','DESCRIPCIÓN','COLOR'].concat(TALLAS, ['TOTAL']),
+        hstyle:['hr','hr','hr'].concat(TALLAS.map(()=> 'h'), ['hr']), rows, filter:true,
+        total:['TOTAL', {v:n,f:`SUBTOTAL(103,A${r0}:A${rf})`,s:'tot',n:'#,##0" filas"'}, ''].concat(TALLAS.map((_,j)=>({v:sumT(j),f:`SUBTOTAL(109,${L(j)}${r0}:${L(j)}${rf})`,s:'tot'})), [{v:sumAll,f:`SUBTOTAL(109,${cT}${r0}:${cT}${rf})`,s:'tot'}]),
+        cf:[
+            { ref:`D${r0}:${ult}${rf}`, rules:[ { type:'cellIs', operator:'greaterThan', formulae:['0'], color:'verdeS' } ] },
+            { ref:`${cT}${r0}:${cT}${rf}`, rules:[
+                { type:'cellIs', operator:'equal', formulae:['0'], color:'rojo', bold:true },
+                { type:'cellIs', operator:'between', formulae:['1','3'], color:'ambar', bold:true } ] }
+        ]
+    };
+    const items = [
+        ['Filas (artículo + color)', { v:n, f:`COUNTA(STOCK!A${r0}:A${rf})`, s:'big' }, 'Una fila por color de cada artículo'],
+        ['Unidades totales', { v:sumAll, f:`SUM(STOCK!${cT}${r0}:${cT}${rf})`, s:'big' }, 'Suma de todas las tallas'],
+        ['Colores sin stock (0)', { v:filas.filter(f=>f.t.every(x=>x===0)).length, f:`COUNTIF(STOCK!${cT}${r0}:${cT}${rf},0)`, s:'big' }, 'En rojo en la hoja STOCK']
+    ];
+    TALLAS.forEach((t,j) => {
+        const row = r0 + items.length;
+        items.push([`Talla ${t}`, { v:sumT(j), f:`SUM(STOCK!${L(j)}${r0}:${L(j)}${rf})`, s:'big' },
+            { v:sumAll?sumT(j)/sumAll:0, f:`IF(SUM(STOCK!${cT}${r0}:${cT}${rf})=0,0,B${row}/SUM(STOCK!${cT}${r0}:${cT}${rf}))`, s:'pct' }]);
+    });
+    const hr = xlHojaResumen('Consultar Stock — resumen', `Generado: ${new Date().toLocaleString('es-PE')}`, items);
+    hr.header = ['INDICADOR','VALOR','DETALLE / % DEL TOTAL'];
+    return { hojas:[hr, hoja] };
+}
+
+
+
+// ══ v27.05 — CAMBIOS DE PRECIO POR TIENDA ══
+// Las hojas "tda" del memorándum (Promotda, Combotda…) traen una fila por tienda.
+// Al cargar un libro se guardan los precios de CADA tienda (en IndexedDB, no en
+// localStorage, porque son ~100 tiendas) para poder comparar antes/ahora por tienda.
+const CS_TDA_KEYS = 'pieers_cs_tda_keys';
+let _csTdaActual = null;       // { TIENDA: { cod: [etiq, menor, mayor, oferta] } } del libro en lectura
+const csTdaMem = {};           // libro → datos por tienda (ya leídos de IndexedDB)
+const _CS_TDA_NAC = 'NACIONAL (hojas generales)';
+
+function _csTdaHoja(rows, sheetName, baseTipo) {
+    if (!_csTdaActual || !rows || !rows.length) return;
+    const esCod = v => { const s = String(v||'').trim(); return s.length===7 && /^[A-Z0-9]+$/i.test(s) && /\d/.test(s); };
+    // Columna de tienda: encabezado que diga "local" en las primeras filas
+    let cLocal = -1, hdrRow = -1;
+    for (let i = 0; i < Math.min(rows.length, 6) && cLocal < 0; i++) {
+        const r = rows[i] || [];
+        for (let j = 0; j < r.length; j++) { const h = String(r[j]||'').trim().toLowerCase(); if (h === 'local' || h.includes('[local]')) { cLocal = j; hdrRow = i; break; } }
+    }
+    for (let ri = 0; ri < rows.length; ri++) {
+        if (ri === hdrRow) continue;
+        const r = rows[ri];
+        if (!r || r.length < 5) continue;
+        let tienda = _CS_TDA_NAC;
+        if (cLocal >= 0) {
+            tienda = String(r[cLocal]||'').trim().toUpperCase().replace(/\s+/g,' ');
+            if (!tienda || /^TOTAL/.test(tienda)) continue;
+        }
+        let codIdx = -1;
+        for (let i = 0; i < r.length; i++) if (esCod(r[i])) { codIdx = i; break; }
+        if (codIdx < 0) continue;
+        const cod = String(r[codIdx]).trim().toUpperCase();
+        // Precios: mismos criterios que el lector principal (números > 1 después del código, sin la columna de stock)
+        const stockIdx = r.length - 1, vals = [];
+        for (let i = codIdx + 2; i < r.length; i++) {
+            if (i === stockIdx) continue;
+            const raw = r[i]; let n = NaN;
+            if (typeof raw === 'number') n = raw; else if (typeof raw === 'string' && /^\d+(\.\d+)?$/.test(raw.trim())) n = parseFloat(raw);
+            if (!isNaN(n) && n > 1 && !vals.includes(n)) vals.push(n);
+        }
+        if (!vals.length) continue;
+        vals.sort((a,b) => b - a);
+        const etiq = vals[0], pMin = vals[vals.length-1], pSeg = vals.length >= 3 ? vals[1] : 0;
+        const rowStr = r.map(c => String(c||'').toUpperCase()).join(' ');
+        let tipo = baseTipo;
+        if (String(r[codIdx+3]||'').trim().toUpperCase() === 'OF' || rowStr.includes('OFERTA') || r.some(c => String(c||'').trim() === 'OF')) tipo = 'oferta';
+        else if (rowStr.includes('EJECUTIVO')) tipo = 'ejecutivo';
+        let me = 0, ma = 0, of = 0;
+        if (tipo === 'oferta') of = pMin;
+        else if (tipo === 'combo') ma = pMin;
+        else if (tipo === 'ejecutivo') { ma = pMin; me = pSeg; }
+        else me = pMin;
+        const T = _csTdaActual[tienda] || (_csTdaActual[tienda] = {});
+        const e = T[cod] || (T[cod] = [0,0,0,0]);
+        if (etiq > e[0]) e[0] = etiq;
+        if (me > 0 && (!e[1] || me < e[1])) e[1] = me;
+        if (ma > 0 && (!e[2] || ma < e[2])) e[2] = ma;
+        if (of > 0 && (!e[3] || of < e[3])) e[3] = of;
+    }
+}
+
+function _csTdaIdbPut(libro, data) {
+    return pIdb().then(db => new Promise(res => {
+        try { const tx = db.transaction('files','readwrite'); tx.objectStore('files').put(data, 'cs_tda::' + libro); tx.oncomplete = () => res(true); tx.onerror = () => res(false); }
+        catch(e) { res(false); }
+    })).catch(() => false);
+}
+function _csTdaIdbDel(libro) {
+    return pIdb().then(db => new Promise(res => {
+        try { const tx = db.transaction('files','readwrite'); tx.objectStore('files').delete('cs_tda::' + libro); tx.oncomplete = () => res(true); tx.onerror = () => res(false); }
+        catch(e) { res(false); }
+    })).catch(() => false);
+}
+function _csTdaKeys() { try { return JSON.parse(localStorage.getItem(CS_TDA_KEYS) || '[]') || []; } catch(e) { return []; } }
+function _csTdaSetKeys(k) { try { localStorage.setItem(CS_TDA_KEYS, JSON.stringify(k)); } catch(e) {} }
+// Borra los datos por tienda de libros que ya no se conservan
+function _csTdaPodar() {
+    const vivos = Object.keys(csLibrosRaw);
+    const keys = _csTdaKeys();
+    keys.filter(k => !vivos.includes(k)).forEach(k => { _csTdaIdbDel(k); delete csTdaMem[k]; });
+    _csTdaSetKeys(keys.filter(k => vivos.includes(k)));
+}
+function _csTdaFin(libroId) {
+    if (!_csTdaActual) return;
+    const data = _csTdaActual; _csTdaActual = null;
+    if (!Object.keys(data).length) return;
+    csTdaMem[libroId] = data;
+    const keys = _csTdaKeys().filter(k => k !== libroId); keys.push(libroId); _csTdaSetKeys(keys);
+    _csTdaIdbPut(libroId, data).then(() => _csTdaPodar());
+}
+function csTdaCargar(libro) {
+    if (!libro) return Promise.resolve(null);
+    if (csTdaMem[libro]) return Promise.resolve(csTdaMem[libro]);
+    if (!_csTdaKeys().includes(libro)) return Promise.resolve(null);
+    return pCacheGet('cs_tda::' + libro).then(d => { if (d) csTdaMem[libro] = d; return d || null; });
+}
+// Convierte {cod:[e,me,ma,of]} → {cod:{etiqueta,menor,mayor,oferta}}
+function _csTdaObj(T) {
+    const o = {};
+    if (T) Object.keys(T).forEach(c => { const v = T[c]; o[c] = { etiqueta:v[0]||0, menor:v[1]||0, mayor:v[2]||0, oferta:v[3]||0 }; });
+    return o;
+}
+
+// ══ v27.04 — CAMBIOS DE PRECIO ENTRE MEMORÁNDUMS (antes / ahora) ══
+// Cada libro cargado guarda sus propios precios por código (independiente de la
+// regla "gana el más barato"), para poder comparar dos libros entre sí.
+const CS_RAW_KEY = 'pieers_cs_libros_raw';
+let csLibrosRaw = {};          // { nombreLibro: { cod: {etiqueta, menor, mayor, oferta} } }
+let _csRawActual = null;       // libro que se está leyendo ahora mismo
+let _csRawDescTmp = '';        // descripción de la fila que se está registrando
+try { csLibrosRaw = JSON.parse(localStorage.getItem(CS_RAW_KEY) || '{}') || {}; } catch(e) { csLibrosRaw = {}; }
+
+function csRawGuardar() {
+    try {
+        // Conservar solo los 3 libros más recientes para no llenar la memoria
+        const orden = (csLibrosCargados || []).map(l => l.nombre);
+        const nombres = Object.keys(csLibrosRaw).sort((a,b) => orden.indexOf(b) - orden.indexOf(a));
+        nombres.slice(3).forEach(n => delete csLibrosRaw[n]);
+        localStorage.setItem(CS_RAW_KEY, JSON.stringify(csLibrosRaw));
+        if (typeof _csTdaPodar === 'function' && _csTdaKeys().length) _csTdaPodar();
+    } catch(e) {}
+}
+// Llamado desde reg() del parser: registra el precio que trae ESTE libro para el código
+function _csRawReg(cod, etiq, menor, mayor, oferta, tiendas) {
+    if (!_csRawActual || !cod) return;
+    const r = _csRawActual[cod] || (_csRawActual[cod] = { etiqueta:0, menor:0, mayor:0, oferta:0, _t:{} });
+    if (etiq > r.etiqueta) r.etiqueta = etiq;
+    if (_csRawDescTmp && (!r.d || _csRawDescTmp.length > r.d.length)) r.d = _csRawDescTmp.replace(/\s+/g,' ');
+    const put = (k, v) => {
+        if (!(v > 0)) return;
+        const cur = r[k], curT = !!r._t[k];
+        if (!cur || (tiendas && !curT) || (tiendas === !!curT && v < cur)) { r[k] = v; r._t[k] = !!tiendas; }
+    };
+    put('menor', menor); put('mayor', mayor); put('oferta', oferta);
+}
+function _csRawFin(libroId) {
+    if (!_csRawActual) return;
+    Object.values(_csRawActual).forEach(r => { delete r._t; });
+    csLibrosRaw[libroId] = _csRawActual;
+    _csRawActual = null;
+    csRawGuardar();
+}
+function _csRawPrecioFinal(r) { return r.oferta || r.menor || r.mayor || 0; }
+function _csRawDesc(cod) {
+    const d = (csStockDB && csStockDB[cod] && csStockDB[cod].desc) || '';
+    if (d) return d;
+    for (const n of Object.keys(csLibrosRaw)) { const r = csLibrosRaw[n][cod]; if (r && r.d) return r.d; }
+    return '';
+}
+
+// Calcula la lista de cambios entre dos libros
+function csCalcularCambios(libAntes, libAhora) {
+    return csCalcularCambiosMap(csLibrosRaw[libAntes] || {}, csLibrosRaw[libAhora] || {});
+}
+function csCalcularCambiosMap(A, B) {
+    const out = [];
+    const dif = (x, y) => Math.abs((x||0) - (y||0)) > 0.005;
+    Object.keys(B).forEach(cod => {
+        const b = B[cod], a = A[cod];
+        if (!a) { out.push({ cod, tipo:'nuevo', antes:null, ahora:b, pa:0, pb:_csRawPrecioFinal(b) }); return; }
+        const campos = ['etiqueta','menor','mayor','oferta'].filter(k => dif(a[k], b[k]));
+        if (!campos.length) return;
+        const pa = _csRawPrecioFinal(a), pb = _csRawPrecioFinal(b);
+        out.push({ cod, tipo: pb > pa + 0.005 ? 'subio' : pb < pa - 0.005 ? 'bajo' : 'cambio', antes:a, ahora:b, pa, pb, campos });
+    });
+    Object.keys(A).forEach(cod => { if (!B[cod]) out.push({ cod, tipo:'retirado', antes:A[cod], ahora:null, pa:_csRawPrecioFinal(A[cod]), pb:0 }); });
+    const peso = { subio:0, bajo:1, cambio:2, nuevo:3, retirado:4 };
+    out.sort((x,y) => peso[x.tipo]-peso[y.tipo] || Math.abs(y.pb-y.pa)-Math.abs(x.pb-x.pa) || (x.cod<y.cod?-1:1));
+    return out;
+}
+
+let _csCambiosFiltro = 'todos', _csCambiosLista = [];
+function csVerCambiosPrecio() {
+    const m = document.getElementById('modal-cs-cambios');
+    if (!m) return;
+    const orden = (csLibrosCargados || []).map(l => l.nombre).filter(n => csLibrosRaw[n]);
+    Object.keys(csLibrosRaw).forEach(n => { if (!orden.includes(n)) orden.unshift(n); });
+    const selA = document.getElementById('cs-cmb-antes'), selB = document.getElementById('cs-cmb-ahora');
+    const opts = orden.map(n => '<option value="' + n.replace(/"/g,'&quot;') + '">' + n + '</option>').join('');
+    selA.innerHTML = opts; selB.innerHTML = opts;
+    if (orden.length >= 2) { selA.value = orden[orden.length-2]; selB.value = orden[orden.length-1]; }
+    _csCambiosFiltro = 'todos';
+    document.getElementById('cs-cmb-buscar').value = '';
+    document.getElementById('cs-cmb-tienda').value = '';
+    m.style.display = 'flex';
+    csCambiosRefrescar();
+}
+// v27.05: carga los datos por tienda de los dos libros elegidos y arma la lista de tiendas
+let _csCmbTdaOk = false;
+async function csCambiosRefrescar() {
+    const selA = document.getElementById('cs-cmb-antes'), selB = document.getElementById('cs-cmb-ahora'), selT = document.getElementById('cs-cmb-tienda');
+    const a = selA.value, b = selB.value, prev = selT.value;
+    let tA = null, tB = null;
+    try { [tA, tB] = await Promise.all([csTdaCargar(a), csTdaCargar(b)]); } catch(e) {}
+    _csCmbTdaOk = !!(tA && tB);
+    let html = '<option value="">⭐ Mi tienda (Cajamarca + nacional)</option>';
+    if (_csCmbTdaOk) {
+        const set = new Set([...Object.keys(tA), ...Object.keys(tB)]);
+        const lista = [...set].sort((x,y) => (y===_CS_TDA_NAC)-(x===_CS_TDA_NAC) || (y==='CAJAMARCA')-(x==='CAJAMARCA') || (x<y?-1:1));
+        html += '<option value="*">🌐 TODAS LAS TIENDAS (' + lista.length + ')</option>'
+             + lista.map(t => '<option value="' + t.replace(/"/g,'&quot;') + '">🏬 ' + t + '</option>').join('');
+    } else if (Object.keys(csLibrosRaw).length >= 2 && a !== b) {
+        html += '<option value="" disabled>— Para ver por tienda, vuelve a cargar los dos memorándums —</option>';
+    }
+    selT.innerHTML = html;
+    selT.value = [...selT.options].some(o => o.value === prev && !o.disabled) ? prev : '';
+    _csCmbCacheKey = '';
+    csRenderCambios();
+}
+let _csCmbCacheKey = '', _csCmbCache = [];
+// Lista de cambios según libro ANTES/AHORA y la tienda elegida (cada ítem lleva .tienda)
+function csCambiosCalcularSel(a, b, t) {
+    const key = a + '|' + b + '|' + t;
+    if (key === _csCmbCacheKey) return _csCmbCache;
+    let lista;
+    if (!t || !_csCmbTdaOk) {
+        lista = csCalcularCambios(a, b).map(x => (x.tienda = 'MI TIENDA (CAJAMARCA)', x));
+    } else {
+        const A = csTdaMem[a] || {}, B = csTdaMem[b] || {};
+        const tiendas = t === '*' ? [...new Set([...Object.keys(A), ...Object.keys(B)])].sort() : [t];
+        lista = [];
+        tiendas.forEach(td => csCalcularCambiosMap(_csTdaObj(A[td]), _csTdaObj(B[td])).forEach(x => { x.tienda = td; lista.push(x); }));
+        const peso = { subio:0, bajo:1, cambio:2, nuevo:3, retirado:4 };
+        if (t === '*') lista.sort((x,y) => peso[x.tipo]-peso[y.tipo] || (x.tienda<y.tienda?-1:x.tienda>y.tienda?1:0) || Math.abs(y.pb-y.pa)-Math.abs(x.pb-x.pa));
+    }
+    _csCmbCacheKey = key; _csCmbCache = lista;
+    return lista;
+}
+function csRenderCambios() {
+    const selA = document.getElementById('cs-cmb-antes'), selB = document.getElementById('cs-cmb-ahora');
+    const cont = document.getElementById('cs-cmb-lista'), res = document.getElementById('cs-cmb-resumen');
+    const libros = Object.keys(csLibrosRaw);
+    if (libros.length < 2) {
+        res.innerHTML = '';
+        cont.innerHTML = '<div style="text-align:center;padding:28px 12px;color:#4A4E58;font-size:13px;line-height:1.5;">📭 Necesitas <b>dos libros</b> cargados para comparar.<br>'
+            + (libros.length === 1 ? 'Ya tienes <b>' + libros[0] + '</b>. Carga el otro memorándum (por ejemplo, el del mes anterior o el nuevo) y vuelve aquí.' : 'Carga el memorándum anterior y luego el nuevo. Desde ahora cada libro que cargues queda guardado para comparar.')
+            + '</div>';
+        _csCambiosLista = [];
+        return;
+    }
+    const a = selA.value, b = selB.value;
+    if (a === b) { res.innerHTML = ''; cont.innerHTML = '<div style="text-align:center;padding:24px;color:#4A4E58;font-size:13px;">Elige dos libros distintos.</div>'; _csCambiosLista = []; return; }
+    const tSel = document.getElementById('cs-cmb-tienda').value;
+    const lista = csCambiosCalcularSel(a, b, tSel);
+    _csCambiosLista = lista;
+    const n = t => lista.filter(x => x.tipo === t).length;
+    const chip = (t, ico, txt, col) => '<button onclick="_csCambiosFiltro=\'' + t + '\';csRenderCambios()" style="flex:1;min-width:0;padding:7px 2px;border-radius:9px;border:2px solid ' + col + ';background:' + (_csCambiosFiltro===t ? col : 'transparent') + ';color:' + (_csCambiosFiltro===t ? '#fff' : col) + ';font-family:\'Inter\',sans-serif;font-size:10px;font-weight:800;cursor:pointer;line-height:1.2;">' + ico + ' ' + txt + '<br><span style="font-size:14px;">' + (t==='todos' ? lista.length : n(t)) + '</span></button>';
+    res.innerHTML = chip('todos','📋','TODOS','#1B1D22') + chip('subio','📈','SUBIÓ','#C62828') + chip('bajo','📉','BAJÓ','#2E7D32') + chip('nuevo','🆕','NUEVOS','#1565C0') + chip('retirado','🚫','YA NO','#6D4C41') + (n('cambio') ? chip('cambio','🔁','OTRO','#E65100') : '');
+    const q = (document.getElementById('cs-cmb-buscar').value || '').trim().toUpperCase();
+    const filt = lista.filter(x => (_csCambiosFiltro === 'todos' || x.tipo === _csCambiosFiltro) && (!q || x.cod.includes(q) || x.tienda.includes(q) || _csRawDesc(x.cod).toUpperCase().includes(q)));
+    if (!lista.length) { cont.innerHTML = '<div style="text-align:center;padding:24px;color:#2E7D32;font-size:13px;font-weight:700;">✅ Sin cambios de precio entre "' + a + '" y "' + b + '".</div>'; return; }
+    if (!filt.length) { cont.innerHTML = '<div style="text-align:center;padding:24px;color:#4A4E58;font-size:13px;">Nada que mostrar con este filtro.</div>'; return; }
+    const S = v => v > 0 ? 'S/ ' + v.toFixed(2) : '—';
+    const colTipo = { subio:'#C62828', bajo:'#2E7D32', nuevo:'#1565C0', retirado:'#6D4C41', cambio:'#E65100' };
+    const txtTipo = { subio:'📈 SUBIÓ', bajo:'📉 BAJÓ', nuevo:'🆕 NUEVO', retirado:'🚫 YA NO ESTÁ', cambio:'🔁 CAMBIÓ' };
+    const nomCampo = { etiqueta:'Etiqueta', menor:'Unitario', mayor:'Combo', oferta:'Oferta' };
+    const MAX = 400;
+    cont.innerHTML = filt.slice(0, MAX).map(x => {
+        const col = colTipo[x.tipo];
+        let det = '';
+        if (x.tipo === 'nuevo') det = ['etiqueta','menor','mayor','oferta'].filter(k => x.ahora[k] > 0).map(k => '<span style="margin-right:8px;">' + nomCampo[k] + ': <b>' + S(x.ahora[k]) + '</b></span>').join('');
+        else if (x.tipo === 'retirado') det = ['etiqueta','menor','mayor','oferta'].filter(k => x.antes[k] > 0).map(k => '<span style="margin-right:8px;">' + nomCampo[k] + ': <s>' + S(x.antes[k]) + '</s></span>').join('');
+        else det = x.campos.map(k => '<span style="margin-right:8px;white-space:nowrap;">' + nomCampo[k] + ': <s style="color:#8A8F99;">' + S(x.antes[k]) + '</s> → <b style="color:' + col + ';">' + S(x.ahora[k]) + '</b></span>').join('');
+        const pct = (x.pa > 0 && x.pb > 0) ? ((x.pb - x.pa) / x.pa * 100) : null;
+        const dif = (x.tipo === 'subio' || x.tipo === 'bajo') ? '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:800;color:' + col + ';white-space:nowrap;">' + (x.pb > x.pa ? '+' : '') + (x.pb - x.pa).toFixed(2) + (pct !== null ? ' <span style="font-size:11px;">(' + (pct > 0 ? '+' : '') + pct.toFixed(0) + '%)</span>' : '') + '</div>' : '';
+        return '<div class="cs-cmb-item" style="background:#F8F8F8;border-radius:12px;padding:10px 12px;border-left:4px solid ' + col + ';">'
+            + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">'
+            + '<div style="min-width:0;"><div style="font-family:\'Barlow Condensed\',sans-serif;font-size:16px;font-weight:800;color:#111;letter-spacing:0.5px;">' + x.cod + ' <span style="font-size:10px;color:' + col + ';font-family:\'Inter\',sans-serif;">' + txtTipo[x.tipo] + '</span></div>'
+            + '<div style="font-size:11px;color:#4A4E58;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (_csRawDesc(x.cod) || '&nbsp;') + '</div>'
+            + (tSel ? '<div style="display:inline-block;margin-top:3px;font-size:10px;font-weight:800;color:#fff;background:#4A4E58;border-radius:6px;padding:1px 6px;letter-spacing:0.3px;">🏬 ' + x.tienda + '</div>' : '')
+            + '</div>' + dif + '</div>'
+            + '<div style="font-size:11.5px;color:#1B1D22;margin-top:5px;line-height:1.7;">' + det + '</div>'
+            + (x.tipo === 'subio' || x.tipo === 'bajo' ? '<div style="font-size:11px;color:#4A4E58;margin-top:2px;">Precio final: <s>' + S(x.pa) + '</s> → <b style="color:' + col + ';">' + S(x.pb) + '</b></div>' : '')
+            + '</div>';
+    }).join('') + (filt.length > MAX ? '<div style="text-align:center;padding:10px;color:#4A4E58;font-size:11px;">Mostrando ' + MAX + ' de ' + filt.length + '. Usa el buscador o exporta a Excel para ver todo.</div>' : '');
+}
+function csExportarCambiosExcel() {
+    const a = document.getElementById('cs-cmb-antes').value, b = document.getElementById('cs-cmb-ahora').value;
+    const tSel = document.getElementById('cs-cmb-tienda').value;
+    const lista = _csCambiosLista;
+    if (!lista || !lista.length) { showToast('⚠️ No hay cambios para exportar', '#E65100'); return; }
+    const nomTienda = !tSel ? 'MI TIENDA (CAJAMARCA)' : tSel === '*' ? 'TODAS LAS TIENDAS' : tSel;
+    const txt = { subio:'SUBIÓ', bajo:'BAJÓ', nuevo:'NUEVO', retirado:'YA NO ESTÁ', cambio:'CAMBIÓ' };
+    const r0 = 4, n = lista.length, rf = r0 + n - 1;
+    const g = (o,k) => (o && o[k] > 0) ? o[k] : 0;
+    const descCache = {};
+    const desc = c => descCache[c] !== undefined ? descCache[c] : (descCache[c] = _csRawDesc(c));
+    // Columnas: A CÓDIGO · B DESCRIPCIÓN · C TIENDA · D CAMBIO · E FINAL ANTES · F FINAL AHORA · G DIF · H % · I..P detalle
+    const rows = lista.map((x,i) => {
+        const r = r0 + i;
+        return [ {v:x.cod,s:'cod'}, {v:desc(x.cod),s:'t'}, {v:x.tienda,s:'t'}, {v:txt[x.tipo],s:'est'},
+            {v:x.pa,s:'n',n:'#,##0.00;-#,##0.00;"—"'}, {v:x.pb,s:'n',n:'#,##0.00;-#,##0.00;"—"'},
+            {v:x.pb-x.pa, f:`F${r}-E${r}`, s:'dif', n:'+#,##0.00;[Red]-#,##0.00;0.00'},
+            {v:(x.pa>0&&x.pb>0)?(x.pb-x.pa)/x.pa:0, f:`IF(OR(E${r}=0,F${r}=0),0,(F${r}-E${r})/E${r})`, s:'pct', n:'+0%;-0%;0%'},
+            {v:g(x.antes,'etiqueta'),s:'n'}, {v:g(x.ahora,'etiqueta'),s:'n'},
+            {v:g(x.antes,'menor'),s:'n'},    {v:g(x.ahora,'menor'),s:'n'},
+            {v:g(x.antes,'mayor'),s:'n'},    {v:g(x.ahora,'mayor'),s:'n'},
+            {v:g(x.antes,'oferta'),s:'n'},   {v:g(x.ahora,'oferta'),s:'n'} ];
+    });
+    const cnt = t => lista.filter(x=>x.tipo===t).length;
+    const hoja = {
+        name:'CAMBIOS', tab:XL_C.rojo, titulo:`Cambios de precio — ${a} → ${b} — ${nomTienda}`,
+        sub:`Generado: ${new Date().toLocaleString('es-PE')}  ·  Usa el filtro de la columna TIENDA  ·  Precio final = oferta, si no unitario, si no combo`,
+        widths:[12,42,24,13,12,12,11,9,11,11,11,11,11,11,11,11],
+        header:['CÓDIGO','DESCRIPCIÓN','TIENDA','CAMBIO','FINAL ANTES','FINAL AHORA','DIFERENCIA','%','ETIQ. ANTES','ETIQ. AHORA','UNIT. ANTES','UNIT. AHORA','COMBO ANTES','COMBO AHORA','OFERTA ANTES','OFERTA AHORA'],
+        hstyle:['hr','hr','hr','hr','h','h','hr','hr','h','h','h','h','h','h','h','h'], rows, filter:true,
+        total:['TOTAL', {v:n,f:`SUBTOTAL(103,A${r0}:A${rf})`,s:'tot',n:'#,##0" filas"'}, '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        cf:[
+            { ref:`D${r0}:D${rf}`, rules:[
+                { type:'cellIs', operator:'equal', formulae:['"SUBIÓ"'], color:'rojo', bold:true },
+                { type:'cellIs', operator:'equal', formulae:['"BAJÓ"'], color:'verde', bold:true },
+                { type:'cellIs', operator:'equal', formulae:['"NUEVO"'], color:'azul', bold:true },
+                { type:'cellIs', operator:'equal', formulae:['"YA NO ESTÁ"'], color:'gris', bold:true },
+                { type:'cellIs', operator:'equal', formulae:['"CAMBIÓ"'], color:'ambar', bold:true } ] },
+            { ref:`G${r0}:H${rf}`, rules:[
+                { type:'cellIs', operator:'greaterThan', formulae:['0'], color:'rojoS', bold:true },
+                { type:'cellIs', operator:'lessThan', formulae:['0'], color:'verdeS', bold:true } ] }
+        ]
+    };
+    const D = `CAMBIOS!D${r0}:D${rf}`, Ct = `CAMBIOS!C${r0}:C${rf}`;
+    const hr = xlHojaResumen(`Resumen — ${a} → ${b}`, `Tienda: ${nomTienda}  ·  Generado: ${new Date().toLocaleString('es-PE')}`, [
+        ['Filas con cambios', { v:n, f:`COUNTA(CAMBIOS!A${r0}:A${rf})`, s:'big' }, tSel === '*' ? 'Código × tienda' : 'Total de filas en la hoja CAMBIOS'],
+        ['📈 Subieron de precio', { v:cnt('subio'), f:`COUNTIF(${D},"SUBIÓ")`, s:'big' }, 'Precio final mayor que antes'],
+        ['📉 Bajaron de precio', { v:cnt('bajo'), f:`COUNTIF(${D},"BAJÓ")`, s:'big' }, 'Precio final menor que antes'],
+        ['🆕 Nuevos', { v:cnt('nuevo'), f:`COUNTIF(${D},"NUEVO")`, s:'big' }, 'Solo están en el libro nuevo'],
+        ['🚫 Ya no están', { v:cnt('retirado'), f:`COUNTIF(${D},"YA NO ESTÁ")`, s:'big' }, 'Solo estaban en el libro anterior'],
+        ['🔁 Otro cambio', { v:cnt('cambio'), f:`COUNTIF(${D},"CAMBIÓ")`, s:'big' }, 'Cambió etiqueta u otro precio, no el final'],
+        ['Tienda', { v:nomTienda, s:'k' }, ''], ['Libro ANTES', { v:a, s:'k' }, ''], ['Libro AHORA', { v:b, s:'k' }, '']
+    ]);
+    const hojas = [hr, hoja];
+    // Hoja POR TIENDA: conteos con COUNTIFS (se actualizan si editas la hoja CAMBIOS)
+    const tiendas = [...new Set(lista.map(x => x.tienda))];
+    if (tiendas.length > 1) {
+        const por = {}; lista.forEach(x => { const o = por[x.tienda] || (por[x.tienda] = {subio:0,bajo:0,nuevo:0,retirado:0,cambio:0}); o[x.tipo]++; });
+        tiendas.sort((x,y) => (por[y].subio+por[y].bajo) - (por[x].subio+por[x].bajo) || (x<y?-1:1));
+        const p0 = 4, pf = p0 + tiendas.length - 1;
+        const cols = [['subio','SUBIÓ'],['bajo','BAJÓ'],['nuevo','NUEVO'],['retirado','YA NO ESTÁ'],['cambio','CAMBIÓ']];
+        const prow = tiendas.map((t,i) => {
+            const r = p0 + i, o = por[t];
+            return [ {v:t,s:'k'} ].concat(cols.map(([k,lab]) => ({ v:o[k], f:`COUNTIFS(${Ct},$A${r},${D},"${lab}")`, s:'n' })))
+                .concat([ { v:o.subio+o.bajo+o.nuevo+o.retirado+o.cambio, f:`SUM(B${r}:F${r})`, s:'n0' } ]);
+        });
+        const sumC = k => tiendas.reduce((s,t)=>s+por[t][k],0);
+        hojas.push({
+            name:'POR TIENDA', tab:XL_C.negro, titulo:`Cambios por tienda — ${a} → ${b}`, sub:'Conteos con fórmula sobre la hoja CAMBIOS · ordenado por subidas + bajadas',
+            widths:[30,11,11,11,13,11,11], header:['TIENDA','📈 SUBIÓ','📉 BAJÓ','🆕 NUEVO','🚫 YA NO ESTÁ','🔁 CAMBIÓ','TOTAL'],
+            hstyle:['hr','hr','hr','h','h','h','hr'], rows:prow, filter:true,
+            total:['TOTAL'].concat(cols.map(([k],j) => { const L = String.fromCharCode(66+j); return { v:sumC(k), f:`SUBTOTAL(109,${L}${p0}:${L}${pf})`, s:'tot' }; }), [{ v:n, f:`SUBTOTAL(109,G${p0}:G${pf})`, s:'tot' }]),
+            cf:[ { ref:`B${p0}:B${pf}`, rules:[{ type:'cellIs', operator:'greaterThan', formulae:['0'], color:'rojo', bold:true }] },
+                 { ref:`C${p0}:C${pf}`, rules:[{ type:'cellIs', operator:'greaterThan', formulae:['0'], color:'verde', bold:true }] } ]
+        });
+    }
+    const lim = s => s.replace(/[^a-zA-Z0-9_\-]/g,'_').slice(0,30);
+    const sufT = !tSel ? '' : '_' + lim(tSel === '*' ? 'TODAS' : tSel);
+    xlExportar({ hojas }, 'cambios_precio_' + lim(a) + '_vs_' + lim(b) + sufT + '.xlsx',
+        `🔔 CAMBIOS DE PRECIO — ${nomTienda}\n• ${a} → ${b}\n• Subieron: ${cnt('subio')} | Bajaron: ${cnt('bajo')} | Nuevos: ${cnt('nuevo')} | Ya no: ${cnt('retirado')}`);
+}
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v27.06 — NUBE (Firebase Realtime Database) + USUARIOS CON PERMISOS
+//   • Conteo de inventario/guía compartido en vivo entre celulares
+//   • Almacén compartido (ingresos/retiros de todos)
+//   • Bases y precios: el admin/supervisor los envía y los demás los reciben
+//   • Usuarios con PIN y 3 roles: admin · supervisor · vendedor
+// Se usa la API REST de Firebase + EventSource (sin librerías externas).
+// Si la nube no está configurada, la app funciona EXACTAMENTE igual que antes.
+// ══════════════════════════════════════════════════════════════════════
+const SY_K = {
+    cfg:'pieers_sync_cfg', ses:'pieers_sync_sesion', usr:'pieers_sync_usuarios', cola:'pieers_sync_cola',
+    conteo:'pieers_sync_conteo', hids:'pieers_sync_hist_ids', almver:'pieers_sync_almver', almids:'pieers_sync_alm_ids',
+    basesver:'pieers_sync_basesver', usrver:'pieers_sync_usrver'
+};
+const SY_ROLES = { admin:'Administrador', supervisor:'Supervisor', vendedor:'Vendedor' };
+const SY_PERM  = {
+    cargar:['admin','supervisor'], exportar:['admin','supervisor'], borrar:['admin','supervisor'],
+    publicar:['admin','supervisor'], config:['admin']
+};
+const SY_BASES_KEYS = ['pieers_cs_db','pieers_cs_precios','pieers_cs_mayor','pieers_cs_libros_raw'];
+
+const _syJ = (k, d) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch(e) { return d; } };
+const _syS = (k, v) => { try { if (v === null || v === undefined) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} };
+
+let syCfg = _syJ(SY_K.cfg, null);          // { url, clave }
+let sySes = _syJ(SY_K.ses, null);          // { id, n, r }
+let syUsuarios = _syJ(SY_K.usr, {});       // { id: { n, r, h } }
+let syCola = _syJ(SY_K.cola, []);          // escrituras pendientes (sin internet)
+let syMeta = {};                           // espejo de /meta
+let syOnline = false;
+let syConteoId = _syJ(SY_K.conteo, null);  // conteo compartido activo en este celular
+let syHistIds = _syJ(SY_K.hids, []);       // id de nube de cada lectura de historial (mismo orden)
+let syConteoVivo = { lect:{}, pres:{} };   // espejo de /conteos/{id}/vivo
+let syAlmIds = _syJ(SY_K.almids, {});      // movimientos de almacén ya aplicados: id → {cod,tipo,cant}
+
+function syActivo() { return !!(syCfg && sySes); }
+function pPuede(accion) { if (!syActivo()) return true; return (SY_PERM[accion] || []).includes(sySes.r); }
+function syDenegar() { showToast('🔒 Tu usuario (' + (SY_ROLES[sySes && sySes.r] || '') + ') no tiene permiso para esto', '#B71C1C', 3000); }
+function syId(p) { return (p || '') + Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+function syEsc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// ── HTTP ──
+function syBase() { return syCfg.url.replace(/\/+$/, '') + '/pieers/' + syCfg.clave; }
+function syUrl(path) { return syBase() + (path ? '/' + path : '') + '.json'; }
+async function syReq(method, path, data) {
+    const opt = { method, headers:{ 'Content-Type':'application/json' } };
+    if (data !== undefined) opt.body = JSON.stringify(data);
+    const r = await fetch(syUrl(path), opt);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const t = await r.text();
+    return t ? JSON.parse(t) : null;
+}
+// Cola de escrituras: si no hay internet se guardan y se envían después
+function syEncolar(m, p, d) { syCola.push({ m, p, d }); _syS(SY_K.cola, syCola); syFlush(); }
+let _syFlushing = false, _syFlushTimer = null;
+async function syFlush() {
+    if (_syFlushing || !syCfg) return;
+    _syFlushing = true; clearTimeout(_syFlushTimer);
+    try {
+        while (syCola.length) {
+            const op = syCola[0];
+            _sySent[op.p] = { t: Date.now(), m: op.m };   // antes de enviar: el eco puede llegar antes que la respuesta
+            await syReq(op.m, op.p, op.d);
+            syCola.shift(); _syS(SY_K.cola, syCola);
+        }
+        syEstado(true);
+    } catch(e) {
+        syEstado(false);
+        _syFlushTimer = setTimeout(syFlush, 6000);
+    } finally { _syFlushing = false; syPintarChip(); }
+}
+window.addEventListener('online', () => { syFlush(); syReconectar(); });
+
+// ── STREAMS (tiempo real) ──
+const syStreams = {};
+function _syAplicar(obj, path, data, patch) {
+    const partes = String(path || '/').split('/').filter(Boolean);
+    if (!partes.length) {
+        if (patch) { obj = (obj && typeof obj === 'object') ? obj : {}; Object.keys(data || {}).forEach(k => { if (data[k] === null) delete obj[k]; else obj[k] = data[k]; }); return obj; }
+        return data === null ? {} : data;
+    }
+    obj = (obj && typeof obj === 'object') ? obj : {};
+    let o = obj;
+    for (let i = 0; i < partes.length - 1; i++) { if (!o[partes[i]] || typeof o[partes[i]] !== 'object') o[partes[i]] = {}; o = o[partes[i]]; }
+    const k = partes[partes.length - 1];
+    if (patch) { const dst = (o[k] && typeof o[k] === 'object') ? o[k] : (o[k] = {}); Object.keys(data || {}).forEach(x => { if (data[x] === null) delete dst[x]; else dst[x] = data[x]; }); }
+    else if (data === null) delete o[k]; else o[k] = data;
+    return obj;
+}
+function syEscuchar(nombre, path, onCambio) {
+    syCerrar(nombre);
+    let espejo = {};
+    let es;
+    try { es = new EventSource(syUrl(path)); } catch(e) { syEstado(false); return; }
+    const h = (patch) => (ev) => {
+        try { const d = JSON.parse(ev.data); if (!d) return; espejo = _syAplicar(espejo, d.path, d.data, patch); onCambio(espejo, d.path); } catch(x) { console.warn('sync evt', x); }
+    };
+    es.addEventListener('put', h(false));
+    es.addEventListener('patch', h(true));
+    es.addEventListener('cancel', () => { syEstado(false); });
+    es.onopen = () => syEstado(true);
+    es.onerror = () => syEstado(false);
+    syStreams[nombre] = { es, path, onCambio };
+}
+function syCerrar(nombre) { const s = syStreams[nombre]; if (s) { try { s.es.close(); } catch(e) {} delete syStreams[nombre]; } }
+function syCerrarTodo() { Object.keys(syStreams).forEach(syCerrar); }
+function syReconectar() {
+    Object.keys(syStreams).forEach(n => { const s = syStreams[n]; if (s.es.readyState === 2) syEscuchar(n, s.path, s.onCambio); });
+}
+function syEstado(on) { if (syOnline !== on) { syOnline = on; syPintarChip(); } }
+
+// ── PIN (hash) ──
+async function syHash(pin, uid) {
+    const txt = 'pieers|' + uid + '|' + pin;
+    try {
+        if (window.crypto && crypto.subtle) {
+            const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt));
+            return Array.from(new Uint8Array(b)).map(x => x.toString(16).padStart(2, '0')).join('');
+        }
+    } catch(e) {}
+    let h1 = 5381, h2 = 52711;
+    for (let i = 0; i < txt.length; i++) { const c = txt.charCodeAt(i); h1 = (h1 * 33) ^ c; h2 = (h2 * 31) ^ c; }
+    return 'f' + (h1 >>> 0).toString(16) + (h2 >>> 0).toString(16);
+}
+
+// ══ ROLES: ocultar lo que no se puede usar (clase en <html>, la app no la toca) ══
+function syAplicarRol() {
+    const html = document.documentElement;
+    ['rol-admin','rol-supervisor','rol-vendedor','sy-on'].forEach(c => html.classList.remove(c));
+    if (syActivo()) { html.classList.add('sy-on'); html.classList.add('rol-' + sySes.r); }
+    syPintarChip();
+}
+// Envolver funciones: si no hay permiso, no se ejecutan
+function syEnvolver(nombre, accion, antes) {
+    const orig = window[nombre];
+    if (typeof orig !== 'function' || orig._sy) return;
+    const w = function() {
+        if (accion && !pPuede(accion)) {
+            const a0 = arguments[0];
+            if (a0 && a0.target && 'value' in a0.target) { try { a0.target.value = ''; } catch(e) {} }
+            syDenegar(); return;
+        }
+        if (antes && antes.apply(this, arguments) === false) return;
+        return orig.apply(this, arguments);
+    };
+    w._sy = true; w._orig = orig;
+    window[nombre] = w;
+}
+const _syBloqueoConteo = function() {
+    if (syConteoId && (arguments[0] === 'comp' || arguments[0] === 'maestro' || arguments[0] === 'guia-comp' || arguments[0] === 'stock')) {
+        showToast('☁️ Estás en un conteo compartido. Sal del conteo para cargar otra guía.', '#1565C0', 3500); return false;
+    }
+};
+[['abrirSubCarga','cargar',_syBloqueoConteo], ['driveAbrirModal','cargar',_syBloqueoConteo], ['csLoadPrecios','cargar'],
+ ['guardarLote','exportar'], ['exportarExcel','exportar'], ['almExportar','exportar'], ['almExportarSnap','exportar'],
+ ['csExportarExcel','exportar'], ['csExportarCambiosExcel','exportar'], ['almGuardarSnapshot','exportar'],
+ ['resetearModulo','borrar'], ['csBorrarDB','borrar'], ['csConfirmarLimpiarPrecios','borrar'], ['csEliminarLibro','borrar'],
+ ['almEliminarSnap','borrar'], ['eliminarLote','borrar'], ['resetearApp','config'], ['abrirConfigPIN','config']
+].forEach(([n, a, f]) => syEnvolver(n, a, f));
+
+// ══ CHIP DE ESTADO (inicio + menú) ══
+function syPintarChip() {
+    const chip = document.getElementById('sy-chip');
+    if (chip) {
+        if (!syCfg) chip.innerHTML = '☁️ <b>Nube y usuarios</b> · sin configurar';
+        else if (!sySes) chip.innerHTML = '☁️ Nube · <b>inicia sesión</b>';
+        else chip.innerHTML = (syOnline ? '🟢' : '🟠') + ' <b>' + syEsc(sySes.n) + '</b> · ' + SY_ROLES[sySes.r] + (syCola.length ? ' · ⏳' + syCola.length : '') + (syConteoId ? ' · 📋 conteo' : '');
+    }
+    const bt = document.getElementById('badge-txt');
+    if (bt && typeof modoActual !== 'undefined' && modoActual === 'comp') {
+        const base = bt.textContent.replace(/^☁️ /, '');
+        bt.textContent = (syConteoId ? '☁️ ' : '') + base;
+    }
+}
+
+// ══ ARRANQUE ══
+function syIniciar() {
+    syAplicarRol();
+    if (!syCfg) return;
+    if (!sySes) { syMostrarLogin(); return; }
+    syEscucharMeta();
+    if (syConteoId) syConteoConectar(false);
+    syFlush();
+    if (!syIniciar._t) syIniciar._t = setInterval(() => { if (syConteoId) syPresencia(); }, 25000);
+}
+function syEscucharMeta() {
+    syEscuchar('meta', 'meta', (m) => {
+        const antes = syMeta; syMeta = m || {};
+        // Usuarios cambiaron → refrescar lista (rol, PIN, eliminado)
+        if ((syMeta.usrVer || 0) > (_syJ(SY_K.usrver, 0) || 0)) syRefrescarUsuarios();
+        // Bases nuevas
+        if ((syMeta.basesVer || 0) > (_syJ(SY_K.basesver, 0) || 0) && syMeta.basesPor !== (sySes && sySes.id)) syOfrecerBases();
+        // Almacén
+        syAlmRevisar();
+        // Conteo cerrado por un supervisor
+        if (syConteoId && syMeta.conteos && syMeta.conteos[syConteoId] && syMeta.conteos[syConteoId].estado === 'cerrado') {
+            const c = syMeta.conteos[syConteoId];
+            syConteoSalir(true);
+            mostrarConfirm('🔒 Conteo cerrado', (c.cerradoPor || 'El supervisor') + ' cerró el conteo "' + (c.n || '') + '". Tu conteo queda en este celular: guárdalo como reporte si lo necesitas.', null);
+        }
+        const mc = document.getElementById('sy-modal'); if (mc && mc.style.display === 'flex' && mc.dataset.vista === 'conteo') syVistaConteo();
+    });
+}
+async function syRefrescarUsuarios() {
+    try {
+        const u = await syReq('GET', 'usuarios'); syUsuarios = u || {}; _syS(SY_K.usr, syUsuarios);
+        _syS(SY_K.usrver, syMeta.usrVer || 0);
+        if (sySes) {
+            const yo = syUsuarios[sySes.id];
+            if (!yo) { syCerrarSesion(true); showToast('⚠️ Tu usuario fue eliminado por el administrador', '#B71C1C', 4000); return; }
+            if (yo.r !== sySes.r || yo.n !== sySes.n) { sySes.r = yo.r; sySes.n = yo.n; _syS(SY_K.ses, sySes); syAplicarRol(); showToast('👤 Tu rol ahora es: ' + SY_ROLES[yo.r], '#1565C0'); }
+        }
+    } catch(e) {}
+}
+
+// ══ MODAL GENÉRICO ══
+function syModal(vista, html) {
+    let m = document.getElementById('sy-modal');
+    if (!m) {
+        m = document.createElement('div'); m.id = 'sy-modal';
+        m.innerHTML = '<div class="sy-box"><div class="sy-head"><div id="sy-tit"></div><button class="sy-x" onclick="syCerrarModal()">✕</button></div><div id="sy-body"></div></div>';
+        document.body.appendChild(m);
+        m.addEventListener('click', e => { if (e.target === m) syCerrarModal(); });
+    }
+    m.dataset.vista = vista;
+    const tit = { nube:'☁️ NUBE Y USUARIOS', conteo:'☁️ CONTEO COMPARTIDO', alm:'☁️ ALMACÉN COMPARTIDO', bases:'☁️ BASES Y PRECIOS' }[vista] || '☁️ NUBE';
+    document.getElementById('sy-tit').textContent = tit;
+    document.getElementById('sy-body').innerHTML = html;
+    m.style.display = 'flex';
+}
+function syCerrarModal() { const m = document.getElementById('sy-modal'); if (m) m.style.display = 'none'; }
+
+// ══ PANEL NUBE Y USUARIOS ══
+const SY_REGLAS = '{\n  "rules": {\n    ".read": false,\n    ".write": false,\n    "pieers": {\n      "$tienda": {\n        ".read": "$tienda.length >= 16",\n        ".write": "$tienda.length >= 16"\n      }\n    }\n  }\n}';
+function syAbrirNube() {
+    try { const mc = document.getElementById('menuContent'); if (mc) mc.style.display = 'none'; } catch(e) {}
+    if (!syCfg) return syVistaConfigurar();
+    if (!sySes) return syMostrarLogin();
+    syVistaPanel();
+}
+function syVistaConfigurar() {
+    syModal('nube', ''
+        + '<div class="sy-p">Con la nube, varios celulares ven <b>el mismo conteo en vivo</b>, comparten el <b>almacén</b> y reciben las <b>bases y precios</b> que tú cargas. Cada persona entra con su usuario y PIN.</div>'
+        + '<details class="sy-card"><summary>📘 Paso 1 — Crear tu base Firebase (gratis, 5 min)</summary><ol class="sy-ol">'
+        + '<li>Entra a <b>console.firebase.google.com</b> con tu Gmail.</li>'
+        + '<li><b>Crear proyecto</b> → nombre: <i>pieers-067</i> → desactiva Analytics → Crear.</li>'
+        + '<li>Menú <b>Compilación → Realtime Database</b> → <b>Crear base de datos</b> → ubicación <i>us-central1</i> → <b>Modo bloqueado</b> → Habilitar.</li>'
+        + '<li>Pestaña <b>Reglas</b>: borra todo, pega estas reglas y toca <b>Publicar</b>:</li></ol>'
+        + '<pre class="sy-pre" id="sy-reglas">' + syEsc(SY_REGLAS) + '</pre><button class="sy-btn sy-sec" onclick="syCopiar(document.getElementById(\'sy-reglas\').textContent)">📋 Copiar reglas</button>'
+        + '<ol class="sy-ol" start="5"><li>Pestaña <b>Datos</b>: copia la dirección de arriba (termina en <i>firebaseio.com</i> o <i>firebasedatabase.app</i>) y pégala abajo.</li></ol></details>'
+        + '<div class="sy-card"><div class="sy-h">👑 Paso 2 — Crear la tienda (solo el administrador, una vez)</div>'
+        + '<input id="sy-url" class="sy-in" placeholder="https://pieers-067-default-rtdb.firebaseio.com" autocomplete="off">'
+        + '<input id="sy-nom" class="sy-in" placeholder="Tu nombre (ej. Jorge)" autocomplete="off">'
+        + '<input id="sy-pin" class="sy-in" placeholder="Tu PIN (4 a 6 números)" inputmode="numeric" type="password" maxlength="6">'
+        + '<button class="sy-btn" onclick="syCrearTienda()">✅ CREAR TIENDA EN LA NUBE</button></div>'
+        + '<div class="sy-card"><div class="sy-h">📲 ¿Otro celular? Únete con el código</div>'
+        + '<textarea id="sy-cod" class="sy-in" rows="2" placeholder="Pega aquí el código de enlace que te envió el administrador"></textarea>'
+        + '<button class="sy-btn sy-dark" onclick="syUnirse()">🔗 UNIRME A LA TIENDA</button></div>');
+}
+function syCodigoEnlace() { return 'PIEERS1:' + btoa(unescape(encodeURIComponent(syCfg.url + '|' + syCfg.clave))); }
+function syCopiar(t) {
+    const ok = () => showToast('📋 Copiado', '#111');
+    try { navigator.clipboard.writeText(t).then(ok, () => { _syCopiarViejo(t); ok(); }); } catch(e) { _syCopiarViejo(t); ok(); }
+}
+function _syCopiarViejo(t) { const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); } catch(e) {} ta.remove(); }
+function syClaveNueva() { const a = 'abcdefghijkmnpqrstuvwxyz23456789'; let s = 't'; const r = new Uint8Array(23); (window.crypto || {}).getRandomValues ? crypto.getRandomValues(r) : r.forEach((_, i) => r[i] = Math.random() * 256); r.forEach(x => s += a[x % a.length]); return s; }
+function _syNormUrl(u) { u = String(u || '').trim(); if (u && !/^https?:\/\//i.test(u)) u = 'https://' + u; return u.replace(/\/+$/, ''); }
+async function syCrearTienda() {
+    const url = _syNormUrl(document.getElementById('sy-url').value), nom = document.getElementById('sy-nom').value.trim(), pin = document.getElementById('sy-pin').value.trim();
+    if (!/^https?:\/\/.+\..+/.test(url)) return showToast('⚠️ Pega la dirección de tu Realtime Database', '#E65100');
+    if (!nom) return showToast('⚠️ Escribe tu nombre', '#E65100');
+    if (!/^\d{4,6}$/.test(pin)) return showToast('⚠️ El PIN debe tener 4 a 6 números', '#E65100');
+    showLoading('Creando tienda en la nube...');
+    const cfg = { url, clave: syClaveNueva() };
+    const prev = syCfg; syCfg = cfg;
+    try {
+        const uid = syId('u');
+        const usr = { n: nom, r: 'admin', h: await syHash(pin, uid) };
+        await syReq('PUT', 'usuarios/' + uid, usr);
+        await syReq('PATCH', 'meta', { creada: Date.now(), usrVer: Date.now() });
+        syUsuarios = { [uid]: usr }; _syS(SY_K.usr, syUsuarios);
+        _syS(SY_K.cfg, cfg);
+        sySes = { id: uid, n: nom, r: 'admin' }; _syS(SY_K.ses, sySes);
+        hideLoading(); syIniciar(); syVistaPanel();
+        showToast('✅ Tienda creada. Envía el código de enlace a los otros celulares.', '#2E7D32', 4000);
+    } catch(e) {
+        syCfg = prev; hideLoading();
+        mostrarConfirm('❌ No se pudo conectar', 'Revisa: 1) la dirección de la base, 2) que publicaste las reglas, 3) que tienes internet.\n\nDetalle: ' + e.message, null);
+    }
+}
+async function syUnirse() {
+    const raw = document.getElementById('sy-cod').value.trim();
+    let url = '', clave = '';
+    try { const t = decodeURIComponent(escape(atob(raw.replace(/^PIEERS1:/, '').trim()))); [url, clave] = t.split('|'); } catch(e) {}
+    if (!url || !clave) return showToast('⚠️ Código de enlace no válido', '#E65100');
+    showLoading('Conectando...');
+    const prev = syCfg; syCfg = { url, clave };
+    try {
+        const u = await syReq('GET', 'usuarios');
+        if (!u || !Object.keys(u).length) throw new Error('La tienda no existe o no tiene usuarios');
+        syUsuarios = u; _syS(SY_K.usr, u); _syS(SY_K.cfg, syCfg);
+        hideLoading(); syCerrarModal(); syMostrarLogin();
+    } catch(e) { syCfg = prev; hideLoading(); mostrarConfirm('❌ No se pudo unir', 'Detalle: ' + e.message, null); }
+}
+
+// ══ LOGIN ══
+let _syLoginSel = null;
+function syMostrarLogin() {
+    let o = document.getElementById('sy-login');
+    if (!o) { o = document.createElement('div'); o.id = 'sy-login'; document.body.appendChild(o); }
+    const us = Object.entries(syUsuarios || {}).sort((a, b) => (a[1].n || '').localeCompare(b[1].n || ''));
+    o.innerHTML = '<div class="sy-lbox"><div class="sy-ltit"><span style="color:#C62828">P</span>IEERS PRO ☁️</div><div class="sy-lsub">¿Quién eres?</div>'
+        + '<div class="sy-lus">' + (us.length ? us.map(([id, u]) => '<button class="sy-lu' + (_syLoginSel === id ? ' sel' : '') + '" onclick="_syLoginSel=\'' + id + '\';syMostrarLogin()"><b>' + syEsc(u.n) + '</b><span>' + SY_ROLES[u.r] + '</span></button>').join('') : '<div class="sy-p">No hay usuarios. Toca 🔄.</div>') + '</div>'
+        + '<input id="sy-lpin" class="sy-in" placeholder="PIN" inputmode="numeric" type="password" maxlength="6" onkeydown="if(event.key===\'Enter\')syLogin()">'
+        + '<button class="sy-btn" onclick="syLogin()">ENTRAR</button>'
+        + '<div class="sy-lfoot"><a onclick="syLoginRefrescar()">🔄 Actualizar usuarios</a> · <a onclick="syDesconectarPedir()">Desconectar este celular</a></div></div>';
+    o.style.display = 'flex';
+    setTimeout(() => { const i = document.getElementById('sy-lpin'); if (i && _syLoginSel) i.focus(); }, 100);
+}
+async function syLoginRefrescar() { try { const u = await syReq('GET', 'usuarios'); if (u) { syUsuarios = u; _syS(SY_K.usr, u); } syMostrarLogin(); } catch(e) { showToast('⚠️ Sin conexión — se usan los usuarios guardados', '#E65100'); } }
+async function syLogin() {
+    const id = _syLoginSel, pin = (document.getElementById('sy-lpin') || {}).value || '';
+    if (!id) return showToast('👆 Elige tu nombre', '#E65100');
+    const u = syUsuarios[id]; if (!u) return;
+    if ((await syHash(pin, id)) !== u.h) { showToast('❌ PIN incorrecto', '#B71C1C'); try { vibrar && vibrar([60, 40, 60]); } catch(e) {} return; }
+    sySes = { id, n: u.n, r: u.r }; _syS(SY_K.ses, sySes);
+    const o = document.getElementById('sy-login'); if (o) o.style.display = 'none';
+    _syLoginSel = null;
+    syIniciar();
+    showToast('👋 Hola ' + u.n + ' (' + SY_ROLES[u.r] + ')', '#111');
+}
+function syCerrarSesion(forzado) {
+    if (syConteoId) syConteoSalir(true);
+    syCerrarTodo(); sySes = null; _syS(SY_K.ses, null); syAplicarRol(); syCerrarModal();
+    if (syCfg) syMostrarLogin();
+}
+// Desconectar el celular de la nube: requiere el PIN de un administrador
+function syDesconectarPedir() {
+    pPedirTexto('🔌 Desconectar celular', 'PIN de un ADMINISTRADOR para desconectar este celular de la nube:', '', async function(pin) {
+        if (!pin) return;
+        for (const [id, u] of Object.entries(syUsuarios || {})) {
+            if (u.r === 'admin' && (await syHash(pin, id)) === u.h) { syDesconectar(); return; }
+        }
+        showToast('❌ PIN de administrador incorrecto', '#B71C1C');
+    });
+}
+function syDesconectar() {
+    if (syConteoId) syConteoSalir(true);
+    syCerrarTodo();
+    Object.values(SY_K).forEach(k => _syS(k, null));
+    syCfg = null; sySes = null; syUsuarios = {}; syCola = []; syConteoId = null; syHistIds = []; syAlmIds = {};
+    const o = document.getElementById('sy-login'); if (o) o.style.display = 'none';
+    syCerrarModal(); syAplicarRol();
+    showToast('🔌 Celular desconectado de la nube. La app funciona como antes.', '#555', 3500);
+}
+
+function syVistaPanel() {
+    const esAdmin = sySes.r === 'admin';
+    const us = Object.entries(syUsuarios || {}).sort((a, b) => ({admin:0,supervisor:1,vendedor:2}[a[1].r] - {admin:0,supervisor:1,vendedor:2}[b[1].r]) || (a[1].n||'').localeCompare(b[1].n||''));
+    let h = '<div class="sy-card sy-row"><div><div class="sy-h">' + (syOnline ? '🟢 Conectado' : '🟠 Sin conexión (se guarda y se envía después)') + '</div>'
+        + '<div class="sy-p">👤 <b>' + syEsc(sySes.n) + '</b> · ' + SY_ROLES[sySes.r] + (syCola.length ? ' · ⏳ ' + syCola.length + ' pendiente(s)' : '') + '</div></div>'
+        + '<button class="sy-btn sy-sec sy-mini" onclick="syCerrarSesion()">Cerrar sesión</button></div>';
+    h += '<div class="sy-card"><div class="sy-h">🔁 Compartir</div><div class="sy-grid">'
+        + '<button class="sy-btn sy-dark" onclick="syAbrirConteo()">📋 Conteo compartido</button>'
+        + '<button class="sy-btn sy-dark" onclick="syAbrirAlm()">🏪 Almacén compartido</button>'
+        + '<button class="sy-btn sy-dark" onclick="syAbrirBases()">💰 Bases y precios</button></div></div>';
+    if (esAdmin) {
+        h += '<div class="sy-card"><div class="sy-h">🔗 Código de enlace (para otros celulares)</div>'
+            + '<div class="sy-pre sy-cod">' + syEsc(syCodigoEnlace()) + '</div>'
+            + '<div class="sy-grid2"><button class="sy-btn sy-sec" onclick="syCopiar(syCodigoEnlace())">📋 Copiar</button>'
+            + '<button class="sy-btn sy-wa" onclick="window.open(\'https://wa.me/?text=\'+encodeURIComponent(\'Código para entrar a PIEERS PRO (nube): \'+syCodigoEnlace()))">WhatsApp</button></div>'
+            + '<div class="sy-p" style="font-size:10.5px;">⚠️ Este código da acceso a los datos de tu tienda: compártelo solo con tu equipo.</div></div>';
+        h += '<div class="sy-card"><div class="sy-h">👥 Usuarios</div>' + us.map(([id, u]) =>
+            '<div class="sy-urow"><div class="sy-uname"><b>' + syEsc(u.n) + '</b>' + (id === sySes.id ? ' <span class="sy-tag">tú</span>' : '') + '</div>'
+            + '<select class="sy-sel" onchange="syCambiarRol(\'' + id + '\',this.value)">' + Object.keys(SY_ROLES).map(r => '<option value="' + r + '"' + (u.r === r ? ' selected' : '') + '>' + SY_ROLES[r] + '</option>').join('') + '</select>'
+            + '<button class="sy-ib" title="Cambiar PIN" onclick="syCambiarPin(\'' + id + '\')">🔑</button>'
+            + '<button class="sy-ib" title="Eliminar" onclick="syEliminarUsuario(\'' + id + '\')">🗑️</button></div>').join('')
+            + '<div class="sy-add"><input id="sy-nu-n" class="sy-in" placeholder="Nombre (ej. Karen)"><div class="sy-grid2">'
+            + '<select id="sy-nu-r" class="sy-in"><option value="vendedor">Vendedor</option><option value="supervisor">Supervisor</option><option value="admin">Administrador</option></select>'
+            + '<input id="sy-nu-p" class="sy-in" placeholder="PIN 4-6" inputmode="numeric" type="password" maxlength="6"></div>'
+            + '<button class="sy-btn" onclick="syAgregarUsuario()">➕ AGREGAR USUARIO</button></div>'
+            + '<div class="sy-p" style="font-size:10.5px;"><b>Admin:</b> todo. <b>Supervisor:</b> cargar, exportar, crear/cerrar conteos, enviar bases. <b>Vendedor:</b> escanear, contar, retiros/ingresos y consultar precio.</div></div>';
+        h += '<button class="sy-btn sy-sec" style="color:#B71C1C;border-color:#B71C1C" onclick="mostrarConfirm(\'Desconectar\',\'¿Desconectar este celular de la nube? Los datos de la nube no se borran.\',syDesconectar)">🔌 Desconectar este celular</button>';
+    }
+    syModal('nube', h);
+}
+async function _syUsuariosGuardar(id, data) {
+    if (data === null) delete syUsuarios[id]; else syUsuarios[id] = data;
+    _syS(SY_K.usr, syUsuarios);
+    const v = Date.now(); _syS(SY_K.usrver, v);
+    syEncolar(data === null ? 'DELETE' : 'PUT', 'usuarios/' + id, data === null ? undefined : data);
+    syEncolar('PATCH', 'meta', { usrVer: v });
+}
+async function syAgregarUsuario() {
+    if (!pPuede('config')) return syDenegar();
+    const n = document.getElementById('sy-nu-n').value.trim(), r = document.getElementById('sy-nu-r').value, p = document.getElementById('sy-nu-p').value.trim();
+    if (!n) return showToast('⚠️ Escribe el nombre', '#E65100');
+    if (!/^\d{4,6}$/.test(p)) return showToast('⚠️ PIN de 4 a 6 números', '#E65100');
+    const id = syId('u');
+    await _syUsuariosGuardar(id, { n, r, h: await syHash(p, id) });
+    showToast('✅ Usuario ' + n + ' creado', '#2E7D32'); syVistaPanel();
+}
+function _syAdmins() { return Object.values(syUsuarios).filter(u => u.r === 'admin').length; }
+async function syCambiarRol(id, r) {
+    if (!pPuede('config')) return syDenegar();
+    const u = syUsuarios[id]; if (!u) return;
+    if (u.r === 'admin' && r !== 'admin' && _syAdmins() <= 1) { showToast('⚠️ Debe quedar al menos un administrador', '#E65100'); return syVistaPanel(); }
+    await _syUsuariosGuardar(id, Object.assign({}, u, { r }));
+    if (id === sySes.id) { sySes.r = r; _syS(SY_K.ses, sySes); syAplicarRol(); }
+    showToast('✅ ' + u.n + ' ahora es ' + SY_ROLES[r], '#111'); syVistaPanel();
+}
+function syCambiarPin(id) {
+    if (!pPuede('config')) return syDenegar();
+    const u = syUsuarios[id]; if (!u) return;
+    pPedirTexto('🔑 Nuevo PIN', 'Nuevo PIN para ' + u.n + ' (4 a 6 números):', '', async function(p) {
+        if (!p) return; if (!/^\d{4,6}$/.test(p)) return showToast('⚠️ PIN de 4 a 6 números', '#E65100');
+        await _syUsuariosGuardar(id, Object.assign({}, u, { h: await syHash(p, id) }));
+        showToast('✅ PIN actualizado', '#2E7D32');
+    });
+}
+function syEliminarUsuario(id) {
+    if (!pPuede('config')) return syDenegar();
+    const u = syUsuarios[id]; if (!u) return;
+    if (id === sySes.id) return showToast('⚠️ No puedes eliminar tu propio usuario', '#E65100');
+    if (u.r === 'admin' && _syAdmins() <= 1) return showToast('⚠️ Debe quedar al menos un administrador', '#E65100');
+    mostrarConfirm('Eliminar usuario', '¿Eliminar a ' + u.n + '? Ya no podrá entrar.', async () => { await _syUsuariosGuardar(id, null); syVistaPanel(); });
+}
+
+// ══════════ CONTEO COMPARTIDO ══════════
+function syAbrirConteo() {
+    try { const mc = document.getElementById('menuContent'); if (mc) mc.style.display = 'none'; } catch(e) {}
+    if (!syActivo()) { syAbrirNube(); return; }
+    syVistaConteo();
+}
+function syVistaConteo() {
+    const conteos = Object.entries((syMeta && syMeta.conteos) || {}).sort((a, b) => (b[1].ts || 0) - (a[1].ts || 0));
+    let h = '';
+    if (syConteoId) {
+        const info = (syMeta.conteos || {})[syConteoId] || {};
+        const lect = syConteoVivo.lect || {}, pres = syConteoVivo.pres || {};
+        const porU = {}; Object.values(lect).forEach(l => { porU[l.u] = (porU[l.u] || 0) + 1; });
+        const total = Object.keys(lect).length, ahora = Date.now();
+        const nombres = new Set([...Object.keys(porU), ...Object.values(pres).map(p => p.n)]);
+        const filas = [...nombres].map(n => { const p = Object.values(pres).find(x => x.n === n); return { n, c: porU[n] || 0, on: p && ahora - p.t < 70000 }; }).sort((a, b) => b.c - a.c);
+        const esp = [...maestroMap.values()].reduce((a, v) => a + (v.exp || 0), 0);
+        h += '<div class="sy-card"><div class="sy-h">📋 ' + syEsc(info.n || 'Conteo') + '</div>'
+            + '<div class="sy-p">Creado por ' + syEsc(info.por || '') + ' · ' + (info.ts ? new Date(info.ts).toLocaleString('es-PE') : '') + '</div>'
+            + '<div class="sy-kpis"><div><b>' + total.toLocaleString() + '</b><span>leídas</span></div><div><b>' + esp.toLocaleString() + '</b><span>esperadas</span></div><div><b>' + (esp ? Math.round(Math.min(total, esp) / esp * 100) : 0) + '%</b><span>avance</span></div></div>'
+            + '<div class="sy-h" style="margin-top:8px;">👥 Quién está contando</div>'
+            + (filas.length ? filas.map(f => '<div class="sy-urow"><div class="sy-uname">' + (f.on ? '🟢' : '⚪') + ' <b>' + syEsc(f.n) + '</b>' + (sySes && f.n === sySes.n ? ' <span class="sy-tag">tú</span>' : '') + '</div><div class="sy-cnt">' + f.c.toLocaleString() + '</div></div>').join('') : '<div class="sy-p">Aún nadie escanea.</div>')
+            + '</div><div class="sy-grid2"><button class="sy-btn sy-sec" onclick="syConteoSalirPedir()">🚪 Salir del conteo</button>'
+            + (pPuede('publicar') ? '<button class="sy-btn" style="background:#B71C1C" onclick="syConteoCerrarPedir()">🔒 Cerrar para todos</button>' : '') + '</div>'
+            + '<div class="sy-p" style="font-size:10.5px;">Al terminar, el supervisor cierra el conteo y cada uno puede guardar el reporte con 💾 Guardar Lote.</div>';
+    } else {
+        const abiertos = conteos.filter(([, c]) => c.estado === 'abierto');
+        h += '<div class="sy-card"><div class="sy-h">🟢 Conteos abiertos</div>'
+            + (abiertos.length ? abiertos.map(([id, c]) => '<div class="sy-urow"><div class="sy-uname"><b>' + syEsc(c.n) + '</b><br><span class="sy-p">' + syEsc(c.por || '') + ' · ' + (c.items || 0).toLocaleString() + ' códigos · ' + (c.unid || 0).toLocaleString() + ' unid.</span></div><button class="sy-btn sy-mini" onclick="syConteoUnirse(\'' + id + '\')">UNIRME</button></div>').join('') : '<div class="sy-p">No hay conteos abiertos.</div>')
+            + '</div>';
+        if (pPuede('publicar')) {
+            const items = [...maestroMap.values()].filter(v => v.exp > 0).length;
+            h += '<div class="sy-card"><div class="sy-h">➕ Crear conteo con mi maestro/guía actual</div>'
+                + '<div class="sy-p">' + (items ? 'Tu maestro tiene <b>' + items.toLocaleString() + '</b> códigos. Los demás celulares lo reciben al unirse.' : 'Primero carga el maestro o la guía en INVENTARIO.') + '</div>'
+                + '<input id="sy-cn" class="sy-in" placeholder="Nombre (ej. Guía 128002 / Inventario Octubre)" value="' + syEsc('CONTEO ' + new Date().toLocaleDateString('es-PE')) + '">'
+                + '<button class="sy-btn"' + (items ? '' : ' disabled') + ' onclick="syConteoCrear()">📤 CREAR Y COMPARTIR</button></div>';
+        }
+    }
+    syModal('conteo', h);
+}
+async function syConteoCrear() {
+    if (!pPuede('publicar')) return syDenegar();
+    const n = (document.getElementById('sy-cn').value || '').trim() || 'CONTEO';
+    const maestro = {}, desc = {}; let unid = 0;
+    maestroMap.forEach((v, k) => { if (v.exp > 0) { maestro[k] = v.exp; unid += v.exp; const d = descripcionMap.get(k); if (d) desc[k] = d; } });
+    if (!Object.keys(maestro).length) return showToast('⚠️ Carga primero el maestro', '#E65100');
+    const id = syId('c');
+    showLoading('Compartiendo conteo...');
+    try {
+        await syReq('PUT', 'conteos/' + id + '/maestro', maestro);
+        await syReq('PUT', 'conteos/' + id + '/desc', desc);
+        // Lecturas que ya tenía este celular pasan al conteo compartido
+        const lect = {}; syHistIds = historial.map(c => { const lid = syId('l'); lect[lid] = { c, u: sySes.n, t: Date.now() }; return lid; });
+        await syReq('PUT', 'conteos/' + id + '/vivo', { lect, pres: {} });
+        await syReq('PATCH', 'meta/conteos/' + id, { n, por: sySes.n, ts: Date.now(), estado: 'abierto', items: Object.keys(maestro).length, unid });
+        syConteoId = id; _syS(SY_K.conteo, id); _syS(SY_K.hids, syHistIds);
+        hideLoading(); syConteoConectar(false); syVistaConteo();
+        showToast('✅ Conteo compartido. Los demás pueden unirse desde ☁️.', '#2E7D32', 3500);
+    } catch(e) { hideLoading(); showToast('❌ No se pudo compartir: ' + e.message, '#B71C1C', 4000); }
+}
+function syConteoUnirse(id) {
+    const go = async () => {
+        showLoading('Descargando conteo...');
+        try {
+            const [maestro, desc] = await Promise.all([syReq('GET', 'conteos/' + id + '/maestro'), syReq('GET', 'conteos/' + id + '/desc')]);
+            if (!maestro) throw new Error('El conteo no existe');
+            maestroMap = new Map(); historial = []; syHistIds = [];
+            Object.entries(maestro).forEach(([k, e]) => maestroMap.set(k, { exp: e, real: 0 }));
+            Object.entries(desc || {}).forEach(([k, d]) => descripcionMap.set(k, d));
+            totalEsp = Object.values(maestro).reduce((a, b) => a + b, 0);
+            try { guiaMap = new Map(); guiasCargadas = []; } catch(e) {}
+            syConteoId = id; _syS(SY_K.conteo, id); _syS(SY_K.hids, []);
+            saveComp();
+            hideLoading();
+            syConteoConectar(true);
+            if (modoActual !== 'comp') seleccionarModo('comp'); else { renderComp(); }
+            syCerrarModal();
+            showToast('✅ Te uniste al conteo. ¡A escanear!', '#2E7D32');
+        } catch(e) { hideLoading(); showToast('❌ ' + e.message, '#B71C1C', 4000); }
+    };
+    if (historial.length) mostrarConfirm('Unirse al conteo', 'Tu conteo actual de este celular (' + historial.length + ' lecturas) se reemplazará por el conteo compartido. Si lo necesitas, guárdalo antes como lote. ¿Continuar?', go);
+    else go();
+}
+// Escucha las lecturas del conteo y las aplica en este celular
+function syConteoConectar(inicial) {
+    if (!syConteoId) return;
+    syConteoVivo = { lect:{}, pres:{} };
+    syEscuchar('conteo', 'conteos/' + syConteoId + '/vivo', (vivo) => {
+        syConteoVivo = vivo || { lect:{}, pres:{} };
+        syConteoReconciliar();
+        const mc = document.getElementById('sy-modal'); if (mc && mc.style.display === 'flex' && mc.dataset.vista === 'conteo') syVistaConteoSuave();
+    });
+    syPresencia(); syPintarChip();
+}
+let _syVcT = null;
+function syVistaConteoSuave() { clearTimeout(_syVcT); _syVcT = setTimeout(syVistaConteo, 400); }
+const _sySent = {};  // rutas enviadas hace poco (el eco de la nube puede tardar)
+function _syPendiente(path) { const t = _sySent[path]; return syCola.some(op => op.p === path) || (t && Date.now() - t.t < 20000); }
+// Cuando llega el eco de la nube, la ruta deja de estar "pendiente"
+function _syLimpiarEcos(base, mapa) {
+    Object.keys(_sySent).forEach(k => {
+        if (k.indexOf(base) !== 0) return;
+        const id = k.slice(base.length), s = _sySent[k];
+        if ((s.m === 'PUT' && mapa[id]) || (s.m === 'DELETE' && !mapa[id])) delete _sySent[k];
+    });
+}
+function syConteoReconciliar() {
+    if (!syConteoId) return;
+    const lect = syConteoVivo.lect || {};
+    const base = 'conteos/' + syConteoId + '/vivo/lect/';
+    _syLimpiarEcos(base, lect);
+    const conocidos = new Set(syHistIds);
+    let cambios = 0, ult = null;
+    // 1) Lecturas que se borraron en la nube (y no están pendientes de subir)
+    for (let i = syHistIds.length - 1; i >= 0; i--) {
+        const lid = syHistIds[i];
+        if (!lect[lid] && !_syPendiente(base + lid)) {
+            const cod = historial[i];
+            historial.splice(i, 1); syHistIds.splice(i, 1);
+            if (maestroMap.has(cod)) { const v = maestroMap.get(cod); v.real = Math.max(0, v.real - 1); if (v.real === 0 && v.exp === 0) maestroMap.delete(cod); }
+            cambios++;
+        }
+    }
+    // 2) Lecturas nuevas de otros celulares
+    Object.keys(lect).sort((a, b) => (lect[a].t || 0) - (lect[b].t || 0)).forEach(lid => {
+        if (conocidos.has(lid)) return;
+        const c = lect[lid].c; if (!c) return;
+        historial.push(c); syHistIds.push(lid);
+        if (maestroMap.has(c)) maestroMap.get(c).real++; else maestroMap.set(c, { exp: 0, real: 1 });
+        cambios++; ult = c;
+    });
+    if (cambios) {
+        _syS(SY_K.hids, syHistIds);
+        saveComp();
+        if (modoActual === 'comp') { try { if (ult) schedRender('comp', ult); else { syncConteo(); renderComp(); } } catch(e) { try { renderComp(); } catch(x) {} } }
+    }
+}
+function syPresencia() {
+    if (!syConteoId || !sySes) return;
+    if (document.visibilityState === 'hidden') return;
+    syReq('PUT', 'conteos/' + syConteoId + '/vivo/pres/' + sySes.id, { n: sySes.n, t: Date.now() }).then(() => syEstado(true)).catch(() => syEstado(false));
+}
+function syConteoSalir(silencioso) {
+    const id = syConteoId;
+    syCerrar('conteo');
+    if (id && sySes) syReq('DELETE', 'conteos/' + id + '/vivo/pres/' + sySes.id).catch(() => {});
+    syConteoId = null; syHistIds = []; syConteoVivo = { lect:{}, pres:{} };
+    _syS(SY_K.conteo, null); _syS(SY_K.hids, null);
+    syPintarChip();
+    if (!silencioso) showToast('🚪 Saliste del conteo compartido (tu conteo queda en este celular)', '#555', 3000);
+}
+function syConteoSalirPedir() { mostrarConfirm('Salir del conteo', 'Dejarás de recibir y enviar lecturas. Tu conteo actual queda en este celular. ¿Salir?', () => { syConteoSalir(); syVistaConteo(); }); }
+function syConteoCerrarPedir() {
+    if (!pPuede('publicar')) return syDenegar();
+    mostrarConfirm('Cerrar conteo para todos', 'Nadie podrá seguir enviando lecturas a este conteo. Cada celular conserva el conteo completo para guardar el reporte. ¿Cerrar?', () => {
+        const id = syConteoId;
+        syEncolar('PATCH', 'meta/conteos/' + id, { estado: 'cerrado', cerradoPor: sySes.n, cerradoTs: Date.now() });
+        syConteoSalir(true); syVistaConteo();
+        showToast('🔒 Conteo cerrado. Guarda el reporte con 💾 Guardar Lote.', '#111', 3500);
+    });
+}
+// Enganches en el módulo INVENTARIO
+(function() {
+    const _pc = window.procesarCodigo;
+    if (typeof _pc === 'function') window.procesarCodigo = function(cod) {
+        const n0 = historial.length;
+        const r = _pc.apply(this, arguments);
+        if (syConteoId && sySes && historial.length === n0 + 1) {
+            const lid = syId('l'); syHistIds.push(lid); _syS(SY_K.hids, syHistIds);
+            syEncolar('PUT', 'conteos/' + syConteoId + '/vivo/lect/' + lid, { c: historial[n0], u: sySes.n, t: Date.now() });
+        }
+        return r;
+    };
+    const _el = window.eliminarLectura;
+    if (typeof _el === 'function') window.eliminarLectura = function(idx) {
+        const lid = syConteoId ? syHistIds[idx] : null, n0 = historial.length;
+        const r = _el.apply(this, arguments);
+        if (syConteoId && historial.length === n0 - 1) {
+            syHistIds.splice(idx, 1); _syS(SY_K.hids, syHistIds);
+            if (lid) syEncolar('DELETE', 'conteos/' + syConteoId + '/vivo/lect/' + lid);
+        }
+        return r;
+    };
+    // Si algo cambió el conteo por otro camino (guardar lote, reiniciar, cargar otra guía) → salir del conteo
+    const _sc = window.saveComp;
+    if (typeof _sc === 'function') window.saveComp = function() {
+        const r = _sc.apply(this, arguments);
+        if (syConteoId && historial.length !== syHistIds.length) {
+            syConteoSalir(true);
+            showToast('☁️ Saliste del conteo compartido (se guardó/reinició el conteo en este celular)', '#555', 3500);
+        }
+        return r;
+    };
+    const _sm = window.seleccionarModo;
+    if (typeof _sm === 'function') window.seleccionarModo = function() { const r = _sm.apply(this, arguments); syPintarChip(); syMenuNube(); return r; };
+})();
+
+// ══════════ ALMACÉN COMPARTIDO ══════════
+let _syAlmAplicando = false;
+function syAbrirAlm() {
+    try { const mc = document.getElementById('menuContent'); if (mc) mc.style.display = 'none'; } catch(e) {}
+    if (!syActivo()) { syAbrirNube(); return; }
+    const ver = syMeta.almVer || 0, mia = _syJ(SY_K.almver, 0) || 0;
+    let h = '<div class="sy-card"><div class="sy-h">' + (ver ? (ver === mia ? '🟢 Compartiendo el almacén' : '🟠 Hay un almacén más nuevo') : '⚪ El almacén aún no se comparte') + '</div>'
+        + (ver ? '<div class="sy-p">Versión de <b>' + syEsc(syMeta.almPor || '') + '</b> · ' + new Date(ver).toLocaleString('es-PE') + '</div>' : '')
+        + '<div class="sy-p">Cuando el almacén está compartido, cada <b>ingreso o retiro</b> de cualquier celular se ve en todos.</div></div>';
+    if (ver && ver !== mia) h += '<button class="sy-btn" onclick="syAlmRecibir(true)">📥 RECIBIR ALMACÉN COMPARTIDO</button>';
+    if (pPuede('publicar')) h += '<div class="sy-card"><div class="sy-h">📤 Compartir MI almacén</div><div class="sy-p">Tu almacén (' + almMap.size.toLocaleString() + ' códigos) reemplazará el de todos y los movimientos empiezan de cero.</div>'
+        + '<button class="sy-btn"' + (almMap.size ? '' : ' disabled') + ' onclick="syAlmPublicarPedir()">📤 COMPARTIR CON TODOS</button></div>';
+    syModal('alm', h);
+}
+function syAlmPublicarPedir() { mostrarConfirm('Compartir almacén', 'Se reemplazará el almacén de TODOS los celulares por el tuyo (' + almMap.size + ' códigos). ¿Continuar?', syAlmPublicar); }
+async function syAlmPublicar() {
+    if (!pPuede('publicar')) return syDenegar();
+    showLoading('Compartiendo almacén...');
+    try {
+        const data = {}; almMap.forEach((v, k) => { data[k] = { d: v.desc || '', s: v.stock || 0 }; });
+        const ver = Date.now(), verPrev = _syJ(SY_K.almver, 0);
+        await syReq('PUT', 'almacen/data', data);
+        await syReq('PUT', 'almacen/movs', null);
+        _syS(SY_K.almver, ver); syAlmIds = {}; _syS(SY_K.almids, {});   // antes del aviso de la nube
+        try { await syReq('PATCH', 'meta', { almVer: ver, almPor: sySes.n }); } catch(e) { _syS(SY_K.almver, verPrev); throw e; }
+        almMovs.forEach(m => { delete m._ids; });
+        hideLoading(); syAlmConectar(); syAbrirAlm();
+        showToast('✅ Almacén compartido con todos', '#2E7D32');
+    } catch(e) { hideLoading(); showToast('❌ ' + e.message, '#B71C1C', 4000); }
+}
+function syAlmRevisar() {
+    const ver = syMeta.almVer || 0, mia = _syJ(SY_K.almver, 0) || 0;
+    if (!ver) { syCerrar('alm'); return; }
+    if (ver === mia) { if (!syStreams.alm) syAlmConectar(); return; }
+    syCerrar('alm');
+    if (ver > mia) {
+        if (!almMap.size) syAlmRecibir(false);
+        else if (!syAlmRevisar._avisado || syAlmRevisar._avisado !== ver) {
+            syAlmRevisar._avisado = ver;
+            mostrarConfirm('🏪 Almacén compartido', (syMeta.almPor || 'El supervisor') + ' compartió un almacén nuevo. ¿Recibirlo ahora? (reemplaza el almacén de este celular)', () => syAlmRecibir(true));
+        }
+    }
+}
+async function syAlmRecibir(avisar) {
+    const ver = syMeta.almVer || 0; if (!ver) return;
+    try {
+        const data = await syReq('GET', 'almacen/data');
+        almMap = new Map(); Object.entries(data || {}).forEach(([k, v]) => almMap.set(k, { desc: v.d || '', stock: v.s || 0 }));
+        almMovs = []; syAlmIds = {}; _syS(SY_K.almids, {}); _syS(SY_K.almver, ver);
+        saveAlm();
+        if (modoActual === 'alm') renderAlm();
+        syAlmConectar();
+        if (avisar) { showToast('✅ Almacén recibido: ' + almMap.size + ' códigos', '#2E7D32'); syCerrarModal(); }
+    } catch(e) { showToast('⚠️ No se pudo recibir el almacén: ' + e.message, '#E65100'); }
+}
+function syAlmConectar() {
+    syEscuchar('alm', 'almacen/movs', (movs) => syAlmReconciliar(movs || {}));
+}
+function syAlmReconciliar(movs) {
+    let cambios = 0;
+    const base = 'almacen/movs/';
+    _syLimpiarEcos(base, movs);
+    // Movimientos borrados en la nube
+    Object.keys(syAlmIds).forEach(id => {
+        if (movs[id] || _syPendiente(base + id)) return;
+        const k = syAlmIds[id]; delete syAlmIds[id];
+        const v = almMap.get(k.cod);
+        if (v) { if (k.tipo === 'RETIRO') v.stock += k.cant; else v.stock = Math.max(0, v.stock - k.cant); }
+        const m = almMovs.find(x => x._ids && x._ids.includes(id));
+        if (m) { m.cant -= k.cant; m._ids = m._ids.filter(x => x !== id); if (m.cant <= 0) almMovs.splice(almMovs.indexOf(m), 1); }
+        cambios++;
+    });
+    // Movimientos nuevos de otros celulares
+    Object.keys(movs).sort((a, b) => (movs[a].t || 0) - (movs[b].t || 0)).forEach(id => {
+        if (syAlmIds[id]) return;
+        const mv = movs[id]; if (!mv || !mv.cod) return;
+        if (!almMap.has(mv.cod)) almMap.set(mv.cod, { desc: mv.d || '', stock: 0 });
+        const v = almMap.get(mv.cod);
+        if (mv.tipo === 'RETIRO') v.stock = Math.max(0, v.stock - mv.cant); else v.stock += mv.cant;
+        almMovs.push({ cod: mv.cod, tipo: mv.tipo, cant: mv.cant, stockPost: v.stock, ts: mv.t, u: mv.u, _ids: [id] });
+        syAlmIds[id] = { cod: mv.cod, tipo: mv.tipo, cant: mv.cant };
+        cambios++;
+    });
+    if (cambios) {
+        _syS(SY_K.almids, syAlmIds); saveAlm();
+        if (modoActual === 'alm') { try { renderAlm(document.getElementById('alm-filtro-rapido')?.value?.trim().toUpperCase() || ''); } catch(e) {} }
+    }
+}
+function _syAlmCompartiendo() { return syActivo() && syMeta.almVer && syMeta.almVer === (_syJ(SY_K.almver, 0) || 0); }
+function _syAlmEnviar(m, cant) {
+    const id = syId('m');
+    m._ids = (m._ids || []).concat(id);
+    syAlmIds[id] = { cod: m.cod, tipo: m.tipo, cant }; _syS(SY_K.almids, syAlmIds);
+    const d = (almMap.get(m.cod) || {}).desc || '';
+    syEncolar('PUT', 'almacen/movs/' + id, { cod: m.cod, tipo: m.tipo, cant, d, u: sySes.n, t: Date.now() });
+}
+function _syAlmBorrarIds(m) {
+    (m && m._ids || []).forEach(id => { delete syAlmIds[id]; syEncolar('DELETE', 'almacen/movs/' + id); });
+    _syS(SY_K.almids, syAlmIds);
+}
+(function() {
+    const _reg = window.almRegistrarPorCodigo;
+    if (typeof _reg === 'function') window.almRegistrarPorCodigo = function() {
+        const n0 = almMovs.length, u0 = almMovs[n0 - 1], c0 = u0 ? u0.cant : 0;
+        const r = _reg.apply(this, arguments);
+        if (_syAlmCompartiendo()) {
+            if (almMovs.length > n0) _syAlmEnviar(almMovs[almMovs.length - 1], almMovs[almMovs.length - 1].cant);
+            else if (u0 && u0.cant > c0) _syAlmEnviar(u0, u0.cant - c0);
+        }
+        return r;
+    };
+    const _des = window.almDeshacer;
+    if (typeof _des === 'function') window.almDeshacer = function() {
+        const m = almMovs[almMovs.length - 1], n0 = almMovs.length;
+        const r = _des.apply(this, arguments);
+        if (_syAlmCompartiendo() && almMovs.length === n0 - 1) _syAlmBorrarIds(m);
+        return r;
+    };
+    const _elm = window.almEliminarMov;
+    if (typeof _elm === 'function') window.almEliminarMov = function(idx) {
+        const m = almMovs[idx], n0 = almMovs.length;
+        const r = _elm.apply(this, arguments);
+        if (_syAlmCompartiendo() && almMovs.length === n0 - 1) _syAlmBorrarIds(m);
+        return r;
+    };
+})();
+
+// ══════════ BASES Y PRECIOS ══════════
+function syAbrirBases() {
+    try { const mc = document.getElementById('menuContent'); if (mc) mc.style.display = 'none'; } catch(e) {}
+    if (!syActivo()) { syAbrirNube(); return; }
+    const ver = syMeta.basesVer || 0, mia = _syJ(SY_K.basesver, 0) || 0;
+    const tam = SY_BASES_KEYS.reduce((a, k) => a + ((localStorage.getItem(k) || '').length), 0);
+    let h = '<div class="sy-card"><div class="sy-h">' + (ver ? '📦 Última versión enviada' : '⚪ Aún no se enviaron bases') + '</div>'
+        + (ver ? '<div class="sy-p">Por <b>' + syEsc(syMeta.basesPorN || '') + '</b> · ' + new Date(ver).toLocaleString('es-PE') + (ver === mia ? ' · ✅ este celular la tiene' : ' · 🟠 este celular no la tiene') + '</div>' : '')
+        + '<div class="sy-p">Incluye: base de stock (Consultar Precio y Stock), memorándums/libros de precios, precios por mayor y la comparación de cambios de precio.</div></div>';
+    if (ver && ver !== mia) h += '<button class="sy-btn" onclick="syBasesRecibir()">📥 RECIBIR BASES AHORA</button>';
+    if (pPuede('publicar')) h += '<div class="sy-card"><div class="sy-h">📤 Enviar MIS bases a todos</div><div class="sy-p">Tamaño aprox.: ' + (tam / 1048576).toFixed(1) + ' MB. Los demás celulares reciben un aviso para actualizar.</div>'
+        + '<button class="sy-btn"' + (tam ? '' : ' disabled') + ' onclick="syBasesEnviar()">📤 ENVIAR A TODOS</button></div>';
+    syModal('bases', h);
+}
+async function syBasesEnviar() {
+    if (!pPuede('publicar')) return syDenegar();
+    showLoading('Enviando bases a la nube...');
+    try {
+        const data = {};
+        SY_BASES_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v) data[k.replace(/\./g, '_')] = v; });
+        const ver = Date.now();
+        await syReq('PUT', 'bases/data', data);
+        _syS(SY_K.basesver, ver);
+        await syReq('PATCH', 'meta', { basesVer: ver, basesPor: sySes.id, basesPorN: sySes.n });
+        hideLoading(); syAbrirBases();
+        showToast('✅ Bases enviadas. Los demás celulares recibirán el aviso.', '#2E7D32', 3500);
+    } catch(e) { hideLoading(); showToast('❌ No se pudo enviar: ' + e.message, '#B71C1C', 4000); }
+}
+let _syBasesAvisado = 0;
+function syOfrecerBases() {
+    const ver = syMeta.basesVer; if (_syBasesAvisado === ver) return; _syBasesAvisado = ver;
+    mostrarConfirm('📥 Bases y precios nuevos', (syMeta.basesPorN || 'El supervisor') + ' envió bases/precios nuevos (' + new Date(ver).toLocaleString('es-PE') + '). ¿Actualizar este celular ahora? La app se recargará.', syBasesRecibir);
+}
+async function syBasesRecibir() {
+    showLoading('Recibiendo bases...');
+    try {
+        const data = await syReq('GET', 'bases/data');
+        if (!data) throw new Error('No hay bases en la nube');
+        SY_BASES_KEYS.forEach(k => { const v = data[k.replace(/\./g, '_')]; if (v) { try { localStorage.setItem(k, v); } catch(e) { throw new Error('Memoria del celular llena'); } } });
+        _syS(SY_K.basesver, syMeta.basesVer || Date.now());
+        hideLoading(); showToast('✅ Bases actualizadas', '#2E7D32');
+        setTimeout(() => location.reload(), 700);
+    } catch(e) { hideLoading(); showToast('❌ ' + e.message, '#B71C1C', 4000); }
+}
+
+// ══ BOTONES EN MENÚ E INICIO ══
+function syMenuNube() {
+    const mc = document.getElementById('menuContent'); if (!mc) return;
+    const add = (id, txt, fn, antesDe) => {
+        let b = document.getElementById(id);
+        if (!b) { b = document.createElement('button'); b.id = id; b.className = 'sy-menu-btn'; b.innerHTML = txt; b.onclick = fn; const ref = document.getElementById(antesDe); if (ref && ref.parentNode === mc) mc.insertBefore(b, ref); else mc.appendChild(b); }
+        return b;
+    };
+    const bC = add('btn-sy-conteo', '☁️ Conteo compartido (varios celulares)', syAbrirConteo, 'menu-sec-alm');
+    const bA = add('btn-sy-alm', '☁️ Almacén compartido', syAbrirAlm, 'menu-sec-stock');
+    const bB = add('btn-sy-bases', '☁️ Enviar / recibir bases y precios', syAbrirBases, 'btn-stock-borrar');
+    const secApp = [...mc.querySelectorAll('.menu-section')].find(s => /App/.test(s.textContent));
+    let bN = document.getElementById('btn-sy-nube');
+    if (!bN && secApp) { bN = document.createElement('button'); bN.id = 'btn-sy-nube'; bN.className = 'sy-menu-btn'; bN.innerHTML = '☁️ Nube y usuarios'; bN.onclick = syAbrirNube; secApp.parentNode.insertBefore(bN, secApp.nextSibling); }
+    const m = (typeof modoActual !== 'undefined') ? modoActual : null;
+    bC.style.display = m === 'comp' ? '' : 'none';
+    bA.style.display = m === 'alm' ? '' : 'none';
+    bB.style.display = m === 'stock' ? '' : 'none';
+}
+(function syUIInicio() {
+    const pm = document.getElementById('pantalla-modo'); if (!pm) return;
+    const pie = [...pm.querySelectorAll('.logo-v')].pop();
+    const chip = document.createElement('button'); chip.id = 'sy-chip'; chip.onclick = syAbrirNube;
+    if (pie && pie.parentNode) pie.parentNode.insertBefore(chip, pie); else pm.appendChild(chip);
+    syMenuNube(); syPintarChip();
+})();
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && syActivo()) { syReconectar(); syFlush(); if (syConteoId) syPresencia(); } });
+syIniciar();
+
 </script>
