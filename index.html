@@ -1623,7 +1623,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.17 — 18/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.18 — 18/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -2070,7 +2070,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.17 — 18/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.18 — 18/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -10815,7 +10815,7 @@ async function syVistaCarpetas(recargar) {
     if (puede) h += '<div class="sy-card"><div class="sy-h">📤 Subir bases para el equipo</div><div class="sy-grid2">'
         + '<button class="sy-btn" onclick="sySubirCarpeta(true)">📁 Subir carpeta</button>'
         + '<button class="sy-btn sy-dark" onclick="sySubirCarpeta(false)">📄 Subir archivos</button></div>'
-        + '<div class="sy-p" style="font-size:10.5px;margin:0;">En el celular usa "Subir archivos" y marca varios a la vez. Formatos: Excel o CSV (guías, Detalle de Stock WAMA, etc.).</div></div>';
+        + '<div class="sy-p" style="font-size:10.5px;margin:0;">Al subir eliges la carpeta y subcarpeta de destino. También puedes tocar ⬆️ en una carpeta o subcarpeta para subir ahí. En el celular usa "Subir archivos".</div></div>';
     h += '<input id="sy-cq" class="sy-in" placeholder="🔍 Buscar archivo o carpeta" value="' + syEsc(q) + '" oninput="syVistaCarpetas(false)" autocomplete="off">';
     if (!lista.length) h += '<div class="sy-p" style="text-align:center;padding:16px;">📭 Aún no hay carpetas.' + (puede ? ' Sube la primera con los botones de arriba.' : ' Pide a tu supervisor que suba las bases.') + '</div>';
     lista.forEach(([cid, c]) => {
@@ -10825,7 +10825,7 @@ async function syVistaCarpetas(recargar) {
         h += '<div class="sy-card"><div class="sy-row" style="align-items:flex-start;"><div style="min-width:0;">'
             + '<div class="sy-h" style="margin:0;">📁 ' + syEsc(c.n) + '</div>'
             + '<div class="sy-p" style="margin:2px 0 0;font-size:11px;">👤 ' + syEsc(c.porN || '') + ' · 🕒 ' + fh(c.ts) + ' · ' + files.length + ' archivo(s)</div></div>'
-            + (puede ? '<button class="sy-ib" title="Borrar carpeta" onclick="syBorrarCarpeta(\'' + cid + '\')">🗑️</button>' : '') + '</div>'
+            + (puede ? '<div style="display:flex;gap:2px;flex-shrink:0;"><button class="sy-ib" title="Subir aquí" onclick="sySubirAqui(\'' + cid + '\',\'\')">⬆️</button><button class="sy-ib" title="Borrar carpeta" onclick="syBorrarCarpeta(\'' + cid + '\')">🗑️</button></div>' : '') + '</div>'
             + _syArbolHtml(cid, visibles, puede, fh, !!q)
             + (!files.length ? '<div class="sy-p">Carpeta vacía.</div>' : '')
             + '</div>';
@@ -10845,19 +10845,20 @@ function _syArbolHtml(cid, files, puede, fh, abierto) {
     const fila = ([fid, f]) => '<div class="sy-urow"><div class="sy-uname">📄 <b>' + syEsc(f.n) + '</b><br><span class="sy-p" style="font-size:10.5px;">' + _syTam(f.s || 0) + (f.ts ? ' · ' + fh(f.ts) : '') + '</span></div>'
         + '<button class="sy-btn sy-mini" onclick="syCargarDeCarpeta(\'' + cid + '\',\'' + fid + '\')">CARGAR</button>'
         + (puede ? '<button class="sy-ib" title="Borrar archivo" onclick="syBorrarArchivoCarpeta(\'' + cid + '\',\'' + fid + '\')">🗑️</button>' : '') + '</div>';
-    const dibujar = (nodo, nivel) => {
+    const dibujar = (nodo, nivel, ruta) => {
         let out = nodo.files.map(fila).join('');
         Object.keys(nodo.sub).sort((a, b) => a.localeCompare(b, 'es', { numeric: true })).forEach(nom => {
-            const hijo = nodo.sub[nom];
+            const hijo = nodo.sub[nom], rr = ruta ? ruta + '/' + nom : nom;
+            const btnAqui = puede ? '<button class="sy-ib" title="Subir aquí" style="font-size:13px;margin-left:6px;" onclick="event.preventDefault();event.stopPropagation();sySubirAqui(\'' + cid + '\',' + JSON.stringify(rr).replace(/"/g, '&quot;') + ')">⬆️</button>' : '';
             out += '<details class="sy-sub"' + (abierto ? ' open' : '') + ' style="margin:6px 0 2px ' + (nivel ? 10 : 0) + 'px;border-left:3px solid #E3E5EA;padding-left:8px;">'
-                + '<summary style="cursor:pointer;font-weight:800;font-size:13px;padding:6px 0;">📂 ' + syEsc(nom) + ' <span class="sy-p" style="font-weight:600;font-size:11px;">(' + contar(hijo) + ')</span></summary>'
-                + dibujar(hijo, nivel + 1) + '</details>';
+                + '<summary style="cursor:pointer;font-weight:800;font-size:13px;padding:6px 0;">📂 ' + syEsc(nom) + ' <span class="sy-p" style="font-weight:600;font-size:11px;">(' + contar(hijo) + ')</span>' + btnAqui + '</summary>'
+                + dibujar(hijo, nivel + 1, rr) + '</details>';
         });
         return out;
     };
-    return dibujar(raiz, 0);
+    return dibujar(raiz, 0, '');
 }
-function sySubirCarpeta(esCarpeta) {
+function sySubirCarpeta(esCarpeta, cidDest, subDest) {
     if (!pPuede('publicar')) return syDenegar();
     const inp = document.createElement('input');
     inp.type = 'file'; inp.multiple = true; inp.style.display = 'none';
@@ -10871,14 +10872,31 @@ function sySubirCarpeta(esCarpeta) {
         if (grandes.length) return showToast('⚠️ Archivo muy grande (máx. 7 MB): ' + grandes[0].name, '#E65100', 4000);
         const rel = files[0].webkitRelativePath || '';
         const sugerido = rel.includes('/') ? rel.split('/')[0] : ('BASES ' + new Date().toLocaleDateString('es-PE'));
-        _syElegirArchivos(files, sugerido);   // v27.14: revisar y elegir qué archivos subir
+        _syElegirArchivos(files, sugerido, cidDest ? { cid: cidDest, sub: subDest || '' } : null);
     };
     document.body.appendChild(inp); inp.click();
 }
-// v27.14: antes de subir, se muestran los archivos encontrados (con su fecha) para
-// desmarcar los antiguos, y si la carpeta ya existe en la nube se elige REEMPLAZAR o AGREGAR.
+// "⬆️ Subir aquí" desde el árbol: elige si sube archivos o una carpeta a esa ubicación
+function sySubirAqui(cid, sub) {
+    if (!pPuede('publicar')) return syDenegar();
+    const c = syCarpetas[cid] || {};
+    const donde = (c.n || '') + (sub ? ' / ' + sub : '');
+    syModal('carpetas', '<div class="sy-card"><div class="sy-h">⬆️ Subir a: 📁 ' + syEsc(donde) + '</div>'
+        + '<button class="sy-btn" onclick="sySubirCarpeta(false,\'' + cid + '\',' + JSON.stringify(sub || '').replace(/"/g, '&quot;') + ')">📄 Subir archivos aquí</button>'
+        + '<button class="sy-btn sy-dark" onclick="sySubirCarpeta(true,\'' + cid + '\',' + JSON.stringify(sub || '').replace(/"/g, '&quot;') + ')">📁 Subir una carpeta aquí</button>'
+        + '<button class="sy-btn sy-sec" onclick="syVistaCarpetas(false)">← Volver</button></div>');
+}
+// v27.14/27.18: revisar archivos antes de subir + ELEGIR DESTINO (carpeta y subcarpeta)
 let _syElegidos = [];
-async function _syElegirArchivos(files, sugerido) {
+function _sySubcarpetasDe(cid) {
+    const set = new Set();
+    Object.values(((syCarpetas[cid] || {}).files) || {}).forEach(f => {
+        const segs = String(f.p || '').split('/').filter(Boolean);
+        for (let i = 1; i <= segs.length; i++) set.add(segs.slice(0, i).join('/'));
+    });
+    return [...set].sort((a, b) => a.localeCompare(b, 'es', { numeric: true }));
+}
+async function _syElegirArchivos(files, sugerido, destino) {
     try { syCarpetas = (await syReq('GET', 'carpetas')) || {}; } catch(e) {}
     _syElegidos = files.slice().sort((a, b) => (b.lastModified || 0) - (a.lastModified || 0));
     const fdt = t => t ? new Date(t).toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' }) + ' ' + new Date(t).toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' }) : '';
@@ -10890,44 +10908,101 @@ async function _syElegirArchivos(files, sugerido) {
             + '<div class="sy-uname">📄 <b>' + syEsc(f.name) + '</b>' + (viejo ? ' <span class="sy-tag" style="background:#E65100;">antiguo</span>' : '')
             + '<br><span class="sy-p" style="font-size:10.5px;">' + (sub ? '📂 ' + syEsc(sub) + ' · ' : '') + '🕒 ' + fdt(f.lastModified) + ' · ' + _syTam(f.size) + '</span></div></label>';
     }).join('');
+    // Destino por defecto: el que vino de "Subir aquí"; si no, la carpeta con ese nombre si existe; si no, nueva
+    const cidDef = destino ? destino.cid : (_syCarpetaPorNombre(sugerido) || '__nueva');
+    const carpetasOpts = Object.entries(syCarpetas || {}).sort((a, b) => String(a[1].n).localeCompare(String(b[1].n), 'es'))
+        .map(([cid, c]) => '<option value="' + cid + '"' + (cid === cidDef ? ' selected' : '') + '>📁 ' + syEsc(c.n) + '</option>').join('');
     const h = '<div class="sy-p">Se encontraron <b>' + files.length + '</b> archivo(s). <b>Desmarca</b> los que no quieras subir (los marcados como <i>antiguo</i> tienen más de 7 días).</div>'
         + '<div class="sy-card"><div class="sy-row" style="margin-bottom:6px;"><div class="sy-h" style="margin:0;">Archivos</div>'
         + '<div><button class="sy-btn sy-sec sy-mini" onclick="document.querySelectorAll(\'.sy-chk\').forEach(c=>c.checked=true)">Todos</button> '
         + '<button class="sy-btn sy-sec sy-mini" onclick="document.querySelectorAll(\'.sy-chk\').forEach(c=>c.checked=false)">Ninguno</button></div></div>'
-        + '<div style="max-height:38vh;overflow:auto;">' + filas + '</div></div>'
-        + '<div class="sy-card"><div class="sy-h">📁 Nombre de la carpeta en la nube</div>'
-        + '<input id="sy-cn2" class="sy-in" value="' + syEsc(sugerido) + '" oninput="_syModoCarpeta()">'
-        + '<div id="sy-modo-wrap" style="display:none;"><div class="sy-p" style="margin-bottom:4px;">⚠️ Ya existe una carpeta con ese nombre:</div>'
-        + '<label class="sy-p" style="display:flex;gap:8px;align-items:center;cursor:pointer;"><input type="radio" name="sy-modo" value="reemplazar" checked style="accent-color:#C62828;"> <b>Reemplazar</b>: borrar los archivos que tenía y dejar solo estos</label>'
-        + '<label class="sy-p" style="display:flex;gap:8px;align-items:center;cursor:pointer;"><input type="radio" name="sy-modo" value="agregar" style="accent-color:#C62828;"> <b>Agregar</b>: sumar estos a los que ya tenía</label></div></div>'
+        + '<div style="max-height:30vh;overflow:auto;">' + filas + '</div></div>'
+        + '<div class="sy-card"><div class="sy-h">📍 ¿A dónde subir?</div>'
+        + '<div class="sy-p" style="margin:0 0 3px;">Carpeta</div>'
+        + '<select id="sy-dc" class="sy-in" onchange="_syRefrescarDestino(true)">' + carpetasOpts + '<option value="__nueva"' + (cidDef === '__nueva' ? ' selected' : '') + '>➕ Nueva carpeta…</option></select>'
+        + '<input id="sy-cn2" class="sy-in" placeholder="Nombre de la nueva carpeta" value="' + syEsc(sugerido) + '">'
+        + '<div id="sy-ds-wrap"><div class="sy-p" style="margin:0 0 3px;">Subcarpeta</div>'
+        + '<select id="sy-ds" class="sy-in" onchange="_syRefrescarDestino(false)"></select>'
+        + '<input id="sy-dsn" class="sy-in" placeholder="Nombre de la subcarpeta (ej. MEMOS o MEMOS/OCTUBRE)" style="display:none;"></div>'
+        + '<div id="sy-modo-wrap" style="display:none;"><div class="sy-p" style="margin-bottom:4px;">⚠️ <span id="sy-modo-txt"></span></div>'
+        + '<label class="sy-p" style="display:flex;gap:8px;align-items:center;cursor:pointer;"><input type="radio" name="sy-modo" value="agregar" checked style="accent-color:#C62828;"> <b>Agregar</b>: sumar a lo que ya hay (mismo nombre = se actualiza)</label>'
+        + '<label class="sy-p" style="display:flex;gap:8px;align-items:center;cursor:pointer;"><input type="radio" name="sy-modo" value="reemplazar" style="accent-color:#C62828;"> <b>Reemplazar</b>: borrar lo que hay en esa ubicación y dejar solo estos</label></div>'
+        + '<div class="sy-p" id="sy-dest-res" style="margin:6px 0 0;color:#1565C0;font-weight:700;"></div></div>'
         + '<div class="sy-grid2"><button class="sy-btn sy-sec" onclick="syVistaCarpetas(true)">Cancelar</button><button class="sy-btn" onclick="_syConfirmarSubida()">📤 SUBIR</button></div>';
     syModal('carpetas', h);
-    _syModoCarpeta();
+    _syRefrescarDestino(true, destino ? destino.sub : '');
+}
+function _syRefrescarDestino(cambioCarpeta, subPre) {
+    const dc = document.getElementById('sy-dc'); if (!dc) return;
+    const cid = dc.value, nueva = cid === '__nueva';
+    document.getElementById('sy-cn2').style.display = nueva ? '' : 'none';
+    const ds = document.getElementById('sy-ds');
+    if (cambioCarpeta) {
+        const subs = nueva ? [] : _sySubcarpetasDe(cid);
+        ds.innerHTML = '<option value="">(dentro de la carpeta, sin subcarpeta)</option>'
+            + subs.map(sp => '<option value="' + syEsc(sp) + '">' + '&nbsp;&nbsp;'.repeat(sp.split('/').length - 1) + '📂 ' + syEsc(sp.split('/').pop()) + '</option>').join('')
+            + '<option value="__nueva">➕ Nueva subcarpeta…</option>';
+        if (subPre !== undefined) ds.value = subPre;
+    }
+    const nuevaSub = ds.value === '__nueva';
+    document.getElementById('sy-dsn').style.display = nuevaSub ? '' : 'none';
+    // ¿Ya hay archivos en ese destino? → ofrecer Agregar / Reemplazar
+    const d = _syDestino();
+    const filesDest = (!d.cid || nuevaSub) ? [] : Object.values(((syCarpetas[d.cid] || {}).files) || {}).filter(f => { const p = f.p || ''; return d.sub ? (p === d.sub || p.indexOf(d.sub + '/') === 0) : true; });
+    document.getElementById('sy-modo-wrap').style.display = filesDest.length ? '' : 'none';
+    document.getElementById('sy-modo-txt').textContent = 'En esa ubicación ya hay ' + filesDest.length + ' archivo(s).';
+    const r = document.getElementById('sy-dest-res');
+    if (r) r.textContent = '➡️ Se subirá a: 📁 ' + (d.nombre || '…') + (d.sub ? ' / ' + d.sub.replace(/\//g, ' / ') : '') + (nuevaSub && !d.sub ? ' / (escribe el nombre)' : '');
+    const inp = document.getElementById('sy-dsn'); if (inp && !inp._ev) { inp._ev = 1; inp.addEventListener('input', () => _syRefrescarDestino(false)); }
+    const inp2 = document.getElementById('sy-cn2'); if (inp2 && !inp2._ev) { inp2._ev = 1; inp2.addEventListener('input', () => _syRefrescarDestino(false)); }
+}
+function _syLimpiarRuta(s) { return String(s || '').split('/').map(x => x.trim().replace(/[.#$\[\]]/g, '')).filter(Boolean).join('/'); }
+function _syDestino() {
+    const cidSel = (document.getElementById('sy-dc') || {}).value;
+    const nueva = cidSel === '__nueva';
+    const nombre = nueva ? ((document.getElementById('sy-cn2') || {}).value || '').trim() : ((syCarpetas[cidSel] || {}).n || '');
+    const dsv = (document.getElementById('sy-ds') || {}).value || '';
+    const sub = dsv === '__nueva' ? _syLimpiarRuta((document.getElementById('sy-dsn') || {}).value) : dsv;
+    return { cid: nueva ? (_syCarpetaPorNombre(nombre) || null) : cidSel, nombre, sub };
 }
 function _syCarpetaPorNombre(n) { n = String(n || '').trim().toUpperCase(); return Object.keys(syCarpetas || {}).find(k => String(syCarpetas[k].n).trim().toUpperCase() === n); }
-function _syModoCarpeta() {
-    const n = (document.getElementById('sy-cn2') || {}).value || '';
-    const w = document.getElementById('sy-modo-wrap'); if (w) w.style.display = _syCarpetaPorNombre(n) ? '' : 'none';
-}
+function _syModoCarpeta() { _syRefrescarDestino(false); }
 function _syConfirmarSubida() {
-    const n = ((document.getElementById('sy-cn2') || {}).value || '').trim();
-    if (!n) return showToast('⚠️ Escribe el nombre de la carpeta', '#E65100');
+    const d = _syDestino();
+    if (!d.nombre) return showToast('⚠️ Escribe el nombre de la carpeta', '#E65100');
+    if ((document.getElementById('sy-ds') || {}).value === '__nueva' && !d.sub) return showToast('⚠️ Escribe el nombre de la subcarpeta', '#E65100');
     const sel = [...document.querySelectorAll('.sy-chk')].filter(c => c.checked).map(c => _syElegidos[+c.dataset.i]);
     if (!sel.length) return showToast('⚠️ Marca al menos un archivo', '#E65100');
     const modoEl = document.querySelector('input[name="sy-modo"]:checked');
-    const reemplazar = !!_syCarpetaPorNombre(n) && (!modoEl || modoEl.value === 'reemplazar');
-    _sySubirArchivos(n, sel, reemplazar);
+    const wrapVis = (document.getElementById('sy-modo-wrap') || {}).style && document.getElementById('sy-modo-wrap').style.display !== 'none';
+    const reemplazar = !!wrapVis && !!modoEl && modoEl.value === 'reemplazar';
+    _sySubirArchivos(d, sel, reemplazar);
 }
-async function _sySubirArchivos(nombre, files, reemplazar) {
+async function _sySubirArchivos(dest, files, reemplazar) {
+    // Compatibilidad: _sySubirArchivos('NOMBRE', files, reemplazar)
+    if (typeof dest === 'string') dest = { cid: null, nombre: dest, sub: '' };
+    const nombre = dest.nombre, base = dest.sub || '';
     try {
         syCarpetas = (await syReq('GET', 'carpetas')) || {};
-        let cid = _syCarpetaPorNombre(nombre);
+        let cid = dest.cid && syCarpetas[dest.cid] ? dest.cid : _syCarpetaPorNombre(nombre);
         if (cid && reemplazar) {
-            // Reemplazar: se borran los archivos anteriores de esa carpeta
-            showLoading('Borrando archivos anteriores de "' + nombre + '"...');
-            await syReq('DELETE', 'carpetasData/' + cid);
-            await syReq('DELETE', 'carpetas/' + cid + '/files');
-            if (syCarpetas[cid]) syCarpetas[cid].files = {};
+            // Reemplazar: se borran solo los archivos de ESA ubicación (toda la carpeta si no se eligió subcarpeta)
+            showLoading('Borrando archivos anteriores…');
+            if (!base) {
+                await syReq('DELETE', 'carpetasData/' + cid);
+                await syReq('DELETE', 'carpetas/' + cid + '/files');
+                if (syCarpetas[cid]) syCarpetas[cid].files = {};
+            } else {
+                const fl = (syCarpetas[cid] && syCarpetas[cid].files) || {};
+                for (const k of Object.keys(fl)) {
+                    const p = fl[k].p || '';
+                    if (p === base || p.indexOf(base + '/') === 0) {
+                        await syReq('DELETE', 'carpetasData/' + cid + '/' + k);
+                        await syReq('DELETE', 'carpetas/' + cid + '/files/' + k);
+                        delete fl[k];
+                    }
+                }
+            }
         }
         if (!cid) { cid = syId('d'); await syReq('PUT', 'carpetas/' + cid, { n: nombre, por: sySes.id, porN: sySes.n, ts: Date.now() }); }
         const existentes = (syCarpetas[cid] && syCarpetas[cid].files) || {};
@@ -10936,18 +11011,18 @@ async function _sySubirArchivos(nombre, files, reemplazar) {
             const f = files[i];
             showLoading('Subiendo ' + (i + 1) + ' de ' + files.length + ': ' + f.name);
             const ab = await f.arrayBuffer();
-            // Mismo nombre en la carpeta → se reemplaza
-            // v27.15: se guarda la subcarpeta (ej. "ZONA A/HOMBRES"); mismo nombre en otra subcarpeta = otro archivo
-            const sub = (f.webkitRelativePath || '').split('/').slice(1, -1).join('/');
+            // Subcarpeta final = destino elegido + subcarpetas internas de lo que se eligió
+            const interna = (f.webkitRelativePath || '').split('/').slice(1, -1).join('/');
+            const sub = [base, interna].filter(Boolean).join('/');
             const fid = Object.keys(existentes).find(k => existentes[k].n === f.name && (existentes[k].p || '') === sub) || syId('f');
             await syReq('PUT', 'carpetasData/' + cid + '/' + fid, _syAbToB64(ab));
             await syReq('PUT', 'carpetas/' + cid + '/files/' + fid, { n: f.name, p: sub, s: f.size, ts: Date.now(), porN: sySes.n });
             ok++;
         }
         await syReq('PATCH', 'carpetas/' + cid, { ts: Date.now(), porN: sySes.n });
-        await syReq('PATCH', 'meta', { carpetasVer: Date.now(), carpetasPorN: sySes.n, carpetasN: nombre });
+        await syReq('PATCH', 'meta', { carpetasVer: Date.now(), carpetasPorN: sySes.n, carpetasN: nombre + (base ? ' / ' + base : '') });
         hideLoading();
-        showToast('✅ ' + ok + ' archivo(s) subidos a "' + nombre + '". El equipo ya puede escoger su base.', '#2E7D32', 3500);
+        showToast('✅ ' + ok + ' archivo(s) subidos a "' + nombre + (base ? ' / ' + base : '') + '".', '#2E7D32', 3500);
         syVistaCarpetas(true);
     } catch(e) { hideLoading(); showToast('❌ No se pudo subir: ' + e.message, '#B71C1C', 4000); }
 }
