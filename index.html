@@ -1623,7 +1623,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.11 — 18/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.15 — 18/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -2070,7 +2070,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.11 — 18/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.15 — 18/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -2788,7 +2788,7 @@ function cerrarSubCarga() { document.getElementById('modal-subcarga').style.disp
 function abrirSubCarga(modulo) {
     const configs = {
         comp: {
-            titulo: '☁️ CARGAR MAESTRO DESDE DRIVE',
+            titulo: '📂 CARGAR MAESTRO',
             desc: '¿Qué tipo de archivo quieres cargar?',
             opciones: [
                 { ico:'📄', titulo:'Cargar Guías',
@@ -2797,7 +2797,7 @@ function abrirSubCarga(modulo) {
             ]
         },
         alm: {
-            titulo: '☁️ CARGAR INVENTARIO DESDE DRIVE',
+            titulo: '📂 CARGAR INVENTARIO',
             desc: '¿Qué tipo de archivo quieres cargar?',
             opciones: [
                 { ico:'📊', titulo:'Inventario estándar',
@@ -2809,17 +2809,17 @@ function abrirSubCarga(modulo) {
             ]
         },
         cs: {
-            titulo: '☁️ CARGAR BASE DESDE DRIVE',
+            titulo: '📂 CARGAR BASE',
             desc: '¿Qué tipo de archivo quieres cargar?',
             opciones: [
                 { ico:'📄', titulo:'Cargar Stock',
                   desc:'Archivo GUIA.xlsx o CSV o Excel de Detalle de Stock WAMA — se convierte automáticamente',
                   color:'#2E7D32', accion:`driveAbrirModal('guia-cs');cerrarSubCarga()` },
                 { ico:'☁️', titulo:'Cargar Memorandum',
-                  desc:'Carga el Memorandum de precios WAMA directo desde Google Drive',
+                  desc:'Memorandum de precios WAMA — desde Google Drive o desde tu equipo',
                   color:'#BF360C', accion:`driveAbrirModal('precios');cerrarSubCarga()` },
                 { ico:'☁️', titulo:'Cargar Precios por Mayor',
-                  desc:'Carga el Excel de precios por mayor directo desde Google Drive',
+                  desc:'Excel de precios por mayor — desde Google Drive o desde tu equipo',
                   color:'#283593', accion:`driveAbrirModal('preciosMayor');cerrarSubCarga()` },
             ]
         }
@@ -2830,15 +2830,24 @@ function abrirSubCarga(modulo) {
     document.getElementById('subcarga-desc').textContent = cfg.desc;
 
     const cont = document.getElementById('subcarga-opciones');
-    cont.innerHTML = cfg.opciones.map(op => `
-        <button onclick="${op.accion}" style="display:flex;align-items:center;gap:14px;padding:16px;border:none;border-radius:12px;background:#F8F8F8;cursor:pointer;text-align:left;width:100%;border-left:4px solid ${op.color};margin-bottom:0;">
-            <span style="font-size:28px;min-width:36px;text-align:center;">${op.ico}</span>
-            <div style="flex:1;">
-                <div style="font-family:'Barlow',sans-serif;font-size:15px;font-weight:800;color:#111;letter-spacing:0.5px;">${op.titulo}</div>
-                <div style="font-size:11px;color:#111111;margin-top:3px;line-height:1.4;">${op.desc}</div>
+    // v27.12: cada tipo se puede cargar desde Drive o desde el equipo (celular/computadora)
+    cont.innerHTML = cfg.opciones.map(op => {
+        const _t = (op.accion.match(/driveAbrirModal\('([^']+)'\)/) || [])[1] || '';
+        return `
+        <div class="sub-op" style="padding:14px;border-radius:12px;background:#F8F8F8;border-left:4px solid ${op.color};">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <span style="font-size:26px;min-width:34px;text-align:center;">${op.ico}</span>
+                <div style="flex:1;">
+                    <div style="font-family:'Barlow',sans-serif;font-size:15px;font-weight:800;color:#111;letter-spacing:0.5px;">${op.titulo}</div>
+                    <div style="font-size:11px;color:#111111;margin-top:3px;line-height:1.4;">${op.desc}</div>
+                </div>
             </div>
-            <span style="color:#111111;font-size:20px;">›</span>
-        </button>`).join('');
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;">
+                <button onclick="${op.accion}" style="padding:10px 6px;border:none;border-radius:10px;background:${op.color};color:#fff;font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;">☁️ Desde Drive</button>
+                <button onclick="pCargarLocal('${_t}')" style="padding:10px 6px;border:2px solid ${op.color};border-radius:10px;background:#fff;color:${op.color};font-family:'Barlow',sans-serif;font-size:13px;font-weight:800;cursor:pointer;">💻 Desde mi equipo</button>
+            </div>
+        </div>`;
+    }).join('');
 
     document.getElementById('modal-subcarga').style.display = 'flex';
 }
@@ -9911,6 +9920,8 @@ function syEscucharMeta() {
         if ((syMeta.basesVer || 0) > (_syJ(SY_K.basesver, 0) || 0) && syMeta.basesPor !== (sySes && sySes.id)) syOfrecerBases();
         // Almacén
         syAlmRevisar();
+        // Maestro de inventario (v27.12)
+        if (typeof syRevisarMaestro === 'function') syRevisarMaestro();
         // Conteo cerrado por un supervisor
         if (syConteoId && syMeta.conteos && syMeta.conteos[syConteoId] && syMeta.conteos[syConteoId].estado === 'cerrado') {
             const c = syMeta.conteos[syConteoId];
@@ -9942,7 +9953,7 @@ function syModal(vista, html) {
         m.addEventListener('click', e => { if (e.target === m) syCerrarModal(); });
     }
     m.dataset.vista = vista;
-    const tit = { nube:'☁️ NUBE Y USUARIOS', conteo:'☁️ CONTEO COMPARTIDO', alm:'☁️ ALMACÉN COMPARTIDO', bases:'☁️ BASES Y PRECIOS' }[vista] || '☁️ NUBE';
+    const tit = { nube:'☁️ NUBE Y USUARIOS', conteo:'☁️ CONTEO COMPARTIDO', alm:'☁️ ALMACÉN COMPARTIDO', bases:'☁️ BASES Y PRECIOS', carpetas:'📁 BASES COMPARTIDAS' }[vista] || '☁️ NUBE';
     document.getElementById('sy-tit').textContent = tit;
     document.getElementById('sy-body').innerHTML = html;
     m.style.display = 'flex';
@@ -10383,9 +10394,15 @@ function syAbrirAlm() {
     syModal('alm', h);
 }
 function syAlmPublicarPedir() { mostrarConfirm('Compartir almacén', 'Se reemplazará el almacén de TODOS los celulares por el tuyo (' + almMap.size + ' códigos). ¿Continuar?', syAlmPublicar); }
-async function syAlmPublicar() {
+let _syAlmPublicando = false;
+async function syAlmPublicar(silencioso) {
     if (!pPuede('publicar')) return syDenegar();
-    showLoading('Compartiendo almacén...');
+    if (_syAlmPublicando) { if (!silencioso) showToast('⏳ Ya se está compartiendo el almacén…', '#555'); return; }
+    _syAlmPublicando = true;
+    try { return await _syAlmPublicarX(silencioso); } finally { _syAlmPublicando = false; }
+}
+async function _syAlmPublicarX(silencioso) {
+    if (!silencioso) showLoading('Compartiendo almacén...');
     try {
         const data = {}; almMap.forEach((v, k) => { data[k] = { d: v.desc || '', s: v.stock || 0 }; });
         const ver = Date.now(), verPrev = _syJ(SY_K.almver, 0);
@@ -10394,9 +10411,11 @@ async function syAlmPublicar() {
         _syS(SY_K.almver, ver); syAlmIds = {}; _syS(SY_K.almids, {});   // antes del aviso de la nube
         try { await syReq('PATCH', 'meta', { almVer: ver, almPor: sySes.n }); } catch(e) { _syS(SY_K.almver, verPrev); throw e; }
         almMovs.forEach(m => { delete m._ids; });
-        hideLoading(); syAlmConectar(); syAbrirAlm();
-        showToast('✅ Almacén compartido con todos', '#2E7D32');
-    } catch(e) { hideLoading(); showToast('❌ ' + e.message, '#B71C1C', 4000); }
+        if (!silencioso) hideLoading();
+        syAlmConectar();
+        if (!silencioso) { syAbrirAlm(); showToast('✅ Almacén compartido con todos', '#2E7D32'); }
+        else showToast('☁️ Almacén enviado a todos los celulares (' + almMap.size.toLocaleString() + ' códigos)', '#1565C0', 3000);
+    } catch(e) { if (!silencioso) hideLoading(); showToast('❌ Almacén no compartido: ' + e.message, '#B71C1C', 4000); }
 }
 function syAlmRevisar() {
     const ver = syMeta.almVer || 0, mia = _syJ(SY_K.almver, 0) || 0;
@@ -10404,7 +10423,9 @@ function syAlmRevisar() {
     if (ver === mia) { if (!syStreams.alm) syAlmConectar(); return; }
     syCerrar('alm');
     if (ver > mia) {
-        if (!almMap.size) syAlmRecibir(false);
+        // Sin datos propios que perder (vacío, o todo lo que tiene vino de la nube) → recibir directo
+        const _soloNube = (_syJ(SY_K.almver, 0) || 0) > 0 && !almMovs.some(m => !m._ids);
+        if (!almMap.size || _soloNube) syAlmRecibir(!!almMap.size);
         else if (!syAlmRevisar._avisado || syAlmRevisar._avisado !== ver) {
             syAlmRevisar._avisado = ver;
             mostrarConfirm('🏪 Almacén compartido', (syMeta.almPor || 'El supervisor') + ' compartió un almacén nuevo. ¿Recibirlo ahora? (reemplaza el almacén de este celular)', () => syAlmRecibir(true));
@@ -10503,15 +10524,16 @@ function syAbrirBases() {
     const tam = SY_BASES_KEYS.reduce((a, k) => a + ((localStorage.getItem(k) || '').length), 0);
     let h = '<div class="sy-card"><div class="sy-h">' + (ver ? '📦 Última versión enviada' : '⚪ Aún no se enviaron bases') + '</div>'
         + (ver ? '<div class="sy-p">Por <b>' + syEsc(syMeta.basesPorN || '') + '</b> · ' + new Date(ver).toLocaleString('es-PE') + (ver === mia ? ' · ✅ este celular la tiene' : ' · 🟠 este celular no la tiene') + '</div>' : '')
-        + '<div class="sy-p">Incluye: base de stock (Consultar Precio y Stock), memorándums/libros de precios, precios por mayor y la comparación de cambios de precio.</div></div>';
+        + '<div class="sy-p">Incluye: base de stock (Consultar Precio y Stock), memorándums/libros de precios, precios por mayor y la comparación de cambios de precio.</div>'
+        + '<div class="sy-p" style="color:#1565C0;"><b>Automático:</b> cuando un supervisor o administrador carga una base (stock, memorándum, maestro de inventario o almacén), se envía sola a los demás celulares.</div></div>';
     if (ver && ver !== mia) h += '<button class="sy-btn" onclick="syBasesRecibir()">📥 RECIBIR BASES AHORA</button>';
     if (pPuede('publicar')) h += '<div class="sy-card"><div class="sy-h">📤 Enviar MIS bases a todos</div><div class="sy-p">Tamaño aprox.: ' + (tam / 1048576).toFixed(1) + ' MB. Los demás celulares reciben un aviso para actualizar.</div>'
         + '<button class="sy-btn"' + (tam ? '' : ' disabled') + ' onclick="syBasesEnviar()">📤 ENVIAR A TODOS</button></div>';
     syModal('bases', h);
 }
-async function syBasesEnviar() {
+async function syBasesEnviar(silencioso) {
     if (!pPuede('publicar')) return syDenegar();
-    showLoading('Enviando bases a la nube...');
+    if (!silencioso) showLoading('Enviando bases a la nube...');
     try {
         const data = {};
         SY_BASES_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v) data[k.replace(/\./g, '_')] = v; });
@@ -10519,9 +10541,10 @@ async function syBasesEnviar() {
         await syReq('PUT', 'bases/data', data);
         _syS(SY_K.basesver, ver);
         await syReq('PATCH', 'meta', { basesVer: ver, basesPor: sySes.id, basesPorN: sySes.n });
-        hideLoading(); syAbrirBases();
-        showToast('✅ Bases enviadas. Los demás celulares recibirán el aviso.', '#2E7D32', 3500);
-    } catch(e) { hideLoading(); showToast('❌ No se pudo enviar: ' + e.message, '#B71C1C', 4000); }
+        if (!silencioso) { hideLoading(); syAbrirBases(); showToast('✅ Bases enviadas. Los demás celulares recibirán el aviso.', '#2E7D32', 3500); }
+        else showToast('☁️ Bases y precios enviados a todos los celulares', '#1565C0', 3000);
+        return true;
+    } catch(e) { if (!silencioso) hideLoading(); showToast('❌ No se pudo enviar a la nube: ' + e.message, '#B71C1C', 4000); return false; }
 }
 let _syBasesAvisado = 0;
 function syOfrecerBases() {
@@ -10568,5 +10591,402 @@ function syMenuNube() {
 })();
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && syActivo()) { syReconectar(); syFlush(); if (syConteoId) syPresencia(); } });
 syIniciar();
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v27.12 — CARGAR DESDE EL EQUIPO + LAS BASES QUE CARGAS LLEGAN SOLAS A LOS DEMÁS
+// ══════════════════════════════════════════════════════════════════════
+// Cargar un archivo desde el celular/computadora: usa exactamente el mismo
+// proceso que la carga desde Drive (misma conversión para todos los formatos).
+function pCargarLocal(tipo) {
+    if (!pPuede('cargar')) return syDenegar();
+    if (syConteoId && (tipo === 'guia-comp' || tipo === 'maestro' || tipo === 'stock')) { showToast('☁️ Estás en un conteo compartido. Sal del conteo para cargar otra guía.', '#1565C0', 3500); return; }
+    const inp = document.createElement('input');
+    inp.type = 'file';
+    inp.accept = '.xlsx,.xls,.csv,.txt,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,text/plain,*/*';
+    inp.style.display = 'none';
+    inp.onchange = () => {
+        const f = inp.files && inp.files[0]; inp.remove(); if (!f) return;
+        try { cerrarSubCarga(); } catch(e) {}
+        showLoading('Leyendo ' + f.name + '...');
+        const r = new FileReader();
+        r.onload = e => { hideLoading(); driveArchivoNombre = f.name; driveCurrentTipo = tipo; driveProcesar(e.target.result, tipo); };
+        r.onerror = () => { hideLoading(); showToast('❌ No se pudo leer el archivo', '#c62828'); };
+        r.readAsArrayBuffer(f);
+    };
+    document.body.appendChild(inp);
+    inp.click();
+}
+
+// ── Firmas rápidas para saber si una base cambió por una CARGA (no por un escaneo) ──
+function _sySigStr(s) { s = s || ''; let h = 0; const step = Math.max(1, Math.floor(s.length / 6000)); for (let i = 0; i < s.length; i += step) h = (h * 31 + s.charCodeAt(i)) | 0; return s.length + ':' + h; }
+function _syBasesSig() { return SY_BASES_KEYS.map(k => _sySigStr(localStorage.getItem(k))).join('|'); }
+function _syMaestroSig() { let n = 0, s = 0; try { maestroMap.forEach(v => { if (v.exp > 0) { n++; s += v.exp; } }); } catch(e) {} return n + ':' + s + ':' + ((typeof guiasCargadas !== 'undefined' && guiasCargadas) ? guiasCargadas.length : 0); }
+function _syAlmSig() { let n = 0, s = 0; try { almMap.forEach(v => { n++; s += (+v.stock || 0); }); } catch(e) {} return n + ':' + s; }
+
+let _syCarga = null;   // foto de las bases justo antes de que el usuario cargue un archivo
+function syMarcarCarga() { _syCarga = { t: Date.now(), alm: _syAlmSig(), mae: _syMaestroSig(), bas: _syBasesSig() }; }
+function _syCargaReciente() { return !!(_syCarga && Date.now() - _syCarga.t < 180000); }
+function _syPuedeAuto() { return syActivo() && pPuede('publicar') && _syCargaReciente(); }
+// Toda carga pasa por aquí: Drive, "desde mi equipo" y los selectores de archivo antiguos
+(function() {
+    const _dp = window.driveProcesar;
+    if (typeof _dp === 'function') window.driveProcesar = function() { if (syActivo()) syMarcarCarga(); return _dp.apply(this, arguments); };
+    document.addEventListener('change', e => { const t = e.target; if (t && t.type === 'file' && t.files && t.files.length && syActivo()) syMarcarCarga(); }, true);
+})();
+
+// ── 1) Bases de Consultar Precio y Stock (stock, memorándum, precios por mayor) ──
+let _syAutoBT = null;
+function syAutoBases() {
+    if (!_syPuedeAuto()) return;
+    clearTimeout(_syAutoBT);
+    _syAutoBT = setTimeout(async () => {
+        if (!_syPuedeAuto()) return;
+        const sig = _syBasesSig();
+        if (sig === _syCarga.bas) return;
+        _syCarga.bas = sig;
+        await syBasesEnviar(true);
+    }, 2500);
+}
+['csSaveDB', 'csSavePreciosLocal', 'csSavePreciosMayorLocal'].forEach(n => {
+    const o = window[n]; if (typeof o !== 'function') return;
+    window[n] = function() { const r = o.apply(this, arguments); try { syAutoBases(); } catch(e) {} return r; };
+});
+
+// ── 2) Maestro de INVENTARIO (guías / stock WAMA) ──
+const SY_K_MAEVER = 'pieers_sync_maestrover';
+let _syAutoMT = null;
+(function() {
+    const _sc = window.saveComp;
+    if (typeof _sc === 'function') window.saveComp = function() {
+        const r = _sc.apply(this, arguments);
+        try {
+            if (_syPuedeAuto() && !syConteoId && _syMaestroSig() !== _syCarga.mae && maestroMap.size) {
+                clearTimeout(_syAutoMT);
+                _syAutoMT = setTimeout(() => { if (_syPuedeAuto() && _syMaestroSig() !== _syCarga.mae) { _syCarga.mae = _syMaestroSig(); syMaestroPublicar(); } }, 1500);
+            }
+        } catch(e) {}
+        return r;
+    };
+})();
+async function syMaestroPublicar() {
+    if (!syActivo() || !pPuede('publicar')) return false;
+    try {
+        const m = {}, d = {}, gm = {}; let n = 0, u = 0;
+        maestroMap.forEach((v, k) => { if (v.exp > 0) { m[k] = v.exp; n++; u += v.exp; const ds = descripcionMap.get(k); if (ds) d[k] = ds; const g = guiaMap && guiaMap.get ? guiaMap.get(k) : null; if (g) gm[k] = g; } });
+        if (!n) return false;
+        const ver = Date.now();
+        await syReq('PUT', 'maestro/data', { m, d, gm, g: (guiasCargadas || []), t: totalEsp || u, f: driveArchivoNombre || '' });
+        _syS(SY_K_MAEVER, ver);
+        await syReq('PATCH', 'meta', { maestroVer: ver, maestroPor: sySes.id, maestroPorN: sySes.n, maestroN: n, maestroU: u, maestroF: driveArchivoNombre || '' });
+        showToast('☁️ Maestro enviado a todos los celulares (' + n.toLocaleString() + ' códigos)', '#1565C0', 3000);
+        return true;
+    } catch(e) { showToast('⚠️ No se pudo enviar el maestro a la nube: ' + e.message, '#E65100', 3500); return false; }
+}
+let _syMaeAvisado = 0;
+function syRevisarMaestro() {
+    const ver = syMeta.maestroVer || 0;
+    if (!ver || ver <= (_syJ(SY_K_MAEVER, 0) || 0) || syMeta.maestroPor === (sySes && sySes.id) || _syMaeAvisado === ver) return;
+    _syMaeAvisado = ver;
+    if (syConteoId) { showToast('📋 ' + (syMeta.maestroPorN || 'El supervisor') + ' cargó un maestro nuevo. Lo recibirás al salir del conteo compartido.', '#1565C0', 4000); _syMaeAvisado = 0; return; }
+    mostrarConfirm('📋 Maestro nuevo', (syMeta.maestroPorN || 'El supervisor') + ' cargó un maestro nuevo' + (syMeta.maestroF ? ' (' + syMeta.maestroF + ')' : '') + ': ' + (syMeta.maestroN || 0).toLocaleString() + ' códigos, ' + (syMeta.maestroU || 0).toLocaleString() + ' unidades. ¿Actualizar INVENTARIO en este celular? Tus lecturas actuales se mantienen.', syMaestroRecibir);
+}
+async function syMaestroRecibir() {
+    showLoading('Recibiendo maestro...');
+    try {
+        const p = await syReq('GET', 'maestro/data');
+        if (!p || !p.m) throw new Error('No hay maestro en la nube');
+        maestroMap = new Map();
+        Object.entries(p.m).forEach(([k, e]) => maestroMap.set(k, { exp: e, real: 0 }));
+        Object.entries(p.d || {}).forEach(([k, ds]) => descripcionMap.set(k, ds));
+        try { guiaMap = new Map(Object.entries(p.gm || {})); guiasCargadas = p.g || []; } catch(e) {}
+        totalEsp = p.t || Object.values(p.m).reduce((a, b) => a + b, 0);
+        if (historial.length) syncConteo();
+        try { localStorage.setItem('p_total_v8', totalEsp); } catch(e) {}
+        saveComp();
+        _syS(SY_K_MAEVER, syMeta.maestroVer || Date.now());
+        hideLoading();
+        if (modoActual === 'comp') renderComp();
+        showToast('✅ Maestro actualizado: ' + maestroMap.size.toLocaleString() + ' códigos', '#2E7D32');
+    } catch(e) { hideLoading(); showToast('❌ ' + e.message, '#B71C1C', 4000); }
+}
+
+// ── 3) ALMACÉN: si cargas un inventario nuevo, se comparte solo ──
+let _syAlmRemoto = 0;
+(function() {
+    const _sa = window.saveAlm;
+    if (typeof _sa === 'function') window.saveAlm = function() {
+        const r = _sa.apply(this, arguments);
+        try {
+            if (!_syAlmRemoto && _syPuedeAuto() && almMap.size && _syAlmSig() !== _syCarga.alm) {
+                _syCarga.alm = _syAlmSig();
+                syAlmPublicar(true);
+            }
+        } catch(e) {}
+        return r;
+    };
+    // Los movimientos (ingresos/retiros) NO cuentan como carga: actualizar la foto
+    ['almRegistrarPorCodigo', 'almDeshacer', 'almEliminarMov'].forEach(n => {
+        const o = window[n]; if (typeof o !== 'function') return;
+        window[n] = function() { const r = o.apply(this, arguments); if (_syCarga) _syCarga.alm = _syAlmSig(); return r; };
+    });
+    // Lo que llega de otros celulares tampoco cuenta como carga
+    const _rec = window.syAlmReconciliar;
+    if (typeof _rec === 'function') window.syAlmReconciliar = function() { _syAlmRemoto++; try { return _rec.apply(this, arguments); } finally { _syAlmRemoto--; if (_syCarga) _syCarga.alm = _syAlmSig(); } };
+    const _rcb = window.syAlmRecibir;
+    if (typeof _rcb === 'function') window.syAlmRecibir = async function() { _syAlmRemoto++; try { return await _rcb.apply(this, arguments); } finally { _syAlmRemoto--; if (_syCarga) _syCarga.alm = _syAlmSig(); } };
+})();
+
+
+// ══════════════════════════════════════════════════════════════════════
+// v27.13 — INVENTARIO: CARPETAS DE BASES EN LA NUBE
+// El supervisor/admin sube una carpeta (o varios archivos) y cada usuario
+// escoge cuál cargar como su maestro. Se guarda el archivo original y se
+// procesa igual que "Desde mi equipo" (misma conversión).
+// ══════════════════════════════════════════════════════════════════════
+let syCarpetas = {};          // espejo liviano de /carpetas (sin el contenido de los archivos)
+let _syNoAutoHasta = 0;       // al cargar desde una carpeta, NO reenviar el maestro a todos
+const _SY_EXT_OK = /\.(xlsx|xls|csv|txt)$/i;
+const _SY_MAX_ARCH = 7 * 1024 * 1024;
+
+function _syAbToB64(ab) {
+    const u = new Uint8Array(ab); let s = '';
+    for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000));
+    return btoa(s);
+}
+function _syB64ToAb(b64) { const s = atob(b64); const u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u.buffer; }
+function _syTam(n) { return n >= 1048576 ? (n / 1048576).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1024)) + ' KB'; }
+
+// Las cargas explícitas (Drive / desde mi equipo) sí se reenvían; las de carpeta no
+(function() {
+    const _mc = window.syMarcarCarga;
+    if (typeof _mc === 'function') window.syMarcarCarga = function() { if (Date.now() < _syNoAutoHasta) { _syCarga = null; return; } return _mc.apply(this, arguments); };
+    ['pCargarLocal', 'driveAbrirModal'].forEach(n => { const o = window[n]; if (typeof o === 'function') window[n] = function() { _syNoAutoHasta = 0; return o.apply(this, arguments); }; });
+})();
+
+function syAbrirCarpetas() {
+    try { const mc = document.getElementById('menuContent'); if (mc) mc.style.display = 'none'; } catch(e) {}
+    if (!syActivo()) {
+        mostrarConfirm('📁 Bases compartidas', 'Para compartir carpetas de bases entre celulares primero activa la nube: Inicio → ☁️ Nube y usuarios.', null);
+        return;
+    }
+    syVistaCarpetas(true);
+}
+async function syVistaCarpetas(recargar) {
+    if (recargar) {
+        syModal('carpetas', '<div class="sy-p" style="text-align:center;padding:20px;">⏳ Cargando carpetas…</div>');
+        try { syCarpetas = (await syReq('GET', 'carpetas')) || {}; } catch(e) { syModal('carpetas', '<div class="sy-p">⚠️ Sin conexión. Intenta de nuevo.</div>'); return; }
+    }
+    const puede = pPuede('publicar');
+    const q = ((document.getElementById('sy-cq') || {}).value || '').trim().toUpperCase();
+    const lista = Object.entries(syCarpetas || {}).sort((a, b) => (b[1].ts || 0) - (a[1].ts || 0));
+    const fh = ts => ts ? new Date(ts).toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' }) + ' · ' + new Date(ts).toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' }) : '';
+    let h = '<div class="sy-p">Escoge la base que te toca contar y tócala para cargarla en tu INVENTARIO.</div>';
+    if (puede) h += '<div class="sy-card"><div class="sy-h">📤 Subir bases para el equipo</div><div class="sy-grid2">'
+        + '<button class="sy-btn" onclick="sySubirCarpeta(true)">📁 Subir carpeta</button>'
+        + '<button class="sy-btn sy-dark" onclick="sySubirCarpeta(false)">📄 Subir archivos</button></div>'
+        + '<div class="sy-p" style="font-size:10.5px;margin:0;">En el celular usa "Subir archivos" y marca varios a la vez. Formatos: Excel o CSV (guías, Detalle de Stock WAMA, etc.).</div></div>';
+    h += '<input id="sy-cq" class="sy-in" placeholder="🔍 Buscar archivo o carpeta" value="' + syEsc(q) + '" oninput="syVistaCarpetas(false)" autocomplete="off">';
+    if (!lista.length) h += '<div class="sy-p" style="text-align:center;padding:16px;">📭 Aún no hay carpetas.' + (puede ? ' Sube la primera con los botones de arriba.' : ' Pide a tu supervisor que suba las bases.') + '</div>';
+    lista.forEach(([cid, c]) => {
+        const files = Object.entries(c.files || {}).sort((a, b) => String(a[1].n).localeCompare(String(b[1].n), 'es', { numeric: true }));
+        const visibles = q ? files.filter(([, f]) => String(f.n).toUpperCase().includes(q) || String(f.p || '').toUpperCase().includes(q) || String(c.n).toUpperCase().includes(q)) : files;
+        if (q && !visibles.length) return;
+        h += '<div class="sy-card"><div class="sy-row" style="align-items:flex-start;"><div style="min-width:0;">'
+            + '<div class="sy-h" style="margin:0;">📁 ' + syEsc(c.n) + '</div>'
+            + '<div class="sy-p" style="margin:2px 0 0;font-size:11px;">👤 ' + syEsc(c.porN || '') + ' · 🕒 ' + fh(c.ts) + ' · ' + files.length + ' archivo(s)</div></div>'
+            + (puede ? '<button class="sy-ib" title="Borrar carpeta" onclick="syBorrarCarpeta(\'' + cid + '\')">🗑️</button>' : '') + '</div>'
+            + _syArbolHtml(cid, visibles, puede, fh, !!q)
+            + (!files.length ? '<div class="sy-p">Carpeta vacía.</div>' : '')
+            + '</div>';
+    });
+    syModal('carpetas', h);
+    const qi = document.getElementById('sy-cq'); if (qi && q) { qi.focus(); qi.setSelectionRange(q.length, q.length); }
+}
+// v27.15: dibuja los archivos de una carpeta respetando sus subcarpetas (árbol desplegable)
+function _syArbolHtml(cid, files, puede, fh, abierto) {
+    const raiz = { sub: {}, files: [] };
+    files.forEach(([fid, f]) => {
+        let nodo = raiz;
+        String(f.p || '').split('/').filter(Boolean).forEach(seg => { nodo = nodo.sub[seg] || (nodo.sub[seg] = { sub: {}, files: [] }); });
+        nodo.files.push([fid, f]);
+    });
+    const contar = n => n.files.length + Object.values(n.sub).reduce((a, x) => a + contar(x), 0);
+    const fila = ([fid, f]) => '<div class="sy-urow"><div class="sy-uname">📄 <b>' + syEsc(f.n) + '</b><br><span class="sy-p" style="font-size:10.5px;">' + _syTam(f.s || 0) + (f.ts ? ' · ' + fh(f.ts) : '') + '</span></div>'
+        + '<button class="sy-btn sy-mini" onclick="syCargarDeCarpeta(\'' + cid + '\',\'' + fid + '\')">CARGAR</button>'
+        + (puede ? '<button class="sy-ib" title="Borrar archivo" onclick="syBorrarArchivoCarpeta(\'' + cid + '\',\'' + fid + '\')">🗑️</button>' : '') + '</div>';
+    const dibujar = (nodo, nivel) => {
+        let out = nodo.files.map(fila).join('');
+        Object.keys(nodo.sub).sort((a, b) => a.localeCompare(b, 'es', { numeric: true })).forEach(nom => {
+            const hijo = nodo.sub[nom];
+            out += '<details class="sy-sub"' + (abierto ? ' open' : '') + ' style="margin:6px 0 2px ' + (nivel ? 10 : 0) + 'px;border-left:3px solid #E3E5EA;padding-left:8px;">'
+                + '<summary style="cursor:pointer;font-weight:800;font-size:13px;padding:6px 0;">📂 ' + syEsc(nom) + ' <span class="sy-p" style="font-weight:600;font-size:11px;">(' + contar(hijo) + ')</span></summary>'
+                + dibujar(hijo, nivel + 1) + '</details>';
+        });
+        return out;
+    };
+    return dibujar(raiz, 0);
+}
+function sySubirCarpeta(esCarpeta) {
+    if (!pPuede('publicar')) return syDenegar();
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.multiple = true; inp.style.display = 'none';
+    inp.accept = '.xlsx,.xls,.csv,.txt,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv,text/plain';
+    if (esCarpeta) { inp.setAttribute('webkitdirectory', ''); inp.setAttribute('directory', ''); }
+    inp.onchange = () => {
+        const todos = Array.from(inp.files || []); inp.remove();
+        const files = todos.filter(f => _SY_EXT_OK.test(f.name));
+        if (!files.length) return showToast('⚠️ No hay archivos Excel/CSV en lo que elegiste', '#E65100');
+        const grandes = files.filter(f => f.size > _SY_MAX_ARCH);
+        if (grandes.length) return showToast('⚠️ Archivo muy grande (máx. 7 MB): ' + grandes[0].name, '#E65100', 4000);
+        const rel = files[0].webkitRelativePath || '';
+        const sugerido = rel.includes('/') ? rel.split('/')[0] : ('BASES ' + new Date().toLocaleDateString('es-PE'));
+        _syElegirArchivos(files, sugerido);   // v27.14: revisar y elegir qué archivos subir
+    };
+    document.body.appendChild(inp); inp.click();
+}
+// v27.14: antes de subir, se muestran los archivos encontrados (con su fecha) para
+// desmarcar los antiguos, y si la carpeta ya existe en la nube se elige REEMPLAZAR o AGREGAR.
+let _syElegidos = [];
+async function _syElegirArchivos(files, sugerido) {
+    try { syCarpetas = (await syReq('GET', 'carpetas')) || {}; } catch(e) {}
+    _syElegidos = files.slice().sort((a, b) => (b.lastModified || 0) - (a.lastModified || 0));
+    const fdt = t => t ? new Date(t).toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' }) + ' ' + new Date(t).toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' }) : '';
+    const hoy = Date.now();
+    const filas = _syElegidos.map((f, i) => {
+        const sub = (f.webkitRelativePath || '').split('/').slice(1, -1).join(' / ');
+        const viejo = f.lastModified && (hoy - f.lastModified) > 7 * 86400000;
+        return '<label class="sy-urow" style="cursor:pointer;"><input type="checkbox" class="sy-chk" data-i="' + i + '" checked style="width:20px;height:20px;accent-color:#C62828;flex-shrink:0;">'
+            + '<div class="sy-uname">📄 <b>' + syEsc(f.name) + '</b>' + (viejo ? ' <span class="sy-tag" style="background:#E65100;">antiguo</span>' : '')
+            + '<br><span class="sy-p" style="font-size:10.5px;">' + (sub ? '📂 ' + syEsc(sub) + ' · ' : '') + '🕒 ' + fdt(f.lastModified) + ' · ' + _syTam(f.size) + '</span></div></label>';
+    }).join('');
+    const h = '<div class="sy-p">Se encontraron <b>' + files.length + '</b> archivo(s). <b>Desmarca</b> los que no quieras subir (los marcados como <i>antiguo</i> tienen más de 7 días).</div>'
+        + '<div class="sy-card"><div class="sy-row" style="margin-bottom:6px;"><div class="sy-h" style="margin:0;">Archivos</div>'
+        + '<div><button class="sy-btn sy-sec sy-mini" onclick="document.querySelectorAll(\'.sy-chk\').forEach(c=>c.checked=true)">Todos</button> '
+        + '<button class="sy-btn sy-sec sy-mini" onclick="document.querySelectorAll(\'.sy-chk\').forEach(c=>c.checked=false)">Ninguno</button></div></div>'
+        + '<div style="max-height:38vh;overflow:auto;">' + filas + '</div></div>'
+        + '<div class="sy-card"><div class="sy-h">📁 Nombre de la carpeta en la nube</div>'
+        + '<input id="sy-cn2" class="sy-in" value="' + syEsc(sugerido) + '" oninput="_syModoCarpeta()">'
+        + '<div id="sy-modo-wrap" style="display:none;"><div class="sy-p" style="margin-bottom:4px;">⚠️ Ya existe una carpeta con ese nombre:</div>'
+        + '<label class="sy-p" style="display:flex;gap:8px;align-items:center;cursor:pointer;"><input type="radio" name="sy-modo" value="reemplazar" checked style="accent-color:#C62828;"> <b>Reemplazar</b>: borrar los archivos que tenía y dejar solo estos</label>'
+        + '<label class="sy-p" style="display:flex;gap:8px;align-items:center;cursor:pointer;"><input type="radio" name="sy-modo" value="agregar" style="accent-color:#C62828;"> <b>Agregar</b>: sumar estos a los que ya tenía</label></div></div>'
+        + '<div class="sy-grid2"><button class="sy-btn sy-sec" onclick="syVistaCarpetas(true)">Cancelar</button><button class="sy-btn" onclick="_syConfirmarSubida()">📤 SUBIR</button></div>';
+    syModal('carpetas', h);
+    _syModoCarpeta();
+}
+function _syCarpetaPorNombre(n) { n = String(n || '').trim().toUpperCase(); return Object.keys(syCarpetas || {}).find(k => String(syCarpetas[k].n).trim().toUpperCase() === n); }
+function _syModoCarpeta() {
+    const n = (document.getElementById('sy-cn2') || {}).value || '';
+    const w = document.getElementById('sy-modo-wrap'); if (w) w.style.display = _syCarpetaPorNombre(n) ? '' : 'none';
+}
+function _syConfirmarSubida() {
+    const n = ((document.getElementById('sy-cn2') || {}).value || '').trim();
+    if (!n) return showToast('⚠️ Escribe el nombre de la carpeta', '#E65100');
+    const sel = [...document.querySelectorAll('.sy-chk')].filter(c => c.checked).map(c => _syElegidos[+c.dataset.i]);
+    if (!sel.length) return showToast('⚠️ Marca al menos un archivo', '#E65100');
+    const modoEl = document.querySelector('input[name="sy-modo"]:checked');
+    const reemplazar = !!_syCarpetaPorNombre(n) && (!modoEl || modoEl.value === 'reemplazar');
+    _sySubirArchivos(n, sel, reemplazar);
+}
+async function _sySubirArchivos(nombre, files, reemplazar) {
+    try {
+        syCarpetas = (await syReq('GET', 'carpetas')) || {};
+        let cid = _syCarpetaPorNombre(nombre);
+        if (cid && reemplazar) {
+            // Reemplazar: se borran los archivos anteriores de esa carpeta
+            showLoading('Borrando archivos anteriores de "' + nombre + '"...');
+            await syReq('DELETE', 'carpetasData/' + cid);
+            await syReq('DELETE', 'carpetas/' + cid + '/files');
+            if (syCarpetas[cid]) syCarpetas[cid].files = {};
+        }
+        if (!cid) { cid = syId('d'); await syReq('PUT', 'carpetas/' + cid, { n: nombre, por: sySes.id, porN: sySes.n, ts: Date.now() }); }
+        const existentes = (syCarpetas[cid] && syCarpetas[cid].files) || {};
+        let ok = 0;
+        for (let i = 0; i < files.length; i++) {
+            const f = files[i];
+            showLoading('Subiendo ' + (i + 1) + ' de ' + files.length + ': ' + f.name);
+            const ab = await f.arrayBuffer();
+            // Mismo nombre en la carpeta → se reemplaza
+            // v27.15: se guarda la subcarpeta (ej. "ZONA A/HOMBRES"); mismo nombre en otra subcarpeta = otro archivo
+            const sub = (f.webkitRelativePath || '').split('/').slice(1, -1).join('/');
+            const fid = Object.keys(existentes).find(k => existentes[k].n === f.name && (existentes[k].p || '') === sub) || syId('f');
+            await syReq('PUT', 'carpetasData/' + cid + '/' + fid, _syAbToB64(ab));
+            await syReq('PUT', 'carpetas/' + cid + '/files/' + fid, { n: f.name, p: sub, s: f.size, ts: Date.now(), porN: sySes.n });
+            ok++;
+        }
+        await syReq('PATCH', 'carpetas/' + cid, { ts: Date.now(), porN: sySes.n });
+        await syReq('PATCH', 'meta', { carpetasVer: Date.now(), carpetasPorN: sySes.n, carpetasN: nombre });
+        hideLoading();
+        showToast('✅ ' + ok + ' archivo(s) subidos a "' + nombre + '". El equipo ya puede escoger su base.', '#2E7D32', 3500);
+        syVistaCarpetas(true);
+    } catch(e) { hideLoading(); showToast('❌ No se pudo subir: ' + e.message, '#B71C1C', 4000); }
+}
+async function syCargarDeCarpeta(cid, fid) {
+    if (syConteoId) return showToast('☁️ Estás en un conteo compartido. Sal del conteo para cargar otra base.', '#1565C0', 3500);
+    const f = ((syCarpetas[cid] || {}).files || {})[fid]; if (!f) return;
+    const go = async () => {
+        showLoading('Descargando ' + f.n + '…');
+        try {
+            const b64 = await syReq('GET', 'carpetasData/' + cid + '/' + fid);
+            if (!b64) throw new Error('El archivo ya no está en la nube');
+            const ab = _syB64ToAb(b64);
+            hideLoading(); syCerrarModal();
+            if (modoActual !== 'comp') seleccionarModo('comp');
+            _syNoAutoHasta = Date.now() + 120000;   // es TU base: no se reenvía a los demás
+            driveArchivoNombre = f.n; driveCurrentTipo = 'guia-comp';
+            driveProcesar(ab, 'guia-comp');
+        } catch(e) { hideLoading(); showToast('❌ ' + e.message, '#B71C1C', 4000); }
+    };
+    if (historial.length) mostrarConfirm('Cargar base', 'Vas a cargar "' + (f.p ? f.p + ' / ' : '') + f.n + '". Tienes ' + historial.length + ' lecturas en tu conteo actual (se mantienen). ¿Continuar?', go);
+    else go();
+}
+function syBorrarCarpeta(cid) {
+    if (!pPuede('publicar')) return syDenegar();
+    const c = syCarpetas[cid] || {};
+    mostrarConfirm('Borrar carpeta', '¿Borrar la carpeta "' + (c.n || '') + '" con sus ' + Object.keys(c.files || {}).length + ' archivo(s)? Nadie podrá volver a cargarlos.', async () => {
+        try { await syReq('DELETE', 'carpetasData/' + cid); await syReq('DELETE', 'carpetas/' + cid); showToast('🗑️ Carpeta borrada', '#555'); } catch(e) { showToast('❌ ' + e.message, '#B71C1C'); }
+        syVistaCarpetas(true);
+    });
+}
+function syBorrarArchivoCarpeta(cid, fid) {
+    if (!pPuede('publicar')) return syDenegar();
+    const f = ((syCarpetas[cid] || {}).files || {})[fid] || {};
+    mostrarConfirm('Borrar archivo', '¿Borrar "' + (f.p ? f.p + '/' : '') + (f.n || '') + '" de la carpeta?', async () => {
+        try { await syReq('DELETE', 'carpetasData/' + cid + '/' + fid); await syReq('DELETE', 'carpetas/' + cid + '/files/' + fid); } catch(e) { showToast('❌ ' + e.message, '#B71C1C'); }
+        syVistaCarpetas(true);
+    });
+}
+// Aviso a los demás cuando hay carpetas nuevas
+let _syCarpAvisado = null;
+(function() {
+    const _rm = window.syRevisarMaestro;
+    window.syRevisarMaestro = function() {
+        if (typeof _rm === 'function') _rm.apply(this, arguments);
+        const v = syMeta.carpetasVer || 0;
+        if (_syCarpAvisado === null) { _syCarpAvisado = v; return; }   // primera lectura: no avisar lo viejo
+        if (v > _syCarpAvisado) {
+            _syCarpAvisado = v;
+            if (syMeta.carpetasPorN && sySes && syMeta.carpetasPorN !== sySes.n) showToast('📁 ' + syMeta.carpetasPorN + ' subió bases a "' + (syMeta.carpetasN || '') + '". Ábrelas en INVENTARIO → ☁️ Bases compartidas.', '#1565C0', 5000);
+            const m = document.getElementById('sy-modal'); if (m && m.style.display === 'flex' && m.dataset.vista === 'carpetas') syVistaCarpetas(true);
+        }
+    };
+})();
+// Botón en el menú de INVENTARIO (visible para todos los roles)
+(function() {
+    const ponerBoton = () => {
+        const mc = document.getElementById('menuContent'); if (!mc) return;
+        let b = document.getElementById('btn-sy-carpetas');
+        if (!b) {
+            b = document.createElement('button'); b.id = 'btn-sy-carpetas'; b.className = 'sy-menu-btn';
+            b.innerHTML = '📁 Bases compartidas (escoger mi base)'; b.onclick = syAbrirCarpetas;
+            const ref = document.getElementById('btn-sy-conteo') || document.getElementById('menu-sec-alm');
+            if (ref && ref.parentNode === mc) mc.insertBefore(b, ref); else mc.appendChild(b);
+        }
+        b.style.display = (typeof modoActual !== 'undefined' && modoActual === 'comp') ? '' : 'none';
+    };
+    const _sm = window.seleccionarModo;
+    if (typeof _sm === 'function') window.seleccionarModo = function() { const r = _sm.apply(this, arguments); ponerBoton(); return r; };
+    ponerBoton();
+})();
 
 </script>
