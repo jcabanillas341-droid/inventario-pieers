@@ -1596,7 +1596,7 @@
         html.rol-vendedor #btn-carga-comp, html.rol-vendedor #btn-comp-guardar, html.rol-vendedor #btn-comp-reiniciar,
         html.rol-vendedor #btn-carga-alm, html.rol-vendedor #btn-alm-guardar, html.rol-vendedor #btn-alm-exportar, html.rol-vendedor #btn-alm-reiniciar,
         html.rol-vendedor #btn-carga-cs, html.rol-vendedor #btn-stock-export, html.rol-vendedor #btn-stock-borrar,
-        html.rol-vendedor #comp-file-btns, html.rol-vendedor #btn-sy-carpetas,
+        html.rol-vendedor #comp-file-btns, html.rol-vendedor #btn-sy-carpetas, html:not(.rol-admin) #btn-tk-vend,
         html.rol-vendedor button[onclick^="resetearApp"], html.rol-vendedor button[onclick^="abrirConfigPIN"],
         html.rol-supervisor button[onclick^="resetearApp"], html.rol-supervisor button[onclick^="abrirConfigPIN"] { display:none !important; }
         /* Modo oscuro */
@@ -1623,7 +1623,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.18 — 18/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.20 — 18/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -2070,7 +2070,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.18 — 18/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.20 — 18/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -2129,6 +2129,7 @@
     <div id="modalTkVentas" class="modal" style="background:#F2F2F2;">
         <div style="display:flex;align-items:center;gap:10px;padding:12px 14px;background:#fff;border-bottom:2px solid #2E7D32;flex-shrink:0;">
             <div style="font-family:'Barlow',sans-serif;font-size:16px;font-weight:900;color:#111;flex:1;">📊 VENTAS POR DÍA</div>
+            <button id="btn-tk-vend" onclick="tkAbrirVendedores()" style="background:#1565C0;border:none;color:#fff;font-family:'Barlow',sans-serif;font-weight:800;font-size:12px;border-radius:8px;padding:7px 10px;cursor:pointer;">👥 VENDEDORES</button>
             <button onclick="cerrarModalTkVentas()" style="background:none;border:none;color:#555;font-size:22px;cursor:pointer;padding:0 4px;">✕</button>
         </div>
         <div id="tk-ventas-lista" style="flex:1;overflow-y:auto;padding:10px;"></div>
@@ -3570,7 +3571,8 @@ function almGuardarYVerInformes() {
         totalUnidades: [...almMap.values()].reduce((a,v)=>a+v.stock,0),
         totalMovimientos: almMovs.length,
         data: Object.fromEntries([...almMap.entries()]),
-        movs: [...almMovs.slice(-500)]
+        movs: [...almMovs.slice(-500)],
+        guardadoPor: (typeof pUsuarioActual === 'function' ? pUsuarioActual() : '')
     };
     almSnapshots.push(snap);
     try { localStorage.setItem('p_alm_snaps_v1', JSON.stringify(almSnapshots.slice(-20))); } catch(e) {}
@@ -3604,7 +3606,7 @@ function renderAlmInformes() {
 
         const info = document.createElement('div');
         info.innerHTML = '<div style="font-family:Arial,sans-serif;font-size:15px;font-weight:900;color:var(--rojo);margin-bottom:2px;">' + snap.nombre + '</div>'
-            + '<div style="font-size:11px;color:#111111;margin-bottom:10px;">' + snap.fecha + ' | ' + (snap.totalCodigos||0).toLocaleString() + ' cod. | ' + (snap.totalUnidades||0).toLocaleString() + ' uds.</div>';
+            + '<div style="font-size:11px;color:#111111;margin-bottom:10px;">' + snap.fecha + ' | ' + (snap.totalCodigos||0).toLocaleString() + ' cod. | ' + (snap.totalUnidades||0).toLocaleString() + ' uds.' + (snap.guardadoPor ? '<br><span style="color:#1565C0;font-weight:700;">👤 Guardado por ' + snap.guardadoPor + '</span>' : '') + '</div>';
         card.appendChild(info);
 
         const row = document.createElement('div');
@@ -3720,7 +3722,7 @@ function almExportarSnap(idx) {
     const snap = almSnapshots[idx];
     const data = snap.data || {};
     const entries = Object.entries(data).sort((a,b)=>b[1].stock-a[1].stock).map(([c,v])=>[c,v.desc||'',v.stock]);
-    const spec = xlSpecAlmacen('Almacén — '+snap.nombre, 'Informe guardado: '+snap.fecha, entries, (snap.movs||[]), 'STOCK');
+    const spec = xlSpecAlmacen('Almacén — '+snap.nombre, 'Informe guardado: '+snap.fecha + (snap.guardadoPor ? ' · por ' + snap.guardadoPor : ''), entries, (snap.movs||[]), 'STOCK');
     const resSnap = `📦 ALMACÉN: ${snap.nombre}\n` +
         `• Códigos: ${(snap.totalCodigos||0).toLocaleString()}\n` +
         `• Unidades: ${(snap.totalUnidades||0).toLocaleString()}\n` +
@@ -4331,7 +4333,10 @@ function guardarLote() {
         const def='COMPARATIVO_'+new Date().toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'2-digit'}).replace(/\//g,'-')+'_'+(lotes.length+1);
         pPedirTexto('💾 Guardar reporte', 'Nombre del reporte:', def, function(n) {
         if (!n) return;
-        lotes.push({nombre:n, fecha:new Date().toLocaleString(), tipo:'comp', datosLectura:[...historial], maestroSnapshot:Object.fromEntries(maestroMap), descSnapshot:Object.fromEntries(descripcionMap)});
+        lotes.push({nombre:n, fecha:new Date().toLocaleString(), tipo:'comp', datosLectura:[...historial], maestroSnapshot:Object.fromEntries(maestroMap), descSnapshot:Object.fromEntries(descripcionMap),
+            // v27.19: quién guardó el reporte y quién leyó cada código (conteo compartido)
+            guardadoPor: (typeof pUsuarioActual === 'function' ? pUsuarioActual() : ''),
+            lectInfo: (typeof pLectInfoSnapshot === 'function' ? pLectInfoSnapshot() : null)});
         historial=[]; maestroMap.forEach(v=>v.real=0);
         saveComp(); saveLotes(); renderComp();
         showToast('✅ Guardado: '+n,'#111');
@@ -4425,7 +4430,8 @@ function renderLotes() {
     if (!lotes.length) { d.innerHTML='<p style="color:#111111;text-align:center;margin-top:50px;font-family:Barlow,sans-serif;">Sin reportes guardados</p>'; return; }
     lotes.forEach((l,i)=>{
         const div=document.createElement('div'); div.className='card-lote';
-        div.innerHTML=`<strong style="color:var(--rojo);font-family:'Barlow',sans-serif;font-size:14px;">${l.nombre}</strong><br><small style="color:#111111;">${l.fecha} | ${l.datosLectura.length.toLocaleString()} unid.</small><br><br>
+        const _quien = (typeof pResumenLectores === 'function') ? pResumenLectores(l) : '';
+        div.innerHTML=`<strong style="color:var(--rojo);font-family:'Barlow',sans-serif;font-size:14px;">${l.nombre}</strong><br><small style="color:#111111;">${l.fecha} | ${l.datosLectura.length.toLocaleString()} unid.</small>${l.guardadoPor ? `<br><small style="color:#1565C0;font-weight:700;">👤 Guardado por ${l.guardadoPor}</small>` : ''}${_quien ? `<br><small style="color:#555;">👥 Leyeron: ${_quien}</small>` : ''}<br><br>
         <button onclick="verDetalleLote(${i})"  style="${btnS('#0d47a1','white')}">👁 VER</button>
         <button onclick="reanudarLote(${i})" style="${btnS('#1A1A1A','white')}">▶ REANUDAR</button>
         <button onclick="exportarExcel(${i})" style="${btnS('#D32F2F','white')}">📊 EXCEL</button>
@@ -7287,6 +7293,7 @@ function tkRender() {
     });
 
     let totalGeneral = 0, totalItems = 0, html = '';
+    const _tkL = []; // v27.20: líneas con su subtotal (para el Excel de tickets)
 
     // ── Tarjetas de grupo de combo (pueden mezclar modelos distintos) ──
     Object.keys(grupos).forEach(nombreGrupo => {
@@ -7318,12 +7325,14 @@ function tkRender() {
                 const suelto  = c - enCombo;
                 restanteCombo -= enCombo;
                 subtotalGrupo += enCombo * comboPrecio;
+                let _sL = enCombo * comboPrecio;
                 if (suelto > 0) {
                     const up = tkPrecioUnidad(csPreciosDB[tkModeloBase(m)] || {});
-                    subtotalGrupo += suelto * up;
+                    subtotalGrupo += suelto * up; _sL += suelto * up;
                     detalleSueltos.push(suelto + ' de ' + m + ' (S/' + up.toFixed(2) + ')');
                 }
                 const desc = tkDescripcionItem(m);
+                _tkL.push({ k:m, d:desc, c, s:+_sL.toFixed(2), p:'COMBO ' + nombreGrupo });
                 return `<div onclick="abrirModalTkDel('${m}')" style="cursor:pointer;padding:2px 0;font-size:12px;color:#333;">${desc} <span style="color:#999;font-size:10px;">(${m})</span> — x${c}</div>`;
             }).join('');
 
@@ -7374,6 +7383,7 @@ function tkRender() {
         const _unitSistema = unit;
         if (_esManual) unit = _manual;
         const subtotal = count * unit;
+        _tkL.push({ k:modelo, d:desc, c:count, s:+subtotal.toFixed(2), p:_esManual ? 'PRECIO A MANO' : (esColor ? 'PROMO COLOR' : '') });
         totalGeneral += subtotal;
         totalItems   += count;
         const _pctInd = tkPctDescuento(unit, etiquetaRef);
@@ -7408,6 +7418,7 @@ function tkRender() {
         const unitNormal = tkPrecioUnidad(_preciosUmbral);
         const precioAplicado = cumple ? tk50OffAplicar(info.precioEspecial, _preciosUmbral.etiqueta) : unitNormal;
         const subtotal = count * precioAplicado;
+        _tkL.push({ k:modelo, d:desc, c:count, s:+subtotal.toFixed(2), p:cumple ? 'PROMO COMPRA MAYOR A ' + info.umbral : '' });
         totalGeneral += subtotal;
         totalItems   += count;
         const colorBorde = cumple ? '#7B1FA2' : '#999';
@@ -7432,6 +7443,7 @@ function tkRender() {
     });
 
     cont.innerHTML = html;
+    tkLineasActual = _tkL;
     document.getElementById('tk-total').textContent = totalGeneral.toFixed(2);
     document.getElementById('tk-total-items').textContent = totalItems;
 }
@@ -7513,6 +7525,7 @@ function tkNuevoTicket() {
 //  VENTAS GUARDADAS (tickets), agrupadas por día
 // ══════════════════════════════════════════════════════
 let tkTickets = [];
+let tkLineasActual = [];
 
 function tkFechaHoy() {
     const d = new Date();
@@ -7564,9 +7577,13 @@ function tkConfirmarGuardar() {
         hora: ahora.toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit'}),
         items: JSON.parse(JSON.stringify(ticketItems)),
         precios: Object.keys(tkPreciosManuales).length ? JSON.parse(JSON.stringify(tkPreciosManuales)) : undefined,
+        usuario: (typeof pUsuarioActual === 'function' ? pUsuarioActual() : ''),
+        uid: (typeof syActivo === 'function' && syActivo()) ? sySes.id : undefined,
+        lineas: tkLineasActual.slice(),
         total, cantidad, obs
     });
     tkGuardarEnStorage();
+    if (typeof tkNubeSincronizar === 'function') tkNubeSincronizar();
     cerrarModalTkObs();
     showToast('✅ Venta guardada: S/' + total.toFixed(2), '#2E7D32');
     try { beep(1200, 0.08); } catch(e) {}
@@ -7604,7 +7621,7 @@ function tkRenderVentas() {
         ticketsDia.slice().reverse().forEach(t => {
             html += `<div onclick="tkVerDetalleTicket(${t.id})" style="background:#fff;border-radius:10px;padding:10px 12px;margin-bottom:6px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.08);">
                 <div style="display:flex;justify-content:space-between;align-items:center;">
-                    <span style="font-size:12px;color:#555;">🕐 ${t.hora} — ${t.cantidad} prenda${t.cantidad>1?'s':''}</span>
+                    <span style="font-size:12px;color:#555;">🕐 ${t.hora} — ${t.cantidad} prenda${t.cantidad>1?'s':''}${t.usuario ? ' · 👤 ' + t.usuario : ''}</span>
                     <span style="font-family:'Barlow',sans-serif;font-weight:800;font-size:15px;color:#2E7D32;">S/${t.total.toFixed(2)}</span>
                 </div>
                 ${t.obs ? `<div style="font-size:11px;color:#1565C0;margin-top:3px;">📝 ${t.obs}</div>` : ''}
@@ -7620,7 +7637,7 @@ function tkVerDetalleTicket(id) {
     const t = tkTickets.find(x => x.id === id);
     if (!t) return;
     _tkTicketVerActual = id;
-    document.getElementById('tk-detalle-titulo').textContent = tkFechaLegible(t.fecha) + ' — ' + t.hora + (t.obs ? ' · 📝 ' + t.obs : '');
+    document.getElementById('tk-detalle-titulo').textContent = tkFechaLegible(t.fecha) + ' — ' + t.hora + (t.usuario ? ' · 👤 ' + t.usuario : '') + (t.obs ? ' · 📝 ' + t.obs : '');
     const cont = document.getElementById('tk-detalle-items');
     let html = '';
     Object.keys(t.items).forEach(k => {
@@ -7647,6 +7664,7 @@ function tkEditarTicketGuardado() {
         '✏️ SÍ, EDITAR', () => {
             ticketItems = JSON.parse(JSON.stringify(t.items));
             tkPreciosManuales = t.precios ? JSON.parse(JSON.stringify(t.precios)) : {};
+            if (typeof tkNubeBorrar === 'function') tkNubeBorrar(t);
             tkTickets = tkTickets.filter(x => x.id !== idT); // se re-guarda al terminar de editar
             tkGuardarEnStorage();
             cerrarModalTkDetalle();
@@ -7662,6 +7680,7 @@ function tkEliminarTicketGuardado() {
     const idT = _tkTicketVerActual;
     mostrarConfirmDoble('¿Eliminar este ticket?', 'Esta acción no se puede deshacer.',
         '🗑️ SÍ, ELIMINAR', () => {
+            if (typeof tkNubeBorrar === 'function') tkNubeBorrar(tkTickets.find(x => x.id === idT));
             tkTickets = tkTickets.filter(x => x.id !== idT);
             tkGuardarEnStorage();
             cerrarModalTkDetalle();
@@ -9164,6 +9183,8 @@ function xlRenderSheetJS(spec) {
 // Punto de entrada: genera y descarga con el panel de WhatsApp de siempre
 async function xlExportar(spec, nombre, resumen) {
     try {
+        // v27.19: cada hoja dice quién exportó el Excel
+        try { const u = (typeof pUsuarioActual === 'function') ? pUsuarioActual() : ''; if (u) spec.hojas.forEach(h => { if (!h.plano) h.sub = (h.sub ? h.sub + '  ·  ' : '') + 'Exportado por ' + u + ' · ' + new Date().toLocaleString('es-PE'); }); if (u && resumen) resumen += '\n• Por: ' + u; } catch(e) {}
         showToast('⏳ Preparando Excel…', '#111');
         let ok = false;
         try { ok = await xlCargarExcelJS(); } catch(e) {}
@@ -9210,16 +9231,17 @@ function xlHojaMovs(titulo, sub, movs, plano) {
     const rows = movs.map((mv, i) => [
         { v:i+1, s:'c' }, { v:String(mv.cod), s:'cod' }, { v:mv.tipo, s:'est' },
         { v:+mv.cant || 0, s:'n0' }, { v:+mv.stockPost || 0, s:'n0' },
-        { v: mv.ts ? new Date(mv.ts).toLocaleString('es-PE') : '', s:'c' }
+        { v: mv.ts ? new Date(mv.ts).toLocaleString('es-PE') : '', s:'c' },
+        { v: mv.u || '', s:'c' }
     ]);
     const hoja = {
-        name:'MOVIMIENTOS', tab:XL_C.negro, titulo, sub, plano:!!plano, widths:[7,20,13,12,18,20],
-        header:['#','CÓDIGO','TIPO','CANTIDAD','STOCK RESULTANTE','FECHA / HORA'], rows, filter:true,
+        name:'MOVIMIENTOS', tab:XL_C.negro, titulo, sub, plano:!!plano, widths:[7,20,13,12,18,20,16],
+        header:['#','CÓDIGO','TIPO','CANTIDAD','STOCK RESULTANTE','FECHA / HORA','USUARIO'], rows, filter:true,
         cf:[{ ref:`C${r0}:C${rr}`, rules:[
             { type:'cellIs', operator:'equal', formulae:['"INGRESO"'], color:'verde', bold:true },
             { type:'cellIs', operator:'equal', formulae:['"RETIRO"'], color:'rojo', bold:true } ] }]
     };
-    if (!plano) hoja.total = [ 'TOTAL', '', '', { v:movs.reduce((a,m)=>a+(+m.cant||0),0), f:`SUBTOTAL(109,D${r0}:D${rr})`, s:'tot' }, '', '' ];
+    if (!plano) hoja.total = [ 'TOTAL', '', '', { v:movs.reduce((a,m)=>a+(+m.cant||0),0), f:`SUBTOTAL(109,D${r0}:D${rr})`, s:'tot' }, '', '', '' ];
     return hoja;
 }
 
@@ -9282,21 +9304,27 @@ function xlSpecComparativo(lote, cA) {
         const mn = (lote.manual&&lote.manual[cod])||[];
         filas.push({ cod, desc, exp:v.exp, leido, man:mn.reduce((a,m)=>a+m.cant,0), obs:mn.map(m=>m.obs).filter(Boolean).join(' | ') });
     });
+    // v27.19: quién leyó cada código (si el reporte lo tiene)
+    const LI = Array.isArray(lote.lectInfo) && lote.lectInfo.length === lote.datosLectura.length ? lote.lectInfo : null;
+    const conUsuarios = !!(LI && LI.some(x => x && x[0]));
+    const porCodU = {};
+    if (conUsuarios) lote.datosLectura.forEach((c, i) => { const u = (LI[i] && LI[i][0]) || '(sin usuario)'; const m = porCodU[c] || (porCodU[c] = {}); m[u] = (m[u] || 0) + 1; });
+    const leidoPor = c => { const m = porCodU[c]; return m ? Object.entries(m).sort((a, b) => b[1] - a[1]).map(([u, k]) => u + ' ' + k).join(' · ') : ''; };
     Object.entries(cA).forEach(([cod,cant]) => { if(!lote.maestroSnapshot.hasOwnProperty(cod)) filas.push({ cod, desc:descripcionMap.get(cod)||'', exp:0, leido:cant, man:0, obs:'' }); });
     const r0 = 4, n = filas.length, rf = Math.max(r0 + n - 1, r0);
     const rows = filas.map((f,i) => {
         const r = r0 + i, d = f.leido - f.exp, est = d<0?'FALTA':d>0?'SOBRA':'OK';
         return [ {v:f.cod,s:'cod'}, {v:f.desc,s:'t'}, {v:f.exp,s:'n0'}, {v:f.leido,s:'n0'},
                  {v:est, f:`IF(D${r}<C${r},"FALTA",IF(D${r}>C${r},"SOBRA","OK"))`, s:'est'},
-                 {v:d, f:`D${r}-C${r}`, s:'dif'}, {v:f.man||0, s:'n'}, {v:f.obs,s:'obs'} ];
+                 {v:d, f:`D${r}-C${r}`, s:'dif'}, {v:f.man||0, s:'n'}, {v:f.obs,s:'obs'} ].concat(conUsuarios ? [{ v: leidoPor(f.cod), s:'t' }] : []);
     });
     const sum = k => filas.reduce((a,f)=>a+(k==='d'?f.leido-f.exp:f[k]),0);
     const cnt = e => filas.filter(f => (f.leido<f.exp?'FALTA':f.leido>f.exp?'SOBRA':'OK')===e).length;
     const hc = {
         name:'CONCILIACION', tab:XL_C.rojo, titulo:`Conciliación — ${lote.nombre}`, sub:`Fecha: ${lote.fecha}  ·  ESTADO y DIFERENCIA se recalculan solos si cambias CONTEO REAL`,
-        widths:[20,56,14,14,12,14,14,42], header:['CÓDIGO','DESCRIPCIÓN','STOCK ESPERADO','CONTEO REAL','ESTADO','DIFERENCIA','INGRESO MANUAL','OBSERVACIÓN'],
-        hstyle:['hr','hr','h','h','hr','hr','h','h'], rows, filter:true,
-        total:['TOTAL', {v:n,f:`SUBTOTAL(103,A${r0}:A${rf})`,s:'tot',n:'#,##0" códigos"'}, {v:sum('exp'),f:`SUBTOTAL(109,C${r0}:C${rf})`,s:'tot'}, {v:sum('leido'),f:`SUBTOTAL(109,D${r0}:D${rf})`,s:'tot'}, '', {v:sum('d'),f:`SUBTOTAL(109,F${r0}:F${rf})`,s:'tot',n:'+#,##0;-#,##0;0'}, {v:sum('man'),f:`SUBTOTAL(109,G${r0}:G${rf})`,s:'tot'}, ''],
+        widths:[20,56,14,14,12,14,14,42].concat(conUsuarios ? [30] : []), header:['CÓDIGO','DESCRIPCIÓN','STOCK ESPERADO','CONTEO REAL','ESTADO','DIFERENCIA','INGRESO MANUAL','OBSERVACIÓN'].concat(conUsuarios ? ['LEÍDO POR'] : []),
+        hstyle:['hr','hr','h','h','hr','hr','h','h'].concat(conUsuarios ? ['hr'] : []), rows, filter:true,
+        total:['TOTAL', {v:n,f:`SUBTOTAL(103,A${r0}:A${rf})`,s:'tot',n:'#,##0" códigos"'}, {v:sum('exp'),f:`SUBTOTAL(109,C${r0}:C${rf})`,s:'tot'}, {v:sum('leido'),f:`SUBTOTAL(109,D${r0}:D${rf})`,s:'tot'}, '', {v:sum('d'),f:`SUBTOTAL(109,F${r0}:F${rf})`,s:'tot',n:'+#,##0;-#,##0;0'}, {v:sum('man'),f:`SUBTOTAL(109,G${r0}:G${rf})`,s:'tot'}, ''].concat(conUsuarios ? [''] : []),
         cf:[
             { ref:`E${r0}:E${rf}`, rules:[
                 { type:'cellIs', operator:'equal', formulae:['"FALTA"'], color:'rojo', bold:true },
@@ -9329,7 +9357,35 @@ function xlSpecComparativo(lote, cA) {
         { type:'cellIs', operator:'greaterThanOrEqual', formulae:['0.95'], color:'verde', bold:true },
         { type:'cellIs', operator:'lessThan', formulae:['0.8'], color:'rojo', bold:true },
         { type:'cellIs', operator:'between', formulae:['0.8','0.9499'], color:'ambar', bold:true } ] }]);
-    return { hojas:[hr, hc, hl] };
+    const hojasC = [hr, hc, hl];
+    // v27.19: quién guardó / quién contó
+    const extra = [];
+    if (lote.guardadoPor) extra.push(['👤 Guardado por', { v: lote.guardadoPor, s:'k' }, lote.fecha || '']);
+    if (conUsuarios) {
+        const tot = {}; LI.forEach(x => { const u = (x && x[0]) || '(sin usuario)'; tot[u] = (tot[u] || 0) + 1; });
+        const usuarios = Object.keys(tot).sort((a, b) => tot[b] - tot[a]);
+        extra.push(['👥 Contaron', { v: usuarios.map(u => u + ' (' + tot[u] + ')').join(', '), s:'k' }, 'Detalle en las hojas POR USUARIO y LECTURAS_DETALLE']);
+        // Hoja LECTURAS_DETALLE: cada lectura con su usuario y hora
+        const r0d = 4, nd = lote.datosLectura.length, rfd = Math.max(r0d + nd - 1, r0d);
+        const fhora = t => t ? new Date(t).toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : '';
+        const hd = {
+            name:'LECTURAS_DETALLE', tab:'1565C0', titulo:`Lecturas una por una — ${lote.nombre}`, sub:'Quién leyó cada código (conteo compartido)',
+            widths:[8,20,50,18,12], header:['#','CÓDIGO','DESCRIPCIÓN','USUARIO','HORA'], hstyle:['h','hr','hr','hr','h'], filter:true,
+            rows: lote.datosLectura.map((c, i) => [ {v:i+1,s:'c'}, {v:c,s:'cod'}, {v:(lote.descSnapshot&&lote.descSnapshot[c])||descripcionMap.get(c)||'',s:'t'}, {v:(LI[i]&&LI[i][0])||'(sin usuario)',s:'est'}, {v:fhora(LI[i]&&LI[i][1]),s:'c'} ])
+        };
+        // Hoja POR USUARIO: lecturas y códigos por persona, con fórmulas sobre LECTURAS_DETALLE
+        const r0u = 4, D = `LECTURAS_DETALLE!D${r0d}:D${rfd}`;
+        const codsU = {}; lote.datosLectura.forEach((c, i) => { const u = (LI[i] && LI[i][0]) || '(sin usuario)'; (codsU[u] = codsU[u] || new Set()).add(c); });
+        const hu = {
+            name:'POR USUARIO', tab:'1565C0', titulo:`Conteo por usuario — ${lote.nombre}`, sub:'Lecturas = prendas escaneadas por cada persona',
+            widths:[26,14,16,12], header:['USUARIO','LECTURAS','CÓDIGOS DISTINTOS','% DEL TOTAL'], hstyle:['hr','hr','h','h'], filter:true,
+            rows: usuarios.map((u, i) => { const r = r0u + i; return [ {v:u,s:'k'}, {v:tot[u], f:`COUNTIF(${D},A${r})`, s:'n0'}, {v:codsU[u].size, s:'n0'}, {v: nd ? tot[u]/nd : 0, f:`IF(SUM(B$${r0u}:B$${r0u+usuarios.length-1})=0,0,B${r}/SUM(B$${r0u}:B$${r0u+usuarios.length-1}))`, s:'pct'} ]; }),
+            total:['TOTAL', {v:nd, f:`SUBTOTAL(109,B${r0u}:B${r0u+usuarios.length-1})`, s:'tot'}, '', {v:1, f:`SUBTOTAL(109,D${r0u}:D${r0u+usuarios.length-1})`, s:'tot', n:'0%'}]
+        };
+        hojasC.push(hu, hd);
+    }
+    extra.forEach(it => hr.rows.push([ { v: it[0], s:'k' }, it[1], { v: it[2] || '', s:'obs' } ]));
+    return { hojas: hojasC };
 }
 
 // ── Consultar Stock (por color y talla) ──
@@ -9981,7 +10037,7 @@ function syModal(vista, html) {
         m.addEventListener('click', e => { if (e.target === m) syCerrarModal(); });
     }
     m.dataset.vista = vista;
-    const tit = { nube:'☁️ NUBE Y USUARIOS', conteo:'☁️ CONTEO COMPARTIDO', alm:'☁️ ALMACÉN COMPARTIDO', bases:'☁️ BASES Y PRECIOS', carpetas:'📁 BASES COMPARTIDAS' }[vista] || '☁️ NUBE';
+    const tit = { tkvend:'👥 TICKETS POR VENDEDOR', nube:'☁️ NUBE Y USUARIOS', conteo:'☁️ CONTEO COMPARTIDO', alm:'☁️ ALMACÉN COMPARTIDO', bases:'☁️ BASES Y PRECIOS', carpetas:'📁 BASES COMPARTIDAS' }[vista] || '☁️ NUBE';
     document.getElementById('sy-tit').textContent = tit;
     document.getElementById('sy-body').innerHTML = html;
     m.style.display = 'flex';
@@ -11119,5 +11175,173 @@ let _syCarpAvisado = null;
     if (typeof _sm === 'function') window.seleccionarModo = function() { const r = _sm.apply(this, arguments); ponerBoton(); return r; };
     ponerBoton();
 })();
+
+
+// ══ v27.19 — QUIÉN GUARDÓ / QUIÉN LEYÓ ══
+function pUsuarioActual() { try { return (typeof syActivo === 'function' && syActivo()) ? sySes.n : ''; } catch(e) { return ''; } }
+// Una entrada por lectura de "historial": [usuario, hora]. En conteo compartido sale de la nube.
+function pLectInfoSnapshot() {
+    const yo = pUsuarioActual();
+    try {
+        if (syConteoId && Array.isArray(syHistIds) && syHistIds.length === historial.length) {
+            const L = (syConteoVivo && syConteoVivo.lect) || {};
+            return historial.map((c, i) => { const l = L[syHistIds[i]]; return l ? [l.u || '', l.t || null] : [yo, null]; });
+        }
+    } catch(e) {}
+    return yo ? historial.map(() => [yo, null]) : null;
+}
+function pResumenLectores(l) {
+    if (!l || !Array.isArray(l.lectInfo)) return '';
+    const t = {}; l.lectInfo.forEach(x => { const u = x && x[0]; if (u) t[u] = (t[u] || 0) + 1; });
+    const us = Object.keys(t).sort((a, b) => t[b] - t[a]);
+    return us.length ? us.map(u => u + ' (' + t[u] + ')').join(', ') : '';
+}
+// Movimientos de almacén hechos en este celular: guardar el usuario
+(function() {
+    const o = window.almRegistrarPorCodigo; if (typeof o !== 'function') return;
+    window.almRegistrarPorCodigo = function() {
+        const r = o.apply(this, arguments);
+        try { const m = almMovs[almMovs.length - 1], u = pUsuarioActual(); if (m && u && !m.u) m.u = u; } catch(e) {}
+        return r;
+    };
+})();
+
+
+// ══ v27.20 — TICKETS SIMULADOS EN LA NUBE (admin descarga por vendedor) ══
+// Cada ticket guardado con sesión iniciada se sube a  tickets/{uid}/{id}
+function tkNubeSincronizar() {
+    try {
+        if (typeof syActivo !== 'function' || !syActivo()) return;
+        let cambio = false;
+        tkTickets.forEach(t => {
+            if (t.nube) return;
+            if (!t.uid) t.uid = sySes.id;
+            if (!t.usuario) t.usuario = sySes.n;
+            if (t.uid !== sySes.id) return; // de otro usuario de este celular: lo sube él
+            syEncolar('PUT', 'tickets/' + t.uid + '/' + t.id, t);
+            t.nube = 1; cambio = true;
+        });
+        if (cambio) tkGuardarEnStorage();
+    } catch(e) {}
+}
+function tkNubeBorrar(t) {
+    try { if (t && t.nube && t.uid && typeof syActivo === 'function' && syActivo()) syEncolar('DELETE', 'tickets/' + t.uid + '/' + t.id); } catch(e) {}
+}
+(function() {
+    const envolver = n => { const o = window[n]; if (typeof o !== 'function') return; window[n] = async function() { const r = await o.apply(this, arguments); try { setTimeout(tkNubeSincronizar, 300); } catch(e) {} return r; }; };
+    envolver('syLogin'); envolver('syCrearTienda');
+    const a = window.abrirModalTkVentas; if (typeof a === 'function') window.abrirModalTkVentas = function() { tkNubeSincronizar(); return a.apply(this, arguments); };
+    setTimeout(tkNubeSincronizar, 1500);
+})();
+
+let _tkvDatos = null, _tkvDesde = '', _tkvHasta = '';
+function _tkvF(d) { return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function tkAbrirVendedores() {
+    if (!syActivo() || sySes.r !== 'admin') { showToast('🔒 Solo el administrador puede ver los tickets de los vendedores', '#B71C1C', 3000); return; }
+    if (!_tkvDesde) { const h = new Date(); _tkvHasta = _tkvF(h); _tkvDesde = _tkvF(new Date(h.getFullYear(), h.getMonth(), 1)); }
+    syModal('tkvend', '<div class="sy-p">⏳ Trayendo tickets de la nube…</div>');
+    tkVendCargar();
+}
+async function tkVendCargar() {
+    tkNubeSincronizar();
+    try { await syFlush(); } catch(e) {}
+    try { _tkvDatos = (await syReq('GET', 'tickets')) || {}; }
+    catch(e) { syModal('tkvend', '<div class="sy-p">⚠️ Sin conexión. No se pudieron traer los tickets.</div><button class="sy-btn" onclick="tkVendCargar()">🔄 Reintentar</button>'); return; }
+    tkVendVista();
+}
+function tkVendRango(tipo) {
+    const h = new Date();
+    if (tipo === 'hoy') { _tkvDesde = _tkvHasta = _tkvF(h); }
+    else if (tipo === '7') { _tkvHasta = _tkvF(h); _tkvDesde = _tkvF(new Date(h.getTime() - 6 * 864e5)); }
+    else if (tipo === 'mes') { _tkvHasta = _tkvF(h); _tkvDesde = _tkvF(new Date(h.getFullYear(), h.getMonth(), 1)); }
+    else if (tipo === 'todo') { _tkvDesde = ''; _tkvHasta = ''; }
+    tkVendVista();
+}
+// Agrupa los tickets del rango por vendedor: { uid: { n, tickets:[...] } }
+function tkVendAgrupar() {
+    const out = {};
+    Object.entries(_tkvDatos || {}).forEach(([uid, m]) => {
+        Object.values(m || {}).forEach(t => {
+            if (!t || !t.fecha) return;
+            if (_tkvDesde && t.fecha < _tkvDesde) return;
+            if (_tkvHasta && t.fecha > _tkvHasta) return;
+            const n = t.usuario || (syUsuarios[uid] && syUsuarios[uid].n) || '(sin nombre)';
+            (out[uid] = out[uid] || { n, tickets: [] }).tickets.push(t);
+        });
+    });
+    Object.values(out).forEach(v => v.tickets.sort((a, b) => (a.fecha + a.hora + a.id).localeCompare(b.fecha + b.hora + b.id)));
+    return out;
+}
+function tkVendVista() {
+    const g = tkVendAgrupar();
+    const lista = Object.entries(g).sort((a, b) => b[1].tickets.reduce((x, t) => x + (+t.total || 0), 0) - a[1].tickets.reduce((x, t) => x + (+t.total || 0), 0));
+    const totG = lista.reduce((a, [, v]) => a + v.tickets.reduce((x, t) => x + (+t.total || 0), 0), 0);
+    const nG = lista.reduce((a, [, v]) => a + v.tickets.length, 0);
+    const chip = (t, l) => '<button class="sy-btn sy-sec sy-mini" onclick="tkVendRango(\'' + t + '\')">' + l + '</button>';
+    let h = '<div class="sy-card"><div class="sy-h">📅 Rango de fechas</div>'
+        + '<div class="sy-grid2"><input type="date" class="sy-in" id="tkv-d" value="' + _tkvDesde + '" onchange="_tkvDesde=this.value;tkVendVista()"><input type="date" class="sy-in" id="tkv-h" value="' + _tkvHasta + '" onchange="_tkvHasta=this.value;tkVendVista()"></div>'
+        + '<div style="display:flex;gap:6px;flex-wrap:wrap;">' + chip('hoy','Hoy') + chip('7','7 días') + chip('mes','Este mes') + chip('todo','Todo') + '<button class="sy-btn sy-sec sy-mini" onclick="tkVendCargar()">🔄</button></div></div>';
+    h += '<div class="sy-kpis" style="margin-bottom:10px;"><div><b>' + lista.length + '</b>vendedores</div><div><b>' + nG + '</b>tickets</div><div><b>' + totG.toFixed(0) + '</b>S/ total</div></div>';
+    if (!lista.length) h += '<div class="sy-p" style="text-align:center;padding:16px 0;">No hay tickets en este rango.<br>Los vendedores deben tener su sesión iniciada al guardar sus tickets.</div>';
+    else {
+        h += '<button class="sy-btn" onclick="tkVendExcel()">📥 EXCEL DE TODOS</button><div class="sy-card" style="margin-top:10px;">';
+        lista.forEach(([uid, v]) => {
+            const tot = v.tickets.reduce((x, t) => x + (+t.total || 0), 0), pr = v.tickets.reduce((x, t) => x + (+t.cantidad || 0), 0);
+            h += '<div class="sy-urow"><div class="sy-uname"><b>👤 ' + syEsc(v.n) + '</b><br><span style="font-size:11px;color:#555;">' + v.tickets.length + ' ticket' + (v.tickets.length !== 1 ? 's' : '') + ' · ' + pr + ' prenda(s) · <b style="color:#2E7D32;">S/' + tot.toFixed(2) + '</b></span></div>'
+                + '<button class="sy-btn sy-mini" style="background:#2E7D32;" onclick="tkVendExcel(\'' + uid + '\')">📥 Excel</button></div>';
+        });
+        h += '</div>';
+    }
+    syModal('tkvend', h);
+}
+function tkVendExcel(uidSolo) {
+    const g = tkVendAgrupar();
+    const uids = uidSolo ? [uidSolo].filter(u => g[u]) : Object.keys(g).sort((a, b) => g[a].n.localeCompare(g[b].n));
+    if (!uids.length) { showToast('No hay tickets para exportar', '#c62828'); return; }
+    const rango = (_tkvDesde || _tkvHasta) ? ('Del ' + (_tkvDesde || 'inicio').split('-').reverse().join('/') + ' al ' + (_tkvHasta || 'hoy').split('-').reverse().join('/')) : 'Todas las fechas';
+    const fFecha = f => f ? f.split('-').reverse().join('/') : '';
+    const MON = '"S/ "#,##0.00';
+    // Hoja TICKETS (uno por fila) y DETALLE (una prenda por fila)
+    const tks = [], det = [];
+    uids.forEach(uid => g[uid].tickets.forEach(t => tks.push({ t, n: g[uid].n })));
+    tks.sort((a, b) => (a.t.fecha + a.t.hora).localeCompare(b.t.fecha + b.t.hora));
+    tks.forEach((x, i) => {
+        const t = x.t, num = i + 1;
+        const lin = (Array.isArray(t.lineas) && t.lineas.length) ? t.lineas : Object.keys(t.items || {}).map(k => ({ k, d: (typeof tkDescripcionItem === 'function' ? tkDescripcionItem(k) : k), c: t.items[k], s: null, p: '' }));
+        lin.forEach(l => det.push({ num, t, n: x.n, l }));
+    });
+    const r0 = 4;
+    const rT0 = r0, rTf = r0 + Math.max(tks.length, 1) - 1;
+    const hT = {
+        name:'TICKETS', tab:'2E7D32', titulo:'Tickets simulados', sub: rango + ' · un ticket por fila', filter:true,
+        widths:[8,12,10,22,10,14,40], header:['N°','FECHA','HORA','VENDEDOR','PRENDAS','TOTAL S/','OBSERVACIÓN'], hstyle:['h','hr','h','hr','h','h','hr'],
+        rows: tks.map((x, i) => [ {v:i+1,s:'c'}, {v:fFecha(x.t.fecha),s:'c'}, {v:x.t.hora||'',s:'c'}, {v:x.n,s:'est'}, {v:+x.t.cantidad||0,s:'n0'}, {v:+x.t.total||0,s:'n',n:MON}, {v:x.t.obs||'',s:'obs'} ]),
+        total:['TOTAL','','','', {v:tks.reduce((a,x)=>a+(+x.t.cantidad||0),0), f:`SUBTOTAL(109,E${rT0}:E${rTf})`, s:'tot'}, {v:tks.reduce((a,x)=>a+(+x.t.total||0),0), f:`SUBTOTAL(109,F${rT0}:F${rTf})`, s:'tot', n:MON}, '']
+    };
+    const rDf = r0 + Math.max(det.length, 1) - 1;
+    const hD = {
+        name:'DETALLE', tab:'1565C0', titulo:'Detalle de prendas por ticket', sub: rango + ' · una línea por prenda', filter:true,
+        widths:[8,12,10,22,18,48,8,13,13,26], header:['N° TICKET','FECHA','HORA','VENDEDOR','CÓDIGO','DESCRIPCIÓN','CANT.','P. UNIT. S/','SUBTOTAL S/','PROMO'], hstyle:['h','hr','h','hr','hr','hr','h','h','h','hr'],
+        rows: det.map((x, i) => { const r = r0 + i, c = +x.l.c || 0, sb = x.l.s; return [ {v:x.num,s:'c'}, {v:fFecha(x.t.fecha),s:'c'}, {v:x.t.hora||'',s:'c'}, {v:x.n,s:'est'}, {v:x.l.k,s:'cod'}, {v:x.l.d||'',s:'t'}, {v:c,s:'n0'},
+            (sb === null || sb === undefined) ? {v:'',s:'c'} : {v: c ? sb / c : 0, f:`IF(G${r}=0,0,I${r}/G${r})`, s:'n', n:MON},
+            (sb === null || sb === undefined) ? {v:'',s:'c'} : {v:sb, s:'n', n:MON}, {v:x.l.p||'',s:'obs'} ]; }),
+        total:['TOTAL','','','','','', {v:det.reduce((a,x)=>a+(+x.l.c||0),0), f:`SUBTOTAL(109,G${r0}:G${rDf})`, s:'tot'}, '', {v:det.reduce((a,x)=>a+(+x.l.s||0),0), f:`SUBTOTAL(109,I${r0}:I${rDf})`, s:'tot', n:MON}, '']
+    };
+    // Hoja RESUMEN por vendedor (con fórmulas sobre TICKETS)
+    const V = `TICKETS!D${rT0}:D${rTf}`, P = `TICKETS!E${rT0}:E${rTf}`, T = `TICKETS!F${rT0}:F${rTf}`;
+    const nU = uids.length, rUf = r0 + nU - 1;
+    const hR = {
+        name:'RESUMEN', tab:'C62828', titulo: uidSolo ? ('Tickets de ' + g[uidSolo].n) : 'Tickets por vendedor', sub: rango, zebra:false,
+        widths:[26,12,12,16,18,14], header:['VENDEDOR','TICKETS','PRENDAS','TOTAL S/','TICKET PROMEDIO S/','% DEL TOTAL'], hstyle:['hr','h','h','h','h','h'],
+        rows: uids.map((u, i) => { const r = r0 + i, v = g[u], tot = v.tickets.reduce((a,t)=>a+(+t.total||0),0), pr = v.tickets.reduce((a,t)=>a+(+t.cantidad||0),0), totG = tks.reduce((a,x)=>a+(+x.t.total||0),0);
+            return [ {v:v.n,s:'k'}, {v:v.tickets.length, f:`COUNTIF(${V},A${r})`, s:'n0'}, {v:pr, f:`SUMIF(${V},A${r},${P})`, s:'n0'}, {v:tot, f:`SUMIF(${V},A${r},${T})`, s:'n', n:MON},
+                {v: v.tickets.length ? tot / v.tickets.length : 0, f:`IF(B${r}=0,0,D${r}/B${r})`, s:'n', n:MON}, {v: totG ? tot / totG : 0, f:`IF(SUM(D$${r0}:D$${rUf})=0,0,D${r}/SUM(D$${r0}:D$${rUf}))`, s:'pct'} ]; }),
+        total:['TOTAL', {v:tks.length, f:`SUBTOTAL(109,B${r0}:B${rUf})`, s:'tot'}, {v:tks.reduce((a,x)=>a+(+x.t.cantidad||0),0), f:`SUBTOTAL(109,C${r0}:C${rUf})`, s:'tot'}, {v:tks.reduce((a,x)=>a+(+x.t.total||0),0), f:`SUBTOTAL(109,D${r0}:D${rUf})`, s:'tot', n:MON}, {v: tks.length ? tks.reduce((a,x)=>a+(+x.t.total||0),0) / tks.length : 0, f:`IF(B${rUf+1}=0,0,D${rUf+1}/B${rUf+1})`, s:'tot', n:MON}, '']
+    };
+    const nom = 'TICKETS_' + (uidSolo ? g[uidSolo].n.replace(/[^\w]+/g, '_').toUpperCase() : 'VENDEDORES') + '_' + (_tkvDesde || 'inicio') + '_a_' + (_tkvHasta || 'hoy');
+    const totG = tks.reduce((a,x)=>a+(+x.t.total||0),0);
+    const res = '🧾 TICKETS ' + (uidSolo ? 'de ' + g[uidSolo].n : 'por vendedor') + '\n• ' + rango + '\n• Tickets: ' + tks.length + ' | Prendas: ' + det.reduce((a,x)=>a+(+x.l.c||0),0) + '\n• Total: S/' + totG.toFixed(2);
+    xlExportar({ hojas: [hR, hT, hD] }, nom, res);
+}
 
 </script>
