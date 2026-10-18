@@ -1623,7 +1623,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.20 — 18/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.21 — 18/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -2070,7 +2070,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.20 — 18/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.21 — 18/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -10040,7 +10040,21 @@ function syModal(vista, html) {
     const tit = { tkvend:'👥 TICKETS POR VENDEDOR', nube:'☁️ NUBE Y USUARIOS', conteo:'☁️ CONTEO COMPARTIDO', alm:'☁️ ALMACÉN COMPARTIDO', bases:'☁️ BASES Y PRECIOS', carpetas:'📁 BASES COMPARTIDAS' }[vista] || '☁️ NUBE';
     document.getElementById('sy-tit').textContent = tit;
     document.getElementById('sy-body').innerHTML = html;
+    try { syOjos(document.getElementById('sy-body')); } catch(e) {}
     m.style.display = 'flex';
+}
+// v27.21: clave con letras y números + botón 👁️ para ver lo que escribes
+function syClaveOk(p) { return /^[A-Za-z0-9ÑñÁÉÍÓÚáéíóú._\-@#*]{4,12}$/.test(String(p || '')); }
+function syOjos(root) {
+    root.querySelectorAll('input[type="password"]').forEach(inp => {
+        if (inp.dataset.ojo) return; inp.dataset.ojo = 1;
+        const w = document.createElement('div'); w.style.cssText = 'position:relative;';
+        inp.parentNode.insertBefore(w, inp); w.appendChild(inp); inp.style.paddingRight = '44px';
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'sy-ojo'; b.textContent = '👁️'; b.title = 'Ver / ocultar clave';
+        b.style.cssText = 'position:absolute;right:6px;top:4px;height:38px;width:36px;border:none;background:none;font-size:18px;cursor:pointer;';
+        b.onclick = () => { const ver = inp.type === 'password'; inp.type = ver ? 'text' : 'password'; b.textContent = ver ? '🙈' : '👁️'; inp.focus(); };
+        w.appendChild(b);
+    });
 }
 function syCerrarModal() { const m = document.getElementById('sy-modal'); if (m) m.style.display = 'none'; }
 
@@ -10065,7 +10079,7 @@ function syVistaConfigurar() {
         + '<div class="sy-card"><div class="sy-h">👑 Paso 2 — Crear la tienda (solo el administrador, una vez)</div>'
         + '<input id="sy-url" class="sy-in" placeholder="https://pieers-067-default-rtdb.firebaseio.com" autocomplete="off">'
         + '<input id="sy-nom" class="sy-in" placeholder="Tu nombre (ej. Jorge)" autocomplete="off">'
-        + '<input id="sy-pin" class="sy-in" placeholder="Tu PIN (4 a 6 números)" inputmode="numeric" type="password" maxlength="6">'
+        + '<input id="sy-pin" class="sy-in" placeholder="Tu clave (4 a 12 letras o números)" type="password" maxlength="12" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false">'
         + '<button class="sy-btn" onclick="syCrearTienda()">✅ CREAR TIENDA EN LA NUBE</button></div>'
         + '<div class="sy-card"><div class="sy-h">📲 ¿Otro celular? Únete con el código</div>'
         + '<textarea id="sy-cod" class="sy-in" rows="2" placeholder="Pega aquí el código de enlace que te envió el administrador"></textarea>'
@@ -10083,7 +10097,7 @@ async function syCrearTienda() {
     const url = _syNormUrl(document.getElementById('sy-url').value), nom = document.getElementById('sy-nom').value.trim(), pin = document.getElementById('sy-pin').value.trim();
     if (!/^https?:\/\/.+\..+/.test(url)) return showToast('⚠️ Pega la dirección de tu Realtime Database', '#E65100');
     if (!nom) return showToast('⚠️ Escribe tu nombre', '#E65100');
-    if (!/^\d{4,6}$/.test(pin)) return showToast('⚠️ El PIN debe tener 4 a 6 números', '#E65100');
+    if (!syClaveOk(pin)) return showToast('⚠️ La clave debe tener 4 a 12 letras o números (sin espacios)', '#E65100');
     showLoading('Creando tienda en la nube...');
     const cfg = { url, clave: syClaveNueva() };
     const prev = syCfg; syCfg = cfg;
@@ -10125,7 +10139,7 @@ function syMostrarLogin() {
     const us = Object.entries(syUsuarios || {}).sort((a, b) => (a[1].n || '').localeCompare(b[1].n || ''));
     o.innerHTML = '<div class="sy-lbox"><div class="sy-ltit"><span style="color:#C62828">P</span>IEERS PRO ☁️</div><div class="sy-lsub">¿Quién eres?</div>'
         + '<div class="sy-lus">' + (us.length ? us.map(([id, u]) => '<button class="sy-lu' + (_syLoginSel === id ? ' sel' : '') + '" onclick="_syLoginSel=\'' + id + '\';syMostrarLogin()"><b>' + syEsc(u.n) + '</b><span>' + SY_ROLES[u.r] + '</span></button>').join('') : '<div class="sy-p">No hay usuarios. Toca 🔄.</div>') + '</div>'
-        + '<input id="sy-lpin" class="sy-in" placeholder="PIN" inputmode="numeric" type="password" maxlength="6" onkeydown="if(event.key===\'Enter\')syLogin()">'
+        + '<input id="sy-lpin" class="sy-in" placeholder="Clave" type="password" maxlength="12" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" onkeydown="if(event.key===\'Enter\')syLogin()">'
         + '<button class="sy-btn" onclick="syLogin()">ENTRAR</button>'
         + '<div class="sy-lfoot"><a onclick="syLoginRefrescar()">🔄 Actualizar usuarios</a> · <a onclick="syDesconectarPedir()">Desconectar este celular</a></div></div>';
     o.style.display = 'flex';
@@ -10191,7 +10205,7 @@ function syVistaPanel() {
             + '<button class="sy-ib" title="Eliminar" onclick="syEliminarUsuario(\'' + id + '\')">🗑️</button></div>').join('')
             + '<div class="sy-add"><input id="sy-nu-n" class="sy-in" placeholder="Nombre (ej. Karen)"><div class="sy-grid2">'
             + '<select id="sy-nu-r" class="sy-in"><option value="vendedor">Vendedor</option><option value="supervisor">Supervisor</option><option value="admin">Administrador</option></select>'
-            + '<input id="sy-nu-p" class="sy-in" placeholder="PIN 4-6" inputmode="numeric" type="password" maxlength="6"></div>'
+            + '<input id="sy-nu-p" class="sy-in" placeholder="Clave 4-12" type="password" maxlength="12" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false"></div>'
             + '<button class="sy-btn" onclick="syAgregarUsuario()">➕ AGREGAR USUARIO</button></div>'
             + '<div class="sy-p" style="font-size:10.5px;"><b>Admin:</b> todo. <b>Supervisor:</b> cargar, exportar, crear/cerrar conteos, enviar bases. <b>Vendedor:</b> escanear, contar, retiros/ingresos y consultar precio.</div></div>';
         h += '<button class="sy-btn sy-sec" style="color:#B71C1C;border-color:#B71C1C" onclick="mostrarConfirm(\'Desconectar\',\'¿Desconectar este celular de la nube? Los datos de la nube no se borran.\',syDesconectar)">🔌 Desconectar este celular</button>';
@@ -10209,7 +10223,7 @@ async function syAgregarUsuario() {
     if (!pPuede('config')) return syDenegar();
     const n = document.getElementById('sy-nu-n').value.trim(), r = document.getElementById('sy-nu-r').value, p = document.getElementById('sy-nu-p').value.trim();
     if (!n) return showToast('⚠️ Escribe el nombre', '#E65100');
-    if (!/^\d{4,6}$/.test(p)) return showToast('⚠️ PIN de 4 a 6 números', '#E65100');
+    if (!syClaveOk(p)) return showToast('⚠️ Clave de 4 a 12 letras o números (sin espacios)', '#E65100');
     const id = syId('u');
     await _syUsuariosGuardar(id, { n, r, h: await syHash(p, id) });
     showToast('✅ Usuario ' + n + ' creado', '#2E7D32'); syVistaPanel();
@@ -10226,8 +10240,8 @@ async function syCambiarRol(id, r) {
 function syCambiarPin(id) {
     if (!pPuede('config')) return syDenegar();
     const u = syUsuarios[id]; if (!u) return;
-    pPedirTexto('🔑 Nuevo PIN', 'Nuevo PIN para ' + u.n + ' (4 a 6 números):', '', async function(p) {
-        if (!p) return; if (!/^\d{4,6}$/.test(p)) return showToast('⚠️ PIN de 4 a 6 números', '#E65100');
+    pPedirTexto('🔑 Nuevo PIN', 'Nueva clave para ' + u.n + ' (4 a 12 letras o números):', '', async function(p) {
+        if (!p) return; if (!syClaveOk(p)) return showToast('⚠️ Clave de 4 a 12 letras o números (sin espacios)', '#E65100');
         await _syUsuariosGuardar(id, Object.assign({}, u, { h: await syHash(p, id) }));
         showToast('✅ PIN actualizado', '#2E7D32');
     });
@@ -11287,7 +11301,8 @@ function tkVendVista() {
         h += '<button class="sy-btn" onclick="tkVendExcel()">📥 EXCEL DE TODOS</button><div class="sy-card" style="margin-top:10px;">';
         lista.forEach(([uid, v]) => {
             const tot = v.tickets.reduce((x, t) => x + (+t.total || 0), 0), pr = v.tickets.reduce((x, t) => x + (+t.cantidad || 0), 0);
-            h += '<div class="sy-urow"><div class="sy-uname"><b>👤 ' + syEsc(v.n) + '</b><br><span style="font-size:11px;color:#555;">' + v.tickets.length + ' ticket' + (v.tickets.length !== 1 ? 's' : '') + ' · ' + pr + ' prenda(s) · <b style="color:#2E7D32;">S/' + tot.toFixed(2) + '</b></span></div>'
+            h += '<div class="sy-urow"><div class="sy-uname" style="cursor:pointer;" onclick="tkVendVer(\'' + uid + '\')"><b>👤 ' + syEsc(v.n) + '</b><br><span style="font-size:11px;color:#555;">' + v.tickets.length + ' ticket' + (v.tickets.length !== 1 ? 's' : '') + ' · ' + pr + ' prenda(s) · <b style="color:#2E7D32;">S/' + tot.toFixed(2) + '</b></span></div>'
+                + '<button class="sy-btn sy-mini sy-dark" onclick="tkVendVer(\'' + uid + '\')">👁️ Ver</button>'
                 + '<button class="sy-btn sy-mini" style="background:#2E7D32;" onclick="tkVendExcel(\'' + uid + '\')">📥 Excel</button></div>';
         });
         h += '</div>';
@@ -11342,6 +11357,37 @@ function tkVendExcel(uidSolo) {
     const totG = tks.reduce((a,x)=>a+(+x.t.total||0),0);
     const res = '🧾 TICKETS ' + (uidSolo ? 'de ' + g[uidSolo].n : 'por vendedor') + '\n• ' + rango + '\n• Tickets: ' + tks.length + ' | Prendas: ' + det.reduce((a,x)=>a+(+x.l.c||0),0) + '\n• Total: S/' + totG.toFixed(2);
     xlExportar({ hojas: [hR, hT, hD] }, nom, res);
+}
+
+
+// ══ v27.21 — VER LAS VENTAS DE UN VENDEDOR (sin descargar Excel) ══
+function tkVendVer(uid) {
+    const g = tkVendAgrupar(), v = g[uid];
+    if (!v) { tkVendVista(); return; }
+    const tot = v.tickets.reduce((a, t) => a + (+t.total || 0), 0), pr = v.tickets.reduce((a, t) => a + (+t.cantidad || 0), 0);
+    const rango = (_tkvDesde || _tkvHasta) ? ((_tkvDesde || 'inicio').split('-').reverse().join('/') + ' al ' + (_tkvHasta || 'hoy').split('-').reverse().join('/')) : 'Todas las fechas';
+    let h = '<div class="sy-row" style="margin-bottom:8px;"><button class="sy-btn sy-sec sy-mini" onclick="tkVendVista()">← Volver</button>'
+        + '<button class="sy-btn sy-mini" style="background:#2E7D32;" onclick="tkVendExcel(\'' + uid + '\')">📥 Excel</button></div>'
+        + '<div class="sy-h" style="font-size:16px;">👤 ' + syEsc(v.n) + '</div><div class="sy-p">📅 ' + rango + '</div>'
+        + '<div class="sy-kpis" style="margin-bottom:10px;"><div><b>' + v.tickets.length + '</b>tickets</div><div><b>' + pr + '</b>prendas</div><div><b>' + tot.toFixed(0) + '</b>S/ total</div></div>'
+        + '<div class="sy-p" style="text-align:center;">Ticket promedio: <b>S/' + (v.tickets.length ? tot / v.tickets.length : 0).toFixed(2) + '</b></div>';
+    const porDia = {};
+    v.tickets.forEach(t => (porDia[t.fecha] = porDia[t.fecha] || []).push(t));
+    Object.keys(porDia).sort().reverse().forEach(f => {
+        const ts = porDia[f], td = ts.reduce((a, t) => a + (+t.total || 0), 0);
+        h += '<div style="display:flex;justify-content:space-between;align-items:baseline;border-bottom:2px solid #2E7D32;padding:6px 2px;margin:12px 0 6px;font-family:Barlow,sans-serif;font-weight:900;">'
+            + '<span>' + tkFechaLegible(f) + '</span><span style="color:#2E7D32;">S/' + td.toFixed(2) + ' · ' + ts.length + ' tkt</span></div>';
+        ts.slice().reverse().forEach(t => {
+            const lin = (Array.isArray(t.lineas) && t.lineas.length) ? t.lineas : Object.keys(t.items || {}).map(k => ({ k, d: tkDescripcionItem(k), c: t.items[k], s: null }));
+            h += '<details class="sy-card" style="padding:9px 11px;margin-bottom:6px;"><summary style="display:flex;justify-content:space-between;gap:8px;list-style:none;">'
+                + '<span style="font-size:12px;color:#555;">🕐 ' + syEsc(t.hora || '') + ' — ' + (+t.cantidad || 0) + ' prenda(s)' + (t.obs ? '<br><span style="color:#1565C0;">📝 ' + syEsc(t.obs) + '</span>' : '') + '</span>'
+                + '<b style="color:#2E7D32;font-family:Barlow,sans-serif;font-size:15px;white-space:nowrap;">S/' + (+t.total || 0).toFixed(2) + '</b></summary><div style="margin-top:6px;">'
+                + lin.map(l => '<div style="display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-top:1px solid #E3E5EA;font-size:12px;"><span>' + syEsc(l.d || '') + ' <span style="color:#999;font-size:10px;">(' + syEsc(l.k) + ')</span> — x' + l.c + (l.p ? '<br><span style="color:#E65100;font-size:10px;font-weight:700;">' + syEsc(l.p) + '</span>' : '') + '</span>'
+                    + '<b style="white-space:nowrap;">' + (l.s === null || l.s === undefined ? '' : 'S/' + (+l.s).toFixed(2)) + '</b></div>').join('')
+                + '</div></details>';
+        });
+    });
+    syModal('tkvend', h);
 }
 
 </script>
