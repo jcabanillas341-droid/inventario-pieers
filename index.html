@@ -1623,7 +1623,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.22 — 18/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.23 — 18/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -2070,7 +2070,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.22 — 18/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.23 — 18/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -10200,6 +10200,12 @@ function syVistaPanel() {
             + '<div class="sy-grid2"><button class="sy-btn sy-sec" onclick="syCopiar(syCodigoEnlace())">📋 Copiar</button>'
             + '<button class="sy-btn sy-wa" onclick="window.open(\'https://wa.me/?text=\'+encodeURIComponent(\'Código para entrar a PIEERS PRO (nube): \'+syCodigoEnlace()))">WhatsApp</button></div>'
             + '<div class="sy-p" style="font-size:10.5px;">⚠️ Este código da acceso a los datos de tu tienda: compártelo solo con tu equipo.</div></div>';
+        const vm = (syMeta && syMeta.vendMods) || {};
+        const sw = (k, t) => '<div class="sy-urow"><div class="sy-uname"><b>' + t + '</b><br><span style="font-size:11px;color:' + (vm[k] ? '#2E7D32' : '#B71C1C') + ';font-weight:700;">' + (vm[k] ? '👁️ Visible para vendedores' : '🙈 Oculto para vendedores') + '</span></div>'
+            + '<button class="sy-btn sy-mini' + (vm[k] ? ' sy-sec' : '') + '" style="' + (vm[k] ? '' : 'background:#2E7D32;') + '" onclick="syVendMod(\'' + k + '\',' + (!vm[k]) + ')">' + (vm[k] ? '🙈 Ocultar' : '👁️ Mostrar') + '</button></div>';
+        h += '<div class="sy-card"><div class="sy-h">🧩 Módulos para vendedores</div>'
+            + '<div class="sy-p">Consultar Precio y Simulador siempre se ven. Estos dos se muestran solo cuando tú lo decidas:</div>'
+            + sw('comp', '📋 Inventario / Guías / Tienda') + sw('alm', '🏪 Gestión de Almacén') + '</div>';
         h += '<div class="sy-card"><div class="sy-h">👥 Usuarios</div>' + us.map(([id, u]) =>
             '<div class="sy-urow"><div class="sy-uname"><b>' + syEsc(u.n) + '</b>' + (id === sySes.id ? ' <span class="sy-tag">tú</span>' : '') + '</div>'
             + '<select class="sy-sel" onchange="syCambiarRol(\'' + id + '\',this.value)">' + Object.keys(SY_ROLES).map(r => '<option value="' + r + '"' + (u.r === r ? ' selected' : '') + '>' + SY_ROLES[r] + '</option>').join('') + '</select>'
@@ -11444,41 +11450,40 @@ function lsGrandeEsperar() { const p = _lsGPend.splice(0); return Promise.all(p)
     }).catch(() => {});
 })();
 
-// ══ v27.22 — MÓDULOS SEGÚN ROL ══
-// Vendedor: solo Consultar Precio y Simulador. Inventario aparece solo si hay un
-// conteo compartido abierto (para poder unirse y escanear). Almacén, nunca.
-function _pHayConteoAbierto() { try { return !!(syConteoId || Object.values((syMeta && syMeta.conteos) || {}).some(c => c && c.estado === 'abierto')); } catch(e) { return false; } }
+// ══ v27.23 — MÓDULOS SEGÚN ROL ══
+// Vendedor: siempre Consultar Precio y Simulador. Inventario y Almacén quedan ocultos
+// hasta que el ADMINISTRADOR los muestre desde ☁️ Nube (meta/vendMods).
 function pEsVendedor() { return typeof syActivo === 'function' && syActivo() && sySes.r === 'vendedor'; }
+function pVendPuede(mod) { return !pEsVendedor() || !!(syMeta && syMeta.vendMods && syMeta.vendMods[mod]); }
+function syVendMod(mod, on) {
+    if (!syActivo() || sySes.r !== 'admin') return syDenegar();
+    syMeta.vendMods = Object.assign({}, syMeta.vendMods || {}, { [mod]: !!on });
+    syEncolar('PATCH', 'meta/vendMods', { [mod]: !!on });
+    showToast((on ? '👁️ Visible' : '🙈 Oculto') + ' para vendedores: ' + (mod === 'comp' ? 'Inventario' : 'Almacén'), on ? '#2E7D32' : '#B71C1C');
+    syVistaPanel();
+}
 function pModulosRol() {
-    const v = pEsVendedor();
     const bC = document.querySelector('#pantalla-modo .btn-comp'), bA = document.querySelector('#pantalla-modo .btn-alm');
-    if (bA) bA.style.display = v ? 'none' : '';
-    if (bC) {
-        const ver = !v || _pHayConteoAbierto();
-        bC.style.display = ver ? '' : 'none';
-        const t = bC.querySelector('.tit'), d = bC.querySelector('.desc');
-        if (t && !t.dataset.orig) { t.dataset.orig = t.textContent; d.dataset.orig = d.textContent; }
-        if (t) { t.textContent = v ? '📋 CONTEO COMPARTIDO' : t.dataset.orig; d.textContent = v ? 'Hay un conteo abierto: entra para escanear con el equipo.' : d.dataset.orig; }
-    }
-    // Si un vendedor quedó dentro de un módulo oculto, lo saca
-    if (v && typeof modoActual !== 'undefined' && ((modoActual === 'alm') || (modoActual === 'comp' && !_pHayConteoAbierto()))) {
+    if (bC) bC.style.display = pVendPuede('comp') ? '' : 'none';
+    if (bA) bA.style.display = pVendPuede('alm') ? '' : 'none';
+    // Si el admin lo ocultó mientras el vendedor estaba dentro, lo saca
+    if (pEsVendedor() && typeof modoActual !== 'undefined' && ((modoActual === 'alm' && !pVendPuede('alm')) || (modoActual === 'comp' && !pVendPuede('comp')))) {
+        try { if (modoActual === 'comp' && syConteoId) syConteoSalir(true); } catch(e) {}
         const app = document.getElementById('app-principal');
-        if (app && !app.classList.contains('hidden')) seleccionarModo('stock');
+        if (app && !app.classList.contains('hidden')) { seleccionarModo('stock'); showToast('🔒 El administrador ocultó este módulo', '#B71C1C', 3000); }
     }
 }
 (function() {
-    const o = window.seleccionarModo; if (typeof o !== 'function') return;
-    window.seleccionarModo = function(modo) {
-        if (pEsVendedor()) {
-            if (modo === 'alm') { showToast('🔒 Almacén solo para administrador y supervisor', '#B71C1C', 3000); return; }
-            if (modo === 'comp' && !syConteoId) {
-                if (!_pHayConteoAbierto()) { showToast('🔒 Inventario: espera a que el supervisor abra un conteo compartido', '#B71C1C', 3500); return; }
-                const r = o.apply(this, arguments); setTimeout(() => { try { syAbrirConteo(); } catch(e) {} }, 200); return r;
-            }
-        }
+    const bloq = (mod) => { showToast('🔒 ' + (mod === 'comp' ? 'Inventario' : 'Almacén') + ' está oculto. Pide al administrador que lo muestre.', '#B71C1C', 3500); };
+    const o = window.seleccionarModo;
+    if (typeof o === 'function') window.seleccionarModo = function(modo) {
+        if ((modo === 'comp' || modo === 'alm') && !pVendPuede(modo)) { bloq(modo); return; }
         return o.apply(this, arguments);
     };
+    [['syAbrirConteo','comp'], ['syAbrirAlm','alm']].forEach(([n, mod]) => {
+        const f = window[n]; if (typeof f !== 'function') return;
+        window[n] = function() { if (!pVendPuede(mod)) { bloq(mod); return; } return f.apply(this, arguments); };
+    });
     setTimeout(pModulosRol, 300);
 })();
-
 </script>
