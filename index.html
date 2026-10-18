@@ -1623,7 +1623,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.06 — 18/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.07 — 18/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -2070,7 +2070,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.06 — 18/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.07 — 18/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -10031,10 +10031,17 @@ function syVistaConteo() {
             + '<div class="sy-p" style="font-size:10.5px;">Al terminar, el supervisor cierra el conteo y cada uno puede guardar el reporte con 💾 Guardar Lote.</div>';
     } else {
         const abiertos = conteos.filter(([, c]) => c.estado === 'abierto');
-        h += '<div class="sy-card"><div class="sy-h">🟢 Conteos abiertos</div>'
-            + (abiertos.length ? abiertos.map(([id, c]) => '<div class="sy-urow"><div class="sy-uname"><b>' + syEsc(c.n) + '</b><br><span class="sy-p">' + syEsc(c.por || '') + ' · ' + (c.items || 0).toLocaleString() + ' códigos · ' + (c.unid || 0).toLocaleString() + ' unid.</span></div><button class="sy-btn sy-mini" onclick="syConteoUnirse(\'' + id + '\')">UNIRME</button></div>').join('') : '<div class="sy-p">No hay conteos abiertos.</div>')
+        const fh = ts => ts ? new Date(ts).toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' }) + ' · ' + new Date(ts).toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' }) : '';
+        h += '<div class="sy-card"><div class="sy-h">🟢 Conteo abierto</div>'
+            + (abiertos.length ? abiertos.map(([id, c]) => '<div class="sy-urow"><div class="sy-uname"><b>' + syEsc(c.n) + '</b>'
+                + '<div class="sy-p" style="margin:2px 0 0;">👤 Creado por <b>' + syEsc(c.por || '—') + '</b><br>🕒 ' + fh(c.ts) + '<br>📦 ' + (c.items || 0).toLocaleString() + ' códigos · ' + (c.unid || 0).toLocaleString() + ' unid.</div></div>'
+                + '<div style="display:flex;flex-direction:column;gap:6px;"><button class="sy-btn sy-mini" onclick="syConteoUnirse(\'' + id + '\')">UNIRME</button>'
+                + (pPuede('publicar') ? '<button class="sy-btn sy-sec sy-mini" style="color:#B71C1C;border-color:#B71C1C" onclick="syConteoCerrarId(\'' + id + '\')">🔒 Cerrar</button>' : '') + '</div></div>').join('')
+              : '<div class="sy-p">No hay conteos abiertos.</div>')
             + '</div>';
-        if (pPuede('publicar')) {
+        if (pPuede('publicar') && abiertos.length) {
+            h += '<div class="sy-p" style="text-align:center;">Solo puede haber <b>un conteo abierto</b> a la vez. Para crear otro, primero ciérralo.</div>';
+        } else if (pPuede('publicar')) {
             const items = [...maestroMap.values()].filter(v => v.exp > 0).length;
             h += '<div class="sy-card"><div class="sy-h">➕ Crear conteo con mi maestro/guía actual</div>'
                 + '<div class="sy-p">' + (items ? 'Tu maestro tiene <b>' + items.toLocaleString() + '</b> códigos. Los demás celulares lo reciben al unirse.' : 'Primero carga el maestro o la guía en INVENTARIO.') + '</div>'
@@ -10044,8 +10051,27 @@ function syVistaConteo() {
     }
     syModal('conteo', h);
 }
+function syConteoCerrarId(id) {
+    if (!pPuede('publicar')) return syDenegar();
+    const c = (syMeta.conteos || {})[id] || {};
+    mostrarConfirm('Cerrar conteo', '¿Cerrar "' + (c.n || '') + '" creado por ' + (c.por || '') + '? Los celulares que estén contando conservan sus lecturas para guardar el reporte.', () => {
+        if (syConteoId === id) syConteoSalir(true);
+        syMeta.conteos = syMeta.conteos || {}; if (syMeta.conteos[id]) syMeta.conteos[id].estado = 'cerrado';
+        syEncolar('PATCH', 'meta/conteos/' + id, { estado: 'cerrado', cerradoPor: sySes.n, cerradoTs: Date.now() });
+        syVistaConteo(); showToast('🔒 Conteo cerrado', '#111');
+    });
+}
+let _syCreando = false;
 async function syConteoCrear() {
     if (!pPuede('publicar')) return syDenegar();
+    if (_syCreando) return;
+    _syCreando = true; setTimeout(() => { _syCreando = false; }, 8000);
+    // Solo un conteo abierto a la vez (se revisa en la nube, por si otro celular acaba de crear uno)
+    try {
+        const cs = await syReq('GET', 'meta/conteos') || {};
+        const ab = Object.entries(cs).find(([, c]) => c.estado === 'abierto');
+        if (ab) { _syCreando = false; syMeta.conteos = cs; syVistaConteo(); return showToast('⚠️ Ya hay un conteo abierto de ' + (ab[1].por || '') + '. Únete o ciérralo primero.', '#E65100', 4000); }
+    } catch(e) { _syCreando = false; return showToast('⚠️ Sin conexión: no se puede crear el conteo ahora', '#E65100'); }
     const n = (document.getElementById('sy-cn').value || '').trim() || 'CONTEO';
     const maestro = {}, desc = {}; let unid = 0;
     maestroMap.forEach((v, k) => { if (v.exp > 0) { maestro[k] = v.exp; unid += v.exp; const d = descripcionMap.get(k); if (d) desc[k] = d; } });
@@ -10060,9 +10086,9 @@ async function syConteoCrear() {
         await syReq('PUT', 'conteos/' + id + '/vivo', { lect, pres: {} });
         await syReq('PATCH', 'meta/conteos/' + id, { n, por: sySes.n, ts: Date.now(), estado: 'abierto', items: Object.keys(maestro).length, unid });
         syConteoId = id; _syS(SY_K.conteo, id); _syS(SY_K.hids, syHistIds);
-        hideLoading(); syConteoConectar(false); syVistaConteo();
+        _syCreando = false; hideLoading(); syConteoConectar(false); syVistaConteo();
         showToast('✅ Conteo compartido. Los demás pueden unirse desde ☁️.', '#2E7D32', 3500);
-    } catch(e) { hideLoading(); showToast('❌ No se pudo compartir: ' + e.message, '#B71C1C', 4000); }
+    } catch(e) { _syCreando = false; hideLoading(); showToast('❌ No se pudo compartir: ' + e.message, '#B71C1C', 4000); }
 }
 function syConteoUnirse(id) {
     const go = async () => {
