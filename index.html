@@ -1623,7 +1623,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.21 — 18/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.22 — 18/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -2070,7 +2070,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.21 — 18/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.22 — 18/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -9941,6 +9941,7 @@ function syAplicarRol() {
     ['rol-admin','rol-supervisor','rol-vendedor','sy-on'].forEach(c => html.classList.remove(c));
     if (syActivo()) { html.classList.add('sy-on'); html.classList.add('rol-' + sySes.r); }
     syPintarChip();
+    try { if (typeof pModulosRol === 'function') pModulosRol(); } catch(e) {}
 }
 // Envolver funciones: si no hay permiso, no se ejecutan
 function syEnvolver(nombre, accion, antes) {
@@ -10013,6 +10014,7 @@ function syEscucharMeta() {
             mostrarConfirm('🔒 Conteo cerrado', (c.cerradoPor || 'El supervisor') + ' cerró el conteo "' + (c.n || '') + '". Tu conteo queda en este celular: guárdalo como reporte si lo necesitas.', null);
         }
         const mc = document.getElementById('sy-modal'); if (mc && mc.style.display === 'flex' && mc.dataset.vista === 'conteo') syVistaConteo();
+        try { if (typeof pModulosRol === 'function') pModulosRol(); } catch(e) {}
     });
 }
 async function syRefrescarUsuarios() {
@@ -10656,6 +10658,7 @@ async function syBasesRecibir() {
         if (!data) throw new Error('No hay bases en la nube');
         SY_BASES_KEYS.forEach(k => { const v = data[k.replace(/\./g, '_')]; if (v) { try { localStorage.setItem(k, v); } catch(e) { throw new Error('Memoria del celular llena'); } } });
         _syS(SY_K.basesver, syMeta.basesVer || Date.now());
+        try { if (typeof lsGrandeEsperar === 'function') await lsGrandeEsperar(); } catch(e) {}
         hideLoading(); showToast('✅ Bases actualizadas', '#2E7D32');
         setTimeout(() => location.reload(), 700);
     } catch(e) { hideLoading(); showToast('❌ ' + e.message, '#B71C1C', 4000); }
@@ -11389,5 +11392,93 @@ function tkVendVer(uid) {
     });
     syModal('tkvend', h);
 }
+
+
+// ══ v27.22 — BASES GRANDES: si no entran en la memoria rápida, se guardan en IndexedDB ══
+// Antes: si stock + memorándum pasaban el límite (~5 MB), el memorándum NO se guardaba
+// y por eso tampoco se enviaba a los otros celulares (solo llegaba el stock).
+const LS_GRANDES = new Set(['pieers_cs_db','pieers_cs_precios','pieers_cs_mayor','pieers_cs_libros_raw']);
+let _lsG = {}, _lsGPend = [];
+function _lsGIdb(op, k, v) {
+    const p = pIdb().then(db => new Promise(res => {
+        try { const tx = db.transaction('files','readwrite'), st = tx.objectStore('files'); if (op === 'put') st.put(v, 'lsbig::' + k); else st.delete('lsbig::' + k); tx.oncomplete = () => res(true); tx.onerror = () => res(false); }
+        catch(e) { res(false); }
+    })).catch(() => false);
+    _lsGPend.push(p); return p;
+}
+function lsGrandeEsperar() { const p = _lsGPend.splice(0); return Promise.all(p); }
+(function() {
+    const P = Storage.prototype, _gi = P.getItem, _si = P.setItem, _ri = P.removeItem;
+    P.setItem = function(k, v) {
+        if (this === window.localStorage && LS_GRANDES.has(k)) {
+            v = String(v);
+            try { _si.call(this, k, v); if (k in _lsG) { delete _lsG[k]; _lsGIdb('del', k); } return; }
+            catch(e) { try { _ri.call(this, k); } catch(_) {} _lsG[k] = v; _lsGIdb('put', k, v); return; }
+        }
+        return _si.call(this, k, v);
+    };
+    P.getItem = function(k) {
+        const r = _gi.call(this, k);
+        if (r === null && this === window.localStorage && LS_GRANDES.has(k) && (k in _lsG)) return _lsG[k];
+        return r;
+    };
+    P.removeItem = function(k) {
+        if (this === window.localStorage && LS_GRANDES.has(k) && (k in _lsG)) { delete _lsG[k]; _lsGIdb('del', k); }
+        return _ri.call(this, k);
+    };
+    // Al abrir la app: traer lo que quedó en IndexedDB y recargarlo en memoria
+    pIdb().then(db => new Promise(res => {
+        try {
+            const st = db.transaction('files','readonly').objectStore('files'); let n = 0;
+            LS_GRANDES.forEach(k => { const q = st.get('lsbig::' + k); q.onsuccess = () => { if (q.result != null && _gi.call(localStorage, k) === null) _lsG[k] = q.result; if (++n === LS_GRANDES.size) res(); }; q.onerror = () => { if (++n === LS_GRANDES.size) res(); }; });
+        } catch(e) { res(); }
+    })).then(() => {
+        if (!Object.keys(_lsG).length) return;
+        try {
+            if (_lsG.pieers_cs_db && !Object.keys(csStockDB).length) csLoadSaved();
+            if (_lsG.pieers_cs_mayor && !Object.keys(csPreciosMayorDB).length) csLoadPreciosMayorLocal();
+            if (_lsG.pieers_cs_precios && !Object.keys(csPreciosDB).length) { if (csLoadPreciosLocal() && typeof csActualizarBadgeLibros === 'function') csActualizarBadgeLibros(); }
+            if (_lsG.pieers_cs_libros_raw && typeof csLibrosRaw !== 'undefined') { try { const x = JSON.parse(_lsG.pieers_cs_libros_raw); if (x && typeof x === 'object') csLibrosRaw = x; } catch(e) {} }
+            if (typeof modoActual !== 'undefined' && modoActual === 'ticket' && typeof tkRender === 'function') tkRender();
+        } catch(e) {}
+    }).catch(() => {});
+})();
+
+// ══ v27.22 — MÓDULOS SEGÚN ROL ══
+// Vendedor: solo Consultar Precio y Simulador. Inventario aparece solo si hay un
+// conteo compartido abierto (para poder unirse y escanear). Almacén, nunca.
+function _pHayConteoAbierto() { try { return !!(syConteoId || Object.values((syMeta && syMeta.conteos) || {}).some(c => c && c.estado === 'abierto')); } catch(e) { return false; } }
+function pEsVendedor() { return typeof syActivo === 'function' && syActivo() && sySes.r === 'vendedor'; }
+function pModulosRol() {
+    const v = pEsVendedor();
+    const bC = document.querySelector('#pantalla-modo .btn-comp'), bA = document.querySelector('#pantalla-modo .btn-alm');
+    if (bA) bA.style.display = v ? 'none' : '';
+    if (bC) {
+        const ver = !v || _pHayConteoAbierto();
+        bC.style.display = ver ? '' : 'none';
+        const t = bC.querySelector('.tit'), d = bC.querySelector('.desc');
+        if (t && !t.dataset.orig) { t.dataset.orig = t.textContent; d.dataset.orig = d.textContent; }
+        if (t) { t.textContent = v ? '📋 CONTEO COMPARTIDO' : t.dataset.orig; d.textContent = v ? 'Hay un conteo abierto: entra para escanear con el equipo.' : d.dataset.orig; }
+    }
+    // Si un vendedor quedó dentro de un módulo oculto, lo saca
+    if (v && typeof modoActual !== 'undefined' && ((modoActual === 'alm') || (modoActual === 'comp' && !_pHayConteoAbierto()))) {
+        const app = document.getElementById('app-principal');
+        if (app && !app.classList.contains('hidden')) seleccionarModo('stock');
+    }
+}
+(function() {
+    const o = window.seleccionarModo; if (typeof o !== 'function') return;
+    window.seleccionarModo = function(modo) {
+        if (pEsVendedor()) {
+            if (modo === 'alm') { showToast('🔒 Almacén solo para administrador y supervisor', '#B71C1C', 3000); return; }
+            if (modo === 'comp' && !syConteoId) {
+                if (!_pHayConteoAbierto()) { showToast('🔒 Inventario: espera a que el supervisor abra un conteo compartido', '#B71C1C', 3500); return; }
+                const r = o.apply(this, arguments); setTimeout(() => { try { syAbrirConteo(); } catch(e) {} }, 200); return r;
+            }
+        }
+        return o.apply(this, arguments);
+    };
+    setTimeout(pModulosRol, 300);
+})();
 
 </script>
