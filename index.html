@@ -1623,7 +1623,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.07 — 18/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.11 — 18/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -2070,7 +2070,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.07 — 18/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.11 — 18/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -2171,7 +2171,15 @@
                     style="width:70px;text-align:center;font-family:'Barlow',sans-serif;font-size:22px;font-weight:900;color:#111;border:2px solid #2E7D32;border-radius:10px;padding:8px 4px;">
                 <button onclick="tkCantIncrementar()" style="width:42px;height:42px;border-radius:10px;border:none;background:#2E7D32;color:#fff;font-size:20px;font-weight:900;cursor:pointer;">+</button>
             </div>
-            <button onclick="tkGuardarCantidad()" style="width:100%;background:#2E7D32;color:#fff;border:none;border-radius:10px;padding:12px;font-weight:800;font-size:13px;margin-bottom:8px;">✅ GUARDAR CANTIDAD</button>
+            <div style="font-size:11px;color:#555;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">✏️ Corregir precio c/u <span style="text-transform:none;font-weight:600;color:#888;">(solo simulador)</span></div>
+            <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;">
+                <span style="font-family:'Barlow',sans-serif;font-size:18px;font-weight:900;color:#111;">S/</span>
+                <input id="tk-del-precio-inp" type="number" min="0" step="0.01" inputmode="decimal" placeholder="automático"
+                    style="width:130px;text-align:center;font-family:'Barlow',sans-serif;font-size:20px;font-weight:900;color:#111;border:2px solid #E65100;border-radius:10px;padding:8px 4px;">
+            </div>
+            <div id="tk-del-precio-info" style="font-size:11px;color:#777;margin-bottom:6px;"></div>
+            <button id="tk-del-precio-quitar" onclick="tkQuitarPrecioManual()" style="display:none;background:none;border:none;color:#1565C0;font-size:12px;font-weight:700;text-decoration:underline;cursor:pointer;margin-bottom:10px;">↩️ Volver al precio automático</button>
+            <button onclick="tkGuardarCantidad()" style="width:100%;background:#2E7D32;color:#fff;border:none;border-radius:10px;padding:12px;font-weight:800;font-size:13px;margin-bottom:8px;margin-top:6px;">✅ GUARDAR</button>
             <button onclick="tkEliminarLinea()" style="width:100%;background:#c62828;color:#fff;border:none;border-radius:10px;padding:12px;font-weight:800;font-size:13px;margin-bottom:8px;">🗑️ ELIMINAR TODA LA LÍNEA</button>
             <button onclick="cerrarModalTkDel()" style="width:100%;background:#EEE;color:#333;border:none;border-radius:10px;padding:12px;font-weight:700;font-size:13px;">CANCELAR</button>
         </div>
@@ -4377,7 +4385,7 @@ function resetearApp() {
         // Consultar Stock
         csStockDB = {}; csPreciosDB = {}; csLibrosCargados = []; csPromoColorDB = {}; csPreciosMayorDB = {};
         // Ticket
-        ticketItems = {}; tkTickets = []; tk50OffActivo = false;
+        ticketItems = {}; tkPreciosManuales = {}; tkTickets = []; tk50OffActivo = false;
 
         toggleMenu(); showToast('✅ Todo reseteado (los 4 módulos)','#111');
         setTimeout(()=>location.reload(),800);
@@ -5374,6 +5382,69 @@ function _extraerTallaLabel(desc) {
     return ultima.indexOf('T/') === 0 ? ultima.substring(2) : '';
 }
 
+// ══ v27.09: lectura del memorándum por NOMBRE de columna (no por posición) ══
+// Si WAMA mueve filas o columnas, la app encuentra igual cada dato por su encabezado.
+function _pNum(v) {
+    if (typeof v === 'number') return isFinite(v) ? v : 0;
+    const s = String(v == null ? '' : v).trim().replace(',', '.');
+    return /^\d+(\.\d+)?$/.test(s) ? parseFloat(s) : 0;
+}
+// Busca la fila de encabezados (la que tiene "articidold") y ubica cada columna por su nombre
+function _pHdrMap(rows) {
+    for (let i = 0; i < Math.min(rows.length, 12); i++) {
+        const r = rows[i] || [];
+        const n = r.map(c => String(c == null ? '' : c).toLowerCase().replace(/[\[\]]/g, ' ').replace(/\s+/g, ' ').trim());
+        const f = (...pats) => { for (const p of pats) { const j = n.findIndex(h => typeof p === 'string' ? h === p : p.test(h)); if (j >= 0) return j; } return -1; };
+        const cod = f(/(^|\s)articidold$/);
+        if (cod < 0) continue;
+        const H = {
+            fila: i, cod,
+            desc:   f(/(^|\s)articname$/),
+            etiq:   f(/(^|\s)prec_etiq$/),
+            local:  f('local', /(^|\s)local$/),
+            estado: f(/(^|\s)estadoid$/),
+            promo:  f('descripcion promo', 'promo combo', /^descripcion promo/, /^promo combo/, /^promocion/),
+            pact:   f('promo act', /^promo act/),
+            dprp:   f('desc prp', /^desc\.? ?prp/),
+            pprop:  f('precio prop', /^precio\.? ?prop/),
+            pcombo: f(/^precio\.? ?combo$/, /^prec\.? ?combo/)
+        };
+        if (H.etiq < 0 && H.pprop < 0) return null;   // no parece hoja de precios
+        return H;
+    }
+    return null;
+}
+// Precio de combo escrito en el nombre: "PROMO COMBO 2X219.90" → 109.95 c/u
+function _pPrecioComboDeNombre(nombre) {
+    const m = String(nombre || '').match(/(\d+)\s*[xX]\s*(?:S\s*\/\s*\.?\s*)?(\d+(?:[.,]\d+)?)/);
+    if (!m) return 0;
+    const n = parseInt(m[1], 10), t = parseFloat(m[2].replace(',', '.'));
+    return (n >= 2 && n <= 12 && t > 0) ? +(t / n).toFixed(4) : 0;
+}
+// Precios de una fila usando las columnas encontradas
+function _pPreciosFila(r, H, tipo, nombre) {
+    const etiqCol = H.etiq >= 0 ? _pNum(r[H.etiq]) : 0;
+    const cand = [H.pact, H.dprp, H.pprop].filter(i => i >= 0).map(i => _pNum(r[i])).filter(v => v > 1);
+    const uniq = [...new Set(cand)].sort((a, b) => a - b);
+    // Igual que siempre: etiqueta = el mayor; precio = el menor (nunca por encima de la etiqueta)
+    const todos = uniq.concat(etiqCol > 1 ? [etiqCol] : []);
+    if (!todos.length) return null;
+    const etiq = Math.max(...todos);
+    let pMin = Math.min(...todos);
+    const out = { etiq, pMin, me: 0, ma: 0, of: 0 };
+    if (tipo === 'oferta') out.of = pMin;
+    else if (tipo === 'combo') {
+        // 1) columna "Precio Combo"  2) "COMPRA MAYOR A X A S/ Y"  3) "2X219.90"  4) precio prop
+        let pc = H.pcombo >= 0 ? _pNum(r[H.pcombo]) : 0;
+        if (!(pc > 0)) pc = pPrecioDeNombreUmbral(nombre);
+        if (!(pc > 0)) pc = _pPrecioComboDeNombre(nombre);
+        if (!(pc > 0) || pc > pMin) pc = pMin;   // siempre el más económico (igual que antes)
+        out.ma = pc; out.pMin = Math.min(pMin, pc);
+    } else if (tipo === 'ejecutivo') { out.ma = pMin; out.me = uniq.length >= 2 ? uniq[uniq.length - 1] : 0; }
+    else out.me = pMin;
+    return out;
+}
+
 function csParsePreciosXLSX(wb, nombreLibro) {
     // Acumula sobre los libros ya cargados — cada código nuevo se compara entre
     // TODOS los libros vigentes y gana el precio MÁS ECONÓMICO; el libro de
@@ -5615,6 +5686,10 @@ function csParsePreciosXLSX(wb, nombreLibro) {
                          shU.includes('OFERTA') || shU.includes('EJEC') ||
                          (shU.includes('COMBO') && sheetName.toLowerCase().includes('tda'));
         _csTdaHoja(rows, sheetName, baseTipo); // v27.05: precios por tienda
+        const _H = _pHdrMap(rows);               // v27.09: columnas por nombre
+        const _esLoc = (r) => (_H && _H.local >= 0)
+            ? String(r[_H.local] || '').trim().toUpperCase() === LOCAL
+            : (String(r[0]||'').toUpperCase().includes(LOCAL) || String(r[1]||'').toUpperCase().includes(LOCAL) || String(r[2]||'').toUpperCase().includes(LOCAL));
 
         // Pasada única: separar filas de Cajamarca y filas nacionales
         // Usar Map para acceso O(1) en vez de dos forEach sobre 55k filas
@@ -5625,12 +5700,11 @@ function csParsePreciosXLSX(wb, nombreLibro) {
             const r = rows[ri];
             if (!r||r.length<5) continue;
             // Detección rápida de Cajamarca: buscar LOCAL en los primeros 3 índices
-            const esLocal = String(r[0]||'').toUpperCase().includes(LOCAL) ||
-                            String(r[1]||'').toUpperCase().includes(LOCAL) ||
-                            String(r[2]||'').toUpperCase().includes(LOCAL);
+            const esLocal = _esLoc(r);
             if (esLocal) {
                 filasLocal.push(r);
-                for(let i=0;i<r.length;i++){ if(esCodigo(r[i])){ codConCajamarca.add(String(r[i]).trim().toUpperCase()); break; } }
+                if (_H && esCodigo(r[_H.cod])) codConCajamarca.add(String(r[_H.cod]).trim().toUpperCase());
+                else for(let i=0;i<r.length;i++){ if(esCodigo(r[i])){ codConCajamarca.add(String(r[i]).trim().toUpperCase()); break; } }
             } else {
                 filasNacl.push(r);
             }
@@ -5640,13 +5714,13 @@ function csParsePreciosXLSX(wb, nombreLibro) {
 
         filasAProcesar.forEach(r => {
             if (!r||r.length<5) return;
-            const esFilaCajamarca = String(r[0]||'').toUpperCase().includes(LOCAL) ||
-                                    String(r[1]||'').toUpperCase().includes(LOCAL) ||
-                                    String(r[2]||'').toUpperCase().includes(LOCAL);
+            const esFilaCajamarca = _esLoc(r);
 
-            // Encontrar código 7 chars (primera aparición)
+            // Encontrar código 7 chars: por su columna (articidold) o, si no hay encabezado, la primera aparición
             let codRaw=null, codIdx=-1;
-            for(let i=0;i<r.length;i++){
+            if (_H && esCodigo(r[_H.cod])) { codRaw = String(r[_H.cod]).trim().toUpperCase(); codIdx = _H.cod; }
+            else if (_H) return;   // hoja con encabezados: si la columna del código no tiene código, la fila no es de precios
+            if (codIdx < 0) for(let i=0;i<r.length;i++){
                 if(esCodigo(r[i])){codRaw=String(r[i]).trim().toUpperCase();codIdx=i;break;}
             }
             if(!codRaw||codIdx<0) return;
@@ -5672,7 +5746,7 @@ function csParsePreciosXLSX(wb, nombreLibro) {
 
             // Estado OF/LI: columna codIdx+3 indica si el producto está en oferta (OF) o línea (LI)
             // Cuando estado=OF: este producto ya bajó de precio, ignorar promo y combo
-            const estadoCelda = String(r[codIdx+3]||'').trim().toUpperCase();
+            const estadoCelda = String(r[(_H && _H.estado >= 0) ? _H.estado : codIdx+3]||'').trim().toUpperCase();
             const esEstadoOF = estadoCelda === 'OF';
 
             // Nombre de la promo: buscar el primer texto con palabra clave antes del código
@@ -5687,6 +5761,9 @@ function csParsePreciosXLSX(wb, nombreLibro) {
                 }
             }
             if (!nombre) nombre = String(r[Math.max(0, codIdx-4)]||'').trim();
+            if (_H && _H.promo >= 0) { const _nm = String(r[_H.promo] == null ? '' : r[_H.promo]).trim(); if (_nm && !/^\d+(\.\d+)?$/.test(_nm)) nombre = _nm; }
+            const _hp = _H ? _pPreciosFila(r, _H, tipo, nombre) : null;   // v27.09
+            if (_H && !_hp) return;
 
             // ── Recoger precios ──────────────────────────────────────────
             // 1. Tomar todos los números DESPUÉS del código (desde codIdx+2)
@@ -5727,11 +5804,11 @@ function csParsePreciosXLSX(wb, nombreLibro) {
             const vals = [...new Set(nums.map(n=>n.v))].sort((a,b)=>b-a);
 
             // Precio etiqueta = mayor valor
-            const etiq = vals[0];
+            let etiq = vals[0];
 
             // Asignar seg\u00FAn tipo
             let pMenor=0, pMayor=0, pOferta=0;
-            const pMin = vals[vals.length-1];
+            let pMin = vals[vals.length-1];
             const pSeg = vals.length>=3 ? vals[1] : 0;
 
             if(tipo==='oferta'){
@@ -5740,6 +5817,9 @@ function csParsePreciosXLSX(wb, nombreLibro) {
                 // COMBO: pMayor = precio combo, pMenor = 0 (no tocar el unitario)
                 // El precio unitario viene de la hoja PRomo/PRomo tiendas por separado
                 pMayor = pMin;
+                // v27.08: "COMPRA MAYOR A 200 A S/ 5.90" con la columna de combo vacía → usar el precio del texto
+                const _pTxtU = pPrecioDeNombreUmbral(nombre || r.map(c=>String(c||'')).join(' '));
+                if (_pTxtU > 0 && _pTxtU < pMayor) pMayor = _pTxtU;
                 pMenor = 0;
             } else if(tipo==='ejecutivo'){
                 pMayor = pMin;
@@ -5747,6 +5827,8 @@ function csParsePreciosXLSX(wb, nombreLibro) {
             } else {
                 pMenor = pMin;
             }
+            // v27.09: con encabezados, los precios salen de su columna exacta
+            if (_hp) { etiq = _hp.etiq; pMin = _hp.pMin; pMenor = _hp.me; pMayor = _hp.ma; pOferta = _hp.of; }
 
             // Si nombre dice "X% DSCTO ADIC", guardar el % para aplicarlo
             // DESPUÉS sobre entry.menor (precio unitario real, no el pMin de esta fila)
@@ -6933,6 +7015,7 @@ function csBorrarDB() {
 //    (si sobra 1 unidad impar, esa se cobra a precio unitario)
 // ══════════════════════════════════════════════════════
 let ticketItems = {}; // { modelo(7 car.): cantidad }
+let tkPreciosManuales = {}; // v27.11: { modelo: precio c/u corregido a mano (solo simulador) }
 
 function tkOnBarcodeInput(val) {
     val = (val || '').trim();
@@ -7113,6 +7196,14 @@ function tkPrecioUnidad(precios) {
 //              cuántas unidades de él se lleven).
 // La PROMO COLOR (clave de 11 caracteres) nunca entra aquí — tiene prioridad
 // absoluta y se cobra siempre a su propio precio fijo, sin combo ni umbral.
+// v27.08: precio escrito en el nombre de la promo "COMPRA MAYOR A 200 A S/ 5.90"
+// (WAMA a veces deja vacía la columna "Precio Combo" y el precio solo está en el texto)
+function pPrecioDeNombreUmbral(nombre) {
+    const m = String(nombre || '').match(/MAYOR\s*A\s*(?:S\s*\/\s*\.?\s*)?\d+(?:[.,]\d+)?\s*A\s*(?:UN\s*)?(?:S\s*\/\s*\.?\s*)?(\d+(?:[.,]\d+)?)/i);
+    if (!m) return 0;
+    const v = parseFloat(m[1].replace(',', '.'));
+    return v > 0 ? v : 0;
+}
 function tkInfoPromo(key) {
     if (tkEsPromoColor(key)) return null;
     const modelo = tkModeloBase(key);
@@ -7123,7 +7214,8 @@ function tkInfoPromo(key) {
     const nombre = comboPromo ? comboPromo.nombre : null;
     const mUmbral = nombre ? nombre.match(/MAYOR\s*A\s*(\d+)/i) : null;
     if (mUmbral) {
-        return { tipo: 'umbral', nombre, umbral: parseInt(mUmbral[1], 10), precioEspecial: precios.mayor };
+        const pTxt = pPrecioDeNombreUmbral(nombre);
+        return { tipo: 'umbral', nombre, umbral: parseInt(mUmbral[1], 10), precioEspecial: (pTxt > 0 && pTxt < precios.mayor) ? pTxt : precios.mayor };
     }
     // Tamaño real del combo: "3x89.9" → 3, "2X109.9" → 2. Por defecto 2 si el
     // nombre no trae el patrón NxPRECIO (ej. promos por % de descuento adicional).
@@ -7150,6 +7242,7 @@ function tkRender() {
     const umbralItems = [];   // modelos con promo "COMPRA MAYOR A X"
     const individuales = [];  // sin promo (o combo con solo 1 unidad)
     modelos.forEach(modelo => {
+        if (tkPreciosManuales[modelo] >= 0 && tkPreciosManuales[modelo] !== undefined) { individuales.push(modelo); return; } // v27.11: precio a mano
         const info = tkInfoPromo(modelo);
         if (info && info.tipo === 'umbral') umbralItems.push(modelo);
         else if (info && info.tipo === 'combo') (grupos[info.nombre] = grupos[info.nombre] || []).push(modelo);
@@ -7164,7 +7257,12 @@ function tkRender() {
         let countTotal = 0;
         modelosGrupo.forEach(m => countTotal += ticketItems[m]);
         const _preciosGrupo0 = csPreciosDB[tkModeloBase(modelosGrupo[0])] || {};
-        const comboPrecio = tk50OffAplicar(_preciosGrupo0.mayor || 0, _preciosGrupo0.etiqueta);
+        // v27.10: si el nombre trae "2X219.90" y es más barato que lo guardado, manda el precio del nombre
+        // (funciona aunque el memorándum se haya cargado con una versión anterior)
+        let _mayorG = _preciosGrupo0.mayor || 0;
+        const _pNomG = (typeof _pPrecioComboDeNombre === 'function') ? _pPrecioComboDeNombre(nombreGrupo) : 0;
+        if (_pNomG > 0 && (!_mayorG || _pNomG < _mayorG)) _mayorG = _pNomG;
+        const comboPrecio = tk50OffAplicar(_mayorG, _preciosGrupo0.etiqueta);
         const infoGrupo = tkInfoPromo(modelosGrupo[0]);
         const tamano = (infoGrupo && infoGrupo.tamano) || 2; // ej. 2 (2x) o 3 (3x)
 
@@ -7233,15 +7331,21 @@ function tkRender() {
             unit = tkPrecioUnidad(_preciosBase);
             etiquetaRef = _preciosBase.etiqueta;
         }
+        // v27.11: precio corregido a mano (manda sobre todo)
+        const _manual = tkPreciosManuales[modelo];
+        const _esManual = _manual !== undefined && _manual >= 0;
+        const _unitSistema = unit;
+        if (_esManual) unit = _manual;
         const subtotal = count * unit;
         totalGeneral += subtotal;
         totalItems   += count;
         const _pctInd = tkPctDescuento(unit, etiquetaRef);
-        html += `<div onclick="abrirModalTkDel('${modelo}')" style="background:#fff;border-radius:12px;padding:11px 13px;margin-bottom:8px;border-left:4px solid ${esColor ? '#E53935' : '#2E7D32'};box-shadow:0 1px 3px rgba(0,0,0,0.08);cursor:pointer;">
+        html += `<div onclick="abrirModalTkDel('${modelo}')" style="background:${_esManual ? '#FFF8F0' : '#fff'};border-radius:12px;padding:11px 13px;margin-bottom:8px;border-left:4px solid ${_esManual ? '#E65100' : (esColor ? '#E53935' : '#2E7D32')};box-shadow:0 1px 3px rgba(0,0,0,0.08);cursor:pointer;">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
                 <div style="flex:1;min-width:0;">
                     <div style="font-family:'Barlow',sans-serif;font-weight:800;font-size:14px;color:#111;word-break:break-word;">${desc}</div>
                     <div style="font-size:10px;color:#999;">${modelo}${esColor ? ' · 🎨 promo color' : ''}</div>
+                    ${_esManual ? `<div style="font-size:11px;font-weight:800;color:#E65100;margin-top:3px;">✏️ Precio corregido a mano (sistema: S/${(_unitSistema||0).toFixed(2)})</div>` : ''}
                     <div style="font-size:11px;color:#555;margin-top:3px;">${count} unidad${count > 1 ? 'es' : ''} (S/${unit.toFixed(2)} c/u)</div>
                 </div>
                 <div style="text-align:right;flex-shrink:0;">
@@ -7302,6 +7406,13 @@ function abrirModalTkDel(modelo) {
     document.getElementById('tk-del-desc').textContent = desc;
     document.getElementById('tk-del-cod').textContent  = modelo;
     document.getElementById('tk-del-cant-inp').value   = ticketItems[modelo];
+    // v27.11: precio manual (solo en el simulador; no cambia la base de precios)
+    const _man = tkPreciosManuales[modelo];
+    const _pb = (csPreciosDB && csPreciosDB[tkModeloBase(modelo)]) || {};
+    const _auto = tkEsPromoColor(modelo) && csPromoColorDB[modelo] ? csPromoColorDB[modelo].precio : tkPrecioUnidad(_pb);
+    document.getElementById('tk-del-precio-inp').value = _man > 0 ? _man : '';
+    document.getElementById('tk-del-precio-info').textContent = 'Precio del sistema: S/' + (_auto || 0).toFixed(2) + (_pb.etiqueta ? ' · etiqueta S/' + _pb.etiqueta.toFixed(2) : '') + ' · déjalo vacío para usar el automático';
+    document.getElementById('tk-del-precio-quitar').style.display = _man > 0 ? 'inline-block' : 'none';
     document.getElementById('modalTkDel').style.display = 'flex';
 }
 function cerrarModalTkDel() {
@@ -7326,19 +7437,37 @@ function tkGuardarCantidad() {
         return;
     }
     ticketItems[_tkModeloActual] = cant;
+    // v27.11: precio corregido a mano
+    const _pv = String(document.getElementById('tk-del-precio-inp').value || '').trim().replace(',', '.');
+    if (_pv === '') delete tkPreciosManuales[_tkModeloActual];
+    else {
+        const _p = parseFloat(_pv);
+        if (!(_p >= 0) || _p > 99999) { showToast('⚠️ Precio no válido', '#c62828'); return; }
+        tkPreciosManuales[_tkModeloActual] = Math.round(_p * 100) / 100;
+        showToast('✏️ Precio corregido: S/' + tkPreciosManuales[_tkModeloActual].toFixed(2) + ' c/u (solo en el simulador)', '#E65100');
+    }
     cerrarModalTkDel();
     tkRender();
+}
+function tkQuitarPrecioManual() {
+    if (!_tkModeloActual) return;
+    delete tkPreciosManuales[_tkModeloActual];
+    document.getElementById('tk-del-precio-inp').value = '';
+    document.getElementById('tk-del-precio-quitar').style.display = 'none';
+    cerrarModalTkDel(); tkRender();
+    showToast('↩️ Precio automático restaurado', '#111');
 }
 function tkEliminarLinea() {
     if (!_tkModeloActual) return;
     delete ticketItems[_tkModeloActual];
+    delete tkPreciosManuales[_tkModeloActual];
     cerrarModalTkDel();
     tkRender();
 }
 function tkNuevoTicket() {
     if (!Object.keys(ticketItems).length) return;
     mostrarConfirmDoble('¿Descartar este ticket?', 'Se perderá lo escaneado sin guardarlo como venta. Si quieres conservarlo, usa "💾 Guardar venta" en vez de esto.',
-        '🗑️ SÍ, DESCARTAR', () => { ticketItems = {}; tkRender(); },
+        '🗑️ SÍ, DESCARTAR', () => { ticketItems = {}; tkPreciosManuales = {}; tkRender(); },
         'Cancelar', () => {}
     );
 }
@@ -7397,13 +7526,14 @@ function tkConfirmarGuardar() {
         fecha: tkFechaHoy(),
         hora: ahora.toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit'}),
         items: JSON.parse(JSON.stringify(ticketItems)),
+        precios: Object.keys(tkPreciosManuales).length ? JSON.parse(JSON.stringify(tkPreciosManuales)) : undefined,
         total, cantidad, obs
     });
     tkGuardarEnStorage();
     cerrarModalTkObs();
     showToast('✅ Venta guardada: S/' + total.toFixed(2), '#2E7D32');
     try { beep(1200, 0.08); } catch(e) {}
-    ticketItems = {};
+    ticketItems = {}; tkPreciosManuales = {};
     tkRender();
 }
 
@@ -7479,6 +7609,7 @@ function tkEditarTicketGuardado() {
             : 'Se cargará de vuelta al editor para que lo corrijas y lo vuelvas a guardar.',
         '✏️ SÍ, EDITAR', () => {
             ticketItems = JSON.parse(JSON.stringify(t.items));
+            tkPreciosManuales = t.precios ? JSON.parse(JSON.stringify(t.precios)) : {};
             tkTickets = tkTickets.filter(x => x.id !== idT); // se re-guarda al terminar de editar
             tkGuardarEnStorage();
             cerrarModalTkDetalle();
@@ -9236,6 +9367,8 @@ function _csTdaHoja(rows, sheetName, baseTipo) {
         const r = rows[i] || [];
         for (let j = 0; j < r.length; j++) { const h = String(r[j]||'').trim().toLowerCase(); if (h === 'local' || h.includes('[local]')) { cLocal = j; hdrRow = i; break; } }
     }
+    const H = _pHdrMap(rows);   // v27.09: columnas por nombre
+    if (H) { hdrRow = H.fila; cLocal = H.local; }
     for (let ri = 0; ri < rows.length; ri++) {
         if (ri === hdrRow) continue;
         const r = rows[ri];
@@ -9246,7 +9379,8 @@ function _csTdaHoja(rows, sheetName, baseTipo) {
             if (!tienda || /^TOTAL/.test(tienda)) continue;
         }
         let codIdx = -1;
-        for (let i = 0; i < r.length; i++) if (esCod(r[i])) { codIdx = i; break; }
+        if (H) { if (esCod(r[H.cod])) codIdx = H.cod; }
+        else for (let i = 0; i < r.length; i++) if (esCod(r[i])) { codIdx = i; break; }
         if (codIdx < 0) continue;
         const cod = String(r[codIdx]).trim().toUpperCase();
         // Precios: mismos criterios que el lector principal (números > 1 después del código, sin la columna de stock)
@@ -9260,18 +9394,25 @@ function _csTdaHoja(rows, sheetName, baseTipo) {
         if (!vals.length) continue;
         vals.sort((a,b) => b - a);
         const etiq = vals[0], pMin = vals[vals.length-1], pSeg = vals.length >= 3 ? vals[1] : 0;
+        let etiq2 = etiq;
         const rowStr = r.map(c => String(c||'').toUpperCase()).join(' ');
         let tipo = baseTipo;
-        if (String(r[codIdx+3]||'').trim().toUpperCase() === 'OF' || rowStr.includes('OFERTA') || r.some(c => String(c||'').trim() === 'OF')) tipo = 'oferta';
+        if (String(r[(H && H.estado >= 0) ? H.estado : codIdx+3]||'').trim().toUpperCase() === 'OF' || rowStr.includes('OFERTA') || r.some(c => String(c||'').trim() === 'OF')) tipo = 'oferta';
         else if (rowStr.includes('EJECUTIVO')) tipo = 'ejecutivo';
         let me = 0, ma = 0, of = 0;
         if (tipo === 'oferta') of = pMin;
-        else if (tipo === 'combo') ma = pMin;
+        else if (tipo === 'combo') { ma = pMin; const _pt = pPrecioDeNombreUmbral(rowStr); if (_pt > 0 && _pt < ma) ma = _pt; }
         else if (tipo === 'ejecutivo') { ma = pMin; me = pSeg; }
         else me = pMin;
+        if (H) {
+            const _nm = H.promo >= 0 ? String(r[H.promo] == null ? '' : r[H.promo]).trim() : '';
+            const hp = _pPreciosFila(r, H, tipo, /^\d+(\.\d+)?$/.test(_nm) ? '' : _nm);
+            if (!hp) continue;
+            etiq2 = hp.etiq; me = hp.me; ma = hp.ma; of = hp.of;
+        }
         const T = _csTdaActual[tienda] || (_csTdaActual[tienda] = {});
         const e = T[cod] || (T[cod] = [0,0,0,0]);
-        if (etiq > e[0]) e[0] = etiq;
+        if (etiq2 > e[0]) e[0] = etiq2;
         if (me > 0 && (!e[1] || me < e[1])) e[1] = me;
         if (ma > 0 && (!e[2] || ma < e[2])) e[2] = ma;
         if (of > 0 && (!e[3] || of < e[3])) e[3] = of;
