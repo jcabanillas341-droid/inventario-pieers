@@ -1623,7 +1623,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.23 — 18/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.24 — 22/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -2070,7 +2070,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.23 — 18/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.24 — 22/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -4351,18 +4351,19 @@ function resetearModulo() {
     const mod = {comp:'COMPARATIVO', alm:'ALMACÉN'}[modoActual] || 'módulo';
     const msg = modoActual === 'alm'
         ? '¿Borrar TODO el inventario y movimientos de ALMACÉN?\n\nSe borrará también en la nube.\n(Los informes/reportes guardados se conservan)'
-        : '¿Borrar TODOS los datos de COMPARATIVO?\n\nSe borrarán: maestro, conteo, lecturas y avance.';
+        : '¿Reiniciar el conteo actual?\n\nSe borrarán: maestro, conteo, lecturas y avance.\n(Los reportes guardados se conservan)';
     mostrarConfirm('🗑️ Reiniciar ' + mod, msg, () => {
         if (modoActual === 'comp') {
             // Borrar TODO lo del comparativo del localStorage
-            ['p_maestro_v8','p_hist_v8','p_total_v8','p_desc_v8','p_lotes_v8','p_guiamap_v8','p_guias_v8'].forEach(k => localStorage.removeItem(k));
+            // v27.24: los REPORTES GUARDADOS (p_lotes_v8) NO se borran
+            ['p_maestro_v8','p_hist_v8','p_total_v8','p_desc_v8','p_guiamap_v8','p_guias_v8'].forEach(k => localStorage.removeItem(k));
             // Resetear variables en memoria
             maestroMap = new Map(); descripcionMap = new Map();
             guiaMap = new Map(); guiasCargadas = [];
-            historial = []; lotes = []; totalEsp = 0;
+            historial = []; totalEsp = 0;
             // Re-renderizar pantalla en blanco
             renderComp();
-            showToast('✅ COMPARATIVO reiniciado — pantalla limpia', '#E65100');
+            showToast('✅ Conteo reiniciado — tus ' + lotes.length + ' reporte(s) guardados se conservan', '#E65100');
         } else {
             // Borrar inventario y movimientos — conservar snapshots/reportes
             ['p_alm_v1','p_alm_movs_v1'].forEach(k => localStorage.removeItem(k));
