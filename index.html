@@ -1623,7 +1623,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.26 — 24/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.28 — 24/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -2070,7 +2070,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.26 — 24/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.28 — 24/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -11505,10 +11505,7 @@ function pModulosRol() {
 // ══ v27.26 — BUSCAR ARRIBA, ESCANEAR ABAJO (más pequeño y a un costado) en todos los módulos ══
 (function() {
     const css = `
-    /* Inventario */
-    body.modo-comp #comp-search-wrap { display:flex !important; padding:6px 10px 2px !important; }
-    html body #scanner { width:auto !important; max-width:58% !important; min-width:190px; margin:2px 10px 6px auto !important; padding:6px 10px !important;
-        font-size:13px !important; letter-spacing:1px !important; border-radius:10px !important; min-height:0 !important; text-align:center; }
+    /* Inventario: se deja como estaba (v27.27) */
     /* Consultar precio */
     #vista-stock #cs-name-search-wrap { display:block !important; padding:6px 8px 2px !important; }
     #vista-stock #cs-panel-lectora .cs-ctrl-row { justify-content:flex-end !important; padding:0 2px 2px !important; gap:6px !important; }
@@ -11528,9 +11525,6 @@ function pModulosRol() {
     `;
     const st = document.createElement('style'); st.id = 'v2726-layout'; st.textContent = css; document.head.appendChild(st);
     const mover = () => {
-        // Inventario: buscador antes del escáner
-        const sc = document.getElementById('scanner'), cw = document.getElementById('comp-search-wrap');
-        if (sc && cw && sc.parentNode && cw.nextElementSibling !== sc) sc.parentNode.insertBefore(cw, sc);
         // Consultar precio: buscador encima de la fila CODBAR
         const lec = document.getElementById('cs-panel-lectora'), nw = document.getElementById('cs-name-search-wrap');
         if (lec && nw && lec.parentNode && nw.nextElementSibling !== lec) lec.parentNode.insertBefore(nw, lec);
@@ -11544,11 +11538,70 @@ function pModulosRol() {
     };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mover); else mover();
     // Textos cortos para el escáner pequeño
-    const ph = () => { const a = document.getElementById('scanner'); if (a) a.placeholder = '📷 Escanear (13 díg.)';
+    const ph = () => {
         ['cs-inp-codbar','tk-inp-codbar'].forEach(id => { const e = document.getElementById(id); if (e) e.placeholder = '📷 Escanear (13 díg.)'; }); };
     ph();
     const o = window.seleccionarModo;
     if (typeof o === 'function') window.seleccionarModo = function() { const r = o.apply(this, arguments); try { ph(); mover(); } catch(e) {} return r; };
+})();
+
+
+// ══ v27.28 — BOTÓN ATRÁS DEL CELULAR ══
+// Atrás: 1) cierra la ventana abierta (la de más arriba)  2) cierra el menú OPC.
+//        3) dentro de un módulo vuelve al INICIO  4) en el inicio: "presiona otra vez para salir".
+(function() {
+    const CIERRES = {
+        'modal-promo-color': () => csModalPromoCerrar(), 'modal-pin': () => cerrarPIN(), 'sy-modal': () => syCerrarModal(),
+        'modalTkDel': () => cerrarModalTkDel(), 'modalTkDetalle': () => cerrarModalTkDetalle(), 'modalTkObs': () => cerrarModalTkObs(),
+        'modalTkVentas': () => cerrarModalTkVentas(), 'modal-confirm': () => cerrarConfirm()
+    };
+    const visible = el => { if (!el || !el.isConnected) return false; const cs = getComputedStyle(el); if (cs.display === 'none' || cs.visibility === 'hidden' || +cs.opacity === 0) return false; const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+    // Ventanas abiertas a pantalla completa (fixed, que cubren buena parte de la pantalla)
+    function ventanaArriba() {
+        const W = innerWidth, H = innerHeight; let mejor = null, zMejor = -1;
+        document.querySelectorAll('body *').forEach(el => {
+            if (el.id === 'loading-overlay' || el.id === 'menuContent' || el.id === 'pantalla-modo' || el.id === 'app-principal' || el.id === 'toast') return;
+            const cs = getComputedStyle(el); if (cs.position !== 'fixed' || cs.display === 'none' || cs.visibility === 'hidden') return;
+            const r = el.getBoundingClientRect(); if (r.width < W * 0.6 || r.height < H * 0.5) return;
+            if (!visible(el)) return;
+            const z = parseInt(cs.zIndex, 10) || 0;
+            if (z >= zMejor) { zMejor = z; mejor = el; }
+        });
+        return mejor;
+    }
+    function cerrarVentana(el) {
+        if (CIERRES[el.id]) { try { CIERRES[el.id](); } catch(e) {} if (!visible(el)) return; }
+        const btn = el.querySelector('.btn-confirm-no, #mpt-no, .sy-x, .mov-btn-cancelar')
+            || [...el.querySelectorAll('button')].find(b => /^\s*[✕×✖]\s*$/.test(b.textContent) || /cerrar/i.test(b.getAttribute('onclick') || ''));
+        if (btn && visible(btn)) { try { btn.click(); } catch(e) {} }
+        if (visible(el)) el.style.display = 'none';
+    }
+    let _salirHasta = 0;
+    function manejarAtras() {
+        const lo = document.getElementById('loading-overlay');
+        if (lo && visible(lo)) return true;                       // cargando: no hacer nada
+        const v = ventanaArriba();
+        if (v) { cerrarVentana(v); return true; }
+        const mc = document.getElementById('menuContent');
+        if (mc && mc.style.display === 'block') { mc.style.display = 'none'; return true; }
+        const app = document.getElementById('app-principal');
+        if (app && !app.classList.contains('hidden')) { volverSelector(); return true; }
+        // En el inicio
+        if (Date.now() < _salirHasta) return false;
+        _salirHasta = Date.now() + 2500;
+        showToast('↩️ Presiona ATRÁS otra vez para salir', '#333', 2500);
+        return true;
+    }
+    try {
+        if (!history.state || !history.state.pieers) history.replaceState({ pieers: 'base' }, '');
+        history.pushState({ pieers: 'guard' }, '');
+    } catch(e) {}
+    window.addEventListener('popstate', function() {
+        let seQueda = true;
+        try { seQueda = manejarAtras(); } catch(e) {}
+        if (seQueda) { try { history.pushState({ pieers: 'guard' }, ''); } catch(e) {} }
+        else { try { history.back(); } catch(e) {} }      // segunda vez en el inicio: salir de la app
+    });
 })();
 
 </script>
