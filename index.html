@@ -1623,7 +1623,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.24 — 22/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.26 — 24/Oct/2026</div>
         <!-- Logo -->
         <div class="logo-icono">P</div>
         <div style="text-align:center;margin-bottom:2px;">
@@ -2070,7 +2070,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.24 — 22/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.26 — 24/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -6182,8 +6182,12 @@ function csModalPromoMostrar(config) {
     if (_huboCambioReal) csAlertaCambioPrecio();
 
 
+    // v27.25: precio de etiqueta (ANTES) para mostrar junto al precio de promoción (AHORA)
+    const _etiqA = (typeof csPreciosDB !== 'undefined' && csPreciosDB[config_art] && csPreciosDB[config_art].etiqueta) || 0;
+    const _conAntes = it => _etiqA > 0 && it.precio > 0 && it.precio < _etiqA - 0.005 && ['promo','combo','oferta','color'].includes(it.tipo);
     itemsAMostrar.forEach(item => {
         const esMasBarato = _huboCambioReal && item === _itemDestacado;
+        const _ant = _conAntes(item);
         const bgMap = {color:'linear-gradient(135deg,#E53935,#B71C1C)', promo:'#FFF3E0', combo:'#E3F2FD', oferta:'#E8F5E9', etiqueta:'#FFFDE7', sinprecio:'#F5F5F5'};
         const clrMap= {color:'#fff', promo:'#E65100', combo:'#0288D1', oferta:'#2E7D32', etiqueta:'#F57F17', sinprecio:'#777'};
         const isColor = item.tipo === 'color';
@@ -6191,6 +6195,7 @@ function csModalPromoMostrar(config) {
             ? `<div style="background:${bgMap.color};border-radius:16px;padding:20px 18px;text-align:center;">
                 <div style="font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:rgba(255,255,255,0.8);letter-spacing:2px;text-transform:uppercase;">PRECIO PROMO COLOR</div>
                 <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:20px;color:#fff;margin:4px 0;">🎨 ${item.color||''}</div>
+                ${_ant ? `<div style="font-family:'Inter',sans-serif;font-size:13px;font-weight:800;color:rgba(255,255,255,0.85);">ANTES (etiqueta): <span style="font-family:'Bebas Neue','Inter',sans-serif;font-size:26px;text-decoration:line-through;">S/ ${_etiqA.toFixed(2)}</span></div><div style="font-family:'Inter',sans-serif;font-size:12px;font-weight:900;color:#fff;letter-spacing:2px;margin-top:2px;">AHORA</div>` : ''}
                 <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:64px;color:#fff;line-height:1;">S/ ${Number(item.precio).toFixed(2)}</div>
                 <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:28px;color:rgba(255,255,255,0.95);margin-top:4px;">${item.dto||''}</div>
                </div>`
@@ -6204,6 +6209,7 @@ function csModalPromoMostrar(config) {
                     border-left:5px solid ${clrMap[item.tipo]||'#999'};transform:translateZ(0);
                     ${esMasBarato ? 'outline:3px solid #E65100;box-shadow:0 0 0 4px rgba(230,81,0,0.18),0 6px 16px rgba(0,0,0,0.12);' : ''}">
                 <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:16px;color:#555;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">${item.nombre}${esMasBarato ? '<span style="background:#E65100;color:#fff;font-size:11px;padding:2px 8px;border-radius:8px;letter-spacing:0.5px;">🔔 CAMBIÓ · MÁS ECONÓMICO</span>' : (item.cambio ? '<span style="background:#E65100;color:#fff;font-size:11px;padding:2px 8px;border-radius:8px;letter-spacing:0.5px;">🔔 CAMBIÓ</span>' : '')}</div>
+                ${_ant ? `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px;"><span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:#777;">ANTES (etiqueta)</span><span style="font-family:'Bebas Neue','Inter',sans-serif;font-size:28px;color:#888;text-decoration:line-through;text-decoration-thickness:2px;">S/ ${_etiqA.toFixed(2)}</span></div><div style="font-family:'Inter',sans-serif;font-size:12px;font-weight:900;color:#2E7D32;letter-spacing:2px;">AHORA ${item.tipo === 'combo' ? '(c/u en combo)' : ''}</div>` : ''}
                 <div style="display:flex;justify-content:space-between;align-items:flex-end;">
                     <span style="font-family:'Bebas Neue','Inter',sans-serif;font-size:${esMasBarato?'72px':'52px'};color:#E53935;line-height:1;text-shadow:2px 2px 4px rgba(229,57,53,0.2);">S/ ${Number(item.precio).toFixed(2)}</span>
                     <span style="font-family:'Bebas Neue','Inter',sans-serif;font-size:32px;color:#FF6D00;font-weight:900;background:rgba(255,109,0,0.1);padding:2px 8px;border-radius:8px;border:2px solid rgba(255,109,0,0.3);">${item.dto||''}</span>
@@ -7269,6 +7275,11 @@ function tkInfoPromo(key) {
     return { tipo: 'combo', nombre: nombre || ('__combo_' + modelo), tamano };
 }
 
+// v27.25: línea "Antes (etiqueta) → Ahora (promo)" para el simulador
+function tkAntesAhora(etiqueta, ahora, sufijo) {
+    if (!(etiqueta > 0) || !(ahora >= 0) || ahora >= etiqueta - 0.005) return '';
+    return '<div style="font-size:12px;margin-top:3px;font-family:Inter,sans-serif;"><span style="color:#888;text-decoration:line-through;">Antes S/' + etiqueta.toFixed(2) + '</span> <b style="color:#2E7D32;">→ Ahora S/' + ahora.toFixed(2) + (sufijo || '') + '</b></div>';
+}
 function tkRender() {
     const cont = document.getElementById('tk-lista');
     if (!cont) return;
@@ -7346,6 +7357,7 @@ function tkRender() {
                     <div style="flex:1;min-width:0;">
                         <div style="font-family:'Barlow',sans-serif;font-weight:800;font-size:13px;color:#E65100;">🔗 ${nombreGrupo}</div>
                         <div style="margin-top:3px;">${filas}</div>
+                        ${tkAntesAhora(_preciosGrupo0.etiqueta, comboPrecio, ' c/u en combo')}
                         <div style="font-size:11px;color:#555;margin-top:4px;">${unidadesCombo} en combo de ${tamano} (S/${comboPrecio.toFixed(2)} c/u)${detalleSueltos.length ? ' + ' + detalleSueltos.join(' + ') : ''}</div>
                     </div>
                     <div style="text-align:right;flex-shrink:0;">
@@ -7393,6 +7405,7 @@ function tkRender() {
                 <div style="flex:1;min-width:0;">
                     <div style="font-family:'Barlow',sans-serif;font-weight:800;font-size:14px;color:#111;word-break:break-word;">${desc}</div>
                     <div style="font-size:10px;color:#999;">${modelo}${esColor ? ' · 🎨 promo color' : ''}</div>
+                    ${tkAntesAhora(etiquetaRef, unit)}
                     ${_esManual ? `<div style="font-size:11px;font-weight:800;color:#E65100;margin-top:3px;">✏️ Precio corregido a mano (sistema: S/${(_unitSistema||0).toFixed(2)})</div>` : ''}
                     <div style="font-size:11px;color:#555;margin-top:3px;">${count} unidad${count > 1 ? 'es' : ''} (S/${unit.toFixed(2)} c/u)</div>
                 </div>
@@ -7432,6 +7445,7 @@ function tkRender() {
                     <div style="font-size:11px;font-weight:700;color:${cumple ? '#7B1FA2' : '#999'};margin-top:3px;">
                         ${cumple ? '🎁 Promo activada' : '🔒 Promo no activada'} — compra mayor a S/${info.umbral.toFixed(2)} (llevas S/${baseParaUmbral.toFixed(2)} en el resto)
                     </div>
+                    ${tkAntesAhora(_preciosUmbral.etiqueta, precioAplicado)}
                     <div style="font-size:11px;color:#555;margin-top:2px;">${count} unidad${count > 1 ? 'es' : ''} (S/${precioAplicado.toFixed(2)} c/u${cumple ? ' — precio promo' : ' — precio normal'})</div>
                 </div>
                 <div style="text-align:right;flex-shrink:0;">
@@ -11487,4 +11501,54 @@ function pModulosRol() {
     });
     setTimeout(pModulosRol, 300);
 })();
+
+// ══ v27.26 — BUSCAR ARRIBA, ESCANEAR ABAJO (más pequeño y a un costado) en todos los módulos ══
+(function() {
+    const css = `
+    /* Inventario */
+    body.modo-comp #comp-search-wrap { display:flex !important; padding:6px 10px 2px !important; }
+    html body #scanner { width:auto !important; max-width:58% !important; min-width:190px; margin:2px 10px 6px auto !important; padding:6px 10px !important;
+        font-size:13px !important; letter-spacing:1px !important; border-radius:10px !important; min-height:0 !important; text-align:center; }
+    /* Consultar precio */
+    #vista-stock #cs-name-search-wrap { display:block !important; padding:6px 8px 2px !important; }
+    #vista-stock #cs-panel-lectora .cs-ctrl-row { justify-content:flex-end !important; padding:0 2px 2px !important; gap:6px !important; }
+    #vista-stock #cs-panel-lectora .cs-field-label { font-size:10px !important; }
+    #vista-stock #cs-inp-codbar { flex:0 0 auto !important; width:56% !important; max-width:240px; padding:6px 10px !important; font-size:13px !important; min-height:0 !important; height:auto !important; }
+    /* Simulador */
+    #tk-scan-wrap { padding:2px 12px 6px !important; background:#fff !important; border-bottom:1px solid #cde5cd !important; display:flex; justify-content:flex-end; }
+    #tk-scan-wrap #tk-inp-codbar { width:56% !important; max-width:240px; padding:6px 10px !important; font-size:13px !important; border-width:1.5px !important; }
+    #tk-search-wrap { padding:8px 12px 2px !important; background:#fff; }
+    #tk-search-wrap #tk-name-search { padding:11px 12px !important; font-size:14px !important; }
+    /* Resultados de "Buscar por nombre" en Consultar precio */
+    .cs-name-result { display:flex; align-items:center; gap:8px; background:#fff; margin:5px 8px; padding:9px 11px; border-radius:10px; box-shadow:0 1px 3px rgba(0,0,0,0.10); cursor:pointer; font-family:'Inter',sans-serif; }
+    .cs-name-result-cod { flex:0 0 auto; font-size:11px; font-weight:800; color:#555; min-width:62px; }
+    .cs-name-result-desc { flex:1; min-width:0; font-size:13px; font-weight:700; color:#111; line-height:1.25; }
+    .cs-name-result-stock { flex:0 0 auto; font-size:11px; font-weight:800; color:#fff; background:#2E7D32; border-radius:8px; padding:3px 7px; }
+    body.modo-oscuro .cs-name-result { background:#1E1E1E; } body.modo-oscuro .cs-name-result-desc { color:#eee; }
+    `;
+    const st = document.createElement('style'); st.id = 'v2726-layout'; st.textContent = css; document.head.appendChild(st);
+    const mover = () => {
+        // Inventario: buscador antes del escáner
+        const sc = document.getElementById('scanner'), cw = document.getElementById('comp-search-wrap');
+        if (sc && cw && sc.parentNode && cw.nextElementSibling !== sc) sc.parentNode.insertBefore(cw, sc);
+        // Consultar precio: buscador encima de la fila CODBAR
+        const lec = document.getElementById('cs-panel-lectora'), nw = document.getElementById('cs-name-search-wrap');
+        if (lec && nw && lec.parentNode && nw.nextElementSibling !== lec) lec.parentNode.insertBefore(nw, lec);
+        // Simulador: buscador (con su lista de resultados) arriba, escáner debajo
+        const tkIn = document.getElementById('tk-inp-codbar'), tkS = document.getElementById('tk-name-search');
+        if (tkIn && tkS) {
+            const scW = tkIn.parentNode, seW = tkS.parentNode;
+            scW.id = 'tk-scan-wrap'; seW.id = 'tk-search-wrap';
+            if (scW.parentNode && seW.nextElementSibling !== scW) scW.parentNode.insertBefore(seW, scW);
+        }
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mover); else mover();
+    // Textos cortos para el escáner pequeño
+    const ph = () => { const a = document.getElementById('scanner'); if (a) a.placeholder = '📷 Escanear (13 díg.)';
+        ['cs-inp-codbar','tk-inp-codbar'].forEach(id => { const e = document.getElementById(id); if (e) e.placeholder = '📷 Escanear (13 díg.)'; }); };
+    ph();
+    const o = window.seleccionarModo;
+    if (typeof o === 'function') window.seleccionarModo = function() { const r = o.apply(this, arguments); try { ph(); mover(); } catch(e) {} return r; };
+})();
+
 </script>
