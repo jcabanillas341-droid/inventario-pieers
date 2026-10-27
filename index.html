@@ -1630,7 +1630,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.32 — 25/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.35 — 26/Oct/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2087,7 +2087,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.32 — 25/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.35 — 26/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -9706,7 +9706,9 @@ async function csCambiosRefrescar() {
         html += '<option value="*">🌐 TODAS LAS TIENDAS (' + lista.length + ')</option>'
              + lista.map(t => '<option value="' + t.replace(/"/g,'&quot;') + '">🏬 ' + t + '</option>').join('');
     } else if (Object.keys(csLibrosRaw).length >= 2 && a !== b) {
-        html += '<option value="" disabled>— Para ver por tienda, vuelve a cargar los dos memorándums —</option>';
+        const faltan = [[a, tA], [b, tB]].filter(x => !x[1]).map(x => x[0]);
+        html += '<option value="" disabled>— Sin datos por tienda de: ' + faltan.join(' y ') + ' —</option>'
+             + '<option value="" disabled>— Vuelve a cargar ese memorándum (o recibe bases de nuevo) —</option>';
     }
     selT.innerHTML = html;
     selT.value = [...selT.options].some(o => o.value === prev && !o.disabled) ? prev : '';
@@ -9791,26 +9793,28 @@ function csExportarCambiosExcel() {
     const g = (o,k) => (o && o[k] > 0) ? o[k] : 0;
     const descCache = {};
     const desc = c => descCache[c] !== undefined ? descCache[c] : (descCache[c] = _csRawDesc(c));
-    // Columnas: A CÓDIGO · B DESCRIPCIÓN · C TIENDA · D CAMBIO · E FINAL ANTES · F FINAL AHORA · G DIF · H % · I..P detalle
+    // v27.33 — Columnas: A CÓDIGO · B DESCRIPCIÓN · C TIENDA · D CAMBIO · E UNIT ANTES · F UNIT AHORA
+    //          G COMBO ANTES · H COMBO AHORA · I % DTO ANTES · J % DTO AHORA · K DIFERENCIA S/
+    // UNIT = precio por 1 prenda: oferta si hay, si no unitario, si no etiqueta. % = descuento vs etiqueta.
+    const unit = o => g(o,'oferta') || g(o,'menor') || g(o,'etiqueta');
+    const pctDto = o => { const e = g(o,'etiqueta'), u = unit(o); return (e > 0 && u > 0 && u < e) ? (e - u) / e : 0; };
+    const MON = '#,##0.00;-#,##0.00;"—"';
     const rows = lista.map((x,i) => {
-        const r = r0 + i;
+        const r = r0 + i, ua = unit(x.antes), ub = unit(x.ahora);
         return [ {v:x.cod,s:'cod'}, {v:desc(x.cod),s:'t'}, {v:x.tienda,s:'t'}, {v:txt[x.tipo],s:'est'},
-            {v:x.pa,s:'n',n:'#,##0.00;-#,##0.00;"—"'}, {v:x.pb,s:'n',n:'#,##0.00;-#,##0.00;"—"'},
-            {v:x.pb-x.pa, f:`F${r}-E${r}`, s:'dif', n:'+#,##0.00;[Red]-#,##0.00;0.00'},
-            {v:(x.pa>0&&x.pb>0)?(x.pb-x.pa)/x.pa:0, f:`IF(OR(E${r}=0,F${r}=0),0,(F${r}-E${r})/E${r})`, s:'pct', n:'+0%;-0%;0%'},
-            {v:g(x.antes,'etiqueta'),s:'n'}, {v:g(x.ahora,'etiqueta'),s:'n'},
-            {v:g(x.antes,'menor'),s:'n'},    {v:g(x.ahora,'menor'),s:'n'},
-            {v:g(x.antes,'mayor'),s:'n'},    {v:g(x.ahora,'mayor'),s:'n'},
-            {v:g(x.antes,'oferta'),s:'n'},   {v:g(x.ahora,'oferta'),s:'n'} ];
+            {v:ua,s:'n',n:MON}, {v:ub,s:'n',n:MON},
+            {v:g(x.antes,'mayor'),s:'n',n:MON}, {v:g(x.ahora,'mayor'),s:'n',n:MON},
+            {v:pctDto(x.antes),s:'pct',n:'0%;-0%;"—"'}, {v:pctDto(x.ahora),s:'pct',n:'0%;-0%;"—"'},
+            {v:(ua>0&&ub>0)?ub-ua:0, f:`IF(OR(E${r}=0,F${r}=0),0,F${r}-E${r})`, s:'dif', n:'+#,##0.00;[Red]-#,##0.00;0.00'} ];
     });
     const cnt = t => lista.filter(x=>x.tipo===t).length;
     const hoja = {
         name:'CAMBIOS', tab:XL_C.rojo, titulo:`Cambios de precio — ${a} → ${b} — ${nomTienda}`,
-        sub:`Generado: ${new Date().toLocaleString('es-PE')}  ·  Usa el filtro de la columna TIENDA  ·  Precio final = oferta, si no unitario, si no combo`,
-        widths:[12,42,24,13,12,12,11,9,11,11,11,11,11,11,11,11],
-        header:['CÓDIGO','DESCRIPCIÓN','TIENDA','CAMBIO','FINAL ANTES','FINAL AHORA','DIFERENCIA','%','ETIQ. ANTES','ETIQ. AHORA','UNIT. ANTES','UNIT. AHORA','COMBO ANTES','COMBO AHORA','OFERTA ANTES','OFERTA AHORA'],
-        hstyle:['hr','hr','hr','hr','h','h','hr','hr','h','h','h','h','h','h','h','h'], rows, filter:true,
-        total:['TOTAL', {v:n,f:`SUBTOTAL(103,A${r0}:A${rf})`,s:'tot',n:'#,##0" filas"'}, '', '', '', '', '', '', '', '', '', '', '', '', '', ''],
+        sub:`Generado: ${new Date().toLocaleString('es-PE')}  ·  Usa el filtro de la columna TIENDA  ·  UNIT = precio por 1 prenda (oferta, si no unitario, si no etiqueta)  ·  % = descuento sobre etiqueta  ·  COMBO = precio c/u en combo`,
+        widths:[12,42,22,12,12,12,13,13,12,12,15],
+        header:['CÓDIGO','DESCRIPCIÓN','TIENDA','CAMBIO','UNIT. ANTES','UNIT. AHORA','COMBO ANTES','COMBO AHORA','% DTO. ANTES','% DTO. AHORA','SUBIÓ / BAJÓ S/'],
+        hstyle:['hr','hr','hr','hr','h','h','h','h','h','h','hr'], rows, filter:true,
+        total:['TOTAL', {v:n,f:`SUBTOTAL(103,A${r0}:A${rf})`,s:'tot',n:'#,##0" filas"'}, '', '', '', '', '', '', '', '', ''],
         cf:[
             { ref:`D${r0}:D${rf}`, rules:[
                 { type:'cellIs', operator:'equal', formulae:['"SUBIÓ"'], color:'rojo', bold:true },
@@ -9818,7 +9822,7 @@ function csExportarCambiosExcel() {
                 { type:'cellIs', operator:'equal', formulae:['"NUEVO"'], color:'azul', bold:true },
                 { type:'cellIs', operator:'equal', formulae:['"YA NO ESTÁ"'], color:'gris', bold:true },
                 { type:'cellIs', operator:'equal', formulae:['"CAMBIÓ"'], color:'ambar', bold:true } ] },
-            { ref:`G${r0}:H${rf}`, rules:[
+            { ref:`K${r0}:K${rf}`, rules:[
                 { type:'cellIs', operator:'greaterThan', formulae:['0'], color:'rojoS', bold:true },
                 { type:'cellIs', operator:'lessThan', formulae:['0'], color:'verdeS', bold:true } ] }
         ]
@@ -10698,6 +10702,8 @@ async function syBasesEnviar(silencioso) {
         SY_BASES_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v) data[k.replace(/\./g, '_')] = v; });
         const ver = Date.now();
         await syReq('PUT', 'bases/data', data);
+        // v27.34: también los precios POR TIENDA de cada memorándum (para filtrar por tienda en otros celulares)
+        try { if (typeof syTdaEmpaquetar === 'function') await syReq('PUT', 'bases/tda', await syTdaEmpaquetar()); } catch(e) {}
         _syS(SY_K.basesver, ver);
         await syReq('PATCH', 'meta', { basesVer: ver, basesPor: sySes.id, basesPorN: sySes.n });
         if (!silencioso) { hideLoading(); syAbrirBases(); showToast('✅ Bases enviadas. Los demás celulares recibirán el aviso.', '#2E7D32', 3500); }
@@ -10717,6 +10723,7 @@ async function syBasesRecibir() {
         if (!data) throw new Error('No hay bases en la nube');
         SY_BASES_KEYS.forEach(k => { const v = data[k.replace(/\./g, '_')]; if (v) { try { localStorage.setItem(k, v); } catch(e) { throw new Error('Memoria del celular llena'); } } });
         _syS(SY_K.basesver, syMeta.basesVer || Date.now());
+        try { if (typeof syTdaDesempaquetar === 'function') await syTdaDesempaquetar(await syReq('GET', 'bases/tda')); } catch(e) {}
         try { if (typeof lsGrandeEsperar === 'function') await lsGrandeEsperar(); } catch(e) {}
         hideLoading(); showToast('✅ Bases actualizadas', '#2E7D32');
         setTimeout(() => location.reload(), 700);
@@ -10933,37 +10940,107 @@ function syAbrirCarpetas() {
     }
     syVistaCarpetas(true);
 }
+// v27.35: carpetas fijas (siempre existen), crear carpetas, subir archivos directo y borrar varios a la vez
+const SY_CARP_FIJAS = ['INVENTARIO', 'STOCK', 'GUÍAS', 'MEMORÁNDUM'];
+const _syCarpAbiertas = new Set();
+const _sySelArch = new Set();   // "cid|fid" marcados para borrar
+function _syNormN(n) { return String(n || '').trim().toUpperCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+function _syCarpetaFijaIdx(n) { const k = _syNormN(n); return SY_CARP_FIJAS.findIndex(x => _syNormN(x) === k || (_syNormN(x) === 'MEMORANDUM' && /^MEMO/.test(k)) || (_syNormN(x) === 'GUIAS' && k === 'GUIA')); }
+async function _syAsegurarFijas() {
+    if (!pPuede('publicar')) return;
+    for (const n of SY_CARP_FIJAS) {
+        if (Object.values(syCarpetas || {}).some(c => _syCarpetaFijaIdx(c.n) === SY_CARP_FIJAS.indexOf(n))) continue;
+        const cid = syId('d'), c = { n, por: sySes.id, porN: sySes.n, ts: Date.now(), fija: true };
+        try { await syReq('PUT', 'carpetas/' + cid, c); syCarpetas[cid] = c; } catch(e) {}
+    }
+}
 async function syVistaCarpetas(recargar) {
     if (recargar) {
         syModal('carpetas', '<div class="sy-p" style="text-align:center;padding:20px;">⏳ Cargando carpetas…</div>');
         try { syCarpetas = (await syReq('GET', 'carpetas')) || {}; } catch(e) { syModal('carpetas', '<div class="sy-p">⚠️ Sin conexión. Intenta de nuevo.</div>'); return; }
+        await _syAsegurarFijas();
+        // limpiar selecciones de archivos que ya no existen
+        [..._sySelArch].forEach(k => { const [c, f] = k.split('|'); if (!((syCarpetas[c] || {}).files || {})[f]) _sySelArch.delete(k); });
     }
     const puede = pPuede('publicar');
     const q = ((document.getElementById('sy-cq') || {}).value || '').trim().toUpperCase();
-    const lista = Object.entries(syCarpetas || {}).sort((a, b) => (b[1].ts || 0) - (a[1].ts || 0));
+    const lista = Object.entries(syCarpetas || {}).sort((a, b) => {
+        const ia = _syCarpetaFijaIdx(a[1].n), ib = _syCarpetaFijaIdx(b[1].n);
+        if (ia >= 0 || ib >= 0) return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+        return String(a[1].n).localeCompare(String(b[1].n), 'es', { numeric: true });
+    });
     const fh = ts => ts ? new Date(ts).toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' }) + ' · ' + new Date(ts).toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' }) : '';
     const _modNom = { comp:'INVENTARIO', alm:'ALMACÉN', stock:'CONSULTAR PRECIO Y STOCK' }[modoActual] || 'INVENTARIO';
+    const ico = { 0:'📋', 1:'📦', 2:'📄', 3:'💰' };
     let h = '<div class="sy-p">Toca <b>CARGAR</b> en el archivo para usarlo en <b>' + _modNom + '</b>. Las mismas carpetas se ven en todos los módulos.</div>';
-    if (puede) h += '<div class="sy-card"><div class="sy-h">📤 Subir bases para el equipo</div><div class="sy-grid2">'
-        + '<button class="sy-btn" onclick="sySubirCarpeta(true)">📁 Subir carpeta</button>'
-        + '<button class="sy-btn sy-dark" onclick="sySubirCarpeta(false)">📄 Subir archivos</button></div>'
-        + '<div class="sy-p" style="font-size:10.5px;margin:0;">Al subir eliges la carpeta y subcarpeta de destino. También puedes tocar ⬆️ en una carpeta o subcarpeta para subir ahí. En el celular usa "Subir archivos".</div></div>';
+    if (puede) h += '<div class="sy-grid2" style="margin-bottom:8px;">'
+        + '<button class="sy-btn" onclick="sySubirCarpeta(false)">📄 Subir bases</button>'
+        + '<button class="sy-btn sy-dark" onclick="syNuevaCarpeta()">➕ Nueva carpeta</button></div>'
+        + '<div class="sy-p" style="font-size:10.5px;margin:-2px 0 8px;">Toca ⬆️ en una carpeta para subir los archivos directo ahí. Marca ☑️ varios archivos para borrarlos de una vez.</div>';
     h += '<input id="sy-cq" class="sy-in" placeholder="🔍 Buscar archivo o carpeta" value="' + syEsc(q) + '" oninput="syVistaCarpetas(false)" autocomplete="off">';
-    if (!lista.length) h += '<div class="sy-p" style="text-align:center;padding:16px;">📭 Aún no hay carpetas.' + (puede ? ' Sube la primera con los botones de arriba.' : ' Pide a tu supervisor que suba las bases.') + '</div>';
+    if (puede && _sySelArch.size) h += '<div style="position:sticky;top:0;z-index:2;background:#FFEBEE;border:2px solid #C62828;border-radius:12px;padding:8px 10px;margin-bottom:8px;display:flex;align-items:center;gap:8px;">'
+        + '<div style="flex:1;font-weight:800;font-size:13px;color:#B71C1C;">☑️ ' + _sySelArch.size + ' archivo(s) marcados</div>'
+        + '<button class="sy-btn sy-sec sy-mini" onclick="_sySelArch.clear();syVistaCarpetas(false)">Quitar</button>'
+        + '<button class="sy-btn sy-mini" onclick="syBorrarSeleccionados()">🗑️ Borrar</button></div>';
+    if (!lista.length) h += '<div class="sy-p" style="text-align:center;padding:16px;">📭 Aún no hay carpetas.' + (puede ? '' : ' Pide a tu supervisor que suba las bases.') + '</div>';
     lista.forEach(([cid, c]) => {
         const files = Object.entries(c.files || {}).sort((a, b) => String(a[1].n).localeCompare(String(b[1].n), 'es', { numeric: true }));
         const visibles = q ? files.filter(([, f]) => String(f.n).toUpperCase().includes(q) || String(f.p || '').toUpperCase().includes(q) || String(c.n).toUpperCase().includes(q)) : files;
         if (q && !visibles.length) return;
-        h += '<div class="sy-card"><div class="sy-row" style="align-items:flex-start;"><div style="min-width:0;">'
-            + '<div class="sy-h" style="margin:0;">📁 ' + syEsc(c.n) + '</div>'
-            + '<div class="sy-p" style="margin:2px 0 0;font-size:11px;">👤 ' + syEsc(c.porN || '') + ' · 🕒 ' + fh(c.ts) + ' · ' + files.length + ' archivo(s)</div></div>'
-            + (puede ? '<div style="display:flex;gap:2px;flex-shrink:0;"><button class="sy-ib" title="Subir aquí" onclick="sySubirAqui(\'' + cid + '\',\'\')">⬆️</button><button class="sy-ib" title="Borrar carpeta" onclick="syBorrarCarpeta(\'' + cid + '\')">🗑️</button></div>' : '') + '</div>'
+        const fi = _syCarpetaFijaIdx(c.n), fija = fi >= 0;
+        const abierta = !!q || _syCarpAbiertas.has(cid);
+        const nSel = files.filter(([fid]) => _sySelArch.has(cid + '|' + fid)).length;
+        h += '<details class="sy-card" ' + (abierta ? 'open ' : '') + 'ontoggle="this.open?_syCarpAbiertas.add(\'' + cid + '\'):_syCarpAbiertas.delete(\'' + cid + '\')" style="padding:10px 12px;">'
+            + '<summary style="list-style:none;cursor:pointer;"><div class="sy-row" style="align-items:center;"><div style="min-width:0;">'
+            + '<div class="sy-h" style="margin:0;">' + (fija ? ico[fi] : '📁') + ' ' + syEsc(c.n) + ' <span class="sy-tag" style="background:#4A4E58;">' + files.length + '</span></div>'
+            + '<div class="sy-p" style="margin:2px 0 0;font-size:11px;">' + (files.length ? '👤 ' + syEsc(c.porN || '') + ' · 🕒 ' + fh(c.ts) : 'Vacía') + '</div></div>'
+            + (puede ? '<div style="display:flex;gap:2px;flex-shrink:0;"><button class="sy-ib" title="Subir archivos aquí" onclick="event.preventDefault();event.stopPropagation();sySubirCarpeta(false,\'' + cid + '\',\'\')">⬆️</button>'
+                + (fija ? '' : '<button class="sy-ib" title="Borrar carpeta" onclick="event.preventDefault();event.stopPropagation();syBorrarCarpeta(\'' + cid + '\')">🗑️</button>') + '</div>' : '')
+            + '</div></summary>'
+            + (puede && files.length ? '<div style="display:flex;gap:6px;justify-content:flex-end;margin:6px 0 2px;">'
+                + '<button class="sy-btn sy-sec sy-mini" onclick="_sySelCarpeta(\'' + cid + '\',' + (nSel < files.length) + ')">' + (nSel < files.length ? '☑️ Marcar todos' : '⬜ Desmarcar') + '</button></div>' : '')
             + _syArbolHtml(cid, visibles, puede, fh, !!q)
-            + (!files.length ? '<div class="sy-p">Carpeta vacía.</div>' : '')
-            + '</div>';
+            + (!files.length ? '<div class="sy-p" style="margin-top:6px;">Carpeta vacía.' + (puede ? ' Toca ⬆️ para subir archivos.' : '') + '</div>' : '')
+            + '</details>';
     });
+    const sc = (document.querySelector('#sy-modal .sy-box') || {}).scrollTop || 0;
     syModal('carpetas', h);
+    const box = document.querySelector('#sy-modal .sy-box'); if (box && !recargar) box.scrollTop = sc;
     const qi = document.getElementById('sy-cq'); if (qi && q) { qi.focus(); qi.setSelectionRange(q.length, q.length); }
+}
+function syNuevaCarpeta() {
+    if (!pPuede('publicar')) return syDenegar();
+    pPedirTexto('➕ Nueva carpeta', 'Nombre de la carpeta (ej. GUÍAS NOVIEMBRE):', '', async function(n) {
+        n = String(n || '').trim().replace(/[.#$\[\]\/]/g, '');
+        if (!n) return;
+        if (_syCarpetaPorNombre(n)) return showToast('⚠️ Ya existe una carpeta con ese nombre', '#E65100');
+        try {
+            const cid = syId('d');
+            await syReq('PUT', 'carpetas/' + cid, { n, por: sySes.id, porN: sySes.n, ts: Date.now() });
+            _syCarpAbiertas.add(cid);
+            showToast('📁 Carpeta "' + n + '" creada', '#2E7D32');
+        } catch(e) { showToast('❌ ' + e.message, '#B71C1C'); }
+        syVistaCarpetas(true);
+    });
+}
+function _syToggleSel(cid, fid, on) { const k = cid + '|' + fid; if (on) _sySelArch.add(k); else _sySelArch.delete(k); syVistaCarpetas(false); }
+function _sySelCarpeta(cid, on) { Object.keys(((syCarpetas[cid] || {}).files) || {}).forEach(fid => { const k = cid + '|' + fid; if (on) _sySelArch.add(k); else _sySelArch.delete(k); }); syVistaCarpetas(false); }
+function syBorrarSeleccionados() {
+    if (!pPuede('publicar')) return syDenegar();
+    const sel = [..._sySelArch].map(k => k.split('|')).filter(([c, f]) => ((syCarpetas[c] || {}).files || {})[f]);
+    if (!sel.length) return;
+    const nombres = sel.slice(0, 6).map(([c, f]) => '• ' + syCarpetas[c].files[f].n).join('\n') + (sel.length > 6 ? '\n… y ' + (sel.length - 6) + ' más' : '');
+    mostrarConfirm('🗑️ Borrar ' + sel.length + ' archivo(s)', '¿Borrar estos archivos? Nadie podrá volver a cargarlos.\n\n' + nombres, async () => {
+        let ok = 0;
+        for (let i = 0; i < sel.length; i++) {
+            const [c, f] = sel[i];
+            showLoading('Borrando ' + (i + 1) + ' de ' + sel.length + '…');
+            try { await syReq('DELETE', 'carpetasData/' + c + '/' + f); await syReq('DELETE', 'carpetas/' + c + '/files/' + f); ok++; } catch(e) {}
+        }
+        hideLoading(); _sySelArch.clear();
+        showToast('🗑️ ' + ok + ' archivo(s) borrados', '#555');
+        syVistaCarpetas(true);
+    });
 }
 // v27.15: dibuja los archivos de una carpeta respetando sus subcarpetas (árbol desplegable)
 function _syArbolHtml(cid, files, puede, fh, abierto) {
@@ -10974,7 +11051,7 @@ function _syArbolHtml(cid, files, puede, fh, abierto) {
         nodo.files.push([fid, f]);
     });
     const contar = n => n.files.length + Object.values(n.sub).reduce((a, x) => a + contar(x), 0);
-    const fila = ([fid, f]) => '<div class="sy-urow"><div class="sy-uname">📄 <b>' + syEsc(f.n) + '</b><br><span class="sy-p" style="font-size:10.5px;">' + _syTam(f.s || 0) + (f.ts ? ' · ' + fh(f.ts) : '') + '</span></div>'
+    const fila = ([fid, f]) => '<div class="sy-urow">' + (puede ? '<input type="checkbox" ' + (_sySelArch.has(cid + '|' + fid) ? 'checked ' : '') + 'onclick="_syToggleSel(\'' + cid + '\',\'' + fid + '\',this.checked)" style="width:20px;height:20px;accent-color:#C62828;flex-shrink:0;">' : '') + '<div class="sy-uname">📄 <b>' + syEsc(f.n) + '</b><br><span class="sy-p" style="font-size:10.5px;">' + _syTam(f.s || 0) + (f.ts ? ' · ' + fh(f.ts) : '') + '</span></div>'
         + '<button class="sy-btn sy-mini" onclick="syCargarDeCarpeta(\'' + cid + '\',\'' + fid + '\')">CARGAR</button>'
         + (puede ? '<button class="sy-ib" title="Borrar archivo" onclick="syBorrarArchivoCarpeta(\'' + cid + '\',\'' + fid + '\')">🗑️</button>' : '') + '</div>';
     const dibujar = (nodo, nivel, ruta) => {
@@ -11003,7 +11080,8 @@ function sySubirCarpeta(esCarpeta, cidDest, subDest) {
         const grandes = files.filter(f => f.size > _SY_MAX_ARCH);
         if (grandes.length) return showToast('⚠️ Archivo muy grande (máx. 7 MB): ' + grandes[0].name, '#E65100', 4000);
         const rel = files[0].webkitRelativePath || '';
-        const sugerido = rel.includes('/') ? rel.split('/')[0] : ('BASES ' + new Date().toLocaleDateString('es-PE'));
+        const N0 = _syNormN(files[0].name);
+        const sugerido = rel.includes('/') ? rel.split('/')[0] : (/MEMO/.test(N0) ? 'MEMORÁNDUM' : /GUIA/.test(N0) ? 'GUÍAS' : /STOCK|REPORTE|REPORTER/.test(N0) ? 'STOCK' : 'INVENTARIO');
         _syElegirArchivos(files, sugerido, cidDest ? { cid: cidDest, sub: subDest || '' } : null);
     };
     document.body.appendChild(inp); inp.click();
@@ -11097,7 +11175,7 @@ function _syDestino() {
     const sub = dsv === '__nueva' ? _syLimpiarRuta((document.getElementById('sy-dsn') || {}).value) : dsv;
     return { cid: nueva ? (_syCarpetaPorNombre(nombre) || null) : cidSel, nombre, sub };
 }
-function _syCarpetaPorNombre(n) { n = String(n || '').trim().toUpperCase(); return Object.keys(syCarpetas || {}).find(k => String(syCarpetas[k].n).trim().toUpperCase() === n); }
+function _syCarpetaPorNombre(n) { const k = _syNormN(n); return Object.keys(syCarpetas || {}).find(c => _syNormN(syCarpetas[c].n) === k); }
 function _syModoCarpeta() { _syRefrescarDestino(false); }
 function _syConfirmarSubida() {
     const d = _syDestino();
@@ -14015,6 +14093,32 @@ function afiCambiarUrl() {
         try { if (v && v !== AFI_URL_DEF) localStorage.setItem('pieers_afi_url', v); else localStorage.removeItem('pieers_afi_url'); } catch(e) {}
         abrirAfiliar(); showToast('✅ Enlace actualizado', '#2E7D32');
     });
+}
+
+
+// ══ v27.34 — PRECIOS POR TIENDA TAMBIÉN VIAJAN POR LA NUBE ══
+// Antes solo se enviaban los precios generales; los precios por tienda (IndexedDB) se quedaban
+// en el celular que cargó el memorándum, y en los demás no se podía elegir tienda.
+async function syTdaEmpaquetar() {
+    const out = {}; let i = 0;
+    for (const libro of Object.keys(csLibrosRaw || {})) {
+        const d = await csTdaCargar(libro);
+        if (d && Object.keys(d).length) out['l' + (i++)] = { n: libro, d: JSON.stringify(d) };
+    }
+    return out;
+}
+async function syTdaDesempaquetar(pack) {
+    if (!pack || typeof pack !== 'object') return;
+    const keys = _csTdaKeys();
+    for (const it of Object.values(pack)) {
+        if (!it || !it.n || !it.d) continue;
+        let d = null; try { d = JSON.parse(it.d); } catch(e) {}
+        if (!d) continue;
+        csTdaMem[it.n] = d;
+        await _csTdaIdbPut(it.n, d);
+        if (!keys.includes(it.n)) keys.push(it.n);
+    }
+    _csTdaSetKeys(keys);
 }
 
 </script>
