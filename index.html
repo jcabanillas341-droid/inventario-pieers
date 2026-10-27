@@ -1630,7 +1630,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.35 — 26/Oct/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.36 — 27/Oct/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2087,7 +2087,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.35 — 26/Oct/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.36 — 27/Oct/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -2295,6 +2295,50 @@
 
 <script>
 'use strict';
+
+// ══ v27.36 — LEER EXCEL SIN CONGELAR LA PANTALLA ══
+// El archivo se lee en un "hilo" aparte (Web Worker). Si algo falla, se lee como antes.
+let _pXW = null, _pXWid = 0; const _pXWcb = {};
+function _pXlsxWorker() {
+    if (_pXW) return _pXW;
+    const sc = [...document.scripts].map(x => x.src).filter(u => /xlsx/i.test(u));
+    const libs = sc.length ? sc : ['https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js'];
+    if (libs.indexOf('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js') < 0) libs.push('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
+    const src = 'var LIBS=' + JSON.stringify(libs) + ';'
+        + 'self.onmessage=function(e){var d=e.data;try{if(!self.XLSX){for(var i=0;i<LIBS.length&&!self.XLSX;i++){try{importScripts(LIBS[i]);}catch(x){}}}'
+        + 'if(!self.XLSX)throw new Error("sin libreria");var o=d.opts||{};o.cellHTML=false;var wb=XLSX.read(new Uint8Array(d.ab),o);'
+        // se aligera cada celda (sin html/texto enriquecido) y se envía hoja por hoja para no congelar la pantalla
+        + 'var S=wb.Sheets;wb.Sheets={};wb.SheetNames.forEach(function(n){var ws=S[n],dd=ws&&(ws["!data"]||(Array.isArray(ws)?ws:null));'
+        + 'var lim=function(c){if(c&&typeof c==="object"){delete c.r;delete c.h;if(c.w!==undefined&&String(c.v)===c.w)delete c.w;}};'
+        + 'if(dd){dd.forEach(function(r){if(r)r.forEach(lim);});}else if(ws){Object.keys(ws).forEach(function(k){if(k.charAt(0)!=="!")lim(ws[k]);});}'
+        + 'postMessage({id:d.id,parte:1,n:n,ws:ws});});postMessage({id:d.id,ok:1,wb:wb});}'
+        + 'catch(err){postMessage({id:d.id,ok:0,err:String(err&&err.message||err)});}};';
+    _pXW = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
+    const partes = {};
+    _pXW.onmessage = ev => {
+        const d = ev.data;
+        if (d.parte) { (partes[d.id] = partes[d.id] || {})[d.n] = d.ws; return; }
+        if (d.ok && d.wb) { d.wb.Sheets = partes[d.id] || {}; }
+        delete partes[d.id];
+        const cb = _pXWcb[d.id]; if (cb) { delete _pXWcb[d.id]; cb(d); }
+    };
+    _pXW.onerror = () => { Object.keys(_pXWcb).forEach(k => { const cb = _pXWcb[k]; delete _pXWcb[k]; cb({ ok: 0 }); }); _pXW = null; };
+    return _pXW;
+}
+function pXlsxLeer(data, opts) {
+    const sync = () => XLSX.read(data, opts);
+    try {
+        if (typeof Worker === 'undefined' || !opts || opts.type !== 'array') return Promise.resolve(sync());
+        const u8 = data instanceof Uint8Array ? data : new Uint8Array(data);
+        const copia = u8.slice().buffer;           // copia: el original se sigue pudiendo usar
+        const w = _pXlsxWorker(), id = ++_pXWid;
+        return new Promise(res => {
+            const t = setTimeout(() => { if (_pXWcb[id]) { delete _pXWcb[id]; res(sync()); } }, 120000);
+            _pXWcb[id] = r => { clearTimeout(t); if (r.ok && r.wb) res(r.wb); else { try { res(sync()); } catch(e) { res(sync()); } } };
+            w.postMessage({ id, ab: copia, opts }, [copia]);
+        });
+    } catch(e) { return Promise.resolve(sync()); }
+}
 // ── INICIO DIRECTO SIN LOGIN ──
 (function() {
     // v27.29: el selector de módulos se muestra AL INSTANTE (antes esperaba al evento 'load',
@@ -2741,11 +2785,11 @@ document.getElementById('fileInput').addEventListener('change', function(e) {
     const ext = f.name.split('.').pop().toLowerCase();
     const reader = new FileReader();
     showLoading('Leyendo archivo...', true);
-    reader.onload = function(evt) {
+    reader.onload = async function(evt) {
         if (ext === 'xlsx' || ext === 'xls') {
-            setTimeout(() => {
+            setTimeout(async () => {
                 try {
-                    const wb  = XLSX.read(new Uint8Array(evt.target.result), {type:'array'});
+                    const wb  = await pXlsxLeer(new Uint8Array(evt.target.result), {type:'array'});
                     let csv = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
                     const _detCmp = _detalleStockXLSXaCSV(wb); if (_detCmp) csv = _detCmp;
                     const esStock = csv.includes(',LINEA,') || csv.includes('"LINEA"') || csv.includes(',OFERTA,');
@@ -2781,7 +2825,7 @@ document.getElementById('fileInput').addEventListener('change', function(e) {
                     } else {
                         // Formato normal (columnas código, descripción, cantidad)
                         maestroMap.clear(); totalEsp = 0;
-                        const wb2 = XLSX.read(new Uint8Array(evt.target.result), {type:'array', dense:true});
+                        const wb2 = await pXlsxLeer(new Uint8Array(evt.target.result), {type:'array', dense:true});
                         procesarFilasMaestro(XLSX.utils.sheet_to_json(wb2.Sheets[wb2.SheetNames[0]], {defval:''}), 0);
                         const _badge2 = document.getElementById('comp-archivo-badge');
                         const _btxt2  = document.getElementById('comp-archivo-txt');
@@ -3355,11 +3399,11 @@ document.getElementById('guiaInput').addEventListener('change', function(e) {
     showLoading('Convirtiendo archivo...');
     const reader = new FileReader();
     reader.onload = function(evt) {
-        setTimeout(() => {
+        setTimeout(async () => {
             try {
                 let res;
                 if (isXlsx) {
-                    const wb = XLSX.read(new Uint8Array(evt.target.result),{type:'array'});
+                    const wb = await pXlsxLeer(new Uint8Array(evt.target.result),{type:'array'});
                     let csvTxt = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
                     const _detGuia = _detalleStockXLSXaCSV(wb); if (_detGuia) csvTxt = _detGuia;
                     const esStock  = csvTxt.indexOf(',LINEA,') >= 0 || csvTxt.indexOf('"LINEA"') >= 0;
@@ -3778,11 +3822,11 @@ document.getElementById('almInput').addEventListener('change', function(e) {
     const reader = new FileReader();
     showLoading('Leyendo archivo...');
     reader.onload = function(evt) {
-        setTimeout(() => {
+        setTimeout(async () => {
             try {
                 let rows;
                 if (ext==='xlsx'||ext==='xls') {
-                    const wb=XLSX.read(new Uint8Array(evt.target.result),{type:'array'});
+                    const wb=await pXlsxLeer(new Uint8Array(evt.target.result),{type:'array'});
                     rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
                 } else if (ext==='txt') {
                     // Formato TXT: CODIGO/CANT  o  CODIGO|CANT|DESC  o  CODIGO;CANT
@@ -3848,11 +3892,11 @@ document.getElementById('almInputMas').addEventListener('change', function(e) {
         return new Promise((resolve) => {
             const ext = f.name.split('.').pop().toLowerCase();
             const reader = new FileReader();
-            reader.onload = function(evt) {
+            reader.onload = async function(evt) {
                 try {
                     let rows;
                     if (ext==='xlsx'||ext==='xls') {
-                        const wb = XLSX.read(new Uint8Array(evt.target.result),{type:'array'});
+                        const wb = await pXlsxLeer(new Uint8Array(evt.target.result),{type:'array'});
                         rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
                     } else {
                         const f2 = parsearCSV(evt.target.result);
@@ -3921,10 +3965,10 @@ document.getElementById('almStockInput').addEventListener('change', function(e) 
     const reader = new FileReader();
     showLoading('Convirtiendo stock...');
     reader.onload = function(evt) {
-        setTimeout(() => {
+        setTimeout(async () => {
             try {
                 let filas;
-                if (ext==='xlsx'||ext==='xls') { const wb=XLSX.read(new Uint8Array(evt.target.result),{type:'array',dense:true}); filas=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:'',header:1}); }
+                if (ext==='xlsx'||ext==='xls') { const wb=await pXlsxLeer(new Uint8Array(evt.target.result),{type:'array',dense:true}); filas=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:'',header:1}); }
                 else { filas=parsearCSV(evt.target.result); }
                 const res=convertirStockAResultados(filas);
                 if (!res.length) { hideLoading(); showToast('⚠️ Sin productos','#E65100'); return; }
@@ -6458,9 +6502,9 @@ function csLoadPrecios(event) {
     showLoading('Cargando precios: ' + nombreLibro + '...', true);
     const reader = new FileReader();
     reader.onload = function(e) {
-        setTimeout(() => {
+        setTimeout(async () => {
             try {
-                const wb  = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+                const wb  = await pXlsxLeer(new Uint8Array(e.target.result), {type:'array'});
                 const res = csParsePreciosXLSX(wb, nombreLibro);
                 csSavePreciosLocal();
                 csActualizarBadgeLibros();
@@ -6883,9 +6927,9 @@ function csLoadPreciosMayor(event) {
     showLoading('Cargando precios por mayor...', true);
     const reader = new FileReader();
     reader.onload = function(e) {
-        setTimeout(() => {
+        setTimeout(async () => {
             try {
-                const wb  = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+                const wb  = await pXlsxLeer(new Uint8Array(e.target.result), {type:'array'});
                 const cnt = csParsePreciosMayorXLSX(wb);
                 csSavePreciosMayorLocal();
                 updateProgress('Precios por mayor cargados ✅', 100);
@@ -7896,12 +7940,12 @@ function csLoadFile(e) {
     csSetStatus('Cargando: ' + file.name + ' ...');
     const reader = new FileReader();
     const isCsv = file.name.toLowerCase().endsWith('.csv');
-    reader.onload = ev => {
+    reader.onload = async ev => {
         try {
             let csv;
             if (isCsv) { csv = ev.target.result; }
             else {
-                const wb = XLSX.read(ev.target.result, { type: 'array' });
+                const wb = await pXlsxLeer(ev.target.result, { type: 'array' });
                 csv = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
                 const _detCsF = _detalleStockXLSXaCSV(wb); if (_detCsF) csv = _detCsF;
             }
@@ -8430,9 +8474,9 @@ function driveDescargar(fileId, fileName, tipo, _cacheKey) {
 
 function driveProcesar(ab, tipo) {
     showLoading('Procesando archivo...');
-    setTimeout(function(){
+    setTimeout(async function(){
         try {
-            var wb = XLSX.read(new Uint8Array(ab), {type:'array', dense:true});
+            var wb = await pXlsxLeer(new Uint8Array(ab), {type:'array', dense:true});
             if (tipo === 'maestro') {
                 var csvTxtD = XLSX.utils.sheet_to_csv(wb.Sheets[wb.SheetNames[0]]);
                 var _detD = _detalleStockXLSXaCSV(wb); if (_detD) csvTxtD = _detD;
@@ -11263,9 +11307,16 @@ async function _syCargarDeCarpetaTipo(cid, fid, tipo) {
     const go = async () => {
         showLoading('Descargando ' + f.n + '…');
         try {
-            const b64 = await syReq('GET', 'carpetasData/' + cid + '/' + fid);
-            if (!b64) throw new Error('El archivo ya no está en la nube');
-            const ab = _syB64ToAb(b64);
+            // v27.36: si ya se descargó antes (mismo archivo, misma versión) se usa la copia del celular
+            const ckey = 'carp::' + cid + '/' + fid + ':' + (f.ts || 0) + ':' + (f.s || 0);
+            let ab = null;
+            try { const g = await pCacheGet(ckey); if (g && g.byteLength) ab = g; } catch(e) {}
+            if (!ab) {
+                const b64 = await syReq('GET', 'carpetasData/' + cid + '/' + fid);
+                if (!b64) throw new Error('El archivo ya no está en la nube');
+                ab = _syB64ToAb(b64);
+                try { pCachePut(ckey, ab.slice(0)); } catch(e) {}
+            }
             hideLoading(); syCerrarModal();
             const _modDe = esComp ? 'comp' : (tipo === 'almacen' || tipo === 'guia-alm') ? 'alm' : 'stock';
             if (modoActual !== _modDe) seleccionarModo(_modDe);
