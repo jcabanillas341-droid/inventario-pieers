@@ -1632,7 +1632,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.42 — 08/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.43 — 08/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2089,7 +2089,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.42 — 08/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.43 — 08/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -10126,7 +10126,8 @@ async function syRefrescarUsuarios() {
         _syS(SY_K.usrver, syMeta.usrVer || 0);
         if (sySes) {
             const yo = syUsuarios[sySes.id];
-            if (!yo) { syCerrarSesion(true); showToast('⚠️ Tu usuario fue eliminado por el administrador', '#B71C1C', 4000); return; }
+            // v27.43: usuario eliminado → se cierra la sesión y se borran los datos de la tienda de este celular
+            if (!yo && Object.keys(syUsuarios).length) { pCuentaEliminada(); return; }
             if (yo.r !== sySes.r || yo.n !== sySes.n) { sySes.r = yo.r; sySes.n = yo.n; _syS(SY_K.ses, sySes); syAplicarRol(); showToast('👤 Tu rol ahora es: ' + SY_ROLES[yo.r], '#1565C0'); }
         }
     } catch(e) {}
@@ -10242,7 +10243,7 @@ function syMostrarLogin() {
     let o = document.getElementById('sy-login');
     if (!o) { o = document.createElement('div'); o.id = 'sy-login'; document.body.appendChild(o); }
     const us = Object.entries(syUsuarios || {}).sort((a, b) => (a[1].n || '').localeCompare(b[1].n || ''));
-    o.innerHTML = '<div class="sy-lbox"><div class="sy-ltit"><span style="color:#C62828">P</span>IEERS PRO ☁️</div><div class="sy-lsub">¿Quién eres?</div>'
+    o.innerHTML = '<div class="sy-lbox">' + pLogoLogin() + '<div class="sy-lsub">Inicia sesión · ¿Quién eres?</div>'
         + '<div class="sy-lus">' + (us.length ? us.map(([id, u]) => '<button class="sy-lu' + (_syLoginSel === id ? ' sel' : '') + '" onclick="_syLoginSel=\'' + id + '\';syMostrarLogin()"><b>' + syEsc(u.n) + '</b><span>' + SY_ROLES[u.r] + '</span></button>').join('') : '<div class="sy-p">No hay usuarios. Toca 🔄.</div>') + '</div>'
         + '<input id="sy-lpin" class="sy-in" placeholder="Clave" type="password" maxlength="12" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" onkeydown="if(event.key===\'Enter\')syLogin()">'
         + '<button class="sy-btn" onclick="syLogin()">ENTRAR</button>'
@@ -10284,7 +10285,8 @@ function syDesconectar() {
     syCfg = null; sySes = null; syUsuarios = {}; syCola = []; syConteoId = null; syHistIds = []; syAlmIds = {};
     const o = document.getElementById('sy-login'); if (o) o.style.display = 'none';
     syCerrarModal(); syAplicarRol();
-    showToast('🔌 Celular desconectado de la nube. La app funciona como antes.', '#555', 3500);
+    showToast('🔌 Celular desconectado de la nube.', '#555', 3500);
+    try { pGate(); } catch(e) {}
 }
 
 function syVistaPanel() {
@@ -11736,7 +11738,7 @@ function pModulosRol() {
     function ventanaArriba() {
         const W = innerWidth, H = innerHeight; let mejor = null, zMejor = -1;
         document.querySelectorAll('body *').forEach(el => {
-            if (el.id === 'loading-overlay' || el.id === 'menuContent' || el.id === 'pantalla-modo' || el.id === 'app-principal' || el.id === 'toast') return;
+            if (el.id === 'loading-overlay' || el.id === 'menuContent' || el.id === 'pantalla-modo' || el.id === 'app-principal' || el.id === 'toast' || el.id === 'sy-login') return;
             const cs = getComputedStyle(el); if (cs.position !== 'fixed' || cs.display === 'none' || cs.visibility === 'hidden') return;
             const r = el.getBoundingClientRect(); if (r.width < W * 0.6 || r.height < H * 0.5) return;
             if (!visible(el)) return;
@@ -14234,6 +14236,49 @@ function pNubeHomeIr(q) {
     if (typeof o === 'function') window.syPintarChip = function() { const r = o.apply(this, arguments); try { pNubeHomePintar(); } catch(e) {} return r; };
     const m = window.pModulosRol;
     if (typeof m === 'function') window.pModulosRol = function() { const r = m.apply(this, arguments); try { pNubeHomePintar(); } catch(e) {} return r; };
+})();
+
+
+// ══ v27.43 — INICIAR SESIÓN OBLIGATORIO DESDE EL INICIO ══
+// Sin cuenta no se puede usar la app. Si el administrador borra a un trabajador,
+// en su celular se cierra la sesión y se borran los datos de la tienda.
+function pLogoLogin() {
+    const src = (document.querySelector('#p-logo-inicio img') || {}).src || '';
+    return src ? '<div style="background:#000;border-radius:14px;padding:12px 16px;margin:0 auto 10px;width:max-content;max-width:100%;"><img src="' + src + '" alt="PIEERS" style="display:block;width:190px;max-width:60vw;"></div>'
+               : '<div class="sy-ltit">PIEERS</div>';
+}
+function pGate() {
+    if (syActivo()) { const o = document.getElementById('sy-login'); if (o) o.style.display = 'none'; return; }
+    if (syCfg) { syMostrarLogin(); return; }
+    let o = document.getElementById('sy-login');
+    if (!o) { o = document.createElement('div'); o.id = 'sy-login'; document.body.appendChild(o); }
+    o.innerHTML = '<div class="sy-lbox">' + pLogoLogin()
+        + '<div class="sy-lsub" style="margin-bottom:12px;">Para usar la app necesitas una cuenta de tu tienda.</div>'
+        + '<button class="sy-btn" style="margin-bottom:8px;" onclick="pGateNube()">🔗 Tengo código de enlace</button>'
+        + '<div class="sy-p" style="font-size:11.5px;margin-bottom:12px;">Pídele el código a tu administrador. Luego eliges tu nombre y pones tu clave.</div>'
+        + '<button class="sy-btn sy-sec" onclick="pGateNube()">🏪 Soy administrador: crear la tienda</button></div>';
+    o.style.display = 'flex';
+}
+function pGateNube() { const o = document.getElementById('sy-login'); if (o) o.style.display = 'none'; syAbrirNube(); }
+async function pCuentaEliminada() {
+    try { if (syConteoId) syConteoSalir(true); } catch(e) {}
+    try { syCerrarTodo(); } catch(e) {}
+    // Se conserva solo la conexión con la tienda (para poder entrar con otra cuenta); lo demás se borra
+    const guardar = [SY_K.cfg, SY_K.usr, SY_K.usrver];
+    try { Object.keys(localStorage).forEach(k => { if (!guardar.includes(k)) localStorage.removeItem(k); }); } catch(e) {}
+    try { indexedDB.deleteDatabase('pieers_cache'); } catch(e) {}
+    showToast('⚠️ Tu cuenta fue eliminada por el administrador. Se borraron los datos de este celular.', '#B71C1C', 5000);
+    setTimeout(() => location.reload(), 2500);
+}
+(function() {
+    // Al cerrar la ventana de la nube sin haber entrado, vuelve la pantalla de inicio de sesión
+    const c = window.syCerrarModal;
+    if (typeof c === 'function') window.syCerrarModal = function() { const r = c.apply(this, arguments); setTimeout(() => { try { if (!syActivo()) pGate(); } catch(e) {} }, 50); return r; };
+    // Al abrir: si hay internet, confirmar que la cuenta sigue existiendo
+    setTimeout(() => {
+        pGate();
+        if (syActivo()) syRefrescarUsuarios();
+    }, 300);
 })();
 
 </script>
