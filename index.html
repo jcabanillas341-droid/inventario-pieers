@@ -1553,8 +1553,6 @@
 
         /* ══ v27.06: NUBE Y USUARIOS ══ */
         #sy-chip { display:block; margin:10px auto 0; padding:8px 14px; border-radius:999px; border:1px solid #E3E5EA; background:#fff; color:#1B1D22; font-family:'Inter',sans-serif; font-size:12px; cursor:pointer; box-shadow:0 2px 8px rgba(27,29,34,0.06); max-width:92%; }
-        #toast { z-index: 100000 !important; }
-        #loading-overlay { z-index: 99000 !important; }
         #sy-modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.72); z-index:9870; align-items:flex-end; justify-content:center; }
         #sy-modal .sy-box { background:#fff; border-radius:20px 20px 0 0; width:100%; max-width:480px; max-height:90vh; overflow-y:auto; padding:16px 14px 26px; box-shadow:0 -8px 32px rgba(0,0,0,0.2); font-family:'Inter',sans-serif; color:#1B1D22; }
         .sy-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
@@ -1632,7 +1630,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.40 — 08/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.37 — 05/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2089,7 +2087,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.40 — 08/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.37 — 05/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -14234,197 +14232,6 @@ function pNubeHomeIr(q) {
     if (typeof o === 'function') window.syPintarChip = function() { const r = o.apply(this, arguments); try { pNubeHomePintar(); } catch(e) {} return r; };
     const m = window.pModulosRol;
     if (typeof m === 'function') window.pModulosRol = function() { const r = m.apply(this, arguments); try { pNubeHomePintar(); } catch(e) {} return r; };
-})();
-
-
-// ══ v27.38 — VINCULAR UNA CARPETA DEL PC (Chrome/Edge) ══
-// Mientras la app está abierta en el PC, revisa cada 30 s la carpeta vinculada y sube a
-// Bases compartidas los archivos nuevos o cambiados. Subcarpetas del PC = carpetas de la app.
-// Nunca borra nada en la app por haber borrado en el PC.
-let _pcDir = null, _pcPerm = 'none', _pcTimer = null, _pcRevisando = false, _pcUltima = 0, _pcError = '';
-function _pcAviso(msg, color, dur) { _pcError = msg; showToast(msg, color, dur); pcPintar(); }
-const PC_SYNC_KEY = 'pieers_pcsync_v1', PC_EXT = /\.(xlsx|xls|csv|txt)$/i;
-function pcSoportado() { return typeof window.showDirectoryPicker === 'function'; }
-function _pcEstado() { try { return JSON.parse(localStorage.getItem(PC_SYNC_KEY) || '{}'); } catch(e) { return {}; } }
-function _pcGuardarEstado(e) { try { localStorage.setItem(PC_SYNC_KEY, JSON.stringify(e)); } catch(x) {} }
-function _pcIdb(op, v) {
-    return pIdb().then(db => new Promise(res => {
-        try {
-            const tx = db.transaction('files', op === 'get' ? 'readonly' : 'readwrite'), st = tx.objectStore('files');
-            if (op === 'get') { const q = st.get('pc::dir'); q.onsuccess = () => res(q.result || null); q.onerror = () => res(null); }
-            else { if (op === 'put') st.put(v, 'pc::dir'); else st.delete('pc::dir'); tx.oncomplete = () => res(true); tx.onerror = () => res(false); }
-        } catch(e) { res(null); }
-    })).catch(() => null);
-}
-async function _pcPermiso(pedir) {
-    if (!_pcDir) return (_pcPerm = 'none');
-    try {
-        let p = await _pcDir.queryPermission({ mode: 'read' });
-        if (p !== 'granted' && pedir) p = await _pcDir.requestPermission({ mode: 'read' });
-        _pcPerm = p;
-    } catch(e) { _pcPerm = 'prompt'; }
-    return _pcPerm;
-}
-async function pcVincular() {
-    if (!pPuede('publicar')) return syDenegar();
-    if (!pcSoportado()) return showToast('⚠️ Solo funciona en el PC con Chrome o Edge', '#E65100', 3500);
-    if (!syActivo()) return showToast('☁️ Primero inicia sesión en la nube', '#1565C0');
-    _pcError = '';
-    let dir;
-    try { dir = await window.showDirectoryPicker({ id: 'pieers-bases', mode: 'readwrite' }); }
-    catch(e) {
-        // v27.39: avisar por qué no se pudo (antes no decía nada)
-        if (e && e.name === 'AbortError') { _pcAviso('📂 No se eligió carpeta o no se dio permiso (' + (e.message || 'cancelado') + '). Vuelve a intentarlo y toca "Ver archivos / Permitir".', '#E65100', 6000); return; }
-        try { dir = await window.showDirectoryPicker({ mode: 'read' }); }
-        catch(e2) {
-            if (e2 && e2.name === 'AbortError') { _pcAviso('📂 No se eligió carpeta o no se dio permiso (' + (e2.message || 'cancelado') + ').', '#E65100', 6000); return; }
-            if (e2 && e2.name === 'SecurityError') { _pcAviso('⚠️ Chrome no permite elegir carpetas aquí (' + e2.message + '). Abre la app desde jcabanillas341-droid.github.io/inventario-pieers en Chrome o Edge.', '#B71C1C', 7000); return; }
-            _pcAviso('⚠️ No se pudo abrir la carpeta: ' + ((e2 && (e2.name + ': ' + e2.message)) || e2), '#B71C1C', 7000); return;
-        }
-    }
-    // crea las 4 subcarpetas si no existen (si no hay permiso de escritura, no pasa nada)
-    for (const n of SY_CARP_FIJAS) { try { await dir.getDirectoryHandle(n, { create: true }); } catch(e) {} }
-    _pcDir = dir; _pcPerm = 'granted';
-    await _pcIdb('put', dir);
-    _pcGuardarEstado({});
-    showToast('📂 Carpeta "' + dir.name + '" vinculada. Revisando archivos…', '#2E7D32', 3000);
-    pcIniciar(); await pcRevisar(true);
-}
-async function pcDesvincular() {
-    mostrarConfirm('📂 Desvincular carpeta', '¿Dejar de subir automáticamente los archivos de "' + (_pcDir ? _pcDir.name : '') + '"?\n\nNo se borra nada: ni en el PC ni en la app.', async () => {
-        clearInterval(_pcTimer); _pcTimer = null; _pcDir = null; _pcPerm = 'none';
-        await _pcIdb('del'); _pcGuardarEstado({});
-        showToast('📂 Carpeta desvinculada', '#555'); pcPintar();
-        if (document.getElementById('sy-modal') && document.getElementById('sy-modal').dataset.vista === 'carpetas') syVistaCarpetas(false);
-    });
-}
-async function pcReactivar() {
-    const p = await _pcPermiso(true);
-    if (p === 'granted') { showToast('🟢 Carpeta del PC activa', '#2E7D32'); pcIniciar(); pcRevisar(true); }
-    else showToast('⚠️ Sin permiso para leer la carpeta', '#E65100');
-    pcPintar();
-}
-function pcIniciar() {
-    clearInterval(_pcTimer);
-    _pcTimer = setInterval(() => pcRevisar(false), 30000);
-    pcPintar();
-}
-// Recorre la carpeta: [{ top:'GUÍAS', p:'sub/sub', name, handle }]
-async function _pcListar(dir) {
-    const out = [];
-    async function rec(d, top, ruta, nivel) {
-        for await (const h of d.values()) {
-            if (h.name.startsWith('~$') || h.name.startsWith('.')) continue;
-            if (h.kind === 'directory') { if (nivel < 4) await rec(h, top === null ? h.name : top, top === null ? '' : (ruta ? ruta + '/' : '') + h.name, nivel + 1); }
-            else if (PC_EXT.test(h.name)) out.push({ top, p: ruta, name: h.name, h });
-        }
-    }
-    await rec(dir, null, '', 0);
-    return out;
-}
-function _pcCarpetaDestino(top, nombreArchivo) {
-    let n = top;
-    if (!n) { const N = _syNormN(nombreArchivo); n = /MEMO/.test(N) ? 'MEMORÁNDUM' : /GUIA/.test(N) ? 'GUÍAS' : /STOCK|REPORTE/.test(N) ? 'STOCK' : 'INVENTARIO'; }
-    const fi = _syCarpetaFijaIdx(n);
-    if (fi >= 0) { const cid = Object.keys(syCarpetas || {}).find(k => _syCarpetaFijaIdx(syCarpetas[k].n) === fi); if (cid) return { cid, nombre: syCarpetas[cid].n }; }
-    const cid = _syCarpetaPorNombre(n);
-    return { cid: cid || null, nombre: cid ? syCarpetas[cid].n : n };
-}
-async function pcRevisar(manual) {
-    if (_pcRevisando || !_pcDir || !syActivo() || !pPuede('publicar')) return;
-    if (await _pcPermiso(false) !== 'granted') { pcPintar(); return; }
-    _pcRevisando = true; pcPintar();
-    let subidos = 0, errores = 0;
-    try {
-        const lista = await _pcListar(_pcDir);
-        syCarpetas = (await syReq('GET', 'carpetas')) || {};
-        const est = _pcEstado(), primera = !Object.keys(est).length;
-        const ahora = Date.now();
-        for (const it of lista) {
-            let file; try { file = await it.h.getFile(); } catch(e) { continue; }
-            if (ahora - file.lastModified < 4000) continue;             // todavía se está guardando
-            const dst = _pcCarpetaDestino(it.top, it.name);
-            const clave = _syNormN(dst.nombre) + '|' + it.p + '|' + it.name;
-            const firma = file.size + ':' + file.lastModified;
-            if (est[clave] === firma) continue;
-            const fl = (dst.cid && syCarpetas[dst.cid] && syCarpetas[dst.cid].files) || {};
-            const fidExist = Object.keys(fl).find(k => fl[k].n === it.name && (fl[k].p || '') === it.p);
-            // Al vincular por primera vez: si ya está en la app con el mismo tamaño, no se vuelve a subir
-            if (primera && fidExist && fl[fidExist].s === file.size) { est[clave] = firma; continue; }
-            try {
-                let cid = dst.cid;
-                if (!cid) { cid = syId('d'); const c = { n: dst.nombre, por: sySes.id, porN: sySes.n, ts: Date.now() }; await syReq('PUT', 'carpetas/' + cid, c); syCarpetas[cid] = c; }
-                const fid = fidExist || syId('f');
-                await syReq('PUT', 'carpetasData/' + cid + '/' + fid, _syAbToB64(await file.arrayBuffer()));
-                const meta = { n: it.name, p: it.p, s: file.size, ts: Date.now(), porN: sySes.n + ' (PC)' };
-                await syReq('PUT', 'carpetas/' + cid + '/files/' + fid, meta);
-                await syReq('PATCH', 'carpetas/' + cid, { ts: Date.now(), porN: sySes.n });
-                (syCarpetas[cid].files = syCarpetas[cid].files || {})[fid] = meta;
-                est[clave] = firma; subidos++;
-            } catch(e) { errores++; }
-        }
-        _pcGuardarEstado(est);
-        if (subidos) {
-            await syReq('PATCH', 'meta', { carpetasVer: Date.now(), carpetasPorN: sySes.n, carpetasN: 'carpeta del PC' });
-            showToast('📂 ' + subidos + ' archivo(s) del PC subidos a Bases compartidas', '#2E7D32', 3500);
-        } else if (manual) showToast('📂 Carpeta del PC revisada: todo al día' + (errores ? ' (' + errores + ' con error)' : ''), '#555', 2500);
-        if (errores && !subidos) showToast('⚠️ ' + errores + ' archivo(s) del PC no se pudieron subir. Se reintentará.', '#E65100', 3500);
-    } catch(e) { if (manual) showToast('⚠️ No se pudo revisar la carpeta: ' + e.message, '#E65100', 3500); }
-    _pcRevisando = false; _pcUltima = Date.now(); pcPintar();
-    const m = document.getElementById('sy-modal');
-    if (subidos && m && m.style.display === 'flex' && m.dataset.vista === 'carpetas') syVistaCarpetas(false);
-}
-// Tarjeta dentro de Bases compartidas
-function pcTarjetaHtml() {
-    if (!pcSoportado() || !pPuede('publicar')) return '';
-    const hora = _pcUltima ? new Date(_pcUltima).toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' }) : '—';
-    let h = '<div class="sy-card" style="border:2px solid ' + (_pcDir ? (_pcPerm === 'granted' ? '#2E7D32' : '#E65100') : '#1565C0') + ';">';
-    if (!_pcDir) h += '<div class="sy-h">📂 Carpeta del PC</div><div class="sy-p">Vincula una carpeta de tu PC. Lo que guardes en sus subcarpetas <b>INVENTARIO, STOCK, GUÍAS y MEMORÁNDUM</b> se sube solo aquí, mientras la app esté abierta.</div>'
-        + '<div class="sy-p" style="background:#FFF8E1;border-radius:8px;padding:7px 9px;font-size:11.5px;">⚠️ <b>No elijas</b> el Escritorio, Documentos o Descargas directamente: Chrome no lo permite. Crea una carpeta nueva dentro (ej. <b>PIEERS BASES</b>), elígela y toca <b>"Ver archivos"</b> y luego <b>"Guardar cambios / Permitir"</b>.</div>'
-        + '<button class="sy-btn" style="background:#1565C0;" onclick="pcVincular()">📂 Vincular carpeta del PC</button>'
-        + (_pcError ? '<div class="sy-p" style="margin-top:8px;color:#B71C1C;font-weight:700;">' + syEsc(_pcError) + '</div>' : '');
-    else if (_pcPerm !== 'granted') h += '<div class="sy-h">🟠 Carpeta del PC en pausa</div><div class="sy-p">"' + syEsc(_pcDir.name) + '" — Chrome pide permiso de nuevo cada vez que se abre.</div>'
-        + '<div class="sy-grid2"><button class="sy-btn" style="background:#E65100;" onclick="pcReactivar()">🔓 Reactivar</button><button class="sy-btn sy-sec" onclick="pcDesvincular()">Desvincular</button></div>';
-    else h += '<div class="sy-h">🟢 Carpeta del PC vinculada</div><div class="sy-p">📂 <b>' + syEsc(_pcDir.name) + '</b> · revisa cada 30 s · última: ' + hora + (_pcRevisando ? ' · ⏳ revisando…' : '') + '</div>'
-        + '<div class="sy-grid2"><button class="sy-btn sy-dark" onclick="pcRevisar(true)">🔄 Revisar ahora</button><button class="sy-btn sy-sec" onclick="pcDesvincular()">Desvincular</button></div>';
-    return h + '</div>';
-}
-// Aviso flotante en el PC cuando hay que volver a dar permiso
-function pcPintar() {
-    let b = document.getElementById('pc-aviso');
-    const ver = _pcDir && _pcPerm !== 'granted' && syActivo() && pPuede('publicar');
-    if (ver && !b) {
-        b = document.createElement('button'); b.id = 'pc-aviso'; b.onclick = pcReactivar;
-        b.style.cssText = 'position:fixed;left:12px;bottom:12px;z-index:9000;background:#E65100;color:#fff;border:none;border-radius:12px;padding:10px 14px;font:800 12.5px Inter,sans-serif;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer;';
-        document.body.appendChild(b);
-    }
-    if (b) { b.style.display = ver ? '' : 'none'; if (ver) b.textContent = '📂 Reactivar carpeta del PC (' + _pcDir.name + ')'; }
-    const m = document.getElementById('sy-modal'), c = document.getElementById('pc-tarjeta');
-    if (c && m && m.dataset.vista === 'carpetas') c.innerHTML = pcTarjetaHtml();
-}
-(function() {
-    // Mostrar la tarjeta arriba en Bases compartidas
-    const o = window.syVistaCarpetas;
-    if (typeof o === 'function') window.syVistaCarpetas = async function() {
-        const r = await o.apply(this, arguments);
-        try {
-            const body = document.getElementById('sy-body');
-            if (body && pcSoportado() && pPuede('publicar') && !document.getElementById('pc-tarjeta')) {
-                const d = document.createElement('div'); d.id = 'pc-tarjeta'; d.innerHTML = pcTarjetaHtml();
-                body.insertBefore(d, body.firstChild);
-            }
-        } catch(e) {}
-        return r;
-    };
-    if (!pcSoportado()) return;
-    // Al abrir la app: recuperar la carpeta vinculada
-    _pcIdb('get').then(async h => {
-        if (!h) return;
-        _pcDir = h; await _pcPermiso(false);
-        if (_pcPerm === 'granted') { pcIniciar(); setTimeout(() => pcRevisar(false), 3000); }
-        pcPintar();
-    });
-    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && _pcDir && _pcPerm === 'granted') pcRevisar(false); });
 })();
 
 </script>
