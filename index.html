@@ -1632,7 +1632,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.45 — 08/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.46 — 08/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2089,7 +2089,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.45 — 08/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.46 — 08/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -10268,6 +10268,7 @@ async function syLogin() {
     showToast('👋 Hola ' + u.n + ' (' + SY_ROLES[u.r] + ')', '#111');
 }
 function syCerrarSesion(forzado) {
+    try { pPresenciaSalir(); } catch(e) {}
     if (syConteoId) syConteoSalir(true);
     syCerrarTodo(); sySes = null; _syS(SY_K.ses, null); syAplicarRol(); syCerrarModal();
     if (syCfg) syMostrarLogin();
@@ -10299,6 +10300,7 @@ function syVistaPanel() {
     let h = '<div class="sy-card sy-row"><div><div class="sy-h">' + (syOnline ? '🟢 Conectado' : '🟠 Sin conexión (se guarda y se envía después)') + '</div>'
         + '<div class="sy-p">👤 <b>' + syEsc(sySes.n) + '</b> · ' + SY_ROLES[sySes.r] + (syCola.length ? ' · ⏳ ' + syCola.length + ' pendiente(s)' : '') + '</div></div>'
         + '<button class="sy-btn sy-sec sy-mini" onclick="syCerrarSesion()">Cerrar sesión</button></div>';
+    if (sySes.r === 'admin' || sySes.r === 'supervisor') h += '<div class="sy-card" id="p-enlinea">' + pEnLineaHtml() + '</div>';
     h += '<div class="sy-card"><div class="sy-h">🔁 Compartir</div><div class="sy-grid">'
         + '<button class="sy-btn sy-dark" onclick="syAbrirConteo()">📋 Conteo compartido</button>'
         + '<button class="sy-btn sy-dark" onclick="syAbrirAlm()">🏪 Almacén compartido</button>'
@@ -14283,6 +14285,70 @@ async function pCuentaEliminada() {
         pGate();
         if (syActivo()) syRefrescarUsuarios();
     }, 300);
+})();
+
+
+// ══ v27.46 — ¿QUIÉN ESTÁ USANDO LA APP? (EN LÍNEA) ══
+// Cada celular con sesión avisa cada 30 s: presencia/{usuario}_{celular} = {u,n,r,ts,m,d,v}
+let _pPresT = null, _pEnLinea = null, _pEnLineaT = null, _pEnLineaTs = 0;
+function _pDevId() { try { let d = localStorage.getItem('pieers_dev_id'); if (!d) { d = Math.random().toString(36).slice(2, 10); localStorage.setItem('pieers_dev_id', d); } return d; } catch(e) { return 'x'; } }
+function _pModuloActual() {
+    const af = document.getElementById('modulo-afiliar'); if (af && af.style.display !== 'none' && af.style.display !== '') return 'Afiliar clientes';
+    const app = document.getElementById('app-principal');
+    if (!app || app.classList.contains('hidden') || typeof modoActual === 'undefined' || !modoActual) return 'Inicio';
+    return { comp:'Inventario', alm:'Almacén', stock:'Consultar precio', ticket:'Simulador' }[modoActual] || 'Inicio';
+}
+function _pPresKey() { return sySes ? (sySes.id + '_' + _pDevId()) : null; }
+async function pPresenciaLatido(visible) {
+    if (!syActivo()) return;
+    const k = _pPresKey(); if (!k) return;
+    const movil = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
+    try { await syReq('PUT', 'presencia/' + k, { u: sySes.id, n: sySes.n, r: sySes.r, ts: Date.now(), m: _pModuloActual(), d: movil ? 'Celular' : 'PC', v: visible !== false }); } catch(e) {}
+}
+function pPresenciaSalir() { const k = _pPresKey(); if (k && syCfg) { try { syReq('DELETE', 'presencia/' + k); } catch(e) {} } }
+function _pHace(ms) { const s = Math.round(ms / 1000); if (s < 60) return 'hace ' + s + ' s'; const m = Math.round(s / 60); if (m < 60) return 'hace ' + m + ' min'; const h = Math.round(m / 60); if (h < 24) return 'hace ' + h + ' h'; return 'hace ' + Math.round(h / 24) + ' día(s)'; }
+function pEnLineaHtml() {
+    const ahora = Date.now();
+    if (Date.now() - _pEnLineaTs > 3000) { _pEnLineaTs = Date.now(); setTimeout(pEnLineaCargar, 0); }
+    if (!_pEnLinea) { return '<div class="sy-h">📶 ¿Quién está usando la app?</div><div class="sy-p">⏳ Revisando…</div>'; }
+    // agrupar por usuario (puede tener varios celulares)
+    const porU = {};
+    Object.values(_pEnLinea || {}).forEach(p => { if (!p || !p.u) return; (porU[p.u] = porU[p.u] || []).push(p); });
+    const filas = Object.entries(syUsuarios || {}).map(([id, u]) => {
+        const ds = (porU[id] || []).sort((a, b) => b.ts - a.ts);
+        const on = ds.filter(p => p.v && ahora - p.ts < 75000);
+        return { id, u, ds, on, ult: ds.length ? ds[0].ts : 0 };
+    }).sort((a, b) => (b.on.length > 0) - (a.on.length > 0) || b.ult - a.ult);
+    const nOn = filas.filter(f => f.on.length).length;
+    let h = '<div class="sy-row" style="align-items:center;"><div class="sy-h" style="margin:0;">📶 ¿Quién está usando la app?</div><button class="sy-ib" title="Actualizar" onclick="pEnLineaCargar()">🔄</button></div>'
+        + '<div class="sy-p" style="margin:2px 0 6px;"><b style="color:#2E7D32;">' + nOn + ' en línea ahora</b> · se actualiza solo cada 15 s</div>';
+    h += filas.map(f => {
+        const p = f.on[0] || f.ds[0];
+        const est = f.on.length ? '<span style="color:#2E7D32;font-weight:800;">🟢 En línea</span> · ' + f.on.map(x => (x.d === 'PC' ? '💻 ' : '📱 ') + syEsc(x.m || '')).join(' · ')
+            : p ? '<span style="color:#888;">⚪ ' + _pHace(ahora - p.ts) + (p.m ? ' · ' + syEsc(p.m) : '') + '</span>' : '<span style="color:#aaa;">⚪ Nunca entró (desde esta versión)</span>';
+        return '<div class="sy-urow"><div class="sy-uname"><b>' + syEsc(f.u.n) + '</b> <span class="sy-tag">' + (SY_ROLES[f.u.r] || '') + '</span><br><span style="font-size:11.5px;">' + est + '</span></div></div>';
+    }).join('');
+    return h;
+}
+async function pEnLineaCargar() {
+    _pEnLineaTs = Date.now();
+    try { _pEnLinea = (await syReq('GET', 'presencia')) || {}; } catch(e) { _pEnLinea = _pEnLinea || {}; }
+    const c = document.getElementById('p-enlinea'); if (c) c.innerHTML = pEnLineaHtml();
+}
+(function() {
+    // latido cada 30 s mientras la app está a la vista
+    _pPresT = setInterval(() => { if (document.visibilityState === 'visible') pPresenciaLatido(true); }, 30000);
+    document.addEventListener('visibilitychange', () => pPresenciaLatido(document.visibilityState === 'visible'));
+    window.addEventListener('pagehide', () => pPresenciaLatido(false));
+    setTimeout(() => pPresenciaLatido(true), 2500);
+    // al cambiar de módulo, avisar enseguida
+    const sm = window.seleccionarModo;
+    if (typeof sm === 'function') window.seleccionarModo = function() { const r = sm.apply(this, arguments); setTimeout(() => pPresenciaLatido(true), 300); return r; };
+    const vs = window.volverSelector;
+    if (typeof vs === 'function') window.volverSelector = function() { const r = vs.apply(this, arguments); setTimeout(() => pPresenciaLatido(true), 300); return r; };
+    ['syLogin', 'syIniciar', 'syCrearTienda'].forEach(n => { const f = window[n]; if (typeof f === 'function') window[n] = function() { const r = f.apply(this, arguments); setTimeout(() => pPresenciaLatido(true), 800); return r; }; });
+    // mientras el panel de la nube está abierto, refrescar la lista cada 15 s
+    _pEnLineaT = setInterval(() => { const c = document.getElementById('p-enlinea'); const m = document.getElementById('sy-modal'); if (c && m && m.style.display === 'flex') pEnLineaCargar(); }, 15000);
 })();
 
 </script>
