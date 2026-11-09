@@ -1632,7 +1632,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.46 — 08/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.48 — 09/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2089,7 +2089,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.46 — 08/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.48 — 09/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -6537,7 +6537,7 @@ function csRenderPrecioFinal(cod, p, etiq, ofertaFinal) {
     const libroEl = document.getElementById('cs-pf-libro');
     if (!valorEl) return;
 
-    const fmt = v => v > 0 ? v.toFixed(4) : '0.0000';
+    const fmt = v => v > 0 ? v.toFixed(2) : '0.00';
     const pct = (precio, et) => {
         if (!precio || !et || precio >= et) return '—';
         return '-' + ((et - precio) / et * 100).toFixed(0) + '% dto.';
@@ -6564,7 +6564,7 @@ function csRenderPrecioFinal(cod, p, etiq, ofertaFinal) {
     if (oferta > 0) candidatos.push({ valor: oferta, tipo: 'oferta' });
 
     if (!candidatos.length) {
-        valorEl.textContent = '0.0000';
+        valorEl.textContent = '0.00';
         if (pctEl) pctEl.textContent = '—';
         if (libroEl) libroEl.textContent = '📖 Sin precio cargado';
         return;
@@ -6645,12 +6645,12 @@ function csRenderPrecios(modelCode) {
         if (mFallback) {
             panel.style.display='block';
             // Llenar solo con datos del PRECIOS_POR_MAYOR
-            document.getElementById('cs-p-etiqueta').textContent=mFallback.etiqueta>0?mFallback.etiqueta.toFixed(4):'0.0000';
+            document.getElementById('cs-p-etiqueta').textContent=mFallback.etiqueta>0?mFallback.etiqueta.toFixed(2):'0.00';
             document.getElementById('cs-pct-etiqueta').textContent='Precio base';
             ['menor','mayor','oferta'].forEach(k=>{
                 const el=document.getElementById('cs-p-'+k);
                 const pe=document.getElementById('cs-pct-'+k);
-                if(el) el.textContent='0.0000';
+                if(el) el.textContent='0.00';
                 if(pe) pe.textContent='—';
             });
             const promoDiv=document.getElementById('cs-promo-activa');
@@ -6673,7 +6673,7 @@ function csRenderPrecios(modelCode) {
             ['etiqueta','menor','mayor','oferta'].forEach(k=>{
                 const el=document.getElementById('cs-p-'+k);
                 const pe=document.getElementById('cs-pct-'+k);
-                if(el) el.textContent='0.0000';
+                if(el) el.textContent='0.00';
                 if(pe) pe.textContent='—';
             });
             document.getElementById('cs-pct-etiqueta').textContent='Sin precio';
@@ -6715,7 +6715,7 @@ function csRenderPrecios(modelCode) {
     ['cs-promo-info-unitario','cs-promo-info-combo','cs-promo-info-oferta'].forEach(id=>{
         const el=document.getElementById(id); if(el) el.style.display='none';
     });
-    const fmt=v=>v>0?v.toFixed(4):'0.0000';
+    const fmt=v=>v>0?v.toFixed(2):'0.00';
     const pct=(precio,etiq)=>{
         if(!precio||!etiq||precio>=etiq) return '\u2014';
         return '-'+((etiq-precio)/etiq*100).toFixed(0)+'% dto.';
@@ -6949,7 +6949,7 @@ function csLoadPreciosMayor(event) {
 function csRenderPreciosMayor(modelCode) {
     const cod = String(modelCode||'').toUpperCase();
     const m   = csPreciosMayorDB[cod];
-    const fmt = v => v > 0 ? v.toFixed(4) : '0.0000';
+    const fmt = v => v > 0 ? v.toFixed(2) : '0.00';
     const pct = (p, etiq) => p>0&&etiq>0&&p<etiq ? '-'+((etiq-p)/etiq*100).toFixed(0)+'% dto.' : '—';
 
     // 5ta caja: Precio x Mayor
@@ -6957,7 +6957,7 @@ function csRenderPreciosMayor(modelCode) {
     const mayPct  = document.getElementById('cs-pct-mayor-val');
 
     if (!m) {
-        if (mayBox) mayBox.textContent = '0.0000';
+        if (mayBox) mayBox.textContent = '0.00';
         if (mayPct) mayPct.textContent = '—';
         return;
     }
@@ -6985,7 +6985,7 @@ function csRenderPreciosMayor(modelCode) {
     }
 
     // Llenar 5ta caja: Precio x Mayor
-    if (mayBox) mayBox.textContent = m.mayor > 0 ? fmt(m.mayor) : '0.0000';
+    if (mayBox) mayBox.textContent = m.mayor > 0 ? fmt(m.mayor) : '0.00';
     if (mayPct) mayPct.textContent = m.mayor > 0 ? pct(m.mayor, etiqRef) : '—';
 }
 
@@ -10311,7 +10311,8 @@ function syVistaPanel() {
             + '<div class="sy-grid2"><button class="sy-btn sy-sec" onclick="syCopiar(syCodigoEnlace())">📋 Copiar</button>'
             + '<button class="sy-btn sy-wa" onclick="window.open(\'https://wa.me/?text=\'+encodeURIComponent(\'Código para entrar a PIEERS PRO (nube): \'+syCodigoEnlace()))">WhatsApp</button></div>'
             + '<div class="sy-p" style="font-size:10.5px;">⚠️ Este código da acceso a los datos de tu tienda: compártelo solo con tu equipo.</div></div>';
-        const vm = (syMeta && syMeta.vendMods) || {};
+        let vm = (syMeta && syMeta.vendMods) || {};
+        if (vm.afi === undefined) vm = Object.assign({}, vm, { afi: true });
         const sw = (k, t) => '<div class="sy-urow"><div class="sy-uname"><b>' + t + '</b><br><span style="font-size:11px;color:' + (vm[k] ? '#2E7D32' : '#B71C1C') + ';font-weight:700;">' + (vm[k] ? '👁️ Visible para vendedores' : '🙈 Oculto para vendedores') + '</span></div>'
             + '<button class="sy-btn sy-mini' + (vm[k] ? ' sy-sec' : '') + '" style="' + (vm[k] ? '' : 'background:#2E7D32;') + '" onclick="syVendMod(\'' + k + '\',' + (!vm[k]) + ')">' + (vm[k] ? '🙈 Ocultar' : '👁️ Mostrar') + '</button></div>';
         h += '<div class="sy-card"><div class="sy-h">🧩 Módulos para vendedores</div>'
@@ -11650,7 +11651,13 @@ function lsGrandeEsperar() { const p = _lsGPend.splice(0); return Promise.all(p)
 // Vendedor: siempre Consultar Precio y Simulador. Inventario y Almacén quedan ocultos
 // hasta que el ADMINISTRADOR los muestre desde ☁️ Nube (meta/vendMods).
 function pEsVendedor() { return typeof syActivo === 'function' && syActivo() && sySes.r === 'vendedor'; }
-function pVendPuede(mod) { return !pEsVendedor() || !!(syMeta && syMeta.vendMods && syMeta.vendMods[mod]); }
+function pVendPuede(mod) {
+    if (!pEsVendedor()) return true;
+    let vm = syMeta && syMeta.vendMods;
+    try { if (vm) localStorage.setItem('pieers_vendmods', JSON.stringify(vm)); else vm = JSON.parse(localStorage.getItem('pieers_vendmods') || 'null'); } catch(e) {}
+    vm = vm || {};
+    return mod === 'afi' ? vm.afi !== false : !!vm[mod];   // v27.47: Afiliar se ve salvo que el admin lo oculte
+}
 function syVendMod(mod, on) {
     if (!syActivo() || sySes.r !== 'admin') return syDenegar();
     syMeta.vendMods = Object.assign({}, syMeta.vendMods || {}, { [mod]: !!on });
@@ -14114,13 +14121,15 @@ function abrirAfiliar() {
         + (logo ? '<img src="' + logo + '" alt="PIEERS" style="height:22px;">' : '<b style="color:#fff;">PIEERS</b>')
         + '<span style="background:#E53935;color:#fff;font:900 11px Inter,sans-serif;border-radius:20px;padding:4px 10px;letter-spacing:.5px;">AFILIAR</span>'
         + '<span style="flex:1"></span><button onclick="cerrarAfiliar()" style="background:#222;color:#fff;border:1px solid #444;border-radius:10px;padding:8px 12px;font:800 12px Inter,sans-serif;">← INICIO</button></div>'
-        + '<div style="flex:1;overflow-y:auto;padding:14px;">'
+        + '<div id="afi-cont" style="flex:1;overflow-y:auto;padding:14px;">'
+        + afiPanelRegistroHtml()
         // QR para que el cliente se registre con su celular
         + '<div style="background:#fff;border-radius:18px;padding:16px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.08);margin-bottom:12px;">'
+        + '<div style="font:900 15px Inter,sans-serif;color:#555;margin-bottom:6px;">📱 O que el cliente se registre solo con su celular</div>'
         + '<div style="font:900 20px Barlow,Inter,sans-serif;color:#111;letter-spacing:.5px;">REGÍSTRATE Y OBTÉN<br><span style="color:#E53935;">GRANDES BENEFICIOS</span></div>'
         + '<div style="font:600 12px Inter,sans-serif;color:#555;margin:6px 0 10px;">El cliente escanea este código con la cámara de su celular</div>'
         + '<div id="afi-qr" style="width:230px;max-width:70vw;margin:0 auto;">' + afiQrSvg(url) + '</div>'
-        + '<button onclick="afiAbrirFormulario()" style="margin-top:12px;width:100%;padding:14px;border:none;border-radius:12px;background:#E53935;color:#fff;font:900 15px Barlow,Inter,sans-serif;letter-spacing:.5px;">📝 AFILIAR AQUÍ EN ESTE CELULAR</button>'
+        + '<button onclick="afiAbrirFormulario()" style="margin-top:12px;width:100%;padding:14px;border:none;border-radius:12px;background:#E53935;color:#fff;font:900 15px Barlow,Inter,sans-serif;letter-spacing:.5px;">🌐 Abrir el formulario web</button>'
         + '<div style="display:flex;gap:8px;margin-top:8px;">'
         + '<button onclick="afiCompartir()" style="flex:1;padding:11px;border:none;border-radius:12px;background:#25D366;color:#fff;font:800 13px Inter,sans-serif;">📲 Enviar por WhatsApp</button>'
         + '<button onclick="afiCopiar()" style="flex:1;padding:11px;border:1.5px solid #111;border-radius:12px;background:#fff;color:#111;font:800 13px Inter,sans-serif;">📋 Copiar enlace</button></div></div>'
@@ -14350,5 +14359,249 @@ async function pEnLineaCargar() {
     // mientras el panel de la nube está abierto, refrescar la lista cada 15 s
     _pEnLineaT = setInterval(() => { const c = document.getElementById('p-enlinea'); const m = document.getElementById('sy-modal'); if (c && m && m.style.display === 'flex') pEnLineaCargar(); }, 15000);
 })();
+
+
+// ══ v27.47 — AFILIAR CLIENTES DESDE LA APP (funciona sin internet) ══
+// Se guarda en el celular y, con el usuario que registró, se sube a la nube apenas hay internet.
+const AFI_UBIGEO = {"Amazonas":{"Chachapoyas":["Chachapoyas","Asunción","Balsas","Cheto","Chiliquin","Chuquibamba","Granada","Huancas","La Jalca","Leimebamba","Levanto","Magdalena","Mariscal Castilla","Molinopampa","Montevideo","Olleros","Quinjalca","San Francisco de Daguas","San Isidro de Maino","Soloco","Sonche"],"Bagua":["La Peca","Aramango","Copallin","El Parco","Bagua","Imaza"],"Bongará":["Jumbilla","Corosha","Cuispes","Chisquilla","Churuja","Florida","Recta","San Carlos","Shipasbamba","Valera","Yambrasbamba","Jazan"],"Luya":["Lamud","Camporredondo","Cocabamba","Colcamar","Conila","Inguilpata","Longuita","Lonya Chico","Luya","Luya Viejo","Maria","Ocalli","Ocumal","Pisuquia","San Cristóbal","San Francisco del Yeso","San Jerónimo","San Juan de Lopecancha","Santa Catalina","Santo Tomas","Tingo","Trita","Providencia"],"Rodríguez de Mendoza":["San Nicolas","Cochamal","Chirimoto","Huambo","Limabamba","Longar","Milpuc","Mariscal Benavides","Omia","Santa Rosa","Totora","Vista Alegre"],"Condorcanqui":["Nieva","Rio Santiago","El Cenepa"],"Utcubamba":["Bagua Grande","Cajaruro","Cumba","El Milagro","Jamalca","Lonya Grande","Yamon"]},"Áncash":{"Huaraz":["Huaraz","Independencia","Cochabamba","Colcabamba","Huanchay","Jangas","La Libertad","Olleros","Pampas","Pariacoto","Pira","Tarica"],"Aija":["Aija","Coris","Huacllan","La Merced","Succha"],"Bolognesi":["Chiquian","Abelardo Pardo Lezameta","Aquia","Cajacay","Huayllacayan","Huasta","Mangas","Pacllon","San Miguel de Corpanqui","Ticllos","Antonio Raymondi","Canis","Colquioc","La Primavera","Huallanca"],"Carhuaz":["Carhuaz","Acopampa","Amashca","Anta","Ataquero","Marcara","Pariahuanca","San Miguel de Aco","Shilla","Tinco","Yungar"],"Casma":["Casma","Buena Vista Alta","Comandante Noel","Yautan"],"Corongo":["Corongo","Aco","Bambas","Cusca","La Pampa","Yanac","Yupan"],"Huaylas":["Caraz","Huallanca","Huata","Huaylas","Mato","Pamparomas","Pueblo Libre","Santa Cruz","Yuracmarca","Santo Toribio"],"Huari":["Huari","Cajay","Chavin de Huantar","Huacachi","Huachis","Huacchis","Huantar","Masin","Paucas","Ponto","Rahuapampa","Rapayan","San Marcos","San Pedro de Chana","Uco","Anra"],"Mariscal Luzuriaga":["Piscobamba","Casca","Lucma","Fidel Olivas Escudero","Llama","Llumpa","Musga","Eleazar Guzmán Barron"],"Pallasca":["Cabana","Bolognesi","Conchucos","Huacaschuque","Huandoval","Lacabamba","Llapo","Pallasca","Pampas","Santa Rosa","Tauca"],"Pomabamba":["Pomabamba","Huayllan","Parobamba","Quinuabamba"],"Recuay":["Recuay","Cotaparaco","Huayllapampa","Marca","Pampas Chico","Pararin","Tapacocha","Ticapampa","Llacllin","Catac"],"Santa":["Chimbote","Cáceres del Perú","Macate","Moro","Nepeña","Samanco","Santa","Coishco","Nuevo Chimbote"],"Sihuas":["Sihuas","Alfonso Ugarte","Chingalpo","Huayllabamba","Quiches","Sicsibamba","Acobamba","Cashapampa","Ragash","San Juan"],"Yungay":["Yungay","Cascapara","Mancos","Matacoto","Quillo","Ranrahirca","Shupluy","Yanama"],"Antonio Raymondi":["Llamellin","Aczo","Chaccho","Chingas","Mirgas","San Juan de Rontoy"],"Carlos Fermín Fitzcarral":["San Luis","Yauya","San Nicolas"],"Asunción":["Chacas","Acochaca"],"Huarmey":["Huarmey","Cochapeti","Huayan","Malvas","Culebras"],"Ocros":["Acas","Cajamarquilla","Carhuapampa","Cochas","Congas","Llipa","Ocros","San Cristóbal de Rajan","San Pedro","Santiago de Chilcas"]},"Apurímac":{"Abancay":["Abancay","Circa","Curahuasi","Chacoche","Huanipaca","Lambrama","Pichirhua","San Pedro de Cachora","Tamburco"],"Aymaraes":["Chalhuanca","Capaya","Caraybamba","Colcabamba","Cotaruse","Chapimarca","Huayllo","Lucre","Pocohuanca","Sañayca","Soraya","Tapairihua","Tintay","Toraya","Yanaca","San Juan de Chacña","Justo Apu Sahuaraura"],"Andahuaylas":["Andahuaylas","Andarapa","Chiara","Huancarama","Huancaray","Kishuara","Pacobamba","Pampachiri","San Antonio de Cachi","San Jerónimo","Talavera","Turpo","Pacucha","Pomacocha","Santa Maria de Chicmo","Tumay Huaraca","Huayana","San Miguel de Chaccrampa","Kaquiabamba"],"Antabamba":["Antabamba","El Oro","Huaquirca","Juan Espinoza Medrano","Oropesa","Pachaconas","Sabaino"],"Cotabambas":["Tambobamba","Coyllurqui","Cotabambas","Haquira","Mara","Challhuahuacho"],"Grau":["Chuquibambilla","Curpahuasi","Huayllati","Mamara","Gamarra","Micaela Bastidas","Progreso","Pataypampa","San Antonio","Turpay","Vilcabamba","Virundo","Santa Rosa","Curasco"],"Chincheros":["Chincheros","Ongoy","Ocobamba","Cocharcas","Anco Huallo","Huaccana","Uranmarca","Ranracancha"]},"Arequipa":{"Arequipa":["Arequipa","Cayma","Cerro Colorado","Characato","Chiguata","La Joya","Miraflores","Mollebaya","Paucarpata","Pocsi","Polobaya","Quequeña","Sabandia","Sachaca","San Juan de Siguas","San Juan de Tarucani","Santa Isabel de Siguas","Santa Rita de Siguas","Socabaya","Tiabaya","Uchumayo","Vitor","Yanahuara","Yarabamba","Yura","Mariano Melgar","Jacobo Hunter","Alto Selva Alegre","José Luis Bustamante y Rivero"],"Caylloma":["Chivay","Achoma","Cabanaconde","Caylloma","Callalli","Coporaque","Huambo","Huanca","Ichupampa","Lari","Lluta","Maca","Madrigal","San Antonio de Chuca","Sibayo","Tapay","Tisco","Tuti","Yanque","Majes"],"Camaná":["Camaná","José Maria Quimper","Mariano Nicolas Valcárcel","Mariscal Cáceres","Nicolas de Pierola","Ocoña","Quilca","Samuel Pastor"],"Caravelí":["Caravelí","Acarí","Atico","Atiquipa","Bella Union","Cahuacho","Chala","Chaparra","Huanuhuanu","Jaqui","Lomas","Quicacha","Yauca"],"Castilla":["Aplao","Andagua","Ayo","Chachas","Chilcaymarca","Choco","Huancarqui","Machaguay","Orcopampa","Pampacolca","Tipan","Uraca","Uñon","Viraco"],"Condesuyos":["Chuquibamba","Andaray","Cayarani","Chichas","Iray","Salamanca","Yanaquihua","Rio Grande"],"Islay":["Mollendo","Cocachacra","Dean Valdivia","Islay","Mejia","Punta de Bombón"],"La Union":["Cotahuasi","Alca","Charcana","Huaynacotas","Pampamarca","Puyca","Quechualla","Sayla","Tauria","Tomepampa","Toro"]},"Ayacucho":{"Huamanga":["Ayacucho","Acos Vinchos","Carmen Alto","Chiara","Quinua","San José de Ticllas","San Juan Bautista","Santiago de Pischa","Vinchos","Tambillo","Acocro","Socos","Ocros","Pacaycasa","Jesus Nazareno"],"Cangallo":["Cangallo","Chuschi","Los Morochucos","Paras","Totos","Maria Parado de Bellido"],"Huanta":["Huanta","Ayahuanco","Huamanguilla","Iguain","Luricocha","Santillana","Sivia","Llochegua"],"La Mar":["San Miguel","Anco","Ayna","Chilcas","Chungui","Tambo","Luis Carranza","Santa Rosa","Samugari"],"Lucanas":["Puquio","Aucara","Cabana","Carmen Salcedo","Chaviña","Chipao","Huac-Huas","Laramate","Leoncio Prado","Lucanas","Llauta","Ocaña","Otoca","Sancos","San Juan","San Pedro","Santa Ana de Huaycahuacho","Santa Lucia","Saisa","San Pedro de Palco","San Cristóbal"],"Parinacochas":["Coracora","Coronel Castañeda","Chumpi","Pacapausa","Pullo","Puyusca","San Francisco de Ravacayco","Upahuacho"],"Victor Fajardo":["Huancapi","Alcamenca","Apongo","Canaria","Cayara","Colca","Huaya","Huamanquiquia","Huancaraylla","Sarhua","Vilcanchos","Asquipata"],"Huanca Sancos":["Sancos","Sacsamarca","Santiago de Lucanamarca","Carapo"],"Vilcas Huaman":["Vilcas Huaman","Vischongo","Accomarca","Carhuanca","Concepcion","Huambalpa","Saurama","Independencia"],"Paucar del Sara Sara":["Pausa","Colta","Corculla","Lampa","Marcabamba","Oyolo","Pararca","San Javier de Alpabamba","San José de Ushua","Sara Sara"],"Sucre":["Querobamba","Belén","Chalcos","San Salvador de Quije","Paico","Santiago de Paucaray","San Pedro de Larcay","Soras","Huacaña","Chilcayoc","Morcolla"]},"Cajamarca":{"Cajamarca":["Cajamarca","Asunción","Cospan","Chetilla","Encañada","Jesus","Los Baños del Inca","Llacanora","Magdalena","Matara","Namora","San Juan"],"Cajabamba":["Cajabamba","Cachachi","Condebamba","Sitacocha"],"Celendín":["Celendín","Cortegana","Chumuch","Huasmin","Jorge Chávez","José Gálvez","Miguel Iglesias","Oxamarca","Sorochuco","Sucre","Utco","La Libertad de Pallan"],"Contumaza":["Contumaza","Chilete","Guzmango","San Benito","Cupisnique","Tantarica","Yonan","Santa Cruz de Toled"],"Cutervo":["Cutervo","Callayuc","Cujillo","Choros","La Ramada","Pimpingos","Querocotillo","San Andrés de Cutervo","San Juan de Cutervo","San Luis de Lucma","Santa Cruz","Santo Domingo de La Capilla","Santo Tomas","Socota","Toribio Casanova"],"Chota":["Chota","Anguia","Cochabamba","Conchan","Chadin","Chiguirip","Chimban","Huambos","Lajas","Llama","Miracosta","Paccha","Pion","Querocoto","Tacabamba","Tocmoche","San Juan de Licupis","Choropampa","Chalamarca"],"Hualgayoc":["Bambamarca","Chugur","Hualgayoc"],"Jaén":["Jaén","Bellavista","Colasay","Chontali","Pomahuaca","Pucara","Sallique","San Felipe","San Jose del Alto","Santa Rosa","Las Pirias","Huabal"],"Santa Cruz":["Santa Cruz","Catache","Chancaybaños","La Esperanza","Ninabamba","Pulan","Sexi","Uticyacu","Yauyucan","Andabamba","Saucepampa"],"San Miguel":["San Miguel","Calquis","La Florida","Llapa","Nanchoc","Niepos","San Gregorio","San Silvestre de Cochan","El Prado","Union Agua Blanca","Tongod","Catilluc","Bolivar"],"San Ignacio":["San Ignacio","Chirinos","Huarango","Namballe","La Coipa","San José de Lourdes","Tabaconas"],"San Marcos":["Pedro Gálvez","Ichocan","Gregorio Pita","José Manuel Quiroz","Eduardo Villanueva","José Sabogal","Chancay"],"San Pablo":["San Pablo","San Bernardino","San Luis","Tumbaden"]},"Cusco":{"Cusco":["Cusco","Ccorca","Poroy","San Jerónimo","San Sebastian","Santiago","Saylla","Wanchaq"],"Acomayo":["Acomayo","Acopia","Acos","Pomacanchi","Rondocan","Sangarara","Mosoc Llacta"],"Anta":["Anta","Chinchaypujio","Huarocondo","Limatambo","Mollepata","Pucyura","Zurite","Cachimayo","Ancahuasi"],"Calca":["Calca","Coya","Lamay","Lares","Pisac","San Salvador","Taray","Yanatile"],"Canas":["Yanaoca","Checca","Kunturkanki","Langui","Layo","Pampamarca","Quehue","Tupac Amaru"],"Canchis":["Sicuani","Combapata","Checacupe","Marangani","Pitumarca","San Pablo","San Pedro","Tinta"],"Chumbivilcas":["Santo Tomas","Capacmarca","Colquemarca","Chamaca","Livitaca","Llusco","Quiñota","Velille"],"Espinar":["Espinar","Condoroma","Coporaque","Ocoruro","Pallpata","Pichigua","Suyckutambo","Alto Pichigua"],"La Convención":["Santa Ana","Echarate","Huayopata","Maranura","Ocobamba","Santa Teresa","Vilcabamba","Quellouno","Kimbiri","Pichari"],"Paruro":["Paruro","Accha","Ccapi","Colcha","Huanoquite","Omacha","Yaurisque","Paccaritambo","Pillpinto"],"Paucartambo":["Paucartambo","Caicay","Colquepata","Challabamba","Kosñipata","Huancarani"],"Quispicanchi":["Urcos","Andahuaylillas","Camanti","Ccarhuayo","Ccatca","Cusipata","Huaro","Lucre","Marcapata","Ocongate","Oropesa","Quiquijana"],"Urubamba":["Urubamba","Chinchero","Huayllabamba","Machupicchu","Maras","Ollantaytambo","Yucay"]},"Huancavelica":{"Huancavelica":["Huancavelica","Acobambilla","Acoria","Conayca","Cuenca","Huachocolpa","Huayllahuara","Izcuchaca","Laria","Manta","Mariscal Cáceres","Moya","Nuevo Occoro","Palca","Pilchaca","Vilca","Yauli","Ascensión","Huando"],"Acobamba":["Acobamba","Anta","Andabamba","Caja","Marcas","Paucara","Pomacocha","Rosario"],"Angaraes":["Lircay","Anchonga","Callanmarca","Congalla","Chincho","Huayllay Grande","Huanca-Huanca","Julcamarca","San Antonio de Antaparco","Santo Tomas de Pata","Secclla","Ccochaccasa"],"Castrovirreyna":["Castrovirreyna","Arma","Aurahua","Capillas","Cocas","Chupamarca","Huachos","Huamatambo","Mollepampa","San Juan","Tantara","Ticrapo","Santa Ana"],"Tayacaja":["Pampas","Acostambo","Acraquia","Ahuaycha","Colcabamba","Daniel Hernández","Huachocolpa","Huaribamba","Ñahuimpuquio","Pazos","Quishuar","Salcabamba","San Marcos de Rocchac","Surcubamba","Tintay Puncu","Salcahuasi"],"Huaytara":["Ayavi","Córdova","Huayacundo Arma","Huaytara","Laramarca","Ocoyo","Pilpichaca","Querco","Quito-Arma","San Antonio de Cusicancha","San Francisco de Sangayaico","San Isidro","Santiago de Chocorvos","Santiago de Quirahuara","Santo Domingo de Capillas","Tambo"],"Churcampa":["Churcampa","Anco","Chinchihuasi","El Carmen","La Merced","Locroja","Paucarbamba","San Miguel de Mayocc","San Pedro de Coris","Pachamarca","Cosme"]},"Huanuco":{"Huanuco":["Huanuco","Chinchao","Churubamba","Margos","Quisqui","San Francisco de Cayran","San Pedro de Chaulan","Santa Maria del Valle","Yarumayo","Amarilis","Pillco Marca","Yacus"],"Ambo":["Ambo","Cayna","Colpas","Conchamarca","Huacar","San Francisco","San Rafael","Tomay Kichwa"],"Dos de Mayo":["La Union","Chuquis","Marías","Pachas","Quivilla","Ripan","Shunqui","Sillapata","Yanas"],"Huamalíes":["Llata","Arancay","Chavin de Pariarca","Jacas Grande","Jircan","Miraflores","Monzón","Punchao","Puños","Singa","Tantamayo"],"Marañon":["Huacrachuco","Cholon","San Buenaventura"],"Leoncio Prado":["Rupa-Rupa","Daniel Alomias Robles","Hermílio Valdizan","Luyando","Mariano Damaso Beraun","José Crespo y Castillo"],"Pachitea":["Panao","Chaglla","Molino","Umari"],"Puerto Inca":["Honoria","Puerto Inca","Codo del Pozuzo","Tournavista","Yuyapichis"],"Huacaybamba":["Huacaybamba","Pinra","Canchabamba","Cochabamba"],"Lauricocha":["Jesus","Baños","San Francisco de Asís","Queropalca","San Miguel de Cauri","Rondos","Jivia"],"Yarowilca":["Chavinillo","Aparicio Pomares","Cahuac","Chacabamba","Jacas Chico","Obas","Pampamarca","Choras"]},"Ica":{"Ica":["Ica","La Tinguiña","Los Aquijes","Parcona","Pueblo Nuevo","Salas","San José de los Molinos","San Juan Bautista","Santiago","Subtanjalla","Yauca del Rosario","Tate","Pachacutec","Ocucaje"],"Chincha":["Chincha Alta","Chavin","Chincha Baja","El Carmen","Grocio Prado","San Pedro de Huacarpana","Sunampe","Tambo de Mora","Alto Laran","Pueblo Nuevo","San Juan de Yanac"],"Nazca":["Nazca","Changuillo","El Ingenio","Marcona","Vista Alegre"],"Pisco":["Pisco","Huancano","Humay","Independencia","Paracas","San Andrés","San Clemente","Tupac Amaru Inca"],"Palpa":["Palpa","Llipata","Rio Grande","Santa Cruz","Tibillo"]},"Junín":{"Huancayo":["Huancayo","Carhuacallanga","Colca","Cullhuas","Chacapampa","Chicche","Chilca","Chongos Alto","Chupuro","El Tambo","Huacrapuquio","Hualhuas","Huancan","Huasicancha","Huayucachi","Ingenio","Pariahuanca","Pilcomayo","Pucara","Quichuay","Quilcas","San Agustín","San Jerónimo de Tunan","Santo Domingo de Acobamba","Saño","Sapallanga","Sicaya","Viques"],"Concepcion":["Concepcion","Aco","Andamarca","Comas","Cochas","Chambara","Heroínas Toledo","Manzanares","Mariscal Castilla","Matahuasi","Mito","Nueve de Julio","Orcotuna","Santa Rosa de Ocopa","San José de Quero"],"Jauja":["Jauja","Acolla","Apata","Ataura","Canchayllo","El Mantaro","Huamali","Huaripampa","Huertas","Janjaillo","Julcán","Leonor Ordóñez","Llocllapampa","Marco","Masma","Molinos","Monobamba","Muqui","Muquiyauyo","Paca","Paccha","Pancan","Parco","Pomacancha","Ricran","San Lorenzo","San Pedro de Chunan","Sincos","Tunan Marca","Yauli","Curicaca","Masma Chicche","Sausa","Yauyos"],"Junín":["Junín","Carhuamayo","Ondores","Ulcumayo"],"Tarma":["Tarma","Acobamba","Huaricolca","Huasahuasi","La Union","Palca","Palcamayo","San Pedro de Cajas","Tapo"],"Yauli":["La Oroya","Chacapalpa","Huay-Huay","Marcapomacocha","Morococha","Paccha","Santa Barbara de Carhuacayan","Suitucancha","Yauli","Santa Rosa de Sacco"],"Satipo":["Satipo","Coviriali","Llaylla","Mazamari","Pampa Hermosa","Pangoa","Rio Negro","Rio Tambo"],"Chanchamayo":["Chanchamayo","San Ramón","Vitoc","San Luis de Shuaro","Pichanaqui","Perene"],"Chupaca":["Chupaca","Ahuac","Chongos Bajo","Huachac","Huamancaca Chico","San Juan de Yscos","San Juan de Jarpa","Tres de Diciembre","Yanacancha"]},"La Libertad":{"Trujillo":["Trujillo","Huanchaco","Laredo","Moche","Salaverry","Simbal","Victor Larco Herrera","Poroto","El Porvenir","La Esperanza","Florencia de Mora"],"Bolivar":["Bolivar","Bambamarca","Condormarca","Longotea","Ucuncha","Uchumarca"],"Sánchez Carrión":["Huamachuco","Cochorco","Curgos","Chugay","Marcabal","Sanagoran","Sarin","Sartimbamba"],"Otuzco":["Otuzco","Agallpampa","Charat","Huaranchal","La Cuesta","Paranday","Salpo","Sinsicap","Usquil","Mache"],"Pacasmayo":["San Pedro de Lloc","Guadalupe","Jequetepeque","Pacasmayo","San José"],"Pataz":["Tayabamba","Buldibuyo","Chillia","Huaylillas","Huancaspata","Huayo","Ongon","Parcoy","Pataz","Pias","Taurija","Urpay","Santiago de Challas"],"Santiago de Chuco":["Santiago de Chuco","Cachicadan","Mollebamba","Mollepata","Quiruvilca","Santa Cruz de Chuca","Sitabamba","Angasmarca"],"Ascope":["Ascope","Chicama","Chocope","Santiago de Cao","Magdalena de Cao","Paijan","Rázuri","Casa Grande"],"Chepén":["Chepén","Pacanga","Pueblo Nuevo"],"Julcán":["Julcán","Carabamba","Calamarca","Huaso"],"Gran Chimú":["Cascas","Lucma","Marmot","Sayapullo"],"Viru":["Viru","Chao","Guadalupito"]},"Lambayeque":{"Chiclayo":["Chiclayo","Chongoyape","Eten","Eten Puerto","Lagunas","Monsefu","Nueva Arica","Oyotun","Picsi","Pimentel","Reque","José Leonardo Ortiz","Santa Rosa","Saña","La Victoria","Cayalti","Patapo","Pomalca","Pucala","Tuman"],"Ferreñafe":["Ferreñafe","Incahuasi","Cañaris","Pitipo","Pueblo Nuevo","Manuel Antonio Mesones Muro"],"Lambayeque":["Lambayeque","Chochope","Illimo","Jayanca","Mochumi","Morrope","Motupe","Olmos","Pacora","Salas","San José","Túcume"]},"Lima":{"Lima":["Lima","Ancón","Ate","Breña","Carabayllo","Comas","Chaclacayo","Chorrillos","La Victoria","La Molina","Lince","Lurigancho","Lurin","Magdalena del Mar","Miraflores","Pachacamac","Pueblo Libre","Pucusana","Puente Piedra","Punta Hermosa","Punta Negra","Rímac","San Bartolo","San Isidro","Barranco","San Martín de Porres","San Miguel","Santa Maria del Mar","Santa Rosa","Santiago de Surco","Surquillo","Villa Maria del Triunfo","Jesus Maria","Independencia","El Agustino","San Juan de Miraflores","San Juan de Lurigancho","San Luis","Cieneguilla","San Borja","Villa El Salvador","Los Olivos","Santa Anita"],"Cajatambo":["Cajatambo","Copa","Gorgor","Huancapon","Manas"],"Canta":["Canta","Arahuay","Huamantanga","Huaros","Lachaqui","San Buenaventura","Santa Rosa de Quives"],"Cañete":["San Vicente de Cañete","Calango","Cerro Azul","Coayllo","Chilca","Imperial","Lunahuana","Mala","Nuevo Imperial","Pacaran","Quilmana","San Antonio","San Luis","Santa Cruz de Flores","Zúñiga","Asia"],"Huaura":["Huacho","Ambar","Caleta de Carquin","Checras","Hualmay","Huaura","Leoncio Prado","Paccho","Santa Leonor","Santa Maria","Sayan","Vegueta"],"Huarochiri":["Matucana","Antioquia","Callahuanca","Carampoma","San Pedro de Casta","Cuenca","Chicla","Huanza","Huarochiri","Lahuaytambo","Langa","Mariatana","Ricardo Palma","San Andrés de Tupicocha","San Antonio","San Bartolomé","San Damian","Sangallaya","San Juan de Tantaranche","San Lorenzo de Quinti","San Mateo","San Mateo de Otao","San Pedro de Huancayre","Santa Cruz de Cocachacra","Santa Eulalia","Santiago de Anchucaya","Santiago de Tuna","Santo Domingo de los Olleros","Surco","Huachupampa","Laraos","San Juan de Iris"],"Yauyos":["Yauyos","Alis","Ayauca","Ayaviri","Azángaro","Cacra","Carania","Cochas","Colonia","Chocos","Huampara","Huancaya","Huangascar","Huantan","Huañec","Laraos","Lincha","Miraflores","Omas","Quinches","Quinocay","San Joaquín","San Pedro de Pilas","Tanta","Tauripampa","Tupe","Tomas","Viñac","Vitis","Hongos","Madean","Putinza","Catahuasi"],"Huaral":["Huaral","Atavillos Alto","Atavillos Bajo","Aucallama","Chancay","Ihuari","Lampian","Pacaraos","San Miguel de Acos","Veintisiete de Noviembre","Santa Cruz de Andamarca","Sumbilca"],"Barranca":["Barranca","Paramonga","Pativilca","Supe","Supe Puerto"],"Oyon":["Oyon","Navan","Caujul","Andajes","Pachangara","Cochamarca"]},"Loreto":{"Maynas":["Iquitos","Alto Nanay","Fernando Lores","Las Amazonas","Mazan","Napo","Putumayo","Torres Causana","Indiana","Punchana","Belén","San Juan Bautista","Teniente Manuel Clavero"],"Alto Amazonas":["Yurimaguas","Balsapuerto","Jeberos","Lagunas","Santa Cruz","Teniente Cesar López Rojas"],"Loreto":["Nauta","Parinari","Tigre","Urarinas","Trompeteros"],"Requena":["Requena","Alto Tapiche","Capelo","Emilio San Martín","Maquia","Puinahua","Saquena","Soplin","Tapiche","Jenaro Herrera","Yaquerana"],"Ucayali":["Contamana","Vargas Guerra","Padre Marquez","Pampa Hermosa","Sarayacu","Inahuaya"],"Mariscal Ramón Castilla":["Ramón Castilla","Pebas","Yavari","San Pablo"],"Datem del Marañon":["Barranca","Andoas","Cahuapanas","Manseriche","Morona","Pastaza"]},"Madre de Dios":{"Tambopata":["Tambopata","Inambari","Las Piedras","Laberinto"],"Manu":["Manu","Fitzcarrald","Madre de Dios","Huepetuhe"],"Tahuamanu":["Iñapari","Iberia","Tahuamanu"]},"Moquegua":{"Mariscal Nieto":["Moquegua","Carumas","Cuchumbaya","San Cristóbal","Torata","Samegua"],"General Sánchez Cerro":["Omate","Coalaque","Chojata","Ichuña","La Capilla","Lloque","Matalaque","Puquina","Quinistaquillas","Ubinas","Yunga"],"Ilo":["Ilo","El Algarrobal","Pacocha"]},"Pasco":{"Pasco":["Chaupimarca","Huachon","Huariaca","Huayllay","Ninacaca","Pallanchacra","Paucartambo","San Francisco de Asís de Yarusyacan","Simon Bolivar","Ticlacayan","Tinyahuarco","Vicco","Yanacancha"],"Daniel Alcides Carrión":["Yanahuanca","Chacayan","Goyllarisquizga","Paucar","San Pedro de Pillao","Santa Ana de Tusi","Tapuc","Vilcabamba"],"Oxapampa":["Oxapampa","Chontabamba","Huancabamba","Puerto Bermúdez","Villa Rica","Pozuzo","Palcazu","Constitución"]},"Piura":{"Piura":["Piura","Castilla","Catacaos","La Arena","La Union","Las Lomas","Tambo Grande","Cura Mori","El Tallan"],"Ayabaca":["Ayabaca","Frias","Lagunas","Montero","Pacaipampa","Sapillica","Sicchez","Suyo","Jilili","Paimas"],"Huancabamba":["Huancabamba","Canchaque","Huarmaca","Sondor","Sondorillo","El Carmen de La Frontera","San Miguel de El Faique","Lalaquiz"],"Morropon":["Chulucanas","Buenos Aires","Chalaco","Morropon","Salitral","Santa Catalina de Mossa","Santo Domingo","La Matanza","Yamango","San Juan de Bigote"],"Paita":["Paita","Amotape","Arenal","La Huaca","Colan","Tamarindo","Vichayal"],"Sullana":["Sullana","Bellavista","Lancones","Marcavelica","Miguel Checa","Querecotillo","Salitral","Ignacio Escudero"],"Talara":["Pariñas","El Alto","La Brea","Lobitos","Mancora","Los Organos"],"Sechura":["Sechura","Vice","Bernal","Bellavista de La Union","Cristo Nos Valga","Rinconada Llicuar"]},"Puno":{"Puno":["Puno","Acora","Atuncolla","Capachica","Coata","Chucuito","Huata","Mañazo","Paucarcolla","Pichacani","San Antonio","Tiquillaca","Vilque","Plateria","Amantani"],"Azángaro":["Azángaro","Achaya","Arapa","Asillo","Caminaca","Chupa","José Domingo Choquehuanca","Muñani","Potoni","Saman","San Anton","San José","San Juan de Salinas","Santiago de Pupuja","Tirapata"],"Carabaya":["Macusani","Ajoyani","Ayapata","Coasa","Corani","Crucero","Ituata","Ollachea","San Gaban","Usicayos"],"Chucuito":["Juli","Desaguadero","Huacullani","Pisacoma","Pomata","Zepita","Kelluyo"],"Huancane":["Huancane","Cojata","Inchupalla","Pusi","Rosaspata","Taraco","Vilque Chico","Huatasani"],"Lampa":["Lampa","Cabanilla","Calapuja","Nicasio","Ocuviri","Palca","Paratia","Pucara","Santa Lucia","Vilavila"],"Melgar":["Ayaviri","Antauta","Cupi","Llalli","Macari","Nuñoa","Orurillo","Santa Rosa","Umachiri"],"Sandia":["Sandia","Cuyocuyo","Limbani","Phara","Patambuco","Quiaca","San Juan del Oro","Yanahuaya","Alto Inambari","San Pedro de Putina Punco"],"San Román":["Juliaca","Cabana","Cabanillas","Caracoto"],"Yunguyo":["Yunguyo","Unicachi","Anapia","Copani","Cuturapi","Ollaraya","Tinicachi"],"San Antonio de Putina":["Putina","Pedro Vilca Apaza","Quilcapuncu","Ananea","Sina"],"El Collao":["Ilave","Pilcuyo","Santa Rosa","Capazo","Conduriri"],"Moho":["Moho","Conima","Tilali","Huayrapata"]},"San Martín":{"Moyobamba":["Moyobamba","Calzada","Habana","Jepelacio","Soritor","Yantalo"],"Huallaga":["Saposoa","Piscoyacu","Sacanche","Tingo de Saposoa","Alto Saposoa","El Eslabón"],"Lamas":["Lamas","Barranquita","Caynarachi","Cuñumbuqui","Pinto Recodo","Rumisapa","Shanao","Tabalosos","Zapatero","Alonso de Alvarado","San Roque de Cumbaza"],"Mariscal Cáceres":["Juanjuí","Campanilla","Huicungo","Pachiza","Pajarillo"],"Rioja":["Rioja","Posic","Yorongos","Yuracyacu","Nueva Cajamarca","Elías Soplin Vargas","San Fernando","Pardo Miguel","Awajun"],"San Martín":["Tarapoto","Alberto Leveau","Cacatachi","Chazuta","Chipurana","El Porvenir","Huimbayoc","Juan Guerra","Morales","Papaplaya","San Antonio","Sauce","Shapaja","La Banda de Shilcayo"],"Bellavista":["Bellavista","San Rafael","San Pablo","Alto Biavo","Huallaga","Bajo Biavo"],"Tocache":["Tocache","Nuevo Progreso","Polvora","Shunte","Uchiza"],"Picota":["Picota","Buenos Aires","Caspisapa","Pilluana","Pucacaca","San Cristóbal","San Hilarión","Tingo de Ponasa","Tres Unidos","Shamboyacu"],"El Dorado":["San José de Sisa","Agua Blanca","Shatoja","San Martín","Santa Rosa"]},"Tacna":{"Tacna":["Tacna","Calana","Inclan","Pachia","Palca","Pocollay","Sama","Alto de La Alianza","Ciudad Nueva","Coronel Gregorio Albarracín Lanchipa"],"Tarata":["Tarata","Héroes Albarracín","Estique","Estique-Pampa","Sitajara","Susapaya","Tarucachi","Ticaco"],"Jorge Basadre":["Locumba","Ite","Ilabaya"],"Candarave":["Candarave","Cairani","Curibaya","Huanuara","Quilahuani","Camilaca"]},"Tumbes":{"Tumbes":["Tumbes","Corrales","La Cruz","Pampas de Hospital","San Jacinto","San Juan de La Virgen"],"Contralmirante Villar":["Zorritos","Casitas","Canoas de Punta Sal"],"Zarumilla":["Zarumilla","Matapalo","Papayal","Aguas Verdes"]},"Callao":{"Callao":["Callao","Bellavista","La Punta","Carmen de La Legua","La Perla","Ventanilla","Mi Perú"]},"Ucayali":{"Coronel Portillo":["Calleria","Yarinacocha","Masisea","Campoverde","Iparia","Nueva Requena","Manantay"],"Padre Abad":["Padre Abad","Irazola","Curimana"],"Atalaya":["Raymondi","Tahuania","Yurua","Sepahua"],"Purús":["Purús"]}};
+const _afiF = d => { d = new Date(d); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+const AFI_LOCAL = 'pieers_afi_locales', AFI_IDX = 'pieers_afi_idx';
+function afiLocales() { try { return JSON.parse(localStorage.getItem(AFI_LOCAL) || '[]'); } catch(e) { return []; } }
+function afiGuardarLocales(l) { try { localStorage.setItem(AFI_LOCAL, JSON.stringify(l)); } catch(e) {} }
+function afiIdx() { try { return JSON.parse(localStorage.getItem(AFI_IDX) || '{}'); } catch(e) { return {}; } }
+function afiPendientes() { try { return (syCola || []).filter(op => /^afiliados\//.test(op.p)).length; } catch(e) { return 0; } }
+function afiYo() { return (typeof syActivo === 'function' && syActivo()) ? sySes : null; }
+function afiPanelRegistroHtml() {
+    const yo = afiYo(), hoy = _afiF(Date.now());
+    const mios = afiLocales().filter(a => !yo || a.u === yo.id);
+    const deHoy = mios.filter(a => _afiF(a.ts) === hoy);
+    const pend = afiPendientes();
+    let h = '<div style="background:#fff;border-radius:18px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.08);margin-bottom:12px;">'
+        + '<button onclick="afiFormulario()" style="width:100%;padding:18px;border:none;border-radius:14px;background:linear-gradient(135deg,#E53935,#B71C1C);color:#fff;font:900 20px Barlow,Inter,sans-serif;letter-spacing:.5px;">📝 REGISTRAR CLIENTE</button>'
+        + '<div style="display:flex;gap:8px;margin-top:10px;">'
+        + '<div style="flex:1;background:#F2F7F2;border-radius:12px;padding:10px;text-align:center;"><div style="font:900 26px Barlow,sans-serif;color:#2E7D32;">' + deHoy.length + '</div><div style="font:700 11px Inter,sans-serif;color:#555;">afiliados hoy' + (yo ? ' por ti' : '') + '</div></div>'
+        + '<div style="flex:1;background:' + (pend ? '#FFF3E0' : '#F2F7F2') + ';border-radius:12px;padding:10px;text-align:center;"><div style="font:900 26px Barlow,sans-serif;color:' + (pend ? '#E65100' : '#2E7D32') + ';">' + (pend ? pend : '✓') + '</div><div style="font:700 11px Inter,sans-serif;color:#555;">' + (pend ? 'por subir (sin datos)' : 'todo subido') + '</div></div></div>';
+    if (deHoy.length) h += '<div style="margin-top:10px;">' + deHoy.slice().reverse().slice(0, 8).map(a => '<div style="display:flex;justify-content:space-between;gap:8px;padding:8px 2px;border-top:1px solid #EEE;font:600 13px Inter,sans-serif;"><span><b>' + syEsc(a.nom + ' ' + a.ape) + '</b><br><span style="color:#777;font-size:11.5px;">DNI ' + a.dni + ' · ' + new Date(a.ts).toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' }) + '</span></span><span style="font-size:18px;">' + (afiEnCola(a.dni) ? '⏳' : '✅') + '</span></div>').join('') + '</div>';
+    if (afiEsJefe()) h += '<button onclick="afiVerTodos()" style="width:100%;margin-top:10px;padding:13px;border:none;border-radius:12px;background:#1565C0;color:#fff;font:800 14px Inter,sans-serif;">📊 Afiliados por vendedor</button>';
+    return h + '</div>';
+}
+function afiEnCola(dni) { try { return (syCola || []).some(op => op.p === 'afiliados/' + dni); } catch(e) { return false; } }
+function _afiOpts(arr, sel) { return '<option value="">— Elegir —</option>' + arr.map(x => '<option' + (x === sel ? ' selected' : '') + '>' + syEsc(x) + '</option>').join(''); }
+let _afiEditando = null;
+function afiFormulario(datos) {
+    const c = document.getElementById('afi-cont'); if (!c) return;
+    _afiEditando = datos ? datos.dni : null;
+    const dep = (datos && AFI_UBIGEO[datos.dep]) ? datos.dep : 'Cajamarca';
+    const prov = (datos && AFI_UBIGEO[dep][datos.prov]) ? datos.prov : (datos ? '' : 'Cajamarca');
+    const dist = datos ? (datos.dist || '') : 'Cajamarca';
+    const I = 'width:100%;box-sizing:border-box;padding:13px 12px;border:1.5px solid #CFD3DA;border-radius:12px;font:600 16px Inter,sans-serif;background:#fff;color:#111;margin-top:4px;';
+    const L = (t, inner) => '<label style="display:block;margin-bottom:12px;font:800 13px Inter,sans-serif;color:#333;">' + t + ' <span style="color:#E53935;">*</span>' + inner + '</label>';
+    const max = new Date(); max.setFullYear(max.getFullYear() - 18);
+    c.innerHTML = '<div style="background:#fff;border-radius:18px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.08);">'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><button onclick="' + (datos ? 'afiVistaTodos()' : 'abrirAfiliar()') + '" style="border:1.5px solid #CCC;background:#fff;border-radius:10px;padding:8px 12px;font:800 13px Inter,sans-serif;">← Volver</button><div style="font:900 18px Barlow,Inter,sans-serif;">' + (datos ? '✏️ EDITAR AFILIADO' : '📝 NUEVO AFILIADO') + '</div></div>'
+        + L('DNI', '<input id="af-dni" style="' + I + '" inputmode="numeric" maxlength="8" placeholder="8 dígitos" oninput="this.value=this.value.replace(/\\D/g,\'\')">')
+        + L('Apellidos', '<input id="af-ape" style="' + I + '" autocapitalize="characters" placeholder="Paterno y materno">')
+        + L('Nombres', '<input id="af-nom" style="' + I + '" autocapitalize="characters">')
+        + L('Sexo', '<select id="af-sexo" style="' + I + '"><option value="">— Elegir —</option><option>Femenino</option><option>Masculino</option></select>')
+        + L('Fecha de nacimiento', '<input id="af-nac" type="date" style="' + I + '" max="' + _afiF(max) + '">')
+        + L('Departamento', '<select id="af-dep" style="' + I + '" onchange="afiCambioDep()">' + _afiOpts(Object.keys(AFI_UBIGEO), dep) + '</select>')
+        + L('Provincia', '<select id="af-prov" style="' + I + '" onchange="afiCambioProv()">' + _afiOpts(Object.keys(AFI_UBIGEO[dep]), prov) + '</select>')
+        + L('Distrito', '<select id="af-dist" style="' + I + '">' + _afiOpts(prov ? AFI_UBIGEO[dep][prov] : [], dist) + '</select>')
+        + L('Dirección', '<input id="af-dir" style="' + I + '" placeholder="Jr. / Av. / Calle y número">')
+        + L('Celular', '<input id="af-cel" style="' + I + '" inputmode="numeric" maxlength="9" placeholder="9 dígitos, empieza con 9" oninput="this.value=this.value.replace(/\\D/g,\'\')">')
+        + L('Correo electrónico', '<input id="af-email" type="email" style="' + I + '" autocapitalize="off" placeholder="nombre@correo.com">')
+        + '<label style="display:flex;gap:10px;align-items:flex-start;margin:6px 0 14px;font:600 12.5px Inter,sans-serif;color:#333;"><input id="af-ok" type="checkbox" style="width:22px;height:22px;flex-shrink:0;accent-color:#E53935;"> El cliente acepta que PIEERS use sus datos para el programa de afiliados y promociones (Ley N° 29733).</label>'
+        + '<div id="af-err" style="display:none;background:#FFEBEE;color:#B71C1C;border-radius:10px;padding:10px;font:700 13px Inter,sans-serif;margin-bottom:10px;"></div>'
+        + '<button onclick="afiGuardar()" style="width:100%;padding:17px;border:none;border-radius:14px;background:#2E7D32;color:#fff;font:900 19px Barlow,Inter,sans-serif;">' + (datos ? '💾 GUARDAR CAMBIOS' : '✅ GUARDAR AFILIADO') + '</button>'
+        + '<div style="font:600 11.5px Inter,sans-serif;color:#777;text-align:center;margin-top:8px;">Funciona sin internet: se guarda en este celular y se sube solo cuando haya datos.</div></div>';
+    c.scrollTop = 0;
+    if (datos) {
+        const set = (id, v) => { const e = document.getElementById(id); if (e) e.value = v || ''; };
+        set('af-dni', datos.dni); set('af-ape', datos.ape); set('af-nom', datos.nom); set('af-sexo', datos.sexo); set('af-nac', datos.nac);
+        set('af-dir', datos.dir); set('af-cel', datos.cel); set('af-email', datos.email);
+        const ok = document.getElementById('af-ok'); if (ok) ok.checked = true;
+    }
+}
+function afiCambioDep() { const d = document.getElementById('af-dep').value; const p = document.getElementById('af-prov'); p.innerHTML = _afiOpts(d ? Object.keys(AFI_UBIGEO[d]) : [], ''); document.getElementById('af-dist').innerHTML = _afiOpts([], ''); }
+function afiCambioProv() { const d = document.getElementById('af-dep').value, p = document.getElementById('af-prov').value; document.getElementById('af-dist').innerHTML = _afiOpts(d && p ? AFI_UBIGEO[d][p] : [], ''); }
+function afiGuardar() {
+    const v = id => (document.getElementById(id).value || '').trim();
+    const r = { dni: v('af-dni'), ape: v('af-ape').toUpperCase(), nom: v('af-nom').toUpperCase(), sexo: v('af-sexo'), nac: v('af-nac'),
+        dep: v('af-dep'), prov: v('af-prov'), dist: v('af-dist'), dir: v('af-dir'), cel: v('af-cel'), email: v('af-email').toLowerCase() };
+    const err = m => { const e = document.getElementById('af-err'); e.textContent = '⚠️ ' + m; e.style.display = 'block'; e.scrollIntoView({ block: 'center', behavior: 'smooth' }); };
+    if (!/^\d{8}$/.test(r.dni)) return err('El DNI debe tener 8 números.');
+    if (r.ape.length < 2) return err('Escribe los apellidos.');
+    if (r.nom.length < 2) return err('Escribe los nombres.');
+    if (!r.sexo) return err('Elige el sexo.');
+    if (!r.nac) return err('Pon la fecha de nacimiento.');
+    const n = new Date(r.nac + 'T12:00:00'), hoy = new Date(); let edad = hoy.getFullYear() - n.getFullYear(); if (hoy < new Date(hoy.getFullYear(), n.getMonth(), n.getDate())) edad--;
+    if (!(edad >= 18 && edad < 110)) return err('El cliente debe ser mayor de 18 años.');
+    if (!r.dep || !r.prov || !r.dist) return err('Elige departamento, provincia y distrito.');
+    if (r.dir.length < 4) return err('Escribe la dirección.');
+    if (!/^9\d{8}$/.test(r.cel)) return err('El celular debe tener 9 números y empezar con 9.');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(r.email)) return err('El correo no es válido.');
+    if (!document.getElementById('af-ok').checked) return err('El cliente debe aceptar el uso de sus datos.');
+    if (_afiEditando) return afiGuardarEdicion(r, err);
+    const locales = afiLocales(), idx = afiIdx();
+    const ya = locales.find(a => a.dni === r.dni) || (idx[r.dni] ? { n: idx[r.dni] } : null);
+    if (ya) return err('Este DNI ya está afiliado' + (ya.n ? ' (lo registró ' + ya.n + ')' : '') + '. El cliente ya tiene sus beneficios.');
+    const yo = afiYo();
+    r.ts = Date.now(); r.u = yo ? yo.id : ''; r.n = yo ? yo.n : 'Sin sesión'; r.dev = (localStorage.getItem('pieers_dev_id') || '');
+    locales.push(r); afiGuardarLocales(locales);
+    if (typeof syCfg !== 'undefined' && syCfg) { syEncolar('PUT', 'afiliados/' + r.dni, r); syEncolar('PATCH', 'afiIdx', { [r.dni]: r.n }); }
+    vibrar && vibrar(40);
+    const c = document.getElementById('afi-cont');
+    c.innerHTML = '<div style="background:#fff;border-radius:18px;padding:22px 16px;text-align:center;box-shadow:0 2px 10px rgba(0,0,0,.08);">'
+        + '<div style="font-size:56px;">✅</div><div style="font:900 24px Barlow,Inter,sans-serif;color:#2E7D32;">¡CLIENTE AFILIADO!</div>'
+        + '<div style="font:800 17px Inter,sans-serif;margin:10px 0 4px;">' + syEsc(r.nom + ' ' + r.ape) + '</div>'
+        + '<div style="font:600 14px Inter,sans-serif;color:#555;">DNI ' + r.dni + ' · Cumpleaños en ' + n.toLocaleDateString('es-PE', { month: 'long' }).toUpperCase() + '</div>'
+        + '<div style="background:#FFEBEE;border-radius:14px;padding:12px;margin:14px 0;"><div style="font:900 30px Bebas Neue,Barlow,sans-serif;color:#E53935;line-height:1;">20% HOY</div><div style="font:700 12px Inter,sans-serif;color:#333;">Máx. 4 prendas sobre precio de etiqueta · no aplica Edward, Wama, Sexy</div></div>'
+        + '<div style="font:600 12px Inter,sans-serif;color:#777;margin-bottom:14px;">' + (afiEnCola(r.dni) || !syCfg ? '⏳ Guardado en este celular. Se sube solo cuando haya internet.' : '☁️ Guardado y subido.') + '</div>'
+        + '<button onclick="afiFormulario()" style="width:100%;padding:15px;border:none;border-radius:14px;background:#E53935;color:#fff;font:900 17px Barlow,Inter,sans-serif;margin-bottom:8px;">📝 REGISTRAR OTRO</button>'
+        + '<button onclick="abrirAfiliar()" style="width:100%;padding:12px;border:1.5px solid #CCC;border-radius:12px;background:#fff;font:800 14px Inter,sans-serif;">Listo</button></div>';
+    c.scrollTop = 0;
+}
+// Al abrir el módulo con internet: traer la lista de DNIs ya afiliados (para avisar duplicados sin internet)
+async function afiRefrescarIdx() {
+    if (!(typeof syActivo === 'function' && syActivo())) return;
+    try { const ix = await syReq('GET', 'afiIdx'); if (ix) localStorage.setItem(AFI_IDX, JSON.stringify(ix)); } catch(e) {}
+}
+// ── Vista del administrador / supervisor ──
+let _afiTodos = null, _afiDesde = '', _afiHasta = '';
+async function afiVerTodos() {
+    if (!afiEsJefe()) return;
+    const c = document.getElementById('afi-cont'); if (!c) return;
+    c.innerHTML = '<div style="padding:30px;text-align:center;font:700 14px Inter,sans-serif;">⏳ Trayendo afiliados…</div>';
+    try { await syFlush(); } catch(e) {}
+    try { _afiTodos = (await syReq('GET', 'afiliados')) || {}; } catch(e) { c.innerHTML = '<div style="padding:20px;text-align:center;font:700 14px Inter,sans-serif;">⚠️ Sin internet. <button onclick="afiVerTodos()">Reintentar</button></div>'; return; }
+    if (!_afiDesde) { const h = new Date(); _afiHasta = _afiF(h); _afiDesde = _afiF(new Date(h.getFullYear(), h.getMonth(), 1)); }
+    afiVistaTodos();
+}
+function afiRango(t) { const h = new Date(), f = _afiF; if (t === 'hoy') _afiDesde = _afiHasta = f(h); else if (t === '7') { _afiHasta = f(h); _afiDesde = f(new Date(h - 6 * 864e5)); } else if (t === 'mes') { _afiHasta = f(h); _afiDesde = f(new Date(h.getFullYear(), h.getMonth(), 1)); } else { _afiDesde = _afiHasta = ''; } afiVistaTodos(); }
+function _afiFiltrados() { return Object.values(_afiTodos || {}).filter(a => { const d = _afiF(a.ts); return (!_afiDesde || d >= _afiDesde) && (!_afiHasta || d <= _afiHasta); }).sort((a, b) => b.ts - a.ts); }
+function afiVistaTodos() {
+    const c = document.getElementById('afi-cont'); if (!c) return;
+    const L = _afiFiltrados(), por = {};
+    L.forEach(a => { por[a.n || '—'] = (por[a.n || '—'] || 0) + 1; });
+    const chip = (t, l) => '<button onclick="afiRango(\'' + t + '\')" style="flex:1;padding:9px 4px;border:1.5px solid #CCC;border-radius:10px;background:#fff;font:800 12px Inter,sans-serif;">' + l + '</button>';
+    let h = '<div style="background:#fff;border-radius:18px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.08);">'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><button onclick="abrirAfiliar()" style="border:1.5px solid #CCC;background:#fff;border-radius:10px;padding:8px 12px;font:800 13px Inter,sans-serif;">← Volver</button><div style="font:900 17px Barlow,Inter,sans-serif;">📊 AFILIADOS POR VENDEDOR</div></div>'
+        + '<div style="display:flex;gap:6px;margin-bottom:6px;">' + chip('hoy', 'Hoy') + chip('7', '7 días') + chip('mes', 'Este mes') + chip('todo', 'Todo') + '</div>'
+        + '<div style="font:600 12px Inter,sans-serif;color:#666;margin-bottom:10px;">📅 ' + (_afiDesde ? _afiDesde.split('-').reverse().join('/') + ' al ' + _afiHasta.split('-').reverse().join('/') : 'Todas las fechas') + ' · <b>' + L.length + ' afiliado(s)</b></div>'
+        + Object.entries(por).sort((a, b) => b[1] - a[1]).map(([n, k]) => '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 4px;border-top:1px solid #EEE;font:800 15px Inter,sans-serif;"><span>👤 ' + syEsc(n) + '</span><span style="background:#2E7D32;color:#fff;border-radius:10px;padding:3px 12px;font:900 16px Barlow,sans-serif;">' + k + '</span></div>').join('')
+        + (L.length ? '<button onclick="afiExcel()" style="width:100%;margin-top:10px;padding:13px;border:none;border-radius:12px;background:#2E7D32;color:#fff;font:800 14px Inter,sans-serif;">📥 Descargar Excel</button>' : '<div style="padding:14px;text-align:center;color:#777;font:600 13px Inter,sans-serif;">No hay afiliados en este rango.</div>')
+        + '</div>';
+    if (L.length) h += '<div style="background:#fff;border-radius:18px;padding:6px 14px;box-shadow:0 2px 10px rgba(0,0,0,.08);margin-top:12px;">'
+        + '<div style="font:600 11.5px Inter,sans-serif;color:#888;padding:8px 2px 2px;">Toca un cliente para ver todos sus datos</div>'
+        + L.slice(0, 300).map(afiFichaHtml).join('') + '</div>';
+    c.innerHTML = h;
+}
+function afiExcel() {
+    const L = _afiFiltrados().slice().reverse(); if (!L.length) return;
+    const r0 = 4, rf = r0 + L.length - 1, vend = [...new Set(L.map(a => a.n || '—'))].sort();
+    const rango = _afiDesde ? 'Del ' + _afiDesde.split('-').reverse().join('/') + ' al ' + _afiHasta.split('-').reverse().join('/') : 'Todas las fechas';
+    const mes = d => d ? new Date(d + 'T12:00:00').toLocaleDateString('es-PE', { month: 'long' }).toUpperCase() : '';
+    const hA = { name:'AFILIADOS', tab:'C62828', titulo:'Clientes afiliados', sub: rango, filter:true,
+        widths:[12,8,20,11,26,24,11,13,12,14,16,18,34,12,28],
+        header:['FECHA','HORA','REGISTRÓ','DNI','APELLIDOS','NOMBRES','SEXO','NACIMIENTO','MES CUMPLE','DEPARTAMENTO','PROVINCIA','DISTRITO','DIRECCIÓN','CELULAR','CORREO'],
+        hstyle:['hr','h','hr','hr','hr','hr','hr','h','hr','hr','hr','hr','hr','hr','hr'],
+        rows: L.map(a => { const t = new Date(a.ts); return [ {v:t.toLocaleDateString('es-PE'),s:'c'}, {v:t.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'}),s:'c'}, {v:a.n||'',s:'est'}, {v:a.dni,s:'cod'}, {v:a.ape,s:'t'}, {v:a.nom,s:'t'}, {v:a.sexo,s:'c'}, {v:a.nac?a.nac.split('-').reverse().join('/'):'',s:'c'}, {v:mes(a.nac),s:'c'}, {v:a.dep,s:'t'}, {v:a.prov,s:'t'}, {v:a.dist,s:'t'}, {v:a.dir,s:'t'}, {v:a.cel,s:'cod'}, {v:a.email,s:'t'} ]; }),
+        total:['TOTAL', '', {v:L.length, f:`SUBTOTAL(103,D${r0}:D${rf})`, s:'tot', n:'#,##0" afiliados"'}, '', '', '', '', '', '', '', '', '', '', '', ''] };
+    const hR = { name:'RESUMEN', tab:'1565C0', titulo:'Afiliados por vendedor', sub: rango, zebra:false,
+        widths:[28,14,12], header:['VENDEDOR','AFILIADOS','% DEL TOTAL'], hstyle:['hr','h','h'],
+        rows: vend.map((n, i) => { const r = r0 + i, k = L.filter(a => (a.n || '—') === n).length; return [ {v:n,s:'k'}, {v:k, f:`COUNTIF(AFILIADOS!C${r0}:C${rf},A${r})`, s:'n0'}, {v:k / L.length, f:`IF(SUM(B$${r0}:B$${r0 + vend.length - 1})=0,0,B${r}/SUM(B$${r0}:B$${r0 + vend.length - 1}))`, s:'pct'} ]; }),
+        total:['TOTAL', {v:L.length, f:`SUBTOTAL(109,B${r0}:B${r0 + vend.length - 1})`, s:'tot'}, ''] };
+    xlExportar({ hojas: [hR, hA] }, 'AFILIADOS_' + (_afiDesde || 'todo') + (_afiHasta ? '_a_' + _afiHasta : ''), '🎁 AFILIADOS\n• ' + rango + '\n• Total: ' + L.length + '\n' + vend.map(n => '• ' + n + ': ' + L.filter(a => (a.n || '—') === n).length).join('\n'));
+}
+(function() {
+    const o = window.abrirAfiliar;
+    if (typeof o === 'function') window.abrirAfiliar = function() { const r = o.apply(this, arguments); afiRefrescarIdx(); return r; };
+})();
+
+
+// ══ v27.47 — LETRAS MÁS GRANDES Y PANTALLAS MÁS LIMPIAS ══
+(function() {
+    const st = document.createElement('style'); st.id = 'v2747-ui';
+    st.textContent = `
+    /* Inicio: solo el nombre de cada módulo, más grande */
+    #pantalla-modo .btn-modo .desc { display:none !important; }
+    #pantalla-modo .btn-modo .tit { font-size:25px !important; line-height:1.05 !important; letter-spacing:1px !important; }
+    #pantalla-modo .btn-modo { min-height:76px !important; padding-top:14px !important; padding-bottom:14px !important; }
+    /* Tabla de stock: letra más grande y filas más altas */
+    #cs-table-outer table td, #cs-table-outer table th { font-size:15px !important; padding:7px 5px !important; }
+    #cs-table-outer .cs-th-size, #cs-table-outer .cs-td-pos, #cs-table-outer .cs-td-zero, #cs-table-outer .cs-td-sum { min-width:30px !important; text-align:center !important; }
+    #cs-table-outer .cs-td-color { font-size:14px !important; font-weight:800 !important; }
+    #cs-table-outer .cs-td-pos { font-weight:900 !important; color:#0D47A1 !important; }
+    #cs-table-outer .cs-td-zero { color:#BBB !important; }
+    #cs-table-outer .cs-td-total { font-size:17px !important; font-weight:900 !important; }
+    #cs-table-outer .cs-th-tp, #cs-table-outer .cs-th-tp-label { font-size:11px !important; padding:3px 4px !important; }
+    `;
+    document.head.appendChild(st);
+})();
+
+
+// v27.48: ficha completa del afiliado (se despliega al tocarlo)
+function afiFichaHtml(a) {
+    const nac = a.nac ? new Date(a.nac + 'T12:00:00') : null, hoy = new Date();
+    let edad = ''; if (nac) { edad = hoy.getFullYear() - nac.getFullYear(); if (hoy < new Date(hoy.getFullYear(), nac.getMonth(), nac.getDate())) edad--; }
+    const f = (k, v) => '<div style="display:flex;gap:8px;padding:6px 0;border-top:1px dashed #EEE;"><span style="flex:0 0 108px;color:#888;font-weight:700;">' + k + '</span><span style="flex:1;color:#111;font-weight:700;word-break:break-word;">' + (v || '—') + '</span></div>';
+    const fecha = new Date(a.ts);
+    return '<details style="border-bottom:1px solid #EEE;font:600 13px Inter,sans-serif;">'
+        + '<summary style="list-style:none;cursor:pointer;padding:10px 2px;display:flex;justify-content:space-between;align-items:center;gap:8px;">'
+        + '<span><b style="font-size:14.5px;">' + syEsc(a.nom + ' ' + a.ape) + '</b><br><span style="color:#666;">DNI ' + a.dni + ' · 📱 ' + a.cel + ' · ' + syEsc(a.dist || '') + '</span><br>'
+        + '<span style="color:#1565C0;font-weight:800;">👤 ' + syEsc(a.n || '') + '</span> <span style="color:#888;">· ' + fecha.toLocaleString('es-PE', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' }) + '</span></span>'
+        + '<span style="font-size:18px;color:#999;">▾</span></summary>'
+        + '<div style="background:#F7F8FA;border-radius:12px;padding:6px 12px 10px;margin:0 0 10px;font-size:13px;">'
+        + f('DNI', a.dni) + f('Apellidos', syEsc(a.ape)) + f('Nombres', syEsc(a.nom)) + f('Sexo', syEsc(a.sexo))
+        + f('Nacimiento', nac ? nac.toLocaleDateString('es-PE') + ' (' + edad + ' años)' : '')
+        + f('Mes cumpleaños', nac ? '🎂 ' + nac.toLocaleDateString('es-PE', { month: 'long' }).toUpperCase() : '')
+        + f('Departamento', syEsc(a.dep)) + f('Provincia', syEsc(a.prov)) + f('Distrito', syEsc(a.dist)) + f('Dirección', syEsc(a.dir))
+        + f('Celular', '<a href="tel:' + a.cel + '" style="color:#1565C0;">' + a.cel + '</a>')
+        + f('Correo', '<a href="mailto:' + syEsc(a.email) + '" style="color:#1565C0;">' + syEsc(a.email) + '</a>')
+        + f('Registrado por', '👤 ' + syEsc(a.n || ''))
+        + f('Fecha y hora', fecha.toLocaleDateString('es-PE') + ' · ' + fecha.toLocaleTimeString('es-PE', { hour:'2-digit', minute:'2-digit' }))
+        + (a.edN ? f('Editado por', '✏️ ' + syEsc(a.edN) + ' · ' + new Date(a.edTs).toLocaleString('es-PE', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })) : '')
+        + (afiEsJefe() ? '<div style="display:flex;gap:8px;margin-top:10px;">'
+            + '<button onclick="afiFormulario(_afiBuscar(\'' + a.dni + '\'))" style="flex:1;padding:12px;border:none;border-radius:12px;background:#1565C0;color:#fff;font:800 14px Inter,sans-serif;">✏️ Editar</button>'
+            + '<button onclick="afiEliminar(\'' + a.dni + '\')" style="flex:1;padding:12px;border:none;border-radius:12px;background:#C62828;color:#fff;font:800 14px Inter,sans-serif;">🗑️ Eliminar</button></div>' : '')
+        + '</div></details>';
+}
+
+
+// v27.48: editar y eliminar afiliados (administrador / supervisor)
+function _afiBuscar(dni) { return (_afiTodos && _afiTodos[dni]) || afiLocales().find(a => a.dni === dni) || null; }
+async function afiGuardarEdicion(r, err) {
+    if (!afiEsJefe()) return err('Solo el administrador o supervisor puede editar.');
+    const viejo = _afiEditando, orig = _afiBuscar(viejo) || {};
+    if (r.dni !== viejo && ((_afiTodos && _afiTodos[r.dni]) || afiIdx()[r.dni])) return err('Ese DNI ya pertenece a otro afiliado.');
+    const yo = afiYo();
+    const nuevo = Object.assign({}, orig, r, { edN: yo ? yo.n : '', edTs: Date.now() });
+    try {
+        showLoading('Guardando cambios…');
+        if (r.dni !== viejo) { await syReq('DELETE', 'afiliados/' + viejo); await syReq('PATCH', 'afiIdx', { [viejo]: null }); if (_afiTodos) delete _afiTodos[viejo]; }
+        await syReq('PUT', 'afiliados/' + r.dni, nuevo);
+        await syReq('PATCH', 'afiIdx', { [r.dni]: nuevo.n || '' });
+        if (_afiTodos) _afiTodos[r.dni] = nuevo;
+        const loc = afiLocales(); const i = loc.findIndex(a => a.dni === viejo); if (i >= 0) { loc[i] = nuevo; afiGuardarLocales(loc); }
+        hideLoading(); showToast('✅ Afiliado actualizado', '#2E7D32');
+        _afiEditando = null; afiVistaTodos();
+    } catch(e) { hideLoading(); err('No se pudo guardar (¿hay internet?). ' + e.message); }
+}
+function afiEliminar(dni) {
+    if (!afiEsJefe()) return;
+    const a = _afiBuscar(dni) || {};
+    mostrarConfirm('🗑️ Eliminar afiliado', '¿Eliminar a ' + (a.nom || '') + ' ' + (a.ape || '') + ' (DNI ' + dni + ')?\n\nSe borra de la lista de afiliados para todos.', async () => {
+        try {
+            showLoading('Eliminando…');
+            await syReq('DELETE', 'afiliados/' + dni);
+            await syReq('PATCH', 'afiIdx', { [dni]: null });
+            if (_afiTodos) delete _afiTodos[dni];
+            afiGuardarLocales(afiLocales().filter(x => x.dni !== dni));
+            try { const ix = afiIdx(); delete ix[dni]; localStorage.setItem(AFI_IDX, JSON.stringify(ix)); } catch(e) {}
+            hideLoading(); showToast('🗑️ Afiliado eliminado', '#555');
+            afiVistaTodos();
+        } catch(e) { hideLoading(); showToast('⚠️ No se pudo eliminar (¿hay internet?)', '#E65100', 3500); }
+    });
+}
 
 </script>
