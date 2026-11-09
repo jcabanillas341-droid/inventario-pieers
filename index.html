@@ -1632,7 +1632,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.49 — 09/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.50 — 09/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2097,7 +2097,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.49 — 09/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.50 — 09/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -10319,13 +10319,13 @@ function syVistaPanel() {
             + '<div class="sy-grid2"><button class="sy-btn sy-sec" onclick="syCopiar(syCodigoEnlace())">📋 Copiar</button>'
             + '<button class="sy-btn sy-wa" onclick="window.open(\'https://wa.me/?text=\'+encodeURIComponent(\'Código para entrar a PIEERS PRO (nube): \'+syCodigoEnlace()))">WhatsApp</button></div>'
             + '<div class="sy-p" style="font-size:10.5px;">⚠️ Este código da acceso a los datos de tu tienda: compártelo solo con tu equipo.</div></div>';
-        let vm = (syMeta && syMeta.vendMods) || {};
-        if (vm.afi === undefined) vm = Object.assign({}, vm, { afi: true });
+        let vm = Object.assign({}, P_VEND_DEF, (syMeta && syMeta.vendMods) || {});   // v27.50: todos los módulos
         const sw = (k, t) => '<div class="sy-urow"><div class="sy-uname"><b>' + t + '</b><br><span style="font-size:11px;color:' + (vm[k] ? '#2E7D32' : '#B71C1C') + ';font-weight:700;">' + (vm[k] ? '👁️ Visible para vendedores' : '🙈 Oculto para vendedores') + '</span></div>'
             + '<button class="sy-btn sy-mini' + (vm[k] ? ' sy-sec' : '') + '" style="' + (vm[k] ? '' : 'background:#2E7D32;') + '" onclick="syVendMod(\'' + k + '\',' + (!vm[k]) + ')">' + (vm[k] ? '🙈 Ocultar' : '👁️ Mostrar') + '</button></div>';
         h += '<div class="sy-card"><div class="sy-h">🧩 Módulos para vendedores</div>'
-            + '<div class="sy-p">Consultar Precio y Simulador siempre se ven. Estos se muestran solo cuando tú lo decidas:</div>'
-            + sw('comp', '📋 Inventario / Guías / Tienda') + sw('alm', '🏪 Gestión de Almacén') + sw('afi', '🎁 Afiliar clientes') + '</div>';
+            + '<div class="sy-p">Elige qué módulos ve el vendedor en su celular (tú y el supervisor siempre ven todo):</div>'
+            + sw('stock', '📦 Consultar Precio y Stock') + sw('ticket', '🧾 Simulador de Ticket') + sw('asis', '⏰ Asistencia')
+            + sw('afi', '🎁 Afiliar clientes') + sw('comp', '📋 Inventario / Guías / Tienda') + sw('alm', '🏪 Gestión de Almacén') + '</div>';
         h += '<div class="sy-card"><div class="sy-h">👥 Usuarios</div>' + us.map(([id, u]) =>
             '<div class="sy-urow"><div class="sy-uname"><b>' + syEsc(u.n) + '</b>' + (id === sySes.id ? ' <span class="sy-tag">tú</span>' : '') + '</div>'
             + '<select class="sy-sel" onchange="syCambiarRol(\'' + id + '\',this.value)">' + Object.keys(SY_ROLES).map(r => '<option value="' + r + '"' + (u.r === r ? ' selected' : '') + '>' + SY_ROLES[r] + '</option>').join('') + '</select>'
@@ -11658,43 +11658,61 @@ function lsGrandeEsperar() { const p = _lsGPend.splice(0); return Promise.all(p)
 // ══ v27.23 — MÓDULOS SEGÚN ROL ══
 // Vendedor: siempre Consultar Precio y Simulador. Inventario y Almacén quedan ocultos
 // hasta que el ADMINISTRADOR los muestre desde ☁️ Nube (meta/vendMods).
+// v27.50: el ADMINISTRADOR decide la visibilidad de TODOS los módulos para vendedores.
+const P_VEND_DEF = { stock:true, ticket:true, asis:true, afi:true, comp:false, alm:false };   // valor si el admin aún no lo cambió
+const P_VEND_NOM = { stock:'Consultar Precio', ticket:'Simulador de Ticket', asis:'Asistencia', afi:'Afiliar clientes', comp:'Inventario', alm:'Almacén' };
 function pEsVendedor() { return typeof syActivo === 'function' && syActivo() && sySes.r === 'vendedor'; }
 function pVendPuede(mod) {
     if (!pEsVendedor()) return true;
     let vm = syMeta && syMeta.vendMods;
     try { if (vm) localStorage.setItem('pieers_vendmods', JSON.stringify(vm)); else vm = JSON.parse(localStorage.getItem('pieers_vendmods') || 'null'); } catch(e) {}
     vm = vm || {};
-    return mod === 'afi' ? vm.afi !== false : !!vm[mod];   // v27.47: Afiliar se ve salvo que el admin lo oculte
+    return vm[mod] !== undefined ? !!vm[mod] : !!P_VEND_DEF[mod];
 }
 function syVendMod(mod, on) {
     if (!syActivo() || sySes.r !== 'admin') return syDenegar();
     syMeta.vendMods = Object.assign({}, syMeta.vendMods || {}, { [mod]: !!on });
     syEncolar('PATCH', 'meta/vendMods', { [mod]: !!on });
-    showToast((on ? '👁️ Visible' : '🙈 Oculto') + ' para vendedores: ' + ({ comp:'Inventario', alm:'Almacén', afi:'Afiliar clientes' }[mod] || mod), on ? '#2E7D32' : '#B71C1C');
+    showToast((on ? '👁️ Visible' : '🙈 Oculto') + ' para vendedores: ' + (P_VEND_NOM[mod] || mod), on ? '#2E7D32' : '#B71C1C');
     syVistaPanel();
 }
 function pModulosRol() {
-    const bC = document.querySelector('#pantalla-modo .btn-comp'), bA = document.querySelector('#pantalla-modo .btn-alm');
-    if (bC) bC.style.display = pVendPuede('comp') ? '' : 'none';
-    if (bA) bA.style.display = pVendPuede('alm') ? '' : 'none';
-    const bF = document.querySelector('#pantalla-modo .btn-afi-mod');
-    if (bF) bF.style.display = pVendPuede('afi') ? '' : 'none';
-    if (!pVendPuede('afi')) { const ma = document.getElementById('modulo-afiliar'); if (ma && ma.style.display !== 'none') { ma.style.display = 'none'; showToast('🔒 El administrador ocultó Afiliar clientes', '#B71C1C', 3000); } }
-    // Si el admin lo ocultó mientras el vendedor estaba dentro, lo saca
-    if (pEsVendedor() && typeof modoActual !== 'undefined' && ((modoActual === 'alm' && !pVendPuede('alm')) || (modoActual === 'comp' && !pVendPuede('comp')))) {
+    const BTN = { comp:'.btn-comp', alm:'.btn-alm', stock:'.btn-stock-mod', ticket:'.btn-ticket-mod', asis:'.btn-asis-mod', afi:'.btn-afi-mod' };
+    Object.keys(BTN).forEach(k => { const b = document.querySelector('#pantalla-modo ' + BTN[k]); if (b) b.style.display = pVendPuede(k) ? '' : 'none'; });
+    // Módulos en ventana propia (Afiliar, Asistencia): si el admin lo oculta mientras el vendedor está dentro, lo cierra
+    [['afi','modulo-afiliar'], ['asis','modulo-asistencia']].forEach(([k, id]) => {
+        if (pVendPuede(k)) return;
+        const m = document.getElementById(id);
+        if (m && m.style.display && m.style.display !== 'none') { m.style.display = 'none'; showToast('🔒 El administrador ocultó ' + P_VEND_NOM[k], '#B71C1C', 3000); }
+    });
+    // Si el admin lo ocultó mientras el vendedor estaba dentro, lo saca al inicio
+    if (pEsVendedor() && typeof modoActual !== 'undefined' && modoActual && P_VEND_DEF[modoActual] !== undefined && !pVendPuede(modoActual)) {
         try { if (modoActual === 'comp' && syConteoId) syConteoSalir(true); } catch(e) {}
         const app = document.getElementById('app-principal');
-        if (app && !app.classList.contains('hidden')) { seleccionarModo('stock'); showToast('🔒 El administrador ocultó este módulo', '#B71C1C', 3000); }
+        if (app && !app.classList.contains('hidden')) { volverSelector(); showToast('🔒 El administrador ocultó este módulo', '#B71C1C', 3000); }
+    }
+    // Aviso si el vendedor no tiene ningún módulo visible
+    const sel = document.getElementById('pantalla-modo');
+    if (sel) {
+        let av = document.getElementById('p-sin-mods');
+        const ninguno = pEsVendedor() && Object.keys(BTN).every(k => !pVendPuede(k));
+        if (ninguno && !av) {
+            av = document.createElement('div'); av.id = 'p-sin-mods';
+            av.style.cssText = 'width:100%;max-width:360px;background:#FFF3E0;color:#E65100;border-radius:14px;padding:14px;text-align:center;font:700 13px Inter,sans-serif;';
+            av.textContent = '🔒 El administrador no tiene módulos habilitados para ti por ahora.';
+            const ref = sel.querySelector('.btn-afi-mod'); if (ref && ref.parentNode) ref.parentNode.insertBefore(av, ref.nextSibling); else sel.appendChild(av);
+        }
+        if (av) av.style.display = ninguno ? '' : 'none';
     }
 }
 (function() {
-    const bloq = (mod) => { showToast('🔒 ' + ({ comp:'Inventario', alm:'Almacén', afi:'Afiliar clientes' }[mod] || 'Este módulo') + ' está oculto. Pide al administrador que lo muestre.', '#B71C1C', 3500); };
+    const bloq = (mod) => { showToast('🔒 ' + (P_VEND_NOM[mod] || 'Este módulo') + ' está oculto. Pide al administrador que lo muestre.', '#B71C1C', 3500); };
     const o = window.seleccionarModo;
     if (typeof o === 'function') window.seleccionarModo = function(modo) {
-        if ((modo === 'comp' || modo === 'alm') && !pVendPuede(modo)) { bloq(modo); return; }
+        if (P_VEND_DEF[modo] !== undefined && !pVendPuede(modo)) { bloq(modo); return; }
         return o.apply(this, arguments);
     };
-    [['syAbrirConteo','comp'], ['syAbrirAlm','alm'], ['abrirAfiliar','afi']].forEach(([n, mod]) => {
+    [['syAbrirConteo','comp'], ['syAbrirAlm','alm'], ['abrirAfiliar','afi'], ['abrirAsistencia','asis']].forEach(([n, mod]) => {
         const f = window[n]; if (typeof f !== 'function') return;
         window[n] = function() { if (!pVendPuede(mod)) { bloq(mod); return; } return f.apply(this, arguments); };
     });
