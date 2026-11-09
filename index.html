@@ -1632,7 +1632,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.48 — 09/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.49 — 09/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -1677,6 +1677,14 @@
             <span class="txt">
                 <span class="tit">SIMULADOR DE TICKET</span>
                 <span class="desc">Escanea lo que lleva el cliente y calcula el total — aplica precio unitario o combo automáticamente.</span>
+            </span>
+            <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
+        </button>
+        <button class="btn-modo btn-asis-mod" onclick="abrirAsistencia()" style="width:100%;max-width:360px;">
+            <div style="width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">⏰</div>
+            <span class="txt">
+                <span class="tit">ASISTENCIA</span>
+                <span class="desc">Sube tu captura de Buk (entrada y salida). El administrador ve quién ingresó.</span>
             </span>
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
@@ -2089,7 +2097,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.48 — 09/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.49 — 09/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -14603,5 +14611,465 @@ function afiEliminar(dni) {
         } catch(e) { hideLoading(); showToast('⚠️ No se pudo eliminar (¿hay internet?)', '#E65100', 3500); }
     });
 }
+
+// ══ v27.49 — ASISTENCIA DEL PERSONAL (captura "Marca recibida" de Buk) ══
+// Cada trabajador sube su captura de Buk; la app lee sola la hora y si es entrada o salida.
+// Se guarda en el celular y se sube a la nube apenas hay internet (igual que Afiliar).
+// Solo el ADMINISTRADOR ve quién ingresó, tardanzas, faltas, las fotos y descarga el Excel.
+(function() {
+    const st = document.createElement('style'); st.id = 'v2749-asis';
+    st.textContent = `
+    #pantalla-modo .btn-asis-mod { --acc: #2E7D32; --acc-bg: linear-gradient(135deg,#43A047,#1B5E20); }
+    .btn-asis-mod { background: linear-gradient(135deg, #2E7D32, #1B5E20); color: white; border: none; }
+    #modulo-asistencia { position:fixed; inset:0; z-index:9500; background:#F2F2F4; display:none; flex-direction:column; color:#111; }
+    #modulo-asistencia .as-card { background:#fff; border-radius:18px; padding:16px; box-shadow:0 2px 10px rgba(0,0,0,.08); margin-bottom:12px; font-family:Inter,sans-serif; color:#111; }
+    #modulo-asistencia .as-volver { border:1.5px solid #CCC; background:#fff; border-radius:10px; padding:8px 12px; font:800 13px Inter,sans-serif; color:#111; }
+    #modulo-asistencia .as-tit { font:900 18px Barlow,Inter,sans-serif; color:#111; }
+    #modulo-asistencia .as-lbl { display:block; font:800 13px Inter,sans-serif; color:#333; margin-bottom:4px; }
+    #modulo-asistencia .as-in { width:100%; box-sizing:border-box; padding:13px 12px; border:1.5px solid #CFD3DA; border-radius:12px; font:700 17px Inter,sans-serif; background:#fff; color:#111; }
+    #modulo-asistencia .as-tipo { flex:1; padding:14px 6px; border:2px solid #CFD3DA; border-radius:12px; background:#fff; color:#111; font:900 16px Barlow,Inter,sans-serif; letter-spacing:.5px; }
+    #modulo-asistencia .as-tipo.sel { background:#111; color:#fff; border-color:#111; }
+    #modulo-asistencia .as-msg { display:none; border-radius:12px; padding:10px 12px; font:700 13px Inter,sans-serif; margin-top:10px; }
+    #modulo-asistencia .as-chip { flex:1; padding:9px 4px; border:1.5px solid #CCC; border-radius:10px; background:#fff; color:#111; font:800 12px Inter,sans-serif; }
+    #modulo-asistencia .as-chip.sel { background:#111; color:#fff; border-color:#111; }
+    #modulo-asistencia .as-fila { padding:10px 2px; border-top:1px solid #EEE; font:600 13px Inter,sans-serif; color:#111; }
+    #modulo-asistencia .as-badge { display:inline-block; border-radius:8px; padding:3px 8px; font:900 11px Inter,sans-serif; letter-spacing:.3px; }
+    #modulo-asistencia .as-foto { border:1.5px solid #1565C0; background:#E3F2FD; color:#0D47A1; border-radius:9px; padding:5px 9px; font:800 12px Inter,sans-serif; }
+    #asi-visor { position:fixed; inset:0; z-index:9800; background:rgba(0,0,0,.92); display:none; flex-direction:column; align-items:center; justify-content:center; padding:14px; }
+    `;
+    document.head.appendChild(st);
+})();
+
+const ASI_LOCAL = 'pieers_asi_locales', ASI_CFG = 'pieers_asi_cfg', ASI_TOL = 5;   // tolerancia: 5 minutos
+let _asi = { tipo:'ENTRADA', foto:'', huella:'', horaOCR:'', noBuk:false, ocupado:false };
+let _asiCfg = null, _asiDatos = {}, _asiDesde = '', _asiHasta = '', _asiFotos = {};
+
+function asiYo() { return (typeof syActivo === 'function' && syActivo()) ? sySes : null; }
+function asiEsAdmin() { return !!(asiYo() && sySes.r === 'admin'); }
+function asiLocales() { try { return JSON.parse(localStorage.getItem(ASI_LOCAL) || '[]'); } catch(e) { return []; } }
+function asiGuardarLocales(l) { try { localStorage.setItem(ASI_LOCAL, JSON.stringify(l.slice(-120))); } catch(e) {} }
+function asiPendientes() { try { return (syCola || []).filter(op => /^asistencia\//.test(op.p)).length; } catch(e) { return 0; } }
+function _asiMin(h) { const p = String(h || '').split(':').map(Number); return (p[0] || 0) * 60 + (p[1] || 0) + (p[2] || 0) / 60; }
+function _asiHora(h) {
+    const m = String(h || '').trim().match(/^(\d{1,2})[:.](\d{2})(?:[:.](\d{2}))?$/); if (!m) return '';
+    if (+m[1] > 23 || +m[2] > 59 || +(m[3] || 0) > 59) return '';
+    return String(+m[1]).padStart(2, '0') + ':' + m[2] + ':' + (m[3] || '00');
+}
+function _asiCorta(h) { return h ? h.slice(0, 5) : '—'; }
+function _asiFechaTxt(f) { const d = new Date(f + 'T12:00:00'); return d.toLocaleDateString('es-PE', { weekday:'long', day:'2-digit', month:'2-digit', year:'numeric' }); }
+function _asiDia(f) { return new Date(f + 'T12:00:00').toLocaleDateString('es-PE', { weekday:'long' }).toUpperCase(); }
+
+/* ───────── Abrir / cerrar ───────── */
+function abrirAsistencia() {
+    try { const mc = document.getElementById('menuContent'); if (mc) mc.style.display = 'none'; } catch(e) {}
+    if (!asiYo()) { showToast('☁️ Primero inicia sesión con tu usuario', '#1565C0', 3000); try { pGate(); } catch(e) {} return; }
+    let m = document.getElementById('modulo-asistencia');
+    if (!m) { m = document.createElement('div'); m.id = 'modulo-asistencia'; document.body.appendChild(m); }
+    const logo = (document.querySelector('.header-logo img') || {}).src || '';
+    m.innerHTML = '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#111;border-bottom:3px solid #2E7D32;flex-shrink:0;">'
+        + (logo ? '<img src="' + logo + '" alt="PIEERS" style="height:22px;">' : '<b style="color:#fff;">PIEERS</b>')
+        + '<span style="background:#2E7D32;color:#fff;font:900 11px Inter,sans-serif;border-radius:20px;padding:4px 10px;letter-spacing:.5px;">ASISTENCIA</span>'
+        + '<span style="flex:1"></span><button onclick="cerrarAsistencia()" style="background:#222;color:#fff;border:1px solid #444;border-radius:10px;padding:8px 12px;font:800 12px Inter,sans-serif;">← INICIO</button></div>'
+        + '<div id="asi-cont" style="flex:1;overflow-y:auto;padding:14px;"></div>';
+    m.style.display = 'flex';
+    asiPanel();
+    asiCargarCfg();
+}
+function cerrarAsistencia() { const m = document.getElementById('modulo-asistencia'); if (m) m.style.display = 'none'; }
+
+/* ───────── Pantalla principal (todos) ───────── */
+function asiPanel() {
+    const c = document.getElementById('asi-cont'); if (!c) return;
+    const yo = asiYo(), hoy = _afiF(Date.now());
+    const mios = asiLocales().filter(a => yo && a.u === yo.id);
+    const deHoy = mios.filter(a => a.fecha === hoy);
+    const ent = deHoy.filter(a => a.tipo === 'ENTRADA').map(a => a.hora).sort()[0] || '';
+    const sal = deHoy.filter(a => a.tipo === 'SALIDA').map(a => a.hora).sort().pop() || '';
+    const pend = asiPendientes();
+    const caja = (t, h, col) => '<div style="flex:1;background:' + (h ? '#E8F5E9' : '#F5F5F7') + ';border-radius:14px;padding:12px;text-align:center;">'
+        + '<div style="font:800 11px Inter,sans-serif;color:#555;letter-spacing:.5px;">' + t + '</div>'
+        + '<div style="font:900 30px Barlow,sans-serif;color:' + (h ? col : '#AAA') + ';line-height:1.1;">' + (h ? h.slice(0, 5) : '—') + '</div>'
+        + '<div style="font:700 11px Inter,sans-serif;color:' + (h ? '#2E7D32' : '#999') + ';">' + (h ? '✓ enviada' : 'sin enviar') + '</div></div>';
+    let h = '<div class="as-card">'
+        + '<div style="font:800 13px Inter,sans-serif;color:#555;">👤 ' + syEsc(yo ? yo.n : '') + ' · Hoy ' + new Date().toLocaleDateString('es-PE', { weekday:'long', day:'2-digit', month:'2-digit' }) + '</div>'
+        + '<div style="display:flex;gap:8px;margin:10px 0 12px;">' + caja('ENTRADA', ent, '#1B5E20') + caja('SALIDA', sal, '#0D47A1') + '</div>'
+        + '<button onclick="asiFormulario()" style="width:100%;padding:18px;border:none;border-radius:14px;background:linear-gradient(135deg,#43A047,#1B5E20);color:#fff;font:900 20px Barlow,Inter,sans-serif;letter-spacing:.5px;">📷 SUBIR CAPTURA DE BUK</button>'
+        + '<div style="font:600 12px Inter,sans-serif;color:#666;text-align:center;margin-top:8px;">Marca en Buk, toma captura de la pantalla verde <b>"Marca recibida"</b> y súbela aquí.</div>'
+        + (pend ? '<div style="background:#FFF3E0;color:#E65100;border-radius:12px;padding:10px;margin-top:10px;font:800 13px Inter,sans-serif;text-align:center;">⏳ ' + pend + ' marca(s) guardada(s) en este celular. Se suben solas cuando haya internet.</div>' : '')
+        + '</div>';
+    const ult = mios.slice().reverse().slice(0, 8);
+    if (ult.length) h += '<div class="as-card" style="padding:8px 14px;"><div style="font:800 12px Inter,sans-serif;color:#888;padding:6px 2px;">Mis últimos envíos</div>'
+        + ult.map(a => '<div class="as-fila" style="display:flex;justify-content:space-between;gap:8px;"><span><b>' + (a.tipo === 'ENTRADA' ? '🟢 Entrada' : '🔵 Salida') + '</b> · ' + a.fecha.split('-').reverse().join('/') + '</span><b>' + a.hora + '</b></div>').join('') + '</div>';
+    if (asiEsAdmin()) h += '<div class="as-card"><div style="font:900 13px Inter,sans-serif;margin-bottom:8px;">🔒 Administrador</div>'
+        + '<button onclick="asiVerTabla()" style="width:100%;padding:14px;border:none;border-radius:12px;background:#1565C0;color:#fff;font:800 15px Inter,sans-serif;margin-bottom:8px;">📊 Asistencia del personal</button>'
+        + '<button onclick="asiConfig()" style="width:100%;padding:12px;border:1.5px solid #999;border-radius:12px;background:#fff;color:#111;font:800 13px Inter,sans-serif;">⚙️ Personal y hora de entrada</button></div>';
+    c.innerHTML = h; c.scrollTop = 0;
+}
+
+/* ───────── Formulario: subir captura ───────── */
+function asiFormulario() {
+    const c = document.getElementById('asi-cont'); if (!c) return;
+    _asi = { tipo:'ENTRADA', foto:'', huella:'', horaOCR:'', noBuk:false, ocupado:false };
+    c.innerHTML = '<div class="as-card">'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><button class="as-volver" onclick="asiPanel()">← Volver</button><div class="as-tit">📷 ENVIAR MARCA</div></div>'
+        + '<label for="asi-file" style="display:block;border:2px dashed #9E9E9E;border-radius:14px;padding:22px 10px;text-align:center;font:800 15px Inter,sans-serif;color:#333;cursor:pointer;">'
+        + '<div style="font-size:34px;">🖼️</div>Toca para elegir la captura de Buk<br><span style="font:600 12px Inter,sans-serif;color:#777;">Pantalla verde "Marca recibida"</span></label>'
+        + '<input type="file" id="asi-file" accept="image/*" style="display:none;" onchange="asiFoto(this)">'
+        + '<img id="asi-prev" alt="" style="display:none;max-width:100%;max-height:260px;margin:12px auto 0;border-radius:12px;border:1px solid #DDD;">'
+        + '<div id="asi-ocr" class="as-msg"></div>'
+        + '<div style="display:flex;gap:8px;margin-top:14px;">'
+        + '<button class="as-tipo sel" data-t="ENTRADA" onclick="asiTipo(\'ENTRADA\')">🟢 ENTRADA</button>'
+        + '<button class="as-tipo" data-t="SALIDA" onclick="asiTipo(\'SALIDA\')">🔵 SALIDA</button></div>'
+        + '<div style="display:flex;gap:8px;margin-top:12px;">'
+        + '<div style="flex:1;"><label class="as-lbl">Fecha</label><input id="asi-fecha" type="date" class="as-in" value="' + _afiF(Date.now()) + '" max="' + _afiF(Date.now()) + '"></div>'
+        + '<div style="flex:1;"><label class="as-lbl">Hora de Buk</label><input id="asi-hora" type="time" step="1" class="as-in"></div></div>'
+        + '<div style="font:600 11.5px Inter,sans-serif;color:#777;margin-top:6px;">La hora se lee sola de la captura. Corrígela solo si salió mal.</div>'
+        + '<div id="asi-err" class="as-msg" style="background:#FFEBEE;color:#B71C1C;"></div>'
+        + '<button id="asi-btn" onclick="asiEnviar()" style="width:100%;margin-top:14px;padding:17px;border:none;border-radius:14px;background:#2E7D32;color:#fff;font:900 19px Barlow,Inter,sans-serif;">✅ ENVIAR ASISTENCIA</button>'
+        + '<div style="font:600 11.5px Inter,sans-serif;color:#777;text-align:center;margin-top:8px;">Funciona sin internet: se guarda en este celular y se sube sola.</div></div>';
+    c.scrollTop = 0;
+}
+function asiTipo(t) {
+    _asi.tipo = t;
+    document.querySelectorAll('#asi-cont .as-tipo').forEach(b => b.classList.toggle('sel', b.dataset.t === t));
+}
+function _asiMsg(id, txt, tipo) {
+    const e = document.getElementById(id); if (!e) return;
+    const col = { info:['#E3F2FD','#0D47A1'], ok:['#E8F5E9','#1B5E20'], warn:['#FFF8E1','#8D6E00'], err:['#FFEBEE','#B71C1C'] }[tipo || 'info'];
+    e.style.background = col[0]; e.style.color = col[1]; e.textContent = txt; e.style.display = txt ? 'block' : 'none';
+}
+async function asiFoto(inp) {
+    const file = inp.files && inp.files[0]; if (!file) return;
+    _asi.foto = ''; _asi.huella = ''; _asi.horaOCR = ''; _asi.noBuk = false;
+    const pv = document.getElementById('asi-prev');
+    try { pv.src = URL.createObjectURL(file); pv.style.display = 'block'; } catch(e) {}
+    _asiMsg('asi-ocr', '⏳ Leyendo la captura…', 'info');
+    let img = null;
+    try {
+        _asi.huella = await _asiSha(await file.arrayBuffer());
+        img = await _asiImagen(file);
+        _asi.foto = _asiComprimir(img, 640, 0.62);
+    } catch(e) { _asiMsg('asi-ocr', '⚠️ No se pudo abrir la imagen. Prueba con otra captura.', 'err'); return; }
+    try { await _asiOCR(img); }
+    catch(e) { _asiMsg('asi-ocr', '⚠️ No pude leer la hora (¿sin internet?). Escríbela tú y elige Entrada o Salida.', 'warn'); }
+}
+async function _asiSha(buf) {
+    try { if (!crypto || !crypto.subtle) return ''; const h = await crypto.subtle.digest('SHA-256', buf); return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 32); }
+    catch(e) { return ''; }
+}
+function _asiImagen(file) {
+    return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file); });
+}
+function _asiComprimir(img, maxW, q) {
+    const k = Math.min(1, maxW / img.width), cv = document.createElement('canvas');
+    cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+    cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+    return cv.toDataURL('image/jpeg', q).split(',')[1];
+}
+// Letras blancas sobre verde (Buk) → negro sobre blanco para leer mejor
+function _asiPreparar(img) {
+    const k = Math.min(1, 1200 / img.width), cv = document.createElement('canvas');
+    cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+    const ctx = cv.getContext('2d'); ctx.drawImage(img, 0, 0, cv.width, cv.height);
+    const d = ctx.getImageData(0, 0, cv.width, cv.height);
+    for (let i = 0; i < d.data.length; i += 4) {
+        const l = 0.299 * d.data[i] + 0.587 * d.data[i + 1] + 0.114 * d.data[i + 2];
+        d.data[i] = d.data[i + 1] = d.data[i + 2] = l > 200 ? 0 : 255;
+    }
+    ctx.putImageData(d, 0, 0); return cv;
+}
+function _asiCargarOCR() {
+    if (window.Tesseract) return Promise.resolve(true);
+    if (window._asiOcrP) return window._asiOcrP;
+    window._asiOcrP = new Promise(res => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+        s.onload = () => res(!!window.Tesseract);
+        s.onerror = () => { s.remove(); window._asiOcrP = null; res(false); };
+        document.head.appendChild(s);
+        setTimeout(() => res(!!window.Tesseract), 25000);
+    });
+    return window._asiOcrP;
+}
+async function _asiOCR(img) {
+    if (!(await _asiCargarOCR())) throw new Error('sin OCR');
+    const w = await Tesseract.createWorker('spa');
+    let txt = '';
+    try {
+        txt = (await w.recognize(_asiPreparar(img))).data.text || '';
+        if (!/\d{1,2}\s*[:.]\s*\d{2}/.test(txt)) txt += '\n' + ((await w.recognize(img)).data.text || '');
+    } finally { try { await w.terminate(); } catch(e) {} }
+    const t = txt.replace(/\s+/g, ' ');
+    if (/salida/i.test(t)) asiTipo('SALIDA'); else if (/entrada/i.test(t)) asiTipo('ENTRADA');
+    _asi.noBuk = !/marca\s*recibida|registramos/i.test(t);
+    const m = t.match(/(\d{1,2})\s*[:.]\s*(\d{2})\s*[:.]\s*(\d{2})/) || t.match(/(\d{1,2})\s*[:.]\s*(\d{2})/);
+    const h = m ? _asiHora(m[1] + ':' + m[2] + ':' + (m[3] || '00')) : '';
+    if (h) {
+        _asi.horaOCR = h; document.getElementById('asi-hora').value = h;
+        _asiMsg('asi-ocr', (_asi.noBuk ? '⚠️ No parece una captura de Buk. ' : '✔ ') + 'Detectado: ' + _asi.tipo + ' a las ' + h + '. Revisa que esté bien.', _asi.noBuk ? 'warn' : 'ok');
+    } else {
+        _asiMsg('asi-ocr', '⚠️ No encontré la hora en la captura. Escríbela tú y elige Entrada o Salida.', 'warn');
+    }
+}
+function asiEnviar() {
+    if (_asi.ocupado) return;
+    const err = m => { _asiMsg('asi-err', '⚠️ ' + m, 'err'); const e = document.getElementById('asi-err'); if (e) e.scrollIntoView({ block:'center', behavior:'smooth' }); };
+    _asiMsg('asi-err', '');
+    const yo = asiYo(); if (!yo) return err('Inicia sesión con tu usuario.');
+    if (!_asi.foto) return err('Primero elige la captura de Buk.');
+    const fecha = (document.getElementById('asi-fecha').value || '').trim();
+    const hora = _asiHora(document.getElementById('asi-hora').value);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fecha)) return err('Pon la fecha.');
+    if (fecha > _afiF(Date.now())) return err('La fecha no puede ser futura.');
+    if (!hora) return err('Pon la hora que sale en la captura.');
+    const rep = _asi.huella && asiLocales().some(a => a.hu === _asi.huella);
+    const ya = asiLocales().find(a => a.u === yo.id && a.fecha === fecha && a.tipo === _asi.tipo);
+    if (rep) return mostrarConfirm('⚠️ Captura repetida', 'Esta misma captura ya se envió antes desde este celular.\n\n¿Enviarla igual? (el administrador lo verá marcado)', () => asiGuardar(fecha, hora, true));
+    if (ya) return mostrarConfirm('⚠️ Ya enviaste tu ' + _asi.tipo.toLowerCase(), 'Ya enviaste una ' + _asi.tipo.toLowerCase() + ' el ' + fecha.split('-').reverse().join('/') + ' a las ' + ya.hora + '.\n\n¿Enviar esta también?', () => asiGuardar(fecha, hora, false));
+    asiGuardar(fecha, hora, false);
+}
+function asiGuardar(fecha, hora, rep) {
+    const yo = asiYo(); if (!yo) return;
+    _asi.ocupado = true;
+    const ahora = new Date(), hoy = _afiF(ahora), obs = [];
+    if (rep) obs.push('Captura repetida');
+    if (_asi.horaOCR !== hora) obs.push('Hora escrita a mano');
+    if (_asi.noBuk) obs.push('No parece captura de Buk');
+    if (fecha === hoy) { if (_asiMin(hora) - (ahora.getHours() * 60 + ahora.getMinutes()) > 5) obs.push('Hora mayor a la del envío'); }
+    else obs.push('Enviado el ' + ahora.toLocaleDateString('es-PE'));
+    const id = syId('as');
+    const r = { id, u: yo.id, n: yo.n, tipo: _asi.tipo, fecha, hora, ts: ahora.getTime(), hu: _asi.huella || '', obs: obs.join(' · '), dev: (localStorage.getItem('pieers_dev_id') || '') };
+    const loc = asiLocales(); loc.push(r); asiGuardarLocales(loc);
+    if (typeof syCfg !== 'undefined' && syCfg) {
+        syEncolar('PUT', 'asisFotos/' + id, _asi.foto);           // la foto primero: el registro nunca llega sin su foto
+        syEncolar('PUT', 'asistencia/' + fecha + '/' + id, r);
+    }
+    try { vibrar(40); } catch(e) {}
+    const c = document.getElementById('asi-cont');
+    const enCola = asiPendientes() > 0 || !syCfg;
+    c.innerHTML = '<div class="as-card" style="text-align:center;padding:22px 16px;">'
+        + '<div style="font-size:56px;">✅</div><div style="font:900 24px Barlow,Inter,sans-serif;color:#2E7D32;">' + (r.tipo === 'ENTRADA' ? '¡ENTRADA ENVIADA!' : '¡SALIDA ENVIADA!') + '</div>'
+        + '<div style="font:900 40px Barlow,sans-serif;color:#111;margin:6px 0;">' + hora + '</div>'
+        + '<div style="font:700 14px Inter,sans-serif;color:#555;">' + syEsc(yo.n) + ' · ' + fecha.split('-').reverse().join('/') + '</div>'
+        + (r.obs ? '<div style="background:#FFF8E1;color:#8D6E00;border-radius:12px;padding:8px;margin-top:10px;font:700 12px Inter,sans-serif;">Obs: ' + syEsc(r.obs) + '</div>' : '')
+        + '<div style="font:600 12px Inter,sans-serif;color:#777;margin:12px 0 14px;">' + (enCola ? '⏳ Guardado en este celular. Se sube solo cuando haya internet.' : '☁️ Guardado y subido.') + '</div>'
+        + '<button onclick="asiPanel()" style="width:100%;padding:15px;border:none;border-radius:14px;background:#111;color:#fff;font:900 17px Barlow,Inter,sans-serif;">LISTO</button></div>';
+    c.scrollTop = 0;
+    _asi = { tipo:'ENTRADA', foto:'', huella:'', horaOCR:'', noBuk:false, ocupado:false };
+}
+
+/* ───────── Configuración: quién marca y a qué hora entra (solo admin) ───────── */
+function _asiCfgLocal() { try { return JSON.parse(localStorage.getItem(ASI_CFG) || 'null'); } catch(e) { return null; } }
+async function asiCargarCfg() {
+    if (!_asiCfg) _asiCfg = _asiCfgLocal() || {};
+    if (!asiEsAdmin()) return _asiCfg;
+    try { const v = await syReq('GET', 'meta/asisCfg'); if (v) { _asiCfg = v; localStorage.setItem(ASI_CFG, JSON.stringify(v)); } } catch(e) {}
+    return _asiCfg;
+}
+function asiPersonal() {
+    const cfg = _asiCfg || {}, out = [];
+    Object.entries(syUsuarios || {}).forEach(([id, u]) => {
+        const c = cfg[id] || {};
+        const on = c.on !== undefined ? !!c.on : (u.r !== 'admin');    // por defecto marcan todos menos el administrador
+        if (on) out.push({ id, n: u.n, h: (c.h && _asiHora(c.h)) ? c.h : '09:00' });
+    });
+    return out.sort((a, b) => String(a.n).localeCompare(String(b.n)));
+}
+async function asiConfig() {
+    if (!asiEsAdmin()) return;
+    const c = document.getElementById('asi-cont'); if (!c) return;
+    await asiCargarCfg();
+    const cfg = _asiCfg || {};
+    const filas = Object.entries(syUsuarios || {}).sort((a, b) => String(a[1].n).localeCompare(String(b[1].n))).map(([id, u]) => {
+        const k = cfg[id] || {}, on = k.on !== undefined ? !!k.on : (u.r !== 'admin');
+        return '<div class="as-fila" style="display:flex;align-items:center;gap:10px;">'
+            + '<input type="checkbox" class="asi-on" data-id="' + id + '"' + (on ? ' checked' : '') + ' style="width:22px;height:22px;accent-color:#2E7D32;flex-shrink:0;">'
+            + '<span style="flex:1;"><b>' + syEsc(u.n) + '</b><br><span style="color:#777;font-size:11.5px;">' + (SY_ROLES[u.r] || '') + '</span></span>'
+            + '<input type="time" class="as-in asi-h" data-id="' + id + '" value="' + ((k.h && _asiHora(k.h)) ? k.h : '09:00') + '" style="width:118px;padding:9px;font-size:15px;"></div>';
+    }).join('');
+    c.innerHTML = '<div class="as-card">'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><button class="as-volver" onclick="asiPanel()">← Volver</button><div class="as-tit">⚙️ PERSONAL Y HORARIO</div></div>'
+        + '<div style="font:600 12px Inter,sans-serif;color:#555;margin-bottom:6px;">Marca quién debe enviar asistencia y su hora de entrada. Tolerancia: ' + ASI_TOL + ' min.</div>'
+        + (filas || '<div style="padding:14px;color:#777;">No hay usuarios en la nube.</div>')
+        + '<button onclick="asiConfigGuardar()" style="width:100%;margin-top:12px;padding:15px;border:none;border-radius:14px;background:#2E7D32;color:#fff;font:900 17px Barlow,Inter,sans-serif;">💾 GUARDAR</button></div>';
+    c.scrollTop = 0;
+}
+function asiConfigGuardar() {
+    if (!asiEsAdmin()) return;
+    const cfg = {};
+    document.querySelectorAll('#asi-cont .asi-on').forEach(ch => { cfg[ch.dataset.id] = { on: ch.checked, h: '09:00' }; });
+    document.querySelectorAll('#asi-cont .asi-h').forEach(i => { const h = _asiHora(i.value); if (cfg[i.dataset.id]) cfg[i.dataset.id].h = h ? h.slice(0, 5) : '09:00'; });
+    _asiCfg = cfg;
+    try { localStorage.setItem(ASI_CFG, JSON.stringify(cfg)); } catch(e) {}
+    syEncolar('PUT', 'meta/asisCfg', cfg);
+    showToast('✅ Personal y horarios guardados', '#2E7D32');
+    asiPanel();
+}
+
+/* ───────── Tabla del administrador ───────── */
+async function asiVerTabla() {
+    if (!asiEsAdmin()) return;
+    if (!_asiDesde) _asiDesde = _asiHasta = _afiF(Date.now());
+    await asiCargarRango();
+}
+function asiRango(t) {
+    const h = new Date(), f = _afiF;
+    if (t === 'hoy') _asiDesde = _asiHasta = f(h);
+    else if (t === 'ayer') _asiDesde = _asiHasta = f(new Date(h - 864e5));
+    else if (t === '7') { _asiHasta = f(h); _asiDesde = f(new Date(h - 6 * 864e5)); }
+    else if (t === 'mes') { _asiHasta = f(h); _asiDesde = f(new Date(h.getFullYear(), h.getMonth(), 1)); }
+    asiCargarRango();
+}
+function asiRangoManual() {
+    const d = document.getElementById('asi-d').value, h = document.getElementById('asi-h').value;
+    if (!d || !h) return;
+    _asiDesde = d <= h ? d : h; _asiHasta = d <= h ? h : d;
+    asiCargarRango();
+}
+function _asiDias(desde, hasta) {
+    const out = []; let d = new Date(desde + 'T12:00:00'); const fin = new Date(hasta + 'T12:00:00');
+    while (d <= fin && out.length < 62) { out.push(_afiF(d)); d = new Date(d.getTime() + 864e5); }
+    return out;
+}
+async function asiCargarRango() {
+    const c = document.getElementById('asi-cont'); if (!c) return;
+    c.innerHTML = '<div style="padding:30px;text-align:center;font:700 14px Inter,sans-serif;color:#111;">⏳ Trayendo asistencia…</div>';
+    try { await syFlush(); } catch(e) {}
+    await asiCargarCfg();
+    const dias = _asiDias(_asiDesde, _asiHasta);
+    try {
+        const res = await Promise.all(dias.map(d => syReq('GET', 'asistencia/' + d)));
+        _asiDatos = {}; dias.forEach((d, i) => { _asiDatos[d] = res[i] || {}; });
+    } catch(e) {
+        c.innerHTML = '<div class="as-card" style="text-align:center;">⚠️ Sin internet. <button class="as-volver" onclick="asiCargarRango()">Reintentar</button> <button class="as-volver" onclick="asiPanel()">← Volver</button></div>';
+        return;
+    }
+    asiVistaTabla();
+}
+// Arma una fila por persona y por día (solo días con al menos una marca, y hoy)
+function asiFilas() {
+    const hoy = _afiF(Date.now()), pers = asiPersonal(), filas = [];
+    const ahora = new Date(), minAhora = ahora.getHours() * 60 + ahora.getMinutes();
+    // huellas repetidas en todo el rango
+    const vistas = {};
+    Object.values(_asiDatos).forEach(dd => Object.values(dd || {}).forEach(r => { if (r && r.hu) vistas[r.hu] = (vistas[r.hu] || 0) + 1; }));
+    Object.keys(_asiDatos).sort().reverse().forEach(d => {
+        const recs = Object.values(_asiDatos[d] || {}).filter(r => r && r.u);
+        if (!recs.length && d !== hoy) return;                        // día sin marcas de nadie (¿no laborable?)
+        const lista = pers.slice();
+        recs.forEach(r => { if (!lista.some(p => p.id === r.u)) lista.push({ id: r.u, n: r.n, h: '09:00', extra: true }); });
+        lista.forEach(p => {
+            const mis = recs.filter(r => r.u === p.id);
+            const E = mis.filter(r => r.tipo === 'ENTRADA').sort((a, b) => a.hora < b.hora ? -1 : 1)[0] || null;
+            const S = mis.filter(r => r.tipo === 'SALIDA').sort((a, b) => a.hora > b.hora ? -1 : 1)[0] || null;
+            let tard = '', mins = 0, estado;
+            if (E) { const t = Math.floor(_asiMin(E.hora) - _asiMin(p.h)); tard = t > ASI_TOL ? t : 0; }
+            if (E && S && _asiMin(S.hora) > _asiMin(E.hora)) mins = Math.round(_asiMin(S.hora) - _asiMin(E.hora));
+            if (E) estado = tard > 0 ? 'TARDANZA' : 'PUNTUAL';
+            else if (S) estado = 'SIN MARCA DE INGRESO';
+            else if (d < hoy || minAhora > _asiMin(p.h) + 120) estado = 'NO INGRESÓ';
+            else estado = 'AÚN NO MARCA';
+            const obs = [];
+            mis.forEach(r => { if (r.obs) r.obs.split(' · ').forEach(o => { if (o && !obs.includes(o)) obs.push(o); }); if (r.hu && vistas[r.hu] > 1 && !obs.includes('FOTO REPETIDA')) obs.unshift('FOTO REPETIDA'); });
+            if (E && !S && d < hoy) obs.push('Sin marca de salida');
+            if (mis.length > (E ? 1 : 0) + (S ? 1 : 0)) obs.push(mis.length + ' marcas enviadas');
+            filas.push({ fecha: d, id: p.id, n: p.n, h: p.h, ing: E ? E.hora : '', sal: S ? S.hora : '', idE: E ? E.id : '', idS: S ? S.id : '', tard, mins, estado, obs: obs.join(' · ') });
+        });
+    });
+    return filas;
+}
+const ASI_COL = { 'PUNTUAL':['#E8F5E9','#1B5E20'], 'TARDANZA':['#FFF3C4','#8D6E00'], 'NO INGRESÓ':['#FFCDD2','#B71C1C'], 'SIN MARCA DE INGRESO':['#FFE0B2','#E65100'], 'AÚN NO MARCA':['#ECEFF1','#455A64'] };
+function asiVistaTabla() {
+    const c = document.getElementById('asi-cont'); if (!c) return;
+    const F = asiFilas(), hoy = _afiF(Date.now());
+    const cuenta = e => F.filter(f => f.estado === e).length;
+    const chip = (t, l) => '<button class="as-chip" onclick="asiRango(\'' + t + '\')">' + l + '</button>';
+    const caja = (n, l, col) => '<div style="flex:1;background:' + col[0] + ';border-radius:12px;padding:8px 4px;text-align:center;"><div style="font:900 24px Barlow,sans-serif;color:' + col[1] + ';">' + n + '</div><div style="font:800 10.5px Inter,sans-serif;color:' + col[1] + ';">' + l + '</div></div>';
+    let h = '<div class="as-card">'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><button class="as-volver" onclick="asiPanel()">← Volver</button><div class="as-tit">📊 ASISTENCIA</div><span style="flex:1"></span><button class="as-volver" title="Actualizar" onclick="asiCargarRango()">🔄</button></div>'
+        + '<div style="display:flex;gap:6px;margin-bottom:8px;">' + chip('hoy', 'Hoy') + chip('ayer', 'Ayer') + chip('7', '7 días') + chip('mes', 'Este mes') + '</div>'
+        + '<div style="display:flex;gap:6px;align-items:center;margin-bottom:10px;"><input id="asi-d" type="date" class="as-in" style="flex:1;min-width:0;padding:8px;font-size:14px;" value="' + _asiDesde + '" max="' + hoy + '"><span style="font-weight:800;">a</span><input id="asi-h" type="date" class="as-in" style="flex:1;min-width:0;padding:8px;font-size:14px;" value="' + _asiHasta + '" max="' + hoy + '"><button class="as-volver" onclick="asiRangoManual()">Ver</button></div>'
+        + '<div style="display:flex;gap:6px;">' + caja(cuenta('PUNTUAL'), 'PUNTUAL', ASI_COL['PUNTUAL']) + caja(cuenta('TARDANZA'), 'TARDANZA', ASI_COL['TARDANZA']) + caja(cuenta('NO INGRESÓ'), 'NO INGRESÓ', ASI_COL['NO INGRESÓ']) + '</div>'
+        + (F.length ? '<button onclick="asiExcel()" style="width:100%;margin-top:10px;padding:13px;border:none;border-radius:12px;background:#2E7D32;color:#fff;font:800 14px Inter,sans-serif;">📥 Descargar Excel</button>' : '')
+        + '</div>';
+    if (!F.length) h += '<div class="as-card" style="text-align:center;color:#777;">No hay marcas en estas fechas.</div>';
+    const porDia = {}; F.forEach(f => (porDia[f.fecha] = porDia[f.fecha] || []).push(f));
+    Object.keys(porDia).sort().reverse().forEach(d => {
+        h += '<div class="as-card" style="padding:10px 14px;"><div style="font:900 15px Barlow,Inter,sans-serif;text-transform:uppercase;padding:2px 0 6px;">📅 ' + _asiFechaTxt(d) + '</div>'
+            + porDia[d].map(f => {
+                const col = ASI_COL[f.estado] || ['#EEE', '#111'];
+                return '<div class="as-fila">'
+                    + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><b style="font-size:14.5px;">👤 ' + syEsc(f.n) + '</b>'
+                    + '<span class="as-badge" style="background:' + col[0] + ';color:' + col[1] + ';">' + f.estado + (f.tard ? ' ' + f.tard + ' min' : '') + '</span></div>'
+                    + '<div style="display:flex;gap:12px;align-items:center;margin-top:5px;flex-wrap:wrap;">'
+                    + '<span>Entra <b>' + f.h + '</b></span><span>🟢 <b>' + _asiCorta(f.ing) + '</b></span><span>🔵 <b>' + _asiCorta(f.sal) + '</b></span>'
+                    + (f.mins ? '<span>⏱️ <b>' + Math.floor(f.mins / 60) + 'h ' + String(f.mins % 60).padStart(2, '0') + 'm</b></span>' : '')
+                    + '<span style="flex:1"></span>'
+                    + (f.idE ? '<button class="as-foto" onclick="asiVerFoto(\'' + f.idE + '\',\'Entrada · ' + syEsc(f.n).replace(/'/g, '') + ' · ' + f.ing + '\')">📷 E</button>' : '')
+                    + (f.idS ? '<button class="as-foto" onclick="asiVerFoto(\'' + f.idS + '\',\'Salida · ' + syEsc(f.n).replace(/'/g, '') + ' · ' + f.sal + '\')">📷 S</button>' : '')
+                    + '</div>'
+                    + (f.obs ? '<div style="margin-top:5px;font:700 11.5px Inter,sans-serif;color:' + (/REPETIDA/.test(f.obs) ? '#B71C1C' : '#8D6E00') + ';">⚠️ ' + syEsc(f.obs) + '</div>' : '')
+                    + '</div>';
+            }).join('') + '</div>';
+    });
+    c.innerHTML = h; c.scrollTop = 0;
+}
+async function asiVerFoto(id, titulo) {
+    let v = document.getElementById('asi-visor');
+    if (!v) { v = document.createElement('div'); v.id = 'asi-visor'; v.onclick = e => { if (e.target === v) v.style.display = 'none'; }; document.body.appendChild(v); }
+    v.innerHTML = '<div style="color:#fff;font:800 15px Inter,sans-serif;">⏳ Cargando foto…</div>'; v.style.display = 'flex';
+    try {
+        if (!_asiFotos[id]) _asiFotos[id] = await syReq('GET', 'asisFotos/' + id);
+        if (!_asiFotos[id]) throw new Error('sin foto');
+        v.innerHTML = '<div style="color:#fff;font:800 14px Inter,sans-serif;margin-bottom:10px;text-align:center;">' + syEsc(titulo || '') + '</div>'
+            + '<img src="data:image/jpeg;base64,' + _asiFotos[id] + '" style="max-width:100%;max-height:78vh;border-radius:12px;">'
+            + '<button onclick="document.getElementById(\'asi-visor\').style.display=\'none\'" style="margin-top:12px;padding:12px 26px;border:none;border-radius:12px;background:#fff;color:#111;font:900 15px Inter,sans-serif;">CERRAR</button>';
+    } catch(e) {
+        v.innerHTML = '<div style="color:#fff;font:800 15px Inter,sans-serif;text-align:center;">⚠️ No se pudo cargar la foto<br>(sin internet o aún no se sube).<br><br><button onclick="document.getElementById(\'asi-visor\').style.display=\'none\'" style="padding:10px 22px;border:none;border-radius:10px;background:#fff;color:#111;font:800 14px Inter,sans-serif;">CERRAR</button></div>';
+    }
+}
+function asiExcel() {
+    if (!asiEsAdmin()) return;
+    const L = asiFilas().filter(f => f.estado !== 'AÚN NO MARCA').sort((a, b) => a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : String(a.n).localeCompare(String(b.n)));
+    if (!L.length) { showToast('No hay datos para exportar', '#555'); return; }
+    const r0 = 4, rf = r0 + L.length - 1;
+    const rango = _asiDesde === _asiHasta ? _asiDesde.split('-').reverse().join('/') : 'Del ' + _asiDesde.split('-').reverse().join('/') + ' al ' + _asiHasta.split('-').reverse().join('/');
+    const hD = { name:'DETALLE', tab:'2E7D32', titulo:'Asistencia del personal', sub: rango + '  ·  Tolerancia ' + ASI_TOL + ' min', filter:true,
+        widths:[12,12,24,10,10,10,11,11,22,42],
+        header:['FECHA','DÍA','TRABAJADOR','HORA ENTRADA','INGRESO','SALIDA','HORAS TRAB.','TARDANZA (MIN)','ESTADO','OBSERVACIÓN'],
+        hstyle:['hr','hr','hr','h','hr','hr','h','h','hr','hr'],
+        rows: L.map(f => [ {v:f.fecha.split('-').reverse().join('/'),s:'c'}, {v:_asiDia(f.fecha),s:'c'}, {v:f.n,s:'k'}, {v:f.h,s:'c'},
+            {v:f.ing ? f.ing.slice(0, 5) : '—',s:'c'}, {v:f.sal ? f.sal.slice(0, 5) : '—',s:'c'},
+            {v:f.mins / 1440, s:'n0', n:'[h]:mm'}, {v:f.tard === '' ? 0 : f.tard, s:'n0'}, {v:f.estado,s:'est'}, {v:f.obs,s:'obs'} ]),
+        cf:[{ ref:`I${r0}:I${rf}`, rules:[
+            { type:'cellIs', operator:'equal', formulae:['"PUNTUAL"'], color:'verde', bold:true },
+            { type:'cellIs', operator:'equal', formulae:['"TARDANZA"'], color:'ambar', bold:true },
+            { type:'cellIs', operator:'equal', formulae:['"NO INGRESÓ"'], color:'rojo', bold:true },
+            { type:'cellIs', operator:'equal', formulae:['"SIN MARCA DE INGRESO"'], color:'ambarS', bold:true } ] },
+            { ref:`H${r0}:H${rf}`, rules:[ { type:'cellIs', operator:'greaterThan', formulae:['0'], color:'ambar', bold:true } ] }] };
+    const nombres = [...new Set(L.map(f => f.n))].sort((a, b) => String(a).localeCompare(String(b)));
+    const D = (col) => `DETALLE!$${col}$${r0}:$${col}$${rf}`;
+    const hR = { name:'RESUMEN', tab:'1565C0', titulo:'Resumen de asistencia', sub: rango, zebra:false,
+        widths:[26,12,11,12,11,14,14],
+        header:['TRABAJADOR','DÍAS CON INGRESO','PUNTUAL','TARDANZAS','FALTAS','MIN. TARDANZA','HORAS TRABAJADAS'],
+        hstyle:['hr','h','h','h','h','h','h'],
+        rows: nombres.map((n, i) => { const r = r0 + i, M = L.filter(f => f.n === n); return [
+            {v:n,s:'k'},
+            {v:M.filter(f => f.ing).length, f:`COUNTIFS(${D('C')},A${r},${D('E')},"<>—")`, s:'n0'},
+            {v:M.filter(f => f.estado === 'PUNTUAL').length, f:`COUNTIFS(${D('C')},A${r},${D('I')},"PUNTUAL")`, s:'n0'},
+            {v:M.filter(f => f.estado === 'TARDANZA').length, f:`COUNTIFS(${D('C')},A${r},${D('I')},"TARDANZA")`, s:'n0'},
+            {v:M.filter(f => f.estado === 'NO INGRESÓ').length, f:`COUNTIFS(${D('C')},A${r},${D('I')},"NO INGRESÓ")`, s:'n0'},
+            {v:M.reduce((s, f) => s + (+f.tard || 0), 0), f:`SUMIFS(${D('H')},${D('C')},A${r})`, s:'n0'},
+            {v:M.reduce((s, f) => s + f.mins, 0) / 1440, f:`SUMIFS(${D('G')},${D('C')},A${r})`, s:'n0', n:'[h]:mm'} ]; }),
+        cf:[{ ref:`E${r0}:E${r0 + nombres.length - 1}`, rules:[ { type:'cellIs', operator:'greaterThan', formulae:['0'], color:'rojo', bold:true } ] },
+            { ref:`D${r0}:D${r0 + nombres.length - 1}`, rules:[ { type:'cellIs', operator:'greaterThan', formulae:['0'], color:'ambar', bold:true } ] }] };
+    const txt = '⏰ ASISTENCIA\n• ' + rango + '\n• Puntual: ' + L.filter(f => f.estado === 'PUNTUAL').length + '\n• Tardanzas: ' + L.filter(f => f.estado === 'TARDANZA').length + '\n• No ingresó: ' + L.filter(f => f.estado === 'NO INGRESÓ').length;
+    xlExportar({ hojas: [hR, hD] }, 'ASISTENCIA_' + _asiDesde + (_asiHasta !== _asiDesde ? '_a_' + _asiHasta : ''), txt);
+}
+(function() {
+    // "¿Quién está usando la app?" también muestra Asistencia
+    const o = window._pModuloActual;
+    if (typeof o === 'function') window._pModuloActual = function() { const m = document.getElementById('modulo-asistencia'); if (m && m.style.display === 'flex') return 'Asistencia'; return o.apply(this, arguments); };
+})();
 
 </script>
