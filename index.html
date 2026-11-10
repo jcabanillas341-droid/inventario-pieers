@@ -1632,7 +1632,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.50 — 09/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.52 — 10/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2097,7 +2097,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.50 — 09/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.52 — 10/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -9939,7 +9939,9 @@ const SY_K = {
     conteo:'pieers_sync_conteo', hids:'pieers_sync_hist_ids', almver:'pieers_sync_almver', almids:'pieers_sync_alm_ids',
     basesver:'pieers_sync_basesver', usrver:'pieers_sync_usrver'
 };
-const SY_ROLES = { admin:'Administrador', supervisor:'Supervisor', vendedor:'Vendedor' };
+const SY_ROLES = { admin:'Administrador', supervisor:'Supervisor', vendedor:'Vendedor', cajera:'Cajera', reponedor:'Reponedor', vigilante:'Vigilante' };
+// v27.51: cargos con los mismos permisos que Vendedor
+const SY_ROLES_BASICOS = ['vendedor', 'cajera', 'reponedor', 'vigilante'];
 const SY_PERM  = {
     cargar:['admin','supervisor'], exportar:['admin','supervisor'], borrar:['admin','supervisor'],
     publicar:['admin','supervisor'], config:['admin']
@@ -10053,8 +10055,8 @@ async function syHash(pin, uid) {
 // ══ ROLES: ocultar lo que no se puede usar (clase en <html>, la app no la toca) ══
 function syAplicarRol() {
     const html = document.documentElement;
-    ['rol-admin','rol-supervisor','rol-vendedor','sy-on'].forEach(c => html.classList.remove(c));
-    if (syActivo()) { html.classList.add('sy-on'); html.classList.add('rol-' + sySes.r); }
+    ['rol-admin','rol-supervisor','rol-vendedor','rol-cajera','rol-reponedor','rol-vigilante','sy-on'].forEach(c => html.classList.remove(c));
+    if (syActivo()) { html.classList.add('sy-on'); html.classList.add('rol-' + sySes.r); if (SY_ROLES_BASICOS.includes(sySes.r)) html.classList.add('rol-vendedor'); }
     syPintarChip();
     try { if (typeof pModulosRol === 'function') pModulosRol(); } catch(e) {}
 }
@@ -10332,10 +10334,10 @@ function syVistaPanel() {
             + '<button class="sy-ib" title="Cambiar PIN" onclick="syCambiarPin(\'' + id + '\')">🔑</button>'
             + '<button class="sy-ib" title="Eliminar" onclick="syEliminarUsuario(\'' + id + '\')">🗑️</button></div>').join('')
             + '<div class="sy-add"><input id="sy-nu-n" class="sy-in" placeholder="Nombre (ej. Karen)"><div class="sy-grid2">'
-            + '<select id="sy-nu-r" class="sy-in"><option value="vendedor">Vendedor</option><option value="supervisor">Supervisor</option><option value="admin">Administrador</option></select>'
+            + '<select id="sy-nu-r" class="sy-in"><option value="vendedor">Vendedor</option><option value="cajera">Cajera</option><option value="reponedor">Reponedor</option><option value="vigilante">Vigilante</option><option value="supervisor">Supervisor</option><option value="admin">Administrador</option></select>'
             + '<input id="sy-nu-p" class="sy-in" placeholder="Clave 4-12" type="password" maxlength="12" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false"></div>'
             + '<button class="sy-btn" onclick="syAgregarUsuario()">➕ AGREGAR USUARIO</button></div>'
-            + '<div class="sy-p" style="font-size:10.5px;"><b>Admin:</b> todo. <b>Supervisor:</b> cargar, exportar, crear/cerrar conteos, enviar bases. <b>Vendedor:</b> escanear, contar, retiros/ingresos y consultar precio.</div></div>';
+            + '<div class="sy-p" style="font-size:10.5px;"><b>Admin:</b> todo. <b>Supervisor:</b> cargar, exportar, crear/cerrar conteos, enviar bases. <b>Vendedor, Cajera, Reponedor y Vigilante:</b> escanear, contar, retiros/ingresos y consultar precio.</div></div>';
         h += '<button class="sy-btn sy-sec" style="color:#B71C1C;border-color:#B71C1C" onclick="mostrarConfirm(\'Desconectar\',\'¿Desconectar este celular de la nube? Los datos de la nube no se borran.\',syDesconectar)">🔌 Desconectar este celular</button>';
     }
     syModal('nube', h);
@@ -10891,7 +10893,9 @@ let _syAutoMT = null;
     if (typeof _sc === 'function') window.saveComp = function() {
         const r = _sc.apply(this, arguments);
         try {
-            if (_syPuedeAuto() && !syConteoId && _syMaestroSig() !== _syCarga.mae && maestroMap.size) {
+            // v27.51: el maestro de INVENTARIO ya NO se envía solo a todos. Se comparte únicamente
+            // con el CONTEO COMPARTIDO (cada uno decide si se une). Stock y memorándum sí se envían solos.
+            if (false && _syPuedeAuto() && !syConteoId && _syMaestroSig() !== _syCarga.mae && maestroMap.size) {
                 clearTimeout(_syAutoMT);
                 _syAutoMT = setTimeout(() => { if (_syPuedeAuto() && _syMaestroSig() !== _syCarga.mae) { _syCarga.mae = _syMaestroSig(); syMaestroPublicar(); } }, 1500);
             }
@@ -10915,6 +10919,7 @@ async function syMaestroPublicar() {
 }
 let _syMaeAvisado = 0;
 function syRevisarMaestro() {
+    return; // v27.51: ya no se ofrece el maestro de otro celular; el inventario se comparte solo al unirse a un conteo compartido
     const ver = syMeta.maestroVer || 0;
     if (!ver || ver <= (_syJ(SY_K_MAEVER, 0) || 0) || syMeta.maestroPor === (sySes && sySes.id) || _syMaeAvisado === ver) return;
     _syMaeAvisado = ver;
@@ -11661,7 +11666,7 @@ function lsGrandeEsperar() { const p = _lsGPend.splice(0); return Promise.all(p)
 // v27.50: el ADMINISTRADOR decide la visibilidad de TODOS los módulos para vendedores.
 const P_VEND_DEF = { stock:true, ticket:true, asis:true, afi:true, comp:false, alm:false };   // valor si el admin aún no lo cambió
 const P_VEND_NOM = { stock:'Consultar Precio', ticket:'Simulador de Ticket', asis:'Asistencia', afi:'Afiliar clientes', comp:'Inventario', alm:'Almacén' };
-function pEsVendedor() { return typeof syActivo === 'function' && syActivo() && sySes.r === 'vendedor'; }
+function pEsVendedor() { return typeof syActivo === 'function' && syActivo() && SY_ROLES_BASICOS.includes(sySes.r); }
 function pVendPuede(mod) {
     if (!pEsVendedor()) return true;
     let vm = syMeta && syMeta.vendMods;
