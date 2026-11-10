@@ -1632,7 +1632,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.55 — 10/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.56 — 10/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2097,7 +2097,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.55 — 10/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.56 — 10/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -14771,9 +14771,13 @@ function asiFormulario() {
     _asi = { tipo:'ENTRADA', foto:'', huella:'', horaOCR:'', noBuk:false, ocupado:false };
     c.innerHTML = '<div class="as-card">'
         + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;"><button class="as-volver" onclick="asiPanel()">← Volver</button><div class="as-tit">📷 ENVIAR MARCA</div></div>'
-        + '<label for="asi-file" style="display:block;border:2px dashed #9E9E9E;border-radius:14px;padding:22px 10px;text-align:center;font:800 15px Inter,sans-serif;color:#333;cursor:pointer;">'
-        + '<div style="font-size:34px;">🖼️</div>Toca para elegir la captura de Buk<br><span style="font:600 12px Inter,sans-serif;color:#777;">Pantalla verde "Marca recibida"</span></label>'
-        + '<input type="file" id="asi-file" accept="image/*" style="display:none;" onchange="asiFoto(this)">'
+        // v27.56: el selector de archivo va ENCIMA del recuadro (invisible) — en algunos celulares (WebView) tocar un <label> no abría la galería
+        + '<div style="position:relative;border:2px dashed #9E9E9E;border-radius:14px;padding:22px 10px;text-align:center;font:800 15px Inter,sans-serif;color:#333;overflow:hidden;">'
+        + '<div style="font-size:34px;">🖼️</div>Toca para elegir la captura de Buk<br><span style="font:600 12px Inter,sans-serif;color:#777;">Pantalla verde "Marca recibida"</span>'
+        + '<input type="file" id="asi-file" accept="image/*" onchange="asiFoto(this)" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:200px;"></div>'
+        + '<div style="display:flex;gap:8px;margin-top:8px;">'
+        + '<button type="button" onclick="_asiElegir(\'gal\')" style="flex:1;padding:12px;border:1.5px solid #999;border-radius:12px;background:#fff;color:#111;font:800 13px Inter,sans-serif;">📁 Galería / archivos</button>'
+        + '<button type="button" onclick="_asiElegir(\'cam\')" style="flex:1;padding:12px;border:1.5px solid #999;border-radius:12px;background:#fff;color:#111;font:800 13px Inter,sans-serif;">📷 Tomar foto</button></div>'
         + '<img id="asi-prev" alt="" style="display:none;max-width:100%;max-height:260px;margin:12px auto 0;border-radius:12px;border:1px solid #DDD;">'
         + '<div id="asi-ocr" class="as-msg"></div>'
         + '<div style="display:flex;gap:8px;margin-top:14px;">'
@@ -14787,6 +14791,15 @@ function asiFormulario() {
         + '<button id="asi-btn" onclick="asiEnviar()" style="width:100%;margin-top:14px;padding:17px;border:none;border-radius:14px;background:#2E7D32;color:#fff;font:900 19px Barlow,Inter,sans-serif;">✅ ENVIAR ASISTENCIA</button>'
         + '<div style="font:600 11.5px Inter,sans-serif;color:#777;text-align:center;margin-top:8px;">Funciona sin internet: se guarda en este celular y se sube sola.</div></div>';
     c.scrollTop = 0;
+}
+// v27.56: abrir galería o cámara con un selector nuevo cada vez (más compatible con Median/Android)
+function _asiElegir(modo) {
+    const i = document.createElement('input'); i.type = 'file';
+    i.accept = modo === 'gal' ? 'image/*,.jpg,.jpeg,.png,.webp,.heic' : 'image/*';
+    if (modo === 'cam') i.setAttribute('capture', 'environment');
+    i.style.cssText = 'position:fixed;left:-9999px;top:0;opacity:0;';
+    i.onchange = () => { asiFoto(i); setTimeout(() => { try { i.remove(); } catch(e) {} }, 60000); };
+    document.body.appendChild(i); i.click();
 }
 function asiTipo(t) {
     _asi.tipo = t;
@@ -14808,7 +14821,7 @@ async function asiFoto(inp) {
         _asi.huella = await _asiSha(await file.arrayBuffer());
         img = await _asiImagen(file);
         _asi.foto = _asiComprimir(img, 640, 0.62);
-    } catch(e) { _asiMsg('asi-ocr', '⚠️ No se pudo abrir la imagen. Prueba con otra captura.', 'err'); return; }
+    } catch(e) { _asiMsg('asi-ocr', '⚠️ Este celular no pudo abrir esa imagen (' + (file.type || 'formato desconocido') + '). Toma la captura de nuevo con los botones de captura de pantalla del celular, o usa "📷 Tomar foto".', 'err'); return; }
     try { await _asiOCR(img); }
     catch(e) { _asiMsg('asi-ocr', '⚠️ No pude leer la hora (¿sin internet?). Escríbela tú y elige Entrada o Salida.', 'warn'); }
 }
@@ -14817,7 +14830,11 @@ async function _asiSha(buf) {
     catch(e) { return ''; }
 }
 function _asiImagen(file) {
-    return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file); });
+    // v27.56: si el celular no abre la imagen por "blob:", se intenta como dataURL y luego con createImageBitmap
+    const porSrc = src => new Promise((res, rej) => { const i = new Image(); i.onload = () => (i.width ? res(i) : rej(new Error('vacía'))); i.onerror = rej; i.src = src; });
+    const porData = () => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => porSrc(r.result).then(res, rej); r.onerror = rej; r.readAsDataURL(file); });
+    const porBitmap = async () => { const b = await createImageBitmap(file); const cv = document.createElement('canvas'); cv.width = b.width; cv.height = b.height; cv.getContext('2d').drawImage(b, 0, 0); return cv; };
+    return porSrc(URL.createObjectURL(file)).catch(porData).catch(() => { if (typeof createImageBitmap === 'function') return porBitmap(); throw new Error('no abre'); });
 }
 function _asiComprimir(img, maxW, q) {
     const k = Math.min(1, maxW / img.width), cv = document.createElement('canvas');
