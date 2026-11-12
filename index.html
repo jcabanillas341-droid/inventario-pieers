@@ -1196,7 +1196,7 @@
         .cs-promo-precio { font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important; font-size: 22px !important; letter-spacing: 0.5px; }
         .cs-pa-nombre { font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important; font-size: 19px !important; letter-spacing: 1px !important; }
         #mpc-desc { font-size: 22px !important; }
-        #mpc-card { border-bottom: 4px solid var(--cat-rojo); }
+        #mpc-card { border-bottom: none; }
 
         /* ── SIMULADOR DE TICKET: cabecera negra, total grande tipo precio ── */
         body:not(.modo-oscuro) #vista-ticket { background: var(--cat-bg) !important; }
@@ -1632,7 +1632,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.56 — 10/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.59 — 12/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -1765,8 +1765,9 @@
     <input type="file" id="almStockInput"  class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
 
     <!-- ── MODAL PRECIOS AL PISTOLIZAR (promo color o promos normales) ── -->
-    <div id="modal-promo-color" style="display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,0.0);justify-content:flex-end;align-items:flex-start;padding:0;pointer-events:none;">
-        <div id="mpc-card" style="background:#FFFFFF;border-radius:0 0 24px 24px;width:100%;max-width:480px;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.3),0 4px 12px rgba(0,0,0,0.15);pointer-events:all;position:relative;">
+    <div id="modal-promo-color" style="display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,0.0);flex-direction:column;justify-content:flex-end;align-items:center;padding:0;pointer-events:none;">
+        <!-- v27.58: la ventana flotante sale ABAJO para que el stock (arriba) se siga viendo -->
+        <div id="mpc-card" style="background:#FFFFFF;border-radius:22px 22px 0 0;border-top:5px solid #E53935;width:100%;max-width:480px;max-height:60vh;overflow-y:auto;box-shadow:0 -10px 34px rgba(0,0,0,0.35),0 -2px 10px rgba(0,0,0,0.15);pointer-events:all;position:relative;">
             <!-- Botón VER STOCK fijo arriba de todo -->
             <div id="mpc-btn-stock-top" style="padding:8px 14px 0;">
                 <button id="mpc-btn-stock-fijo"
@@ -1779,7 +1780,7 @@
             <!-- Descripción artículo -->
             <div style="padding:10px 18px 4px;border-bottom:1px solid #F0F0F0;">
                 <div id="mpc-desc" style="font-family:'Bebas Neue','Inter',sans-serif;font-size:20px;color:#111;line-height:1.2;letter-spacing:1px;"></div>
-                <div id="mpc-cod" style="font-family:'Bebas Neue','Inter',sans-serif;font-size:14px;color:#888;margin-top:2px;letter-spacing:2px;"></div>
+                <div id="mpc-cod" style="font-family:'Bebas Neue','Inter',sans-serif;font-size:14px;color:#444;margin-top:2px;letter-spacing:2px;"></div>
             </div>
             <!-- Contenido promos -->
             <!-- Banner cambio de precio -->
@@ -1787,7 +1788,7 @@
             <div id="mpc-lista" style="padding:10px 18px 8px;display:flex;flex-direction:column;gap:8px;"></div>
             <!-- Temporizador visible + barra de progreso -->
             <div style="display:flex;align-items:center;gap:8px;padding:6px 14px 8px;background:#F8F8F8;">
-                <span id="mpc-timer-txt" style="font-family:'Bebas Neue','Inter',sans-serif;font-size:13px;color:#888;letter-spacing:1px;min-width:32px;">0:05</span>
+                <span id="mpc-timer-txt" style="font-family:'Bebas Neue','Inter',sans-serif;font-size:13px;color:#333;letter-spacing:1px;min-width:32px;">0:05</span>
                 <div style="flex:1;height:4px;background:#E0E0E0;border-radius:2px;overflow:hidden;">
                     <div id="mpc-progress" style="height:4px;background:linear-gradient(90deg,#E53935,#FF6D00);width:100%;transform-origin:left;transition:transform 120s linear;"></div>
                 </div>
@@ -2057,14 +2058,14 @@
                     <div class="cs-price-label">UNITARIO</div>
                     <div class="cs-price-val" id="cs-p-menor">0.00</div>
                     <div class="cs-price-pct" id="cs-pct-menor">—</div>
-                    <div id="cs-pf-libro" style="font-size:11px;font-weight:800;color:#fff;background:rgba(0,0,0,0.22);border-radius:8px;padding:2px 6px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">📖 —</div>
+                    <div id="cs-pf-libro" style="font-size:11px;font-weight:800;color:#000;background:rgba(255,255,255,0.6);border-radius:8px;padding:2px 6px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">📖 —</div>
 
                 </div>
                 <div class="cs-price-box" style="background:#00B8D4;flex:1;" data-tipo="combo" id="cs-box-combo">
                     <div class="cs-price-label">COMBO</div>
                     <div class="cs-price-val" id="cs-p-mayor">0.00</div>
                     <div class="cs-price-pct" id="cs-pct-mayor">—</div>
-                    <div id="cs-pf-libro-combo" style="font-size:11px;font-weight:800;color:#fff;background:rgba(0,0,0,0.22);border-radius:8px;padding:2px 6px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">📖 —</div>
+                    <div id="cs-pf-libro-combo" style="font-size:11px;font-weight:800;color:#000;background:rgba(255,255,255,0.6);border-radius:8px;padding:2px 6px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">📖 —</div>
 
                 </div>
             </div>
@@ -2077,7 +2078,7 @@
                 </div>
                 <div style="flex:1;background:#E8EAF6;border-radius:10px;padding:7px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #C5CAE9;">
                     <div style="font-size:11px;font-weight:800;color:#111111;font-family:'Barlow',sans-serif;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px;">x MAYOR</div>
-                    <div id="cs-p-mayor-val" style="font-family:'Barlow',sans-serif;font-size:16px;font-weight:900;color:#1A237E;line-height:1;">0.00</div>
+                    <div id="cs-p-mayor-val" style="font-family:'Barlow',sans-serif;font-size:18px;font-weight:900;color:#000;line-height:1;">0.00</div>
                     <div id="cs-pct-mayor-val" style="font-size:11px;color:#111111;margin-top:3px;font-family:'Inter',sans-serif;font-weight:700;">—</div>
                 </div>
             </div>
@@ -2097,7 +2098,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.56 — 10/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.59 — 12/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -6279,13 +6280,13 @@ function csModalPromoMostrar(config) {
                     box-shadow:0 6px 16px rgba(0,0,0,0.12),0 2px 4px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.8);
                     border-left:5px solid ${clrMap[item.tipo]||'#999'};transform:translateZ(0);
                     ${esMasBarato ? 'outline:3px solid #E65100;box-shadow:0 0 0 4px rgba(230,81,0,0.18),0 6px 16px rgba(0,0,0,0.12);' : ''}">
-                <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:16px;color:#555;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">${item.nombre}${esMasBarato ? '<span style="background:#E65100;color:#fff;font-size:11px;padding:2px 8px;border-radius:8px;letter-spacing:0.5px;">🔔 CAMBIÓ · MÁS ECONÓMICO</span>' : (item.cambio ? '<span style="background:#E65100;color:#fff;font-size:11px;padding:2px 8px;border-radius:8px;letter-spacing:0.5px;">🔔 CAMBIÓ</span>' : '')}</div>
-                ${_ant ? `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px;"><span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:#777;">ANTES (etiqueta)</span><span style="font-family:'Bebas Neue','Inter',sans-serif;font-size:28px;color:#888;text-decoration:line-through;text-decoration-thickness:2px;">S/ ${_etiqA.toFixed(2)}</span></div><div style="font-family:'Inter',sans-serif;font-size:12px;font-weight:900;color:#2E7D32;letter-spacing:2px;">AHORA ${item.tipo === 'combo' ? '(c/u en combo)' : ''}</div>` : ''}
-                <div style="display:flex;justify-content:space-between;align-items:flex-end;">
-                    <span style="font-family:'Bebas Neue','Inter',sans-serif;font-size:${esMasBarato?'72px':'52px'};color:#E53935;line-height:1;text-shadow:2px 2px 4px rgba(229,57,53,0.2);">S/ ${Number(item.precio).toFixed(2)}</span>
-                    <span style="font-family:'Bebas Neue','Inter',sans-serif;font-size:32px;color:#FF6D00;font-weight:900;background:rgba(255,109,0,0.1);padding:2px 8px;border-radius:8px;border:2px solid rgba(255,109,0,0.3);">${item.dto||''}</span>
+                <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:17px;color:#111;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">${item.nombre}${esMasBarato ? '<span style="background:#E65100;color:#fff;font-size:11px;padding:2px 8px;border-radius:8px;letter-spacing:0.5px;">🔔 CAMBIÓ · MÁS ECONÓMICO</span>' : (item.cambio ? '<span style="background:#E65100;color:#fff;font-size:11px;padding:2px 8px;border-radius:8px;letter-spacing:0.5px;">🔔 CAMBIÓ</span>' : '')}</div>
+                ${_ant ? `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px;"><span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:#333;">ANTES (etiqueta)</span><span style="font-family:'Bebas Neue','Inter',sans-serif;font-size:28px;color:#555;text-decoration:line-through;text-decoration-thickness:2px;">S/ ${_etiqA.toFixed(2)}</span></div><div style="font-family:'Inter',sans-serif;font-size:12px;font-weight:900;color:#2E7D32;letter-spacing:2px;">AHORA ${item.tipo === 'combo' ? '(c/u en combo)' : ''}</div>` : ''}
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+                    <span style="font-family:'Bebas Neue','Inter',sans-serif;font-size:${esMasBarato?'64px':'52px'};color:#000;line-height:1;white-space:nowrap;">S/ ${Number(item.precio).toFixed(2)}</span>
+                    <span style="font-family:'Bebas Neue','Inter',sans-serif;font-size:24px;color:#fff;font-weight:900;background:#E65100;padding:2px 8px;border-radius:8px;white-space:nowrap;">${item.dto||''}</span>
                 </div>
-                ${item.libro ? `<div style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#666;margin-top:6px;">📖 ${item.libro}</div>` : ''}
+                ${item.libro ? `<div style="font-family:'Inter',sans-serif;font-size:11.5px;font-weight:800;color:#111;margin-top:6px;">📖 ${item.libro}</div>` : ''}
                </div>`;
     });
 
@@ -11035,15 +11036,77 @@ async function _syAsegurarFijas() {
         try { await syReq('PUT', 'carpetas/' + cid, c); syCarpetas[cid] = c; } catch(e) {}
     }
 }
+
+// ── v27.59: CARPETAS SIN INTERNET ─────────────────────────────────────
+// Cada archivo que se sube, se carga o se "guarda en el celular" queda copiado aquí (IndexedDB),
+// y la lista de carpetas se recuerda; así se puede abrir y CARGAR sin internet.
+const _SY_OFF_IDX = 'pieers_carp_off', _SY_OFF_LISTA = 'pieers_carpetas_lista';
+let _syCarpOffline = false;
+function _syOffIdx() { try { return JSON.parse(localStorage.getItem(_SY_OFF_IDX) || '{}'); } catch(e) { return {}; } }
+function _syOffIdxSet(o) { try { localStorage.setItem(_SY_OFF_IDX, JSON.stringify(o)); } catch(e) {} }
+function _syOffTiene(cid, fid, f) { const x = _syOffIdx()[cid + '/' + fid]; return !!x && (!f || _syCarpOffline || (x.ts === (f.ts || 0) && x.s === (f.s || 0))); }
+function _syOffPut(cid, fid, f, ab) {
+    return pIdb().then(db => new Promise(res => {
+        try { const tx = db.transaction('files', 'readwrite'); tx.objectStore('files').put(ab, 'carpOff::' + cid + '/' + fid);
+            tx.oncomplete = () => { const o = _syOffIdx(); o[cid + '/' + fid] = { ts: f.ts || 0, s: f.s || 0, n: f.n }; _syOffIdxSet(o); res(true); };
+            tx.onerror = () => res(false);
+        } catch(e) { res(false); }
+    })).catch(() => false);
+}
+function _syOffGet(cid, fid) {
+    return pIdb().then(db => new Promise(res => {
+        try { const q = db.transaction('files', 'readonly').objectStore('files').get('carpOff::' + cid + '/' + fid);
+            q.onsuccess = () => res(q.result || null); q.onerror = () => res(null); } catch(e) { res(null); }
+    })).catch(() => null);
+}
+function _syOffBorrar(cid, fid) {
+    const o = _syOffIdx(); delete o[cid + '/' + fid]; _syOffIdxSet(o);
+    pIdb().then(db => { try { db.transaction('files', 'readwrite').objectStore('files').delete('carpOff::' + cid + '/' + fid); } catch(e) {} }).catch(() => {});
+}
+// limpia copias de archivos que ya no existen en la nube
+function _syOffLimpiar() {
+    const o = _syOffIdx();
+    Object.keys(o).forEach(k => { const [c, f] = k.split('/'); if (!((syCarpetas[c] || {}).files || {})[f]) _syOffBorrar(c, f); });
+}
+function _syOffBadge(cid, fid, f) {
+    if (_syOffTiene(cid, fid, f)) return '<div style="font-size:10.5px;font-weight:800;color:#2E7D32;margin-top:2px;">📱 Guardado en el celular</div>';
+    return _syCarpOffline ? '<div style="font-size:10.5px;font-weight:800;color:#B71C1C;margin-top:2px;">☁️ Solo con internet</div>'
+        : '<div style="font-size:10.5px;font-weight:700;color:#888;margin-top:2px;">☁️ En la nube</div>';
+}
+async function syGuardarTodoCelular() {
+    if (_syCarpOffline) return showToast('📴 Necesitas internet para descargar', '#E65100');
+    const pend = [];
+    Object.entries(syCarpetas || {}).forEach(([cid, c]) => Object.entries(c.files || {}).forEach(([fid, f]) => { if (!_syOffTiene(cid, fid, f)) pend.push([cid, fid, f]); }));
+    if (!pend.length) return showToast('✅ Ya tienes todos los archivos en el celular', '#2E7D32');
+    let ok = 0;
+    for (let i = 0; i < pend.length; i++) {
+        const [cid, fid, f] = pend[i];
+        showLoading('Guardando en el celular ' + (i + 1) + ' de ' + pend.length + ': ' + f.n);
+        try { const b64 = await syReq('GET', 'carpetasData/' + cid + '/' + fid); if (b64) { await _syOffPut(cid, fid, f, _syB64ToAb(b64)); ok++; } } catch(e) {}
+    }
+    hideLoading();
+    showToast('📱 ' + ok + ' archivo(s) guardados: ya puedes cargarlos sin internet', '#2E7D32', 3500);
+    syVistaCarpetas(false);
+}
 async function syVistaCarpetas(recargar) {
     if (recargar) {
         syModal('carpetas', '<div class="sy-p" style="text-align:center;padding:20px;">⏳ Cargando carpetas…</div>');
-        try { syCarpetas = (await syReq('GET', 'carpetas')) || {}; } catch(e) { syModal('carpetas', '<div class="sy-p">⚠️ Sin conexión. Intenta de nuevo.</div>'); return; }
-        await _syAsegurarFijas();
+        try {
+            syCarpetas = (await syReq('GET', 'carpetas')) || {};
+            _syCarpOffline = false;
+            await _syAsegurarFijas();
+            try { localStorage.setItem(_SY_OFF_LISTA, JSON.stringify(syCarpetas)); } catch(e) {}
+            _syOffLimpiar();
+        } catch(e) {
+            // v27.59: sin internet → se muestra la última lista guardada
+            let l = null; try { l = JSON.parse(localStorage.getItem(_SY_OFF_LISTA) || 'null'); } catch(e2) {}
+            if (!l) { syModal('carpetas', '<div class="sy-p">⚠️ Sin conexión y aún no hay carpetas guardadas en este celular. Ábrelas una vez con internet.</div>'); return; }
+            syCarpetas = l; _syCarpOffline = true;
+        }
         // limpiar selecciones de archivos que ya no existen
         [..._sySelArch].forEach(k => { const [c, f] = k.split('|'); if (!((syCarpetas[c] || {}).files || {})[f]) _sySelArch.delete(k); });
     }
-    const puede = pPuede('publicar');
+    const puede = pPuede('publicar') && !_syCarpOffline;
     const q = ((document.getElementById('sy-cq') || {}).value || '').trim().toUpperCase();
     const lista = Object.entries(syCarpetas || {}).sort((a, b) => {
         const ia = _syCarpetaFijaIdx(a[1].n), ib = _syCarpetaFijaIdx(b[1].n);
@@ -11058,6 +11121,11 @@ async function syVistaCarpetas(recargar) {
         + '<button class="sy-btn" onclick="sySubirCarpeta(false)">📄 Subir bases</button>'
         + '<button class="sy-btn sy-dark" onclick="syNuevaCarpeta()">➕ Nueva carpeta</button></div>'
         + '<div class="sy-p" style="font-size:10.5px;margin:-2px 0 8px;">Toca ⬆️ en una carpeta para subir los archivos directo ahí. Marca ☑️ varios archivos para borrarlos de una vez.</div>';
+    {   // v27.59: estado sin internet / guardar todo en el celular
+        let tot = 0, loc = 0; Object.entries(syCarpetas || {}).forEach(([cid, c]) => Object.entries(c.files || {}).forEach(([fid, f]) => { tot++; if (_syOffTiene(cid, fid, f)) loc++; }));
+        if (_syCarpOffline) h += '<div style="background:#FFF3E0;border:2px solid #E65100;border-radius:12px;padding:9px 11px;margin-bottom:8px;font-weight:800;font-size:12.5px;color:#BF360C;">📴 Sin internet: puedes CARGAR los ' + loc + ' archivo(s) marcados 📱 Guardado en el celular.</div>';
+        else if (tot) h += '<button class="sy-btn" style="background:#2E7D32;margin-bottom:8px;" onclick="syGuardarTodoCelular()">📱 Guardar todo en el celular (' + loc + '/' + tot + ') · para usar sin internet</button>';
+    }
     h += '<input id="sy-cq" class="sy-in" placeholder="🔍 Buscar archivo o carpeta" value="' + syEsc(q) + '" oninput="syVistaCarpetas(false)" autocomplete="off">';
     if (puede && _sySelArch.size) h += '<div style="position:sticky;top:0;z-index:2;background:#FFEBEE;border:2px solid #C62828;border-radius:12px;padding:8px 10px;margin-bottom:8px;display:flex;align-items:center;gap:8px;">'
         + '<div style="flex:1;font-weight:800;font-size:13px;color:#B71C1C;">☑️ ' + _sySelArch.size + ' archivo(s) marcados</div>'
@@ -11132,7 +11200,7 @@ function _syArbolHtml(cid, files, puede, fh, abierto) {
         nodo.files.push([fid, f]);
     });
     const contar = n => n.files.length + Object.values(n.sub).reduce((a, x) => a + contar(x), 0);
-    const fila = ([fid, f]) => '<div class="sy-urow">' + (puede ? '<input type="checkbox" ' + (_sySelArch.has(cid + '|' + fid) ? 'checked ' : '') + 'onclick="_syToggleSel(\'' + cid + '\',\'' + fid + '\',this.checked)" style="width:20px;height:20px;accent-color:#C62828;flex-shrink:0;">' : '') + '<div class="sy-uname">📄 <b>' + syEsc(f.n) + '</b><br><span class="sy-p" style="font-size:10.5px;">' + _syTam(f.s || 0) + (f.ts ? ' · ' + fh(f.ts) : '') + '</span></div>'
+    const fila = ([fid, f]) => '<div class="sy-urow">' + (puede ? '<input type="checkbox" ' + (_sySelArch.has(cid + '|' + fid) ? 'checked ' : '') + 'onclick="_syToggleSel(\'' + cid + '\',\'' + fid + '\',this.checked)" style="width:20px;height:20px;accent-color:#C62828;flex-shrink:0;">' : '') + '<div class="sy-uname">📄 <b>' + syEsc(f.n) + '</b><br><span class="sy-p" style="font-size:10.5px;">' + _syTam(f.s || 0) + (f.ts ? ' · ' + fh(f.ts) : '') + '</span>' + _syOffBadge(cid, fid, f) + '</div>'
         + '<button class="sy-btn sy-mini" onclick="syCargarDeCarpeta(\'' + cid + '\',\'' + fid + '\')">CARGAR</button>'
         + (puede ? '<button class="sy-ib" title="Borrar archivo" onclick="syBorrarArchivoCarpeta(\'' + cid + '\',\'' + fid + '\')">🗑️</button>' : '') + '</div>';
     const dibujar = (nodo, nivel, ruta) => {
@@ -11307,7 +11375,9 @@ async function _sySubirArchivos(dest, files, reemplazar) {
             const sub = [base, interna].filter(Boolean).join('/');
             const fid = Object.keys(existentes).find(k => existentes[k].n === f.name && (existentes[k].p || '') === sub) || syId('f');
             await syReq('PUT', 'carpetasData/' + cid + '/' + fid, _syAbToB64(ab));
-            await syReq('PUT', 'carpetas/' + cid + '/files/' + fid, { n: f.name, p: sub, s: f.size, ts: Date.now(), porN: sySes.n });
+            const meta = { n: f.name, p: sub, s: f.size, ts: Date.now(), porN: sySes.n };
+            await syReq('PUT', 'carpetas/' + cid + '/files/' + fid, meta);
+            _syOffPut(cid, fid, meta, ab.slice(0));
             ok++;
         }
         await syReq('PATCH', 'carpetas/' + cid, { ts: Date.now(), porN: sySes.n });
@@ -11351,13 +11421,16 @@ async function _syCargarDeCarpetaTipo(cid, fid, tipo) {
             // v27.36: si ya se descargó antes (mismo archivo, misma versión) se usa la copia del celular
             const ckey = 'carp::' + cid + '/' + fid + ':' + (f.ts || 0) + ':' + (f.s || 0);
             let ab = null;
-            try { const g = await pCacheGet(ckey); if (g && g.byteLength) ab = g; } catch(e) {}
+            if (_syOffTiene(cid, fid, f)) { try { const g = await _syOffGet(cid, fid); if (g && g.byteLength) ab = g.slice(0); } catch(e) {} }
+            if (!ab) { try { const g = await pCacheGet(ckey); if (g && g.byteLength) ab = g; } catch(e) {} }
+            if (!ab && _syCarpOffline) throw new Error('Este archivo no está guardado en el celular. Ábrelo con internet o usa "📱 Guardar todo en el celular".');
             if (!ab) {
                 const b64 = await syReq('GET', 'carpetasData/' + cid + '/' + fid);
                 if (!b64) throw new Error('El archivo ya no está en la nube');
                 ab = _syB64ToAb(b64);
                 try { pCachePut(ckey, ab.slice(0)); } catch(e) {}
             }
+            if (!_syOffTiene(cid, fid, f)) _syOffPut(cid, fid, f, ab.slice(0));
             hideLoading(); syCerrarModal();
             const _modDe = esComp ? 'comp' : (tipo === 'almacen' || tipo === 'guia-alm') ? 'alm' : 'stock';
             if (modoActual !== _modDe) seleccionarModo(_modDe);
@@ -15284,7 +15357,7 @@ function asiFilas() {
             if (libre && (E || S)) obs.push('Marcó en su ' + libre.toLowerCase());
             if (S && hS && !libre) { const a = Math.floor(_asiMin(hS) - _asiMin(S.hora)); if (a > ASI_TOL) obs.push('Salió ' + a + ' min antes'); }
             if (mis.length > (E ? 1 : 0) + (S ? 1 : 0)) obs.push(mis.length + ' marcas enviadas');
-            filas.push({ fecha: d, id: p.id, n: p.n, h: hE, hs: hS, libre, ing: E ? E.hora : '', sal: S ? S.hora : '', idE: E ? E.id : '', idS: S ? S.id : '', tard, mins, estado, obs: obs.join(' · ') });
+            filas.push({ fecha: d, id: p.id, n: p.n, h: hE, hs: hS, libre, base: !hv, ing: E ? E.hora : '', sal: S ? S.hora : '', idE: E ? E.id : '', idS: S ? S.id : '', tard, mins, estado, obs: obs.join(' · ') });
         });
     });
     return filas;
@@ -15301,6 +15374,10 @@ function asiVistaTabla() {
         + '<div style="display:flex;gap:6px;margin-bottom:8px;">' + chip('hoy', 'Hoy') + chip('ayer', 'Ayer') + chip('7', '7 días') + chip('mes', 'Este mes') + '</div>'
         + '<div style="display:flex;gap:6px;align-items:center;margin-bottom:10px;"><input id="asi-d" type="date" class="as-in" style="flex:1;min-width:0;padding:8px;font-size:14px;" value="' + _asiDesde + '" max="' + hoy + '"><span style="font-weight:800;">a</span><input id="asi-h" type="date" class="as-in" style="flex:1;min-width:0;padding:8px;font-size:14px;" value="' + _asiHasta + '" max="' + hoy + '"><button class="as-volver" onclick="asiRangoManual()">Ver</button></div>'
         + '<div style="display:flex;gap:6px;">' + caja(cuenta('PUNTUAL'), 'PUNTUAL', ASI_COL['PUNTUAL']) + caja(cuenta('TARDANZA'), 'TARDANZA', ASI_COL['TARDANZA']) + caja(cuenta('NO INGRESÓ'), 'NO INGRESÓ', ASI_COL['NO INGRESÓ']) + caja(F.filter(f => f.libre && f.estado === f.libre).length, 'DESCANSO', ASI_COL['DESCANSO']) + '</div>'
+        // v27.57: aviso cuando falta el horario del Excel (si no, se usa la hora base 09:00 y las tardanzas salen mal)
+        + (() => { const sin = [...new Set(F.filter(f => f.base).map(f => f.fecha))].sort();
+            return sin.length ? '<div style="background:#FFF3E0;color:#E65100;border-radius:12px;padding:10px;margin-top:10px;font:800 12.5px Inter,sans-serif;">⚠️ Sin horario del Excel para ' + (sin.length > 3 ? sin.length + ' día(s)' : sin.map(x => x.slice(8) + '/' + x.slice(5, 7)).join(', ')) + ' (' + F.filter(f => f.base).length + ' fila(s)): se usa la hora base 09:00 y las tardanzas pueden salir mal.'
+                + '<button onclick="asiImportar()" style="width:100%;margin-top:8px;padding:11px;border:none;border-radius:10px;background:#E65100;color:#fff;font:800 13px Inter,sans-serif;">📥 Cargar horario desde Excel</button></div>' : ''; })()
         + (F.length ? '<button onclick="asiExcel()" style="width:100%;margin-top:10px;padding:13px;border:none;border-radius:12px;background:#2E7D32;color:#fff;font:800 14px Inter,sans-serif;">📥 Descargar Excel</button>' : '')
         + '</div>';
     if (!F.length) h += '<div class="as-card" style="text-align:center;color:#777;">No hay marcas en estas fechas.</div>';
@@ -15313,7 +15390,7 @@ function asiVistaTabla() {
                     + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;"><b style="font-size:14.5px;">👤 ' + syEsc(f.n) + '</b>'
                     + '<span class="as-badge" style="background:' + col[0] + ';color:' + col[1] + ';">' + f.estado + (f.tard ? ' ' + f.tard + ' min' : '') + '</span></div>'
                     + '<div style="display:flex;gap:12px;align-items:center;margin-top:5px;flex-wrap:wrap;">'
-                    + (f.libre && f.estado === f.libre ? '<span style="color:#0D47A1;font-weight:800;">' + _asiHorTxt({ d: f.libre }) + '</span>' : '<span>Horario <b>' + f.h + (f.hs ? '–' + f.hs : '') + '</b></span><span>🟢 <b>' + _asiCorta(f.ing) + '</b></span><span>🔵 <b>' + _asiCorta(f.sal) + '</b></span>')
+                    + (f.libre && f.estado === f.libre ? '<span style="color:#0D47A1;font-weight:800;">' + _asiHorTxt({ d: f.libre }) + '</span>' : '<span>Horario <b>' + f.h + (f.hs ? '–' + f.hs : '') + '</b>' + (f.base ? ' <span style="color:#E65100;font-weight:800;">(base, sin Excel)</span>' : '') + '</span><span>🟢 <b>' + _asiCorta(f.ing) + '</b></span><span>🔵 <b>' + _asiCorta(f.sal) + '</b></span>')
                     + (f.mins ? '<span>⏱️ <b>' + Math.floor(f.mins / 60) + 'h ' + String(f.mins % 60).padStart(2, '0') + 'm</b></span>' : '')
                     + '<span style="flex:1"></span>'
                     + (f.idE ? '<button class="as-foto" onclick="asiVerFoto(\'' + f.idE + '\',\'Entrada · ' + syEsc(f.n).replace(/'/g, '') + ' · ' + f.ing + '\')">📷 E</button>' : '')
@@ -15380,7 +15457,7 @@ async function asiExcel() {
         header:['FECHA','DÍA','TRABAJADOR','HORARIO','INGRESO','SALIDA','HORAS TRAB.','TARDANZA (MIN)','ESTADO','OBSERVACIÓN','FOTO ENTRADA','FOTO SALIDA'],
         hstyle:['hr','hr','hr','h','hr','hr','h','h','hr','hr','h','h'],
         rowH: hayFotos ? 70 : undefined,
-        rows: L.map(f => [ {v:f.fecha.split('-').reverse().join('/'),s:'c'}, {v:_asiDia(f.fecha),s:'c'}, {v:f.n,s:'k'}, {v:(f.libre && f.estado === f.libre) ? f.libre : f.h + (f.hs ? ' - ' + f.hs : ''),s:'c'},
+        rows: L.map(f => [ {v:f.fecha.split('-').reverse().join('/'),s:'c'}, {v:_asiDia(f.fecha),s:'c'}, {v:f.n,s:'k'}, {v:(f.libre && f.estado === f.libre) ? f.libre : f.h + (f.hs ? ' - ' + f.hs : '') + (f.base ? ' (base)' : ''),s:'c'},
             {v:f.ing ? f.ing.slice(0, 5) : '—',s:'c'}, {v:f.sal ? f.sal.slice(0, 5) : '—',s:'c'},
             {v:f.mins / 1440, s:'n0', n:'[h]:mm'}, {v:f.tard === '' ? 0 : f.tard, s:'n0'}, {v:f.estado,s:'est'}, {v:f.obs,s:'obs'},
             celFoto(f.idE), celFoto(f.idS) ]),
