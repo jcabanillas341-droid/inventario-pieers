@@ -1632,7 +1632,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.59 — 12/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.61 — 13/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -1767,27 +1767,27 @@
     <!-- ── MODAL PRECIOS AL PISTOLIZAR (promo color o promos normales) ── -->
     <div id="modal-promo-color" style="display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,0.0);flex-direction:column;justify-content:flex-end;align-items:center;padding:0;pointer-events:none;">
         <!-- v27.58: la ventana flotante sale ABAJO para que el stock (arriba) se siga viendo -->
-        <div id="mpc-card" style="background:#FFFFFF;border-radius:22px 22px 0 0;border-top:5px solid #E53935;width:100%;max-width:480px;max-height:60vh;overflow-y:auto;box-shadow:0 -10px 34px rgba(0,0,0,0.35),0 -2px 10px rgba(0,0,0,0.15);pointer-events:all;position:relative;">
+        <div id="mpc-card" style="background:#FFFFFF;border-radius:22px 22px 0 0;border-top:5px solid #E53935;width:100%;max-width:480px;max-height:45vh;overflow-y:auto;box-shadow:0 -10px 34px rgba(0,0,0,0.35),0 -2px 10px rgba(0,0,0,0.15);pointer-events:all;position:relative;">
             <!-- Botón VER STOCK fijo arriba de todo -->
-            <div id="mpc-btn-stock-top" style="padding:8px 14px 0;">
+            <div id="mpc-btn-stock-top" style="display:none;padding:8px 14px 0;">
                 <button id="mpc-btn-stock-fijo"
                     style="width:100%;padding:12px;background:#1565C0;border:none;border-radius:12px;color:#fff;font-family:'Bebas Neue','Inter',sans-serif;font-size:20px;letter-spacing:3px;cursor:pointer;box-shadow:0 3px 10px rgba(21,101,192,0.35);">
                     📦 VER STOCK
                 </button>
             </div>
             <!-- Botón cerrar flotante -->
-            <button onclick="csModalPromoCerrar()" style="position:absolute;top:10px;right:12px;z-index:10;background:rgba(0,0,0,0.12);border:none;color:#555;width:30px;height:30px;border-radius:50%;font-size:15px;cursor:pointer;">✕</button>
+            <button onclick="csModalPromoCerrar()" style="position:absolute;top:6px;right:8px;z-index:10;background:rgba(0,0,0,0.12);border:none;color:#333;width:28px;height:28px;border-radius:50%;font-size:15px;cursor:pointer;">✕</button>
             <!-- Descripción artículo -->
-            <div style="padding:10px 18px 4px;border-bottom:1px solid #F0F0F0;">
-                <div id="mpc-desc" style="font-family:'Bebas Neue','Inter',sans-serif;font-size:20px;color:#111;line-height:1.2;letter-spacing:1px;"></div>
-                <div id="mpc-cod" style="font-family:'Bebas Neue','Inter',sans-serif;font-size:14px;color:#444;margin-top:2px;letter-spacing:2px;"></div>
+            <div style="padding:7px 42px 3px 14px;display:flex;align-items:baseline;gap:8px;min-width:0;">
+                <div id="mpc-desc" style="font-family:'Bebas Neue','Inter',sans-serif;font-size:16px;color:#111;line-height:1.15;letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;"></div>
+                <div id="mpc-cod" style="font-family:'Bebas Neue','Inter',sans-serif;font-size:12px;color:#444;letter-spacing:1px;flex-shrink:0;"></div>
             </div>
             <!-- Contenido promos -->
             <!-- Banner cambio de precio -->
             <div id="mpc-cambio-banner" style="display:none;background:#E65100;color:#fff;font-family:'Inter',sans-serif;font-size:11px;font-weight:800;padding:6px 18px;letter-spacing:0.5px;"></div>
-            <div id="mpc-lista" style="padding:10px 18px 8px;display:flex;flex-direction:column;gap:8px;"></div>
+            <div id="mpc-lista" style="padding:4px 10px 6px;display:flex;flex-direction:column;gap:6px;"></div>
             <!-- Temporizador visible + barra de progreso -->
-            <div style="display:flex;align-items:center;gap:8px;padding:6px 14px 8px;background:#F8F8F8;">
+            <div style="display:flex;align-items:center;gap:8px;padding:3px 14px 5px;background:#F8F8F8;">
                 <span id="mpc-timer-txt" style="font-family:'Bebas Neue','Inter',sans-serif;font-size:13px;color:#333;letter-spacing:1px;min-width:32px;">0:05</span>
                 <div style="flex:1;height:4px;background:#E0E0E0;border-radius:2px;overflow:hidden;">
                     <div id="mpc-progress" style="height:4px;background:linear-gradient(90deg,#E53935,#FF6D00);width:100%;transform-origin:left;transition:transform 120s linear;"></div>
@@ -2098,7 +2098,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.59 — 12/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.61 — 13/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -6263,31 +6263,36 @@ function csModalPromoMostrar(config) {
         const bgMap = {color:'linear-gradient(135deg,#E53935,#B71C1C)', promo:'#FFF3E0', combo:'#E3F2FD', oferta:'#E8F5E9', etiqueta:'#FFFDE7', sinprecio:'#F5F5F5'};
         const clrMap= {color:'#fff', promo:'#E65100', combo:'#0288D1', oferta:'#2E7D32', etiqueta:'#F57F17', sinprecio:'#777'};
         const isColor = item.tipo === 'color';
-        lista.innerHTML += isColor
-            ? `<div style="background:${bgMap.color};border-radius:16px;padding:20px 18px;text-align:center;">
-                <div style="font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:rgba(255,255,255,0.8);letter-spacing:2px;text-transform:uppercase;">PRECIO PROMO COLOR</div>
-                <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:20px;color:#fff;margin:4px 0;">🎨 ${item.color||''}</div>
-                ${_ant ? `<div style="font-family:'Inter',sans-serif;font-size:13px;font-weight:800;color:rgba(255,255,255,0.85);">ANTES (etiqueta): <span style="font-family:'Bebas Neue','Inter',sans-serif;font-size:26px;text-decoration:line-through;">S/ ${_etiqA.toFixed(2)}</span></div><div style="font-family:'Inter',sans-serif;font-size:12px;font-weight:900;color:#fff;letter-spacing:2px;margin-top:2px;">AHORA</div>` : ''}
-                <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:64px;color:#fff;line-height:1;">S/ ${Number(item.precio).toFixed(2)}</div>
-                <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:28px;color:rgba(255,255,255,0.95);margin-top:4px;">${item.dto||''}</div>
-               </div>`
-            : item.tipo === 'sinprecio'
-            ? `<div style="background:#F5F5F5;border-left:6px solid #999;border-radius:14px;padding:16px;">
-                <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:20px;color:#555;text-transform:uppercase;letter-spacing:2px;text-align:center;">${item.nombre}</div>
-                <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:15px;color:#999;text-align:center;margin-top:6px;letter-spacing:1px;">${item.dto||''}</div>
-               </div>`
-            : `<div style="background:${bgMap[item.tipo]||'#F5F5F5'};border-radius:16px;padding:14px 16px;
-                    box-shadow:0 6px 16px rgba(0,0,0,0.12),0 2px 4px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.8);
-                    border-left:5px solid ${clrMap[item.tipo]||'#999'};transform:translateZ(0);
-                    ${esMasBarato ? 'outline:3px solid #E65100;box-shadow:0 0 0 4px rgba(230,81,0,0.18),0 6px 16px rgba(0,0,0,0.12);' : ''}">
-                <div style="font-family:'Bebas Neue','Inter',sans-serif;font-size:17px;color:#111;text-transform:uppercase;letter-spacing:2px;margin-bottom:6px;display:flex;align-items:center;gap:6px;">${item.nombre}${esMasBarato ? '<span style="background:#E65100;color:#fff;font-size:11px;padding:2px 8px;border-radius:8px;letter-spacing:0.5px;">🔔 CAMBIÓ · MÁS ECONÓMICO</span>' : (item.cambio ? '<span style="background:#E65100;color:#fff;font-size:11px;padding:2px 8px;border-radius:8px;letter-spacing:0.5px;">🔔 CAMBIÓ</span>' : '')}</div>
-                ${_ant ? `<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:2px;"><span style="font-family:'Inter',sans-serif;font-size:12px;font-weight:800;color:#333;">ANTES (etiqueta)</span><span style="font-family:'Bebas Neue','Inter',sans-serif;font-size:28px;color:#555;text-decoration:line-through;text-decoration-thickness:2px;">S/ ${_etiqA.toFixed(2)}</span></div><div style="font-family:'Inter',sans-serif;font-size:12px;font-weight:900;color:#2E7D32;letter-spacing:2px;">AHORA ${item.tipo === 'combo' ? '(c/u en combo)' : ''}</div>` : ''}
-                <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-                    <span style="font-family:'Bebas Neue','Inter',sans-serif;font-size:${esMasBarato?'64px':'52px'};color:#000;line-height:1;white-space:nowrap;">S/ ${Number(item.precio).toFixed(2)}</span>
-                    <span style="font-family:'Bebas Neue','Inter',sans-serif;font-size:24px;color:#fff;font-weight:900;background:#E65100;padding:2px 8px;border-radius:8px;white-space:nowrap;">${item.dto||''}</span>
-                </div>
-                ${item.libro ? `<div style="font-family:'Inter',sans-serif;font-size:11.5px;font-weight:800;color:#111;margin-top:6px;">📖 ${item.libro}</div>` : ''}
+        // v27.61: ventana compacta en formato HORIZONTAL (una fila por precio)
+        const _fam = "font-family:'Bebas Neue','Inter',sans-serif;";
+        const _antesH = _ant ? `<div style="font:800 10.5px Inter,sans-serif;color:#333;white-space:nowrap;">ANTES <span style="${_fam}font-size:19px;color:#555;text-decoration:line-through;text-decoration-thickness:2px;">S/ ${_etiqA.toFixed(2)}</span></div>` : '';
+        if (isColor) {
+            lista.innerHTML += `<div style="background:${bgMap.color};border-radius:12px;padding:8px 12px;display:flex;align-items:center;gap:10px;">
+                <div style="flex:1;min-width:0;"><div style="font:900 10.5px Inter,sans-serif;color:rgba(255,255,255,0.9);letter-spacing:1px;">PROMO COLOR</div>
+                    <div style="${_fam}font-size:17px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">🎨 ${item.color||''}</div>
+                    ${_ant ? `<div style="font:800 10.5px Inter,sans-serif;color:rgba(255,255,255,0.9);">ANTES <span style="${_fam}font-size:18px;text-decoration:line-through;">S/ ${_etiqA.toFixed(2)}</span></div>` : ''}</div>
+                <div style="${_fam}font-size:40px;color:#fff;line-height:1;white-space:nowrap;">S/ ${Number(item.precio).toFixed(2)}</div>
+                ${item.dto ? `<div style="${_fam}font-size:19px;color:#B71C1C;background:#fff;padding:2px 7px;border-radius:7px;white-space:nowrap;">${item.dto}</div>` : ''}
                </div>`;
+        } else if (item.tipo === 'sinprecio') {
+            lista.innerHTML += `<div style="background:#F5F5F5;border-left:5px solid #999;border-radius:12px;padding:8px 12px;display:flex;justify-content:space-between;gap:8px;align-items:center;">
+                <div style="${_fam}font-size:17px;color:#333;text-transform:uppercase;letter-spacing:1px;">${item.nombre}</div>
+                <div style="${_fam}font-size:14px;color:#777;">${item.dto||''}</div></div>`;
+        } else {
+            lista.innerHTML += `<div style="background:${bgMap[item.tipo]||'#F5F5F5'};border-radius:12px;padding:7px 10px 7px 12px;border-left:5px solid ${clrMap[item.tipo]||'#999'};
+                    display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,0.10);
+                    ${esMasBarato ? 'outline:3px solid #E65100;' : ''}">
+                <div style="flex:1;min-width:0;">
+                    <div style="${_fam}font-size:14px;color:#111;text-transform:uppercase;letter-spacing:0.5px;line-height:1.1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${item.nombre}${esMasBarato ? ' <span style="background:#E65100;color:#fff;font-size:10px;padding:1px 6px;border-radius:6px;">🔔 CAMBIÓ</span>' : (item.cambio ? ' <span style="background:#E65100;color:#fff;font-size:10px;padding:1px 6px;border-radius:6px;">🔔 CAMBIÓ</span>' : '')}</div>
+                    ${item.libro ? `<div style="font:700 9.5px Inter,sans-serif;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">📖 ${item.libro}</div>` : ''}
+                </div>
+                <div style="text-align:right;flex-shrink:0;">
+                    ${_ant ? `<div style="font:800 10px Inter,sans-serif;color:#333;white-space:nowrap;">ANTES <span style="${_fam}font-size:16px;color:#555;text-decoration:line-through;">S/ ${_etiqA.toFixed(2)}</span> <b style="color:#2E7D32;">AHORA</b></div>` : ''}
+                    <div style="${_fam}font-size:${esMasBarato?'40px':'36px'};color:#000;line-height:0.95;white-space:nowrap;">S/ ${Number(item.precio).toFixed(2)}</div>
+                </div>
+                ${item.dto ? `<div style="${_fam}font-size:18px;color:#fff;background:#E65100;padding:3px 6px;border-radius:7px;white-space:nowrap;flex-shrink:0;">${item.dto}</div>` : ''}
+               </div>`;
+        }
     });
 
     // Configurar botón Ver Stock
@@ -10153,6 +10158,12 @@ async function syRefrescarUsuarios() {
             const yo = syUsuarios[sySes.id];
             // v27.43: usuario eliminado → se cierra la sesión y se borran los datos de la tienda de este celular
             if (!yo && Object.keys(syUsuarios).length) { pCuentaEliminada(); return; }
+            // v27.60: la cuenta se abrió en otro celular, o este celular es de otra persona → se cierra la sesión
+            const bl = _syBloqueo(sySes.id);
+            if (bl) { syCerrarSesion(); showToast(bl, '#B71C1C', 6000); return; }
+            // liberado por el administrador → esta sesión se cierra; se amarra al celular donde vuelva a entrar
+            if (yo.r !== 'admin' && !yo.dev && yo.libre) { syCerrarSesion(); showToast('🔓 El administrador liberó tu cuenta. Vuelve a entrar.', '#1565C0', 5000); return; }
+            _syAmarrar(sySes.id);
             if (yo.r !== sySes.r || yo.n !== sySes.n) { sySes.r = yo.r; sySes.n = yo.n; _syS(SY_K.ses, sySes); syAplicarRol(); showToast('👤 Tu rol ahora es: ' + SY_ROLES[yo.r], '#1565C0'); }
         }
     } catch(e) {}
@@ -10277,11 +10288,48 @@ function syMostrarLogin() {
     setTimeout(() => { const i = document.getElementById('sy-lpin'); if (i && _syLoginSel) i.focus(); }, 100);
 }
 async function syLoginRefrescar() { try { const u = await syReq('GET', 'usuarios'); if (u) { syUsuarios = u; _syS(SY_K.usr, u); } syMostrarLogin(); } catch(e) { showToast('⚠️ Sin conexión — se usan los usuarios guardados', '#E65100'); } }
+
+// ══ v27.60 — UN CELULAR = UN USUARIO · UN USUARIO = UN CELULAR ══
+// usuarios/{id}.dev = id del celular donde está amarrada la cuenta. El administrador no se amarra
+// (puede entrar en cualquier celular) y es quien libera con 🔓 en el panel de usuarios.
+function _syDevNom() {
+    try { const ua = navigator.userAgent || ''; const m = ua.match(/Android[^;)]*;\s*([^;)]+?)(?:\s+Build|\))/); 
+        if (m && m[1] && !/^(K|wv)$/i.test(m[1].trim())) return m[1].trim().slice(0, 30);
+        if (/iPhone/.test(ua)) return 'iPhone'; if (/Android/.test(ua)) return 'Celular Android'; return /Windows|Macintosh|Linux/.test(ua) ? 'PC' : 'Celular';
+    } catch(e) { return 'Celular'; }
+}
+function _syBloqueo(id) {
+    const u = (syUsuarios || {})[id]; if (!u || u.r === 'admin') return '';
+    const mi = _pDevId();
+    if (u.dev && u.dev !== mi) return '🔒 Tu cuenta ya está abierta en otro celular' + (u.devN ? ' (' + u.devN + ')' : '') + '. Pide al administrador que la libere.';
+    const otro = Object.entries(syUsuarios || {}).find(([k, x]) => k !== id && x && x.r !== 'admin' && x.dev === mi);
+    if (otro) return '🔒 Este celular es de ' + otro[1].n + '. Solo ' + otro[1].n + ' puede entrar aquí (o el administrador).';
+    return '';
+}
+function _syAmarrar(id) {
+    const u = (syUsuarios || {})[id]; if (!u || u.r === 'admin' || u.dev) return;
+    const d = Object.assign({}, u, { dev: _pDevId(), devN: _syDevNom(), devTs: Date.now() }); delete d.libre;
+    _syUsuariosGuardar(id, d);
+}
+function syLiberarCel(id) {
+    if (!pPuede('config')) return syDenegar();
+    const u = syUsuarios[id]; if (!u) return;
+    mostrarConfirm('🔓 Liberar celular', 'La cuenta de ' + u.n + ' quedará libre y su celular' + (u.devN ? ' (' + u.devN + ')' : '') + ' también. La próxima vez que entre, se amarrará al celular donde inicie sesión. ¿Continuar?', async () => {
+        const d = Object.assign({}, u, { libre: Date.now() }); delete d.dev; delete d.devN; delete d.devTs;
+        await _syUsuariosGuardar(id, d);
+        showToast('🔓 ' + u.n + ' liberado', '#2E7D32'); syVistaPanel();
+    });
+}
 async function syLogin() {
     const id = _syLoginSel, pin = (document.getElementById('sy-lpin') || {}).value || '';
     if (!id) return showToast('👆 Elige tu nombre', '#E65100');
     const u = syUsuarios[id]; if (!u) return;
     if ((await syHash(pin, id)) !== u.h) { showToast('❌ PIN incorrecto', '#B71C1C'); try { vibrar && vibrar([60, 40, 60]); } catch(e) {} return; }
+    // v27.60: revisar con la lista más reciente (si hay internet) que la cuenta y el celular estén libres
+    try { const fr = await Promise.race([syReq('GET', 'usuarios'), new Promise((_, rj) => setTimeout(() => rj(0), 4000))]); if (fr) { syUsuarios = fr; _syS(SY_K.usr, fr); } } catch(e) {}
+    const bl = _syBloqueo(id);
+    if (bl) { showToast(bl, '#B71C1C', 5000); try { vibrar && vibrar([80, 50, 80]); } catch(e) {} return; }
+    _syAmarrar(id);
     sySes = { id, n: u.n, r: u.r }; _syS(SY_K.ses, sySes);
     const o = document.getElementById('sy-login'); if (o) o.style.display = 'none';
     _syLoginSel = null;
@@ -10343,8 +10391,9 @@ function syVistaPanel() {
             + MODS.filter(([k]) => k !== 'asis' || document.querySelector('#pantalla-modo .btn-asis-mod')).map(([k, t]) => '<tr><td style="padding:4px 4px 4px 2px;font-size:12.5px;line-height:1.15;width:30%;">' + t + '</td>' + ROLC.map(r => celda(r, k)).join('') + '</tr>').join('')
             + '</table></div></div>';
         h += '<div class="sy-card"><div class="sy-h">👥 Usuarios</div>' + us.map(([id, u]) =>
-            '<div class="sy-urow"><div class="sy-uname"><b>' + syEsc(u.n) + '</b>' + (id === sySes.id ? ' <span class="sy-tag">tú</span>' : '') + '</div>'
+            '<div class="sy-urow"><div class="sy-uname"><b>' + syEsc(u.n) + '</b>' + (id === sySes.id ? ' <span class="sy-tag">tú</span>' : '') + (u.dev ? '<br><span style="font-size:10.5px;color:#666;font-weight:700;">📱 ' + syEsc(u.devN || 'celular') + '</span>' : '') + '</div>'
             + '<select class="sy-sel" onchange="syCambiarRol(\'' + id + '\',this.value)">' + Object.keys(SY_ROLES).map(r => '<option value="' + r + '"' + (u.r === r ? ' selected' : '') + '>' + SY_ROLES[r] + '</option>').join('') + '</select>'
+            + (u.r === 'admin' ? '' : u.dev ? '<button class="sy-ib" title="Liberar celular' + (u.devN ? ' (' + syEsc(u.devN) + ')' : '') + '" onclick="syLiberarCel(\'' + id + '\')" style="font-size:13px;width:auto;padding:0 6px;">📱🔓</button>' : '<span title="Aún no entra en ningún celular" style="font-size:11px;color:#999;padding:0 4px;">📱—</span>')
             + '<button class="sy-ib" title="Cambiar PIN" onclick="syCambiarPin(\'' + id + '\')">🔑</button>'
             + '<button class="sy-ib" title="Eliminar" onclick="syEliminarUsuario(\'' + id + '\')">🗑️</button></div>').join('')
             + '<div class="sy-add"><input id="sy-nu-n" class="sy-in" placeholder="Nombre (ej. Karen)"><div class="sy-grid2">'
