@@ -1190,6 +1190,13 @@
 
         /* Precios: tarjetas limpias con cifras grandes (como en el catálogo) */
         .cs-price-box { border-radius: 14px !important; box-shadow: 0 6px 16px rgba(0,0,0,0.14) !important; }
+        /* v27.63: colores de referencia (Etiqueta amarillo claro · Menor naranja · Mayor celeste · Oferta verde) */
+        #cs-price-panel .cs-price-box, #cs-price-panel .cs-ref-box { border: 1.5px solid #000 !important; border-radius: 6px !important; box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important; }
+        #cs-price-panel .cs-price-label { color: #1F3864 !important; text-transform: none !important; font-size: 12px !important; font-weight: 800 !important; letter-spacing: 0 !important; }
+        #cs-price-panel .cs-price-val, #cs-price-panel #cs-p-mayor-val { color: #000 !important; }
+        #cs-price-panel .cs-price-pct { color: #000 !important; background: rgba(255,255,255,0.55) !important; }
+        body.modo-oscuro #cs-price-panel .cs-price-box *, body.modo-oscuro #cs-price-panel .cs-ref-box * { color: #000 !important; }
+        body.modo-oscuro #cs-price-panel .cs-price-label { color: #1F3864 !important; }
         .cs-price-val { font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important; font-size: 30px !important; letter-spacing: 0.5px !important; }
         .cs-price-label { font-family: 'Inter', sans-serif !important; font-size: 11px !important; letter-spacing: 0.8px !important; }
         .cs-promo-row, .cs-promo-activa-row { border-radius: 12px !important; box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important; }
@@ -1632,7 +1639,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.61 — 13/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.63 — 13/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2047,22 +2054,23 @@
         <!-- ── PANEL PRECIOS PROMO ── -->
         <div id="cs-price-panel" style="display:none;flex-direction:column;flex:1;overflow-y:auto;padding:8px;min-height:0;">
             <div id="cs-promo-activa" style="display:none !important;margin-bottom:8px;"></div>
+            <div id="cs-promo-color-box" style="display:none;margin-bottom:6px;"></div>
             <!-- Fila 1: Etiqueta + Unitario + Combo -->
             <div style="display:flex;gap:6px;margin-bottom:6px;">
-                <div class="cs-price-box" style="background:#FFD600;flex:1.1;">
-                    <div class="cs-price-label">ETIQUETA</div>
+                <div class="cs-price-box" style="background:#FFFF99;flex:1.1;">
+                    <div class="cs-price-label">Precio x Etiqueta</div>
                     <div class="cs-price-val" id="cs-p-etiqueta">0.00</div>
                     <div class="cs-price-pct" id="cs-pct-etiqueta">Precio base</div>
                 </div>
-                <div class="cs-price-box" style="background:#FF6D00;flex:1;" data-tipo="unitario" id="cs-box-unitario">
-                    <div class="cs-price-label">UNITARIO</div>
+                <div class="cs-price-box" style="background:#FF8000;flex:1;" data-tipo="unitario" id="cs-box-unitario">
+                    <div class="cs-price-label">Precio x Menor</div>
                     <div class="cs-price-val" id="cs-p-menor">0.00</div>
                     <div class="cs-price-pct" id="cs-pct-menor">—</div>
                     <div id="cs-pf-libro" style="font-size:11px;font-weight:800;color:#000;background:rgba(255,255,255,0.6);border-radius:8px;padding:2px 6px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">📖 —</div>
 
                 </div>
-                <div class="cs-price-box" style="background:#00B8D4;flex:1;" data-tipo="combo" id="cs-box-combo">
-                    <div class="cs-price-label">COMBO</div>
+                <div class="cs-price-box" style="background:#99CCFF;flex:1;" data-tipo="combo" id="cs-box-combo">
+                    <div class="cs-price-label">Precio x Combo</div>
                     <div class="cs-price-val" id="cs-p-mayor">0.00</div>
                     <div class="cs-price-pct" id="cs-pct-mayor">—</div>
                     <div id="cs-pf-libro-combo" style="font-size:11px;font-weight:800;color:#000;background:rgba(255,255,255,0.6);border-radius:8px;padding:2px 6px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;">📖 —</div>
@@ -2071,13 +2079,13 @@
             </div>
             <!-- Fila 2: Oferta (grande) + Mayor (pequeño, secundario) -->
             <div id="cs-box-oferta-row" style="display:flex;gap:6px;align-items:stretch;margin-bottom:8px;">
-                <div id="cs-box-oferta" class="cs-price-box" style="background:#00C853;flex:2;">
-                    <div class="cs-price-label">OFERTA</div>
+                <div id="cs-box-oferta" class="cs-price-box" style="background:#00FF00;flex:2;">
+                    <div class="cs-price-label">Precio x Oferta</div>
                     <div class="cs-price-val" id="cs-p-oferta" style="font-size:26px;">0.00</div>
                     <div class="cs-price-pct" id="cs-pct-oferta">—</div>
                 </div>
-                <div style="flex:1;background:#E8EAF6;border-radius:10px;padding:7px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1px solid #C5CAE9;">
-                    <div style="font-size:11px;font-weight:800;color:#111111;font-family:'Barlow',sans-serif;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:3px;">x MAYOR</div>
+                <div class="cs-ref-box" style="flex:1;background:#00FFFF;border-radius:6px;padding:7px 5px;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1.5px solid #000;">
+                    <div style="font-size:12px;font-weight:800;color:#1F3864;font-family:'Inter',sans-serif;margin-bottom:3px;">Precio x Mayor</div>
                     <div id="cs-p-mayor-val" style="font-family:'Barlow',sans-serif;font-size:18px;font-weight:900;color:#000;line-height:1;">0.00</div>
                     <div id="cs-pct-mayor-val" style="font-size:11px;color:#111111;margin-top:3px;font-family:'Inter',sans-serif;font-weight:700;">—</div>
                 </div>
@@ -2098,7 +2106,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.61 — 13/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.63 — 13/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -6003,6 +6011,7 @@ function csAgregarHistorial(barcode) {
 }
 
 function csRenderHistorial() {
+    { const w = document.getElementById('cs-historial-wrap'); if (w) w.style.display = 'none'; return; }   // v27.63: se quitó "Últimas lecturas"
     const wrap  = document.getElementById('cs-historial-wrap');
     const lista = document.getElementById('cs-historial-lista');
     if (!wrap || !lista || !_csHistorial.length) {
@@ -6252,6 +6261,25 @@ function csModalPromoMostrar(config) {
         itemsAMostrar = itemsBase.filter(it => it.tipo === 'color' || it.tipo === 'sinprecio' || it.tipo === 'combo' || it === _itemDestacado);
     }
     if (_huboCambioReal) csAlertaCambioPrecio();
+
+    // v27.63: YA NO se muestra la ventana flotante. La promo por COLOR (que no está en los cuadros)
+    // se muestra arriba de los precios, con los mismos colores de referencia.
+    {
+        const _pcb = document.getElementById('cs-promo-color-box');
+        const _col = itemsBase.find(it => it.tipo === 'color');
+        const _etq = (typeof csPreciosDB !== 'undefined' && csPreciosDB[config_art] && csPreciosDB[config_art].etiqueta) || 0;
+        if (_pcb) {
+            if (_col) {
+                _pcb.innerHTML = '<div style="font:800 12px Inter,sans-serif;color:#1F3864;margin:0 2px 2px;">Precio x Promo color · 🎨 ' + (_col.color || '') + '</div>'
+                    + '<div style="background:#FF66CC;border:1.5px solid #000;border-radius:6px;padding:6px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;">'
+                    + (_etq > _col.precio ? '<span style="font:800 12px Inter,sans-serif;color:#000;">ANTES <s>S/ ' + _etq.toFixed(2) + '</s></span>' : '<span></span>')
+                    + '<span style="font-family:\'Barlow\',sans-serif;font-size:30px;font-weight:900;color:#000;line-height:1;">S/ ' + Number(_col.precio).toFixed(2) + '</span>'
+                    + '<span style="font:900 13px Inter,sans-serif;color:#000;background:rgba(255,255,255,0.6);border-radius:6px;padding:2px 6px;">' + (_col.dto || '') + '</span></div>';
+                _pcb.style.display = 'block';
+            } else { _pcb.style.display = 'none'; _pcb.innerHTML = ''; }
+        }
+    }
+    return;
 
 
     // v27.25: precio de etiqueta (ANTES) para mostrar junto al precio de promoción (AHORA)
@@ -8017,6 +8045,7 @@ function csOnBarcodeInput(val) {
         if (_mpcTimer) { clearTimeout(_mpcTimer); _mpcTimer = null; }
         const _mp = document.getElementById('modal-promo-color');
         if (_mp) _mp.style.display = 'none';
+        const _pcb0 = document.getElementById('cs-promo-color-box'); if (_pcb0) { _pcb0.style.display = 'none'; _pcb0.innerHTML = ''; }
         // Guardar barcode y artículo para botón VER STOCK
         window._mpcLastBarcode = bc13;
         vibrar(35);
@@ -10010,6 +10039,13 @@ async function syFlush() {
         }
         syEstado(true);
     } catch(e) {
+        // v27.62: si la nube RECHAZA una escritura (HTTP 4xx), se descarta para que no bloquee para siempre a las demás
+        const m = /HTTP (\d+)/.exec(String(e && e.message || ''));
+        if (m && +m[1] >= 400 && +m[1] < 500 && syCola.length) {
+            try { console.warn('[cola] descartada', syCola[0].m, syCola[0].p, e.message); } catch(e2) {}
+            syCola.shift(); _syS(SY_K.cola, syCola);
+            _syFlushing = false; syPintarChip(); return syFlush();
+        }
         syEstado(false);
         _syFlushTimer = setTimeout(syFlush, 6000);
     } finally { _syFlushing = false; syPintarChip(); }
@@ -14881,10 +14917,11 @@ function asiPanel() {
         + ult.map(a => '<div class="as-fila" style="display:flex;justify-content:space-between;gap:8px;"><span><b>' + (a.tipo === 'ENTRADA' ? '🟢 Entrada' : '🔵 Salida') + '</b> · ' + a.fecha.split('-').reverse().join('/') + '</span><b>' + a.hora + '</b></div>').join('') + '</div>';
     if (asiEsAdmin()) h += '<div class="as-card"><div style="font:900 13px Inter,sans-serif;margin-bottom:8px;">🔒 Administrador</div>'
         + '<button onclick="asiVerTabla()" style="width:100%;padding:14px;border:none;border-radius:12px;background:#1565C0;color:#fff;font:800 15px Inter,sans-serif;margin-bottom:8px;">📊 Asistencia del personal</button>'
+        + '<div id="asi-horinfo" style="font:800 12.5px Inter,sans-serif;margin-bottom:8px;"></div>'
         + '<button onclick="asiHorarios()" style="width:100%;padding:13px;border:none;border-radius:12px;background:#2E7D32;color:#fff;font:800 14px Inter,sans-serif;margin-bottom:8px;">📅 Horarios y descansos (Excel)</button>'
         + '<button onclick="asiConfig()" style="width:100%;padding:12px;border:1.5px solid #999;border-radius:12px;background:#fff;color:#111;font:800 13px Inter,sans-serif;">⚙️ Personal y hora de entrada</button></div>';
     c.innerHTML = h; c.scrollTop = 0;
-    _asiMiHorario();
+    _asiMiHorario(); _asiHorInfo();
 }
 
 /* ───────── Formulario: subir captura ───────── */
@@ -15061,6 +15098,7 @@ function _asiCfgLocal() { try { return JSON.parse(localStorage.getItem(ASI_CFG) 
 async function asiCargarCfg() {
     if (!_asiCfg) _asiCfg = _asiCfgLocal() || {};
     if (!asiEsAdmin()) return _asiCfg;
+    if ((syCola || []).some(o => o.p === 'meta/asisCfg')) return _asiCfg;   // v27.62: hay cambios aún sin subir
     try { const v = await syReq('GET', 'meta/asisCfg'); if (v) { _asiCfg = v; localStorage.setItem(ASI_CFG, JSON.stringify(v)); } } catch(e) {}
     return _asiCfg;
 }
@@ -15096,7 +15134,7 @@ function asiConfigGuardar() {
     if (!asiEsAdmin()) return;
     const cfg = {};
     const ant = _asiCfg || {};
-    document.querySelectorAll('#asi-cont .asi-on').forEach(ch => { cfg[ch.dataset.id] = Object.assign({}, ant[ch.dataset.id] || {}, { on: ch.checked, h: '09:00' }); });
+    document.querySelectorAll('#asi-cont .asi-on').forEach(ch => { cfg[ch.dataset.id] = Object.assign({ h: '09:00' }, ant[ch.dataset.id] || {}, { on: ch.checked }); });
     document.querySelectorAll('#asi-cont .asi-h').forEach(i => { const h = _asiHora(i.value); if (cfg[i.dataset.id]) cfg[i.dataset.id].h = h ? h.slice(0, 5) : '09:00'; });
     _asiCfg = cfg;
     try { localStorage.setItem(ASI_CFG, JSON.stringify(cfg)); } catch(e) {}
@@ -15151,9 +15189,9 @@ function _asiLeerFormato(wb) {
             if (/^DNI/i.test(v)) dni = v.replace(/\D/g, '');
             else if (/^CODIGO$/i.test(_asiNorm(v))) { cod = String(C(r, c + 2) || '').trim(); }
             else if (!cargo && r === fh - 1) cargo = v;
-            else if (!n) n = v.replace(/\s*\n\s*/g, ' ');
+            else if (!n) { n = v.replace(/\s*\n\s*/g, ' '); var nl = v.split(/\s*\n\s*/); }
         }
-        return { c, n, dni, cargo, cod, dias: {} };
+        return { c, n, dni, cargo, cod, dias: {}, nom: (nl && nl.length > 1) ? nl[1] : n };
     }).filter(t => t.n);
     // filas de días: columna con el número de día (la que está antes de la primera H.I.)
     let cDia = -1;
@@ -15175,6 +15213,27 @@ function _asiLeerFormato(wb) {
     return { trab, fechas, tit };
 }
 // Busca el usuario de la app que corresponde a cada trabajador del Excel
+// v27.62: empareja a todos a la vez sin repetir usuario: DNI > nombres > apellidos
+function _asiEmparejarTodos(trab) {
+    const cfg = _asiCfg || {}, us = Object.entries(syUsuarios || {}), pares = [];
+    trab.forEach((t, i) => {
+        const nomT = _asiNorm(t.nom).split(' ').filter(w => w.length > 2), todos = _asiNorm(t.n).split(' ').filter(w => w.length > 2);
+        us.forEach(([id, u]) => {
+            let p = 0;
+            if (t.dni && ((u.dni && u.dni === t.dni) || (cfg[id] && cfg[id].xl === t.dni))) p = 1000;
+            else {
+                if (u.r === 'admin' && /ADMINISTRADOR/i.test(t.cargo)) p += 5;
+                _asiNorm(u.n).split(' ').filter(w => w.length > 2).forEach(w => { if (nomT.includes(w)) p += 3; else if (todos.includes(w)) p += 1; });
+            }
+            if (p > 0) pares.push([p, i, id]);
+        });
+    });
+    pares.sort((a, b) => b[0] - a[0]);
+    const tomadoT = new Set(), tomadoU = new Set();
+    trab.forEach(t => t.uid = '__new');
+    pares.forEach(([p, i, id]) => { if (tomadoT.has(i) || tomadoU.has(id)) return; trab[i].uid = id; tomadoT.add(i); tomadoU.add(id); });
+}
+function _asiRolDeCargo(c) { c = _asiNorm(c); return /ADMIN/.test(c) ? 'admin' : /SUPERV/.test(c) ? 'supervisor' : /VIGIL/.test(c) ? 'vigilante' : /CAJ/.test(c) ? 'cajera' : /REPON/.test(c) ? 'reponedor' : 'vendedor'; }
 function _asiEmparejar(t) {
     const cfg = _asiCfg || {};
     const porDni = Object.keys(cfg).find(id => cfg[id] && cfg[id].xl && t.dni && cfg[id].xl === t.dni && syUsuarios[id]);
@@ -15201,7 +15260,7 @@ function asiImportar() {
                 await asiCargarCfg();
                 _asiImp = _asiLeerFormato(wb);
                 _asiImp.archivo = f.name;
-                _asiImp.trab.forEach(t => t.uid = _asiEmparejar(t));
+                _asiEmparejarTodos(_asiImp.trab); _asiImp.renombrar = true;
                 asiImpVista();
             } catch(e) { showToast('❌ ' + (e.message || e), '#c62828', 4000); }
         };
@@ -15212,32 +15271,48 @@ function asiImportar() {
 function asiImpVista() {
     const c = document.getElementById('asi-cont'); if (!c || !_asiImp) return;
     const I = _asiImp, f0 = I.fechas[0], f1 = I.fechas[I.fechas.length - 1];
-    const usados = I.trab.map(t => t.uid).filter(Boolean);
-    const ops = sel => '<option value="">— No está en la app —</option>' + Object.entries(syUsuarios || {}).sort((a, b) => String(a[1].n).localeCompare(String(b[1].n)))
+    const usados = I.trab.map(t => t.uid).filter(u => u && u !== '__new');
+    const ops = sel => '<option value="__new"' + (sel === '__new' ? ' selected' : '') + '>➕ Crear usuario nuevo (clave: últimos 4 del DNI)</option><option value=""' + (!sel ? ' selected' : '') + '>— No incluir —</option>' + Object.entries(syUsuarios || {}).sort((a, b) => String(a[1].n).localeCompare(String(b[1].n)))
         .map(([id, u]) => '<option value="' + id + '"' + (id === sel ? ' selected' : '') + '>' + syEsc(u.n) + (SY_ROLES[u.r] ? ' · ' + SY_ROLES[u.r] : '') + '</option>').join('');
     let h = '<div class="as-card">'
         + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><button class="as-volver" onclick="asiPanel()">← Volver</button><div class="as-tit">📥 HORARIO DEL EXCEL</div></div>'
         + '<div style="font:800 14px Inter,sans-serif;">📅 Del ' + f0.split('-').reverse().join('/') + ' al ' + f1.split('-').reverse().join('/') + ' · ' + I.fechas.length + ' días</div>'
-        + '<div style="font:600 12px Inter,sans-serif;color:#555;margin:4px 0 2px;">Revisa que cada trabajador del Excel esté enlazado con su usuario de la app. La próxima vez se enlaza solo (por DNI).</div></div>';
+        + '<div style="font:600 12px Inter,sans-serif;color:#555;margin:4px 0 2px;">Revisa que cada trabajador del Excel esté enlazado con su usuario de la app. La próxima vez se enlaza solo (por DNI).</div>'
+        + '<label style="display:flex;gap:8px;align-items:center;margin-top:8px;font:800 13px Inter,sans-serif;"><input type="checkbox" ' + (I.renombrar ? 'checked' : '') + ' onchange="_asiImp.renombrar=this.checked" style="width:20px;height:20px;"> Poner en la app el <u>nombre y DNI</u> como están en el Excel</label></div>';
     I.trab.forEach((t, i) => {
         const vals = Object.values(t.dias), des = vals.filter(v => v.d).length, tr = vals.filter(v => v.e).length;
         const lib = Object.entries(t.dias).filter(([, v]) => v.d).map(([f, v]) => f.slice(8) + (v.d !== 'DESCANSO' ? ' ' + v.d.toLowerCase() : '')).join(', ');
         const dup = t.uid && usados.filter(x => x === t.uid).length > 1;
         h += '<div class="as-card" style="padding:12px 14px;">'
-            + '<div style="font:900 14px Inter,sans-serif;">👤 ' + syEsc(t.n) + '</div>'
+            + '<div style="font:900 14px Inter,sans-serif;">👤 ' + syEsc(t.n) + (t.uid && t.uid !== '__new' && syUsuarios[t.uid] ? ' <span style="font:700 11.5px Inter,sans-serif;color:#2E7D32;">→ ' + syEsc(syUsuarios[t.uid].n) + '</span>' : '') + '</div>'
             + '<div style="font:600 11.5px Inter,sans-serif;color:#666;margin:2px 0 8px;">' + syEsc(t.cargo) + (t.dni ? ' · DNI ' + t.dni : '') + ' · ' + tr + ' días · ' + des + ' libre(s)' + (lib ? ' (' + lib + ')' : '') + '</div>'
             + '<select class="as-in asi-map" data-i="' + i + '" onchange="_asiImp.trab[' + i + '].uid=this.value;asiImpVista()" style="padding:10px;font-size:14px;' + (t.uid ? '' : 'border-color:#E65100;') + (dup ? 'border-color:#B71C1C;' : '') + '">' + ops(t.uid) + '</select>'
             + (dup ? '<div style="color:#B71C1C;font:800 11.5px Inter,sans-serif;margin-top:4px;">⚠️ Este usuario está elegido 2 veces</div>' : '')
             + '</div>';
     });
-    const ok = I.trab.filter(t => t.uid).length;
+    const ok = I.trab.filter(t => t.uid).length, nuevos = I.trab.filter(t => t.uid === '__new').length;
     h += '<div class="as-card"><button onclick="asiImpGuardar()" style="width:100%;padding:16px;border:none;border-radius:14px;background:#2E7D32;color:#fff;font:900 17px Barlow,Inter,sans-serif;">✅ GUARDAR HORARIO (' + ok + ' de ' + I.trab.length + ')</button>'
+        + (nuevos ? '<div style="font:800 12px Inter,sans-serif;color:#1565C0;margin-top:8px;text-align:center;">➕ Se crearán ' + nuevos + ' usuario(s) nuevo(s). Su clave será los últimos 4 números de su DNI.</div>' : '')
         + '<div style="font:600 11.5px Inter,sans-serif;color:#777;margin-top:8px;text-align:center;">Si vuelves a cargar un Excel con las mismas fechas, se reemplaza el horario de esos días.</div></div>';
     c.innerHTML = h;
 }
-function asiImpGuardar() {
+async function asiImpGuardar() {
     if (!asiEsAdmin() || !_asiImp) return;
-    const I = _asiImp, T = I.trab.filter(t => t.uid);
+    const I = _asiImp;
+    // v27.62: crear usuarios que faltan y poner nombre/DNI/cargo del Excel
+    let creados = 0;
+    for (const t of I.trab) {
+        if (t.uid === '__new') {
+            const id = syId('u'), pin = (t.dni || '0000').slice(-4).padStart(4, '0');
+            await _syUsuariosGuardar(id, { n: t.n, r: _asiRolDeCargo(t.cargo), h: await syHash(pin, id), dni: t.dni || '', cargo: t.cargo || '' });
+            t.uid = id; creados++;
+        } else if (t.uid && I.renombrar && syUsuarios[t.uid]) {
+            const u = syUsuarios[t.uid];
+            if (u.n !== t.n || u.dni !== t.dni || u.cargo !== t.cargo) await _syUsuariosGuardar(t.uid, Object.assign({}, u, { n: t.n, dni: t.dni || '', cargo: t.cargo || '' }));
+            if (sySes && sySes.id === t.uid) { sySes.n = t.n; _syS(SY_K.ses, sySes); }
+        }
+    }
+    const T = I.trab.filter(t => t.uid);
     if (!T.length) { showToast('Enlaza al menos un trabajador', '#E65100'); return; }
     const uids = T.map(t => t.uid);
     if (uids.some((u, i) => uids.indexOf(u) !== i)) { showToast('⚠️ Hay un usuario elegido 2 veces', '#B71C1C', 3000); return; }
@@ -15246,18 +15321,30 @@ function asiImpGuardar() {
         T.forEach(t => { dia[t.uid] = t.dias[f] || null; });
         _asiHor[f] = Object.assign({}, _asiHor[f] || {}, dia);
         Object.keys(_asiHor[f]).forEach(k => { if (_asiHor[f][k] === null) delete _asiHor[f][k]; });
-        syEncolar('PATCH', 'asisHor/' + f, dia);
     });
     _asiHorGuardarLocal();
+    // v27.62: se sube DIRECTO (no por la cola) y se confirma; si falla, queda en la cola
+    showLoading('Subiendo horario a la nube…');
+    let fallo = 0;
+    await Promise.all(I.fechas.map(async f => { const dia = {}; T.forEach(t => { dia[t.uid] = t.dias[f] || null; });
+        try { await syReq('PATCH', 'asisHor/' + f, dia); } catch(e) { fallo++; syEncolar('PATCH', 'asisHor/' + f, dia); } }));
     // recordar enlace por DNI y activar a quienes estén en el horario
     const cfg = _asiCfg || (_asiCfg = {});
     T.forEach(t => {
         const k = cfg[t.uid] || (cfg[t.uid] = { on: true, h: '09:00' });
         if (t.dni) k.xl = t.dni; k.on = true;
+        // hora base = la hora de entrada más frecuente de lunes a sábado en el Excel (Sheyla → 13:00)
+        const cnt = {}; Object.entries(t.dias).forEach(([f, v]) => { if (v.e && new Date(f + 'T12:00:00').getDay() !== 0) cnt[v.e] = (cnt[v.e] || 0) + 1; });
+        const top = Object.entries(cnt).sort((a, b) => b[1] - a[1])[0]; if (top) k.h = top[0];
     });
     try { localStorage.setItem(ASI_CFG, JSON.stringify(cfg)); } catch(e) {}
-    syEncolar('PUT', 'meta/asisCfg', cfg);
-    showToast('✅ Horario guardado: ' + T.length + ' trabajadores · ' + I.fechas.length + ' días', '#2E7D32', 3000);
+    try { await syReq('PUT', 'meta/asisCfg', cfg); } catch(e) { fallo++; syEncolar('PUT', 'meta/asisCfg', cfg); }
+    const info = { desde: I.fechas[0], hasta: I.fechas[I.fechas.length - 1], archivo: I.archivo || '', ts: Date.now(), por: (sySes && sySes.n) || '', n: T.length };
+    try { localStorage.setItem('pieers_asi_horinfo', JSON.stringify(info)); } catch(e) {}
+    try { await syReq('PUT', 'meta/asisHorInfo', info); } catch(e) { syEncolar('PUT', 'meta/asisHorInfo', info); }
+    hideLoading();
+    if (fallo) showToast('⚠️ Guardado en este celular; se subirá a la nube cuando haya internet', '#E65100', 4000);
+    else showToast('✅ Horario guardado y subido: ' + T.length + ' trabajadores · ' + I.fechas.length + ' días' + (creados ? ' · ' + creados + ' usuario(s) nuevo(s)' : ''), '#2E7D32', 3500);
     _asiHDesde = I.fechas[0]; _asiHHasta = I.fechas[I.fechas.length - 1];
     _asiImp = null;
     asiHorarios();
@@ -15266,7 +15353,8 @@ async function asiCargarHor(dias) {
     const loc = _asiHorLocal();
     try {
         const res = await Promise.all(dias.map(d => syReq('GET', 'asisHor/' + d)));
-        dias.forEach((d, i) => { if (res[i]) _asiHor[d] = res[i]; else delete _asiHor[d]; });
+        const pend = new Set((syCola || []).filter(o => /^asisHor\//.test(o.p)).map(o => o.p.split('/')[1]));
+        dias.forEach((d, i) => { if (pend.has(d) && (loc[d] || _asiHor[d])) { _asiHor[d] = _asiHor[d] || loc[d]; return; } if (res[i]) _asiHor[d] = res[i]; else delete _asiHor[d]; });
         _asiHorGuardarLocal();
     } catch(e) { dias.forEach(d => { if (!_asiHor[d] && loc[d]) _asiHor[d] = loc[d]; }); }
 }
@@ -15323,6 +15411,19 @@ function asiHorSet(f, uid, modo) {
     syEncolar(v ? 'PUT' : 'DELETE', 'asisHor/' + f + '/' + uid, v || undefined);
     showToast('✅ Guardado', '#2E7D32');
     asiHorarios();
+}
+// v27.62: aviso en el panel del administrador: hasta qué fecha hay horario cargado
+async function _asiHorInfo() {
+    const el = document.getElementById('asi-horinfo'); if (!el) return;
+    const pon = i => {
+        const hoy = _afiF(Date.now()), ff = x => x.slice(8) + '/' + x.slice(5, 7);
+        if (!i || !i.hasta) el.innerHTML = '<div style="background:#FFEBEE;color:#B71C1C;border-radius:10px;padding:9px;">⚠️ Aún no cargas el horario del Excel: la app usa 09:00 para todos y no sabe los descansos.</div>';
+        else if (i.hasta < hoy) el.innerHTML = '<div style="background:#FFF3E0;color:#E65100;border-radius:10px;padding:9px;">⚠️ El horario cargado terminó el ' + ff(i.hasta) + '. Carga el Excel de la nueva quincena.</div>';
+        else el.innerHTML = '<div style="background:#E8F5E9;color:#1B5E20;border-radius:10px;padding:9px;">✅ Horario cargado del ' + ff(i.desde) + ' al ' + ff(i.hasta) + ' · ' + (i.n || '') + ' trabajadores</div>';
+    };
+    let loc = null; try { loc = JSON.parse(localStorage.getItem('pieers_asi_horinfo') || 'null'); } catch(e) {}
+    pon(loc);
+    try { const v = await syReq('GET', 'meta/asisHorInfo'); if (v) { pon(v); localStorage.setItem('pieers_asi_horinfo', JSON.stringify(v)); } } catch(e) {}
 }
 // Para el trabajador: "Tu horario hoy"
 async function _asiMiHorario() {
