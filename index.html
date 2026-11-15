@@ -1646,7 +1646,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.65 — 15/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.66 — 15/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2060,6 +2060,7 @@
 
         <!-- ── PANEL PRECIOS PROMO ── -->
         <div id="cs-price-panel" style="display:none;flex-direction:column;flex:1;overflow-y:auto;padding:8px;min-height:0;">
+            <div id="cs-ref-precios"></div>
             <div id="cs-promo-activa" style="display:none !important;margin-bottom:8px;"></div>
             <div id="cs-promo-color-box" style="display:none;margin-bottom:6px;"></div>
             <!-- Fila 1: Etiqueta + Unitario + Combo -->
@@ -2117,7 +2118,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.65 — 15/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.66 — 15/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -6289,6 +6290,7 @@ function csModalPromoMostrar(config) {
                 _pcb.style.display = 'block';
             } else { _pcb.style.display = 'none'; _pcb.innerHTML = ''; }
         }
+        try { window._csRefPintar && window._csRefPintar(config_art); } catch(e) {}
     }
     return;
 
@@ -12057,6 +12059,65 @@ function pModulosRol() {
         window[n] = function() { const r = o.apply(this, arguments); try { pasar(); } catch(e) {} return r; };
     });
     window._csPromoEnCuadros = pasar;
+})();
+
+// ══ v27.66 — PRECIOS IGUAL QUE EL SISTEMA DE CAJA: etiqueta arriba, número en un cuadro de color, nada más.
+//    Debajo: tabla con la promoción y el memorándum de donde sale cada precio. ══
+(function() {
+    const st = document.createElement('style');
+    st.textContent = `
+    #cs-price-panel > *:not(#cs-ref-precios):not(#cs-version-badge) { display:none !important; }
+    #cs-ref-precios { font-family: Arial, Helvetica, sans-serif; }
+    #cs-ref-precios .rp-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px 10px; }
+    #cs-ref-precios .rp-lbl { font:bold 14px Arial, Helvetica, sans-serif; color:#1F3864; margin:0 0 2px 1px; white-space:nowrap; }
+    #cs-ref-precios .rp-box { border:1px solid #000; padding:1px 6px; font:normal 34px Arial, Helvetica, sans-serif; color:#000; line-height:1.15; white-space:nowrap; overflow:hidden; }
+    #cs-ref-precios .rp-tab { width:100%; border-collapse:collapse; margin-top:12px; background:#fff; font:13px Arial, Helvetica, sans-serif; color:#000; }
+    #cs-ref-precios .rp-tab th { background:#D9D9D9; color:#000; font:bold 12px Arial, Helvetica, sans-serif; text-align:left; padding:4px 6px; border:1px solid #A6A6A6; text-transform:none; letter-spacing:0; }
+    #cs-ref-precios .rp-tab td { padding:5px 6px; border:1px solid #BFBFBF; vertical-align:top; line-height:1.2; }
+    #cs-ref-precios .rp-tab td.rp-p { text-align:right; white-space:nowrap; font-weight:bold; }
+    #cs-ref-precios .rp-tab th { background:#D9D9D9 !important; color:#000 !important; font:bold 12px Arial, Helvetica, sans-serif !important; text-transform:none !important; letter-spacing:0 !important; text-align:left !important; }
+    #cs-ref-precios .rp-tab td { text-align:left !important; color:#000 !important; background:#fff !important; font:13px Arial, Helvetica, sans-serif !important; }
+    #cs-ref-precios .rp-tab td.rp-p, #cs-ref-precios .rp-tab th.rp-p { text-align:right !important; font-weight:bold !important; }
+    #cs-ref-precios .rp-cambio { margin-top:8px; background:#FFF3E0; border:1px solid #E65100; color:#BF360C; font:bold 12px Arial, sans-serif; padding:5px 8px; }
+    body.modo-oscuro #cs-ref-precios .rp-lbl { color:#9EC5FF; }`;
+    document.head.appendChild(st);
+    const f2 = v => (Number(v) || 0).toFixed(2);
+    const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
+    function pintar(modelCode) {
+        const el = document.getElementById('cs-ref-precios'); if (!el) return;
+        const cod = String(modelCode || '').toUpperCase();
+        const p = (typeof csPreciosDB !== 'undefined' && csPreciosDB[cod]) || null;
+        const m = (typeof csPreciosMayorDB !== 'undefined' && csPreciosMayorDB[cod]) || null;
+        if (!p && !m) { el.innerHTML = ''; return; }
+        const etq = (p && p.etiqueta) || (m && m.etiqueta) || 0;
+        const xMay = parseFloat((document.getElementById('cs-p-mayor-val') || {}).textContent) || 0;
+        const cajas = [['Precio x Etiqueta', '#FFFF99', etq]];
+        if (!(p && p.esOferta)) cajas.push(['Precio x Menor', '#FF8000', (p && p.menor) || 0]);
+        if (p && p.mayor > 0 && !p.esOferta) cajas.push(['Precio x Combo', '#99CCFF', p.mayor]);
+        cajas.push(['Precio x Mayor', '#00FFFF', xMay]);
+        cajas.push(['Precio x Oferta', '#00FF00', (p && p.oferta) || 0]);
+        let h = '<div class="rp-grid">' + cajas.map(([l, c, v]) => '<div><div class="rp-lbl">' + l + '</div><div class="rp-box" style="background:' + c + ';">' + f2(v) + '</div></div>').join('') + '</div>';
+        // Promociones y memorándum
+        const filas = [], vis = new Set();
+        ((p && p.promos) || []).forEach(pr => {
+            const k = pr.nombre + '|' + f2(pr.precio); if (vis.has(k)) return; vis.add(k);
+            filas.push([pr.nombre, pr.precio, pr.libro || (p.libros && p.libros[p.libros.length - 1]) || '']);
+        });
+        const pc = document.getElementById('cs-promo-color-box');
+        if (pc && pc.style.display !== 'none' && pc.textContent.trim()) {
+            const t = pc.textContent.replace(/\s+/g, ' ').trim();
+            const mm = t.match(/🎨\s*([^S]*?)\s*(?:ANTES.*?)?S\/\s*([\d.]+)/);
+            filas.push(['PROMO COLOR' + (mm ? ' · ' + mm[1].trim() : ''), mm ? parseFloat(mm[2]) : 0, (p && p.libros && p.libros[p.libros.length - 1]) || '']);
+        }
+        if (filas.length) h += '<table class="rp-tab"><tr><th>Denominación</th><th class="rp-p">Precio</th><th>Memorándum</th></tr>'
+            + filas.map(([n, v, l]) => '<tr><td>' + esc(n) + '</td><td class="rp-p">' + (v > 0 ? f2(v) : '—') + '</td><td>' + esc(l) + '</td></tr>').join('') + '</table>';
+        else if (p && p.libros && p.libros.length) h += '<table class="rp-tab"><tr><th>Memorándum</th></tr>' + p.libros.map(l => '<tr><td>' + esc(l) + '</td></tr>').join('') + '</table>';
+        if (p && p.cambio && p.cambioInfo) h += '<div class="rp-cambio">🔔 Cambió de precio en ' + esc(p.cambioInfo.libro) + '</div>';
+        el.innerHTML = h;
+    }
+    const o = window.csRenderPrecios;
+    if (typeof o === 'function') window.csRenderPrecios = function(mc) { const r = o.apply(this, arguments); try { pintar(mc); } catch(e) { console.warn(e); } return r; };
+    window._csRefPintar = pintar;
 })();
 
 // ══ v27.28 — BOTÓN ATRÁS DEL CELULAR ══
