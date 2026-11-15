@@ -1646,7 +1646,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.68 — 15/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.70 — 15/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -1732,6 +1732,7 @@
             <div id="menu-sec-comp" class="menu-section hidden">📋 Inventario / Guías / Tienda</div>
             <button id="btn-carga-comp"    class="hidden" onclick="abrirSubCarga('comp');toggleMenu()">📂 CARGAR MAESTRO</button>
             <button id="btn-comp-alm"      class="hidden" onclick="abrirAlmDesdeComp();toggleMenu()">📋 Comparativo + Stock Almacén</button>
+            <button id="btn-comp-importar" class="hidden" onclick="toggleMenu();importarConteoArchivo()">📥 Subir conteo desde archivo (TXT/Excel)</button>
             <button id="btn-comp-guardar"  class="hidden" onclick="guardarLote();toggleMenu()">💾 Guardar Lote</button>
             <button id="btn-comp-reportes" class="hidden" onclick="toggleMenu();abrirModal('modalLotes')">📋 Reportes guardados</button>
             <button id="btn-comp-reiniciar" class="hidden" onclick="resetearModulo();toggleMenu()" style="color:var(--rojo-light)!important">🗑️ Reiniciar comparativo</button>
@@ -2118,7 +2119,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.68 — 15/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.70 — 15/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -2639,7 +2640,7 @@ function seleccionarModo(modo) {
 
         const compFileBtns = $('comp-file-btns');
         if (compFileBtns) compFileBtns.style.display = 'none';
-        ['btn-carga-comp','btn-comp-alm','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
+        ['btn-carga-comp','btn-comp-alm','btn-comp-importar','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
         $s('menu-sec-alm').classList.add('hidden');
         $s('menu-sec-comp').classList.add('hidden');
         ['btn-carga-alm','btn-alm-buscar','btn-alm-retiro','btn-alm-deshacer','btn-alm-guardar','btn-alm-exportar','btn-alm-informes','btn-alm-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.add('hidden'); });
@@ -2659,7 +2660,7 @@ function seleccionarModo(modo) {
             document.body.className = 'modo-comp' + (localStorage.getItem('pieers_luz') === 'oscuro' ? ' modo-oscuro' : '');
             $s('badge-txt').textContent = 'INVENTARIO';
             $s('menu-sec-comp').classList.remove('hidden');
-            ['btn-carga-comp','btn-comp-alm','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
+            ['btn-carga-comp','btn-comp-alm','btn-comp-importar','btn-comp-guardar','btn-comp-reportes','btn-comp-reiniciar'].forEach(id => { const el=$(id); if(el) el.classList.remove('hidden'); });
             $s('vista-comp').classList.remove('hidden');
             
             if (compFileBtns) compFileBtns.style.display = 'flex';
@@ -4422,18 +4423,23 @@ function guardarLote() {
     if (!historial.length) { showToast('Nada que guardar','#c62828'); toggleMenu(); return; }
     toggleMenu();
     mostrarResumen(() => {
-        const def='COMPARATIVO_'+new Date().toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'2-digit'}).replace(/\//g,'-')+'_'+(lotes.length+1);
+        const def = window._loteReanudado || ('COMPARATIVO_'+new Date().toLocaleDateString('es',{day:'2-digit',month:'2-digit',year:'2-digit'}).replace(/\//g,'-')+'_'+(lotes.length+1));
         pPedirTexto('💾 Guardar reporte', 'Nombre del reporte:', def, function(n) {
         if (!n) return;
-        lotes.push({nombre:n, fecha:new Date().toLocaleString(), tipo:'comp', datosLectura:[...historial], maestroSnapshot:Object.fromEntries(maestroMap), descSnapshot:Object.fromEntries(descripcionMap),
+        // v27.69: el reporte guarda también sus guías; si ya existe uno con el mismo nombre, se actualiza
+        const _nuevo = {nombre:n, fecha:new Date().toLocaleString(), tipo:'comp', datosLectura:[...historial], maestroSnapshot:Object.fromEntries(maestroMap), descSnapshot:Object.fromEntries(descripcionMap),
+            guiaSnapshot:Object.fromEntries(guiaMap), guiasSnapshot:[...guiasCargadas],
             // v27.19: quién guardó el reporte y quién leyó cada código (conteo compartido)
             guardadoPor: (typeof pUsuarioActual === 'function' ? pUsuarioActual() : ''),
-            lectInfo: (typeof pLectInfoSnapshot === 'function' ? pLectInfoSnapshot() : null)});
+            lectInfo: (typeof pLectInfoSnapshot === 'function' ? pLectInfoSnapshot() : null)};
+        const _ix = lotes.findIndex(l => l.nombre === n);
+        if (_ix >= 0) lotes[_ix] = _nuevo; else lotes.push(_nuevo);
+        window._loteReanudado = '';
         historial=[]; maestroMap.forEach(v=>v.real=0);
         saveComp(); saveLotes(); renderComp();
         showToast('✅ Guardado: '+n,'#111');
         // Abrir detalle del lote recién guardado
-        verDetalleLote(lotes.length - 1);
+        verDetalleLote(_ix >= 0 ? _ix : lotes.length - 1);
         });
     });
 }
@@ -4443,7 +4449,7 @@ function resetearModulo() {
     const mod = {comp:'COMPARATIVO', alm:'ALMACÉN'}[modoActual] || 'módulo';
     const msg = modoActual === 'alm'
         ? '¿Borrar TODO el inventario y movimientos de ALMACÉN?\n\nSe borrará también en la nube.\n(Los informes/reportes guardados se conservan)'
-        : '¿Reiniciar el conteo actual?\n\nSe borrarán: maestro, conteo, lecturas y avance.\n(Los reportes guardados se conservan)';
+        : '¿Reiniciar el conteo actual?\n\nSe borra SOLO lo que estás leyendo ahora (maestro, conteo y avance de pantalla).\n✅ Los reportes guardados y sus bases NO se borran: puedes reanudarlos cuando quieras.';
     mostrarConfirm('🗑️ Reiniciar ' + mod, msg, () => {
         if (modoActual === 'comp') {
             // Borrar TODO lo del comparativo del localStorage
@@ -4452,7 +4458,7 @@ function resetearModulo() {
             // Resetear variables en memoria
             maestroMap = new Map(); descripcionMap = new Map();
             guiaMap = new Map(); guiasCargadas = [];
-            historial = []; totalEsp = 0;
+            historial = []; totalEsp = 0; window._loteReanudado = '';
             // Re-renderizar pantalla en blanco
             renderComp();
             showToast('✅ Conteo reiniciado — tus ' + lotes.length + ' reporte(s) guardados se conservan', '#E65100');
@@ -4732,13 +4738,31 @@ function dlRender() {
     }
 }
 
+// v27.69: REANUDAR trae la BASE (maestro, descripciones y guías) que tenía el reporte + su conteo.
+// El reporte NO se borra de la lista; al volver a guardar con el mismo nombre se actualiza.
 function reanudarLote(idx) {
-    showLoading('Reanudando...');
-    const lote=lotes[idx];
-    setTimeout(()=>{
-        lote.datosLectura.forEach(c=>{ historial.push(c); if(maestroMap.has(c)) maestroMap.get(c).real++; else maestroMap.set(c,{exp:0,real:1}); });
-        lotes.splice(idx,1); saveLotes(); saveComp(); hideLoading(); cerrarModal('modalLotes'); renderComp();
-    }, 30);
+    const lote = lotes[idx]; if (!lote) return;
+    const tieneBase = lote.maestroSnapshot && Object.keys(lote.maestroSnapshot).length;
+    const hayActual = historial.length || maestroMap.size;
+    const hacer = () => {
+        showLoading('Reanudando...');
+        setTimeout(() => {
+            if (tieneBase) {
+                maestroMap = new Map(Object.entries(lote.maestroSnapshot).map(([k, v]) => [k, { exp: Number(v && v.exp) || 0, real: 0 }]));
+                totalEsp = 0; maestroMap.forEach(v => { totalEsp += v.exp; });
+                if (lote.descSnapshot) descripcionMap = new Map(Object.entries(lote.descSnapshot));
+                if (lote.guiaSnapshot) guiaMap = new Map(Object.entries(lote.guiaSnapshot));
+                if (lote.guiasSnapshot) guiasCargadas = lote.guiasSnapshot.slice();
+                historial = [];
+            }
+            lote.datosLectura.forEach(c => { historial.push(c); if (maestroMap.has(c)) maestroMap.get(c).real++; else maestroMap.set(c, { exp: 0, real: 1 }); });
+            window._loteReanudado = lote.nombre;
+            saveComp(); hideLoading(); cerrarModal('modalLotes'); renderComp();
+            showToast('▶ Reanudado: ' + lote.nombre + (tieneBase ? ' (con su base)' : ''), '#111', 2500);
+        }, 30);
+    };
+    if (hayActual && tieneBase) mostrarConfirm('▶ Reanudar reporte', 'Se reemplazará el conteo y la base que tienes ahora por los del reporte "' + lote.nombre + '".\n(El reporte se conserva en la lista.)', hacer);
+    else hacer();
 }
 
 function exportarTxt(idx) {
@@ -5162,6 +5186,72 @@ function _madcEjecutarIngreso(items) {
     const chkAll = document.getElementById('madc-chk-all');
     if (chkAll) { chkAll.checked=false; chkAll.indeterminate=false; }
     buscarEnAlmComp(document.getElementById('madc-input')?.value||'');
+}
+
+// ══ v27.70 — SUBIR UN CONTEO YA HECHO desde archivo (código + cantidad) ══
+// TXT/CSV: una línea por código → CODIGO|DESCRIPCION|CANTIDAD (como el _CONSOLIDADO.txt), o CODIGO;CANT, CODIGO,CANT, CODIGO<tab>CANT.
+//          Si la línea solo tiene el código, cuenta 1 (como una lectura).
+// Excel:   la primera celda con texto es el código y el último número de la fila es la cantidad.
+function _impConteoFilas(filas) {
+    const tot = new Map(); let malas = 0;
+    filas.forEach(cel => {
+        cel = (cel || []).map(x => x === null || x === undefined ? '' : String(x).trim()).filter(x => x !== '');
+        if (!cel.length) return;
+        const cod = cel[0].toUpperCase().replace(/\s+/g, '');
+        if (!/^[A-Z0-9][A-Z0-9\-_.]{3,}$/.test(cod) || /^(COD|CODIGO|CÓDIGO|ARTICULO|SKU)/i.test(cod)) { malas++; return; }
+        let cant = 1;
+        if (cel.length > 1) { const n = parseFloat(String(cel[cel.length - 1]).replace(',', '.')); if (isFinite(n)) cant = Math.round(n); }
+        if (cant <= 0) return;
+        tot.set(cod, (tot.get(cod) || 0) + cant);
+    });
+    return { tot, malas };
+}
+function importarConteoArchivo() {
+    if (modoActual !== 'comp') { showToast('Abre el módulo Inventario', '#c62828'); return; }
+    const inp = document.createElement('input'); inp.type = 'file'; inp.accept = '.txt,.csv,.xlsx,.xls,text/plain';
+    inp.onchange = () => {
+        const f = inp.files && inp.files[0]; if (!f) return;
+        const esXl = /\.xls[xm]?$/i.test(f.name);
+        const rd = new FileReader();
+        rd.onload = async ev => {
+            try {
+                let filas;
+                if (esXl) {
+                    const wb = await pXlsxLeer(new Uint8Array(ev.target.result), { type: 'array' });
+                    filas = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: true, defval: '' });
+                } else {
+                    let txt = ev.target.result;
+                    filas = String(txt).split(/\r?\n/).map(l => l.split(/[|;\t,]/));
+                }
+                const { tot } = _impConteoFilas(filas);
+                if (!tot.size) { showToast('❌ No encontré códigos en el archivo', '#c62828', 3500); return; }
+                let uds = 0, fuera = 0; tot.forEach((c, k) => { uds += c; if (!maestroMap.has(k)) fuera++; });
+                const msg = '📄 ' + f.name + '\n\n' + tot.size + ' código(s) · ' + uds + ' unidad(es)'
+                    + (maestroMap.size ? (fuera ? '\n⚠️ ' + fuera + ' código(s) no están en el maestro (saldrán como sobrantes)' : '\n✅ Todos están en el maestro') : '\n(Aún no cargas maestro: se sumarán como lecturas)')
+                    + '\n\nSe SUMARÁN a lo que ya tienes contado (' + historial.length + ' lecturas).';
+                mostrarConfirm('📥 Subir conteo', msg, () => {
+                    showLoading('Subiendo conteo...');
+                    setTimeout(() => {
+                        tot.forEach((cant, cod) => {
+                            for (let i = 0; i < cant; i++) {
+                                historial.push(cod);
+                                if (typeof syConteoId !== 'undefined' && syConteoId && typeof sySes !== 'undefined' && sySes) {
+                                    const lid = syId('l'); syHistIds.push(lid);
+                                    syEncolar('PUT', 'conteos/' + syConteoId + '/vivo/lect/' + lid, { c: cod, u: sySes.n, t: Date.now() });
+                                }
+                            }
+                            if (maestroMap.has(cod)) maestroMap.get(cod).real += cant; else maestroMap.set(cod, { exp: 0, real: cant });
+                        });
+                        try { if (typeof syConteoId !== 'undefined' && syConteoId) _syS(SY_K.hids, syHistIds); } catch(e) {}
+                        saveComp(); hideLoading(); renderComp(); try { beepOK(); } catch(e) {}
+                        showToast('✅ Conteo subido: ' + tot.size + ' códigos · ' + uds + ' unidades', '#1B5E20', 3500);
+                    }, 30);
+                });
+            } catch(e) { hideLoading(); showToast('❌ No pude leer el archivo: ' + (e.message || e), '#c62828', 4000); }
+        };
+        if (esXl) rd.readAsArrayBuffer(f); else rd.readAsText(f);
+    };
+    inp.click();
 }
 
 function agregarAlConteoDesdeAlm(cod) {
