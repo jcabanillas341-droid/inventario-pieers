@@ -1646,7 +1646,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.66 — 15/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.68 — 15/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2118,7 +2118,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.66 — 15/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.68 — 15/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -10435,14 +10435,14 @@ function syVistaPanel() {
         const celda = (rol, k) => { const on = pRolPuede(rol, k); return '<td style="padding:3px;"><button onclick="syRolMod(\'' + rol + '\',\'' + k + '\',' + (!on) + ')" style="width:100%;min-width:34px;height:38px;border-radius:10px;padding:0;border:2px solid ' + (on ? '#2E7D32' : '#DDD') + ';background:' + (on ? '#E8F5E9' : '#FAFAFA') + ';font-size:18px;cursor:pointer;">' + (on ? '✅' : '🚫') + '</button></td>'; };
         // v27.64: cuadro USUARIO × módulo (toca una casilla para mostrar/ocultar)
         const MODU = MODS.filter(([k]) => k !== 'asis' || document.querySelector('#pantalla-modo .btn-asis-mod'));
-        const USB = us.filter(([id, u]) => u && SY_ROLES_BASICOS.includes(u.r));
+        const USB = us.filter(([id, u]) => u && u.r !== 'admin');
         const celdaU = (uid, k) => { const on = pUsrPuede(uid, k); return '<td style="padding:2px;"><button onclick="syUsrMod(\'' + uid + '\',\'' + k + '\',' + (!on) + ')" style="width:100%;min-width:30px;height:36px;border-radius:9px;padding:0;border:2px solid ' + (on ? '#2E7D32' : '#DDD') + ';background:' + (on ? '#E8F5E9' : '#FAFAFA') + ';font-size:16px;cursor:pointer;">' + (on ? '✅' : '🚫') + '</button></td>'; };
         h += '<div class="sy-card"><div class="sy-h">🧩 Módulos por usuario</div>'
-            + '<div class="sy-p">Toca una casilla para elegir qué ve cada persona (✅ ve · 🚫 no ve). Tú y el supervisor siempre ven todo.</div>'
+            + '<div class="sy-p">Toca una casilla para elegir qué ve cada persona (✅ ve · 🚫 no ve), incluido el supervisor. Tú (administrador) siempre ves todo.</div>'
             + '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font:800 12px Inter,sans-serif;">'
             + '<tr><th style="text-align:left;padding:4px 2px;"></th>' + MODU.map(([k, t]) => '<th style="padding:3px 1px;font-size:9.5px;line-height:1.15;text-transform:none;letter-spacing:0;">' + t.split(' ')[0] + '<br>' + ({stock:'Consul.',ticket:'Simul.',afi:'Afiliar',asis:'Asist.',comp:'Invent.',alm:'Almac.'})[k] + '</th>').join('') + '</tr>'
             + (USB.length ? USB.map(([uid, u]) => '<tr><td style="padding:4px 4px 4px 2px;font-size:11.5px;line-height:1.15;max-width:110px;">' + syEsc(u.n) + '<div style="font-size:10px;color:#777;font-weight:700;">' + (SY_ROLES[u.r] || u.r) + '</div></td>' + MODU.map(([k]) => celdaU(uid, k)).join('') + '</tr>').join('')
-                : '<tr><td colspan="7" style="padding:8px;color:#777;">Aún no hay usuarios (vendedor, cajera, reponedor o vigilante).</td></tr>')
+                : '<tr><td colspan="7" style="padding:8px;color:#777;">Aún no hay usuarios. Agrégalos abajo y aparecerán aquí.</td></tr>')
             + '</table></div></div>';
         h += '<div class="sy-card"><div class="sy-h">👥 Usuarios</div>' + us.map(([id, u]) =>
             '<div class="sy-urow"><div class="sy-uname"><b>' + syEsc(u.n) + '</b>' + (id === sySes.id ? ' <span class="sy-tag">tú</span>' : '') + (u.dev ? '<br><span style="font-size:10.5px;color:#666;font-weight:700;">📱 ' + syEsc(u.devN || 'celular') + '</span>' : '') + '</div>'
@@ -11870,7 +11870,9 @@ function _pModsGuardados() {
 function pUsrPuede(uid, mod) {
     const { um } = _pModsGuardados(), x = um[uid] || {};
     if (x[mod] !== undefined) return !!x[mod];
-    const u = (syUsuarios || {})[uid]; return pRolPuede(u ? u.r : 'vendedor', mod);
+    const u = (syUsuarios || {})[uid];
+    if (u && !SY_ROLES_BASICOS.includes(u.r)) return true;   // supervisor: por defecto ve todo (v27.67)
+    return pRolPuede(u ? u.r : 'vendedor', mod);
 }
 function syUsrMod(uid, mod, on) {
     if (!syActivo() || sySes.r !== 'admin') return syDenegar();
@@ -11888,7 +11890,8 @@ function pRolPuede(rol, mod) {
     return vm[mod] !== undefined ? !!vm[mod] : !!P_VEND_DEF[mod];
 }
 function pVendPuede(mod) {
-    if (!pEsVendedor()) return true;
+    // v27.67: aplica a TODOS menos al administrador (también al supervisor)
+    if (!(typeof syActivo === 'function' && syActivo()) || !sySes || sySes.r === 'admin') return true;
     return pUsrPuede(sySes.id, mod);
 }
 function syRolMod(rol, mod, on) {
@@ -11916,7 +11919,7 @@ function pModulosRol() {
         if (m && m.style.display && m.style.display !== 'none') { m.style.display = 'none'; showToast('🔒 El administrador ocultó ' + P_VEND_NOM[k], '#B71C1C', 3000); }
     });
     // Si el admin lo ocultó mientras el vendedor estaba dentro, lo saca al inicio
-    if (pEsVendedor() && typeof modoActual !== 'undefined' && modoActual && P_VEND_DEF[modoActual] !== undefined && !pVendPuede(modoActual)) {
+    if ((sySes && sySes.r !== 'admin') && typeof modoActual !== 'undefined' && modoActual && P_VEND_DEF[modoActual] !== undefined && !pVendPuede(modoActual)) {
         try { if (modoActual === 'comp' && syConteoId) syConteoSalir(true); } catch(e) {}
         const app = document.getElementById('app-principal');
         if (app && !app.classList.contains('hidden')) { volverSelector(); showToast('🔒 El administrador ocultó este módulo', '#B71C1C', 3000); }
@@ -11925,7 +11928,7 @@ function pModulosRol() {
     const sel = document.getElementById('pantalla-modo');
     if (sel) {
         let av = document.getElementById('p-sin-mods');
-        const ninguno = pEsVendedor() && Object.keys(BTN).every(k => !pVendPuede(k));
+        const ninguno = (typeof syActivo === 'function' && syActivo() && sySes && sySes.r !== 'admin') && Object.keys(BTN).every(k => !pVendPuede(k));
         if (ninguno && !av) {
             av = document.createElement('div'); av.id = 'p-sin-mods';
             av.style.cssText = 'width:100%;max-width:360px;background:#FFF3E0;color:#E65100;border-radius:14px;padding:14px;text-align:center;font:700 13px Inter,sans-serif;';
@@ -12118,6 +12121,27 @@ function pModulosRol() {
     const o = window.csRenderPrecios;
     if (typeof o === 'function') window.csRenderPrecios = function(mc) { const r = o.apply(this, arguments); try { pintar(mc); } catch(e) { console.warn(e); } return r; };
     window._csRefPintar = pintar;
+})();
+
+// ══ v27.68 — CONSULTAR: primero PRECIOS y PROMOCIONES, abajo el STOCK ══
+(function() {
+    function ordenar() {
+        const pp = document.getElementById('cs-price-panel'), ps = document.getElementById('cs-panel-stock');
+        if (pp && ps && ps.parentNode && pp.nextElementSibling !== ps) ps.parentNode.insertBefore(pp, ps);
+        if (!pp || !ps) return;
+        const ambos = pp.style.display !== 'none' && ps.style.display !== 'none';
+        // con los dos visibles: precios con su altura (máx. 62%) y el stock ocupa el resto con su propio desplazamiento
+        pp.style.flex = ambos ? '0 1 auto' : '1';
+        pp.style.maxHeight = ambos ? '62%' : '';
+        pp.style.paddingBottom = ambos ? '4px' : '';
+        ps.style.minHeight = ambos ? '150px' : '0';
+        ps.style.borderTop = ambos ? '2px solid #1F3864' : '';
+    }
+    ['csAplicarModo', 'csCambiarTab', 'csOcultarTabs', 'csRenderPrecios'].forEach(n => {
+        const o = window[n]; if (typeof o !== 'function') return;
+        window[n] = function() { const r = o.apply(this, arguments); try { ordenar(); } catch(e) {} return r; };
+    });
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', ordenar); else ordenar();
 })();
 
 // ══ v27.28 — BOTÓN ATRÁS DEL CELULAR ══
