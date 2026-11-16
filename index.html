@@ -20,7 +20,17 @@
     <link rel="preconnect" href="https://cdn.sheetjs.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <script defer src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js" onerror="var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';document.head.appendChild(s);"></script>
+    <script>
+    // v27.73: la librería de Excel (1 MB) ya no se analiza al abrir la app: se carga cuando la app ya está en pantalla.
+    window.pXlsxListo = new Promise(function(res) { window._pXlsxRes = res; });
+    (function() {
+        var pedido = false;
+        function cargar(src, fb) { var s = document.createElement('script'); s.src = src; s.onload = function() { window._pXlsxRes(true); }; s.onerror = function() { if (fb) cargar(fb); else window._pXlsxRes(false); }; document.head.appendChild(s); }
+        window.pXlsxCargar = function() { if (pedido) return; pedido = true; cargar('https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'); };
+        window.addEventListener('load', function() { setTimeout(window.pXlsxCargar, 1500); });
+        ['touchstart', 'mousedown', 'keydown'].forEach(function(ev) { window.addEventListener(ev, window.pXlsxCargar, { once: true, passive: true }); });
+    })();
+    </script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600;700;900&family=Inter:wght@400;500;600;700&family=Bebas+Neue&display=swap" media="print" onload="this.media='all'">
 
     <style>
@@ -558,7 +568,6 @@
         body.modo-oscuro .btn-modo .tit { color: #F0F0F0 !important; }
         body.modo-oscuro .btn-modo .desc { color: #AAA !important; }
         body.modo-oscuro .cs-field-label { color: #AAA !important; }
-        body.modo-oscuro #cs-historial-lista button { background: #2A2A2A !important; color: #E0E0E0 !important; }
         body.modo-oscuro .stat-val { color: #EF9A9A !important; }
 
         body.modo-claro { background: #EDEDF0; }
@@ -1190,27 +1199,11 @@
 
         /* Precios: tarjetas limpias con cifras grandes (como en el catálogo) */
         .cs-price-box { border-radius: 14px !important; box-shadow: 0 6px 16px rgba(0,0,0,0.14) !important; }
-        /* v27.63: colores de referencia (Etiqueta amarillo claro · Menor naranja · Mayor celeste · Oferta verde) */
-        #cs-price-panel .cs-price-box, #cs-price-panel .cs-ref-box { border: 1.5px solid #000 !important; border-radius: 10px !important;
-            box-shadow: 0 6px 0 rgba(0,0,0,0.55), 0 10px 18px rgba(0,0,0,0.25), inset 0 2px 0 rgba(255,255,255,0.75), inset 0 -4px 0 rgba(0,0,0,0.12) !important;
-            background-image: linear-gradient(180deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 45%, rgba(0,0,0,0.06) 100%) !important;
-            margin-bottom: 4px; }
-        #cs-price-panel .cs-price-val, #cs-price-panel #cs-p-mayor-val { font-family: 'Inter', 'Barlow', Arial, sans-serif !important; font-weight: 900 !important; letter-spacing: -0.5px !important;
-            text-shadow: 0 1px 0 rgba(255,255,255,0.8), 0 2px 2px rgba(0,0,0,0.25) !important; }
-        #cs-price-panel .cs-price-val { font-size: 30px !important; }
-        #cs-price-panel #cs-p-mayor-val { font-size: 24px !important; }
-        #cs-price-panel .cs-price-label { color: #1F3864 !important; text-transform: none !important; font-size: 12px !important; font-weight: 800 !important; letter-spacing: 0 !important; }
-        #cs-price-panel .cs-price-val, #cs-price-panel #cs-p-mayor-val { color: #000 !important; }
-        #cs-price-panel .cs-price-pct { color: #000 !important; background: rgba(255,255,255,0.55) !important; }
-        body.modo-oscuro #cs-price-panel .cs-price-box *, body.modo-oscuro #cs-price-panel .cs-ref-box * { color: #000 !important; }
-        body.modo-oscuro #cs-price-panel .cs-price-label { color: #1F3864 !important; }
         .cs-price-val { font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important; font-size: 30px !important; letter-spacing: 0.5px !important; }
         .cs-price-label { font-family: 'Inter', sans-serif !important; font-size: 11px !important; letter-spacing: 0.8px !important; }
         .cs-promo-row, .cs-promo-activa-row { border-radius: 12px !important; box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important; }
         .cs-promo-precio { font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important; font-size: 22px !important; letter-spacing: 0.5px; }
         .cs-pa-nombre { font-family: 'Bebas Neue', 'Barlow', sans-serif !important; font-weight: 400 !important; font-size: 19px !important; letter-spacing: 1px !important; }
-        #mpc-desc { font-size: 22px !important; }
-        #mpc-card { border-bottom: none; }
 
         /* ── SIMULADOR DE TICKET: cabecera negra, total grande tipo precio ── */
         body:not(.modo-oscuro) #vista-ticket { background: var(--cat-bg) !important; }
@@ -1326,7 +1319,6 @@
         body.modo-oscuro #alm-estado-badge, body.modo-oscuro .cs-promo-row, body.modo-oscuro .busq-body,
         body.modo-oscuro .mov-body, body.modo-oscuro .asc-body, body.modo-oscuro .res-body,
         body.modo-oscuro .madc-item, body.modo-oscuro .madc-results, body.modo-oscuro #busq-resultados,
-        body.modo-oscuro #mpc-card, body.modo-oscuro #cs-tabs { background: #1E1E1E !important; border-color: #333 !important; }
         body.modo-oscuro input, body.modo-oscuro textarea, body.modo-oscuro select { background: #2A2A2A !important; border-color: #444 !important; }
         body.modo-oscuro .btn-confirm-no { background: #2A2A2A !important; }
         body.modo-oscuro td { border-bottom-color: #2C2C2C !important; }
@@ -1646,7 +1638,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.72 — 16/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.73 — 16/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -1710,9 +1702,23 @@
             </span>
             <span style="color:rgba(255,255,255,0.4);font-size:20px;">›</span>
         </button>
+        <button id="btn-instalar-app" onclick="pInstalarApp()" style="display:none;width:100%;max-width:360px;margin-top:6px;padding:12px;border:2px solid #2E7D32;border-radius:14px;background:#E8F5E9;color:#1B5E20;font:900 14px Inter,sans-serif;">📲 INSTALAR COMO APP (sin barra de Chrome, abre más rápido)</button>
         <div class="logo-v" style="margin-top:4px;">PIEERS PRO · Cajamarca 067</div>
     </div>
 </div>
+<script>
+// v27.73: botón "Instalar como app" (PWA). Chrome avisa cuando se puede instalar; si ya está instalada, no se muestra.
+(function() {
+    var evInst = null;
+    function enApp() { try { return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; } catch(e) { return false; } }
+    window.addEventListener('beforeinstallprompt', function(e) { e.preventDefault(); evInst = e; var b = document.getElementById('btn-instalar-app'); if (b && !enApp()) b.style.display = 'block'; });
+    window.addEventListener('appinstalled', function() { var b = document.getElementById('btn-instalar-app'); if (b) b.style.display = 'none'; try { showToast('✅ App instalada: búscala en tu pantalla de inicio', '#2E7D32', 4000); } catch(e) {} });
+    window.pInstalarApp = function() {
+        if (!evInst) { try { showToast('En Chrome: menú ⋮ → "Instalar aplicación" o "Agregar a pantalla principal"', '#111', 5000); } catch(e) {} return; }
+        evInst.prompt(); evInst.userChoice.then(function() { evInst = null; });
+    };
+})();
+</script>
 
 
 <!-- ══════ APP PRINCIPAL ══════ -->
@@ -1780,37 +1786,6 @@
     <input type="file" id="almStockInput"  class="hidden" accept="text/csv,text/plain,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*">
 
     <!-- ── MODAL PRECIOS AL PISTOLIZAR (promo color o promos normales) ── -->
-    <div id="modal-promo-color" style="display:none;position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,0.0);flex-direction:column;justify-content:flex-end;align-items:center;padding:0;pointer-events:none;">
-        <!-- v27.58: la ventana flotante sale ABAJO para que el stock (arriba) se siga viendo -->
-        <div id="mpc-card" style="background:#FFFFFF;border-radius:22px 22px 0 0;border-top:5px solid #E53935;width:100%;max-width:480px;max-height:45vh;overflow-y:auto;box-shadow:0 -10px 34px rgba(0,0,0,0.35),0 -2px 10px rgba(0,0,0,0.15);pointer-events:all;position:relative;">
-            <!-- Botón VER STOCK fijo arriba de todo -->
-            <div id="mpc-btn-stock-top" style="display:none;padding:8px 14px 0;">
-                <button id="mpc-btn-stock-fijo"
-                    style="width:100%;padding:12px;background:#1565C0;border:none;border-radius:12px;color:#fff;font-family:'Bebas Neue','Inter',sans-serif;font-size:20px;letter-spacing:3px;cursor:pointer;box-shadow:0 3px 10px rgba(21,101,192,0.35);">
-                    📦 VER STOCK
-                </button>
-            </div>
-            <!-- Botón cerrar flotante -->
-            <button onclick="csModalPromoCerrar()" style="position:absolute;top:6px;right:8px;z-index:10;background:rgba(0,0,0,0.12);border:none;color:#333;width:28px;height:28px;border-radius:50%;font-size:15px;cursor:pointer;">✕</button>
-            <!-- Descripción artículo -->
-            <div style="padding:7px 42px 3px 14px;display:flex;align-items:baseline;gap:8px;min-width:0;">
-                <div id="mpc-desc" style="font-family:'Bebas Neue','Inter',sans-serif;font-size:16px;color:#111;line-height:1.15;letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;"></div>
-                <div id="mpc-cod" style="font-family:'Bebas Neue','Inter',sans-serif;font-size:12px;color:#444;letter-spacing:1px;flex-shrink:0;"></div>
-            </div>
-            <!-- Contenido promos -->
-            <!-- Banner cambio de precio -->
-            <div id="mpc-cambio-banner" style="display:none;background:#E65100;color:#fff;font-family:'Inter',sans-serif;font-size:11px;font-weight:800;padding:6px 18px;letter-spacing:0.5px;"></div>
-            <div id="mpc-lista" style="padding:4px 10px 6px;display:flex;flex-direction:column;gap:6px;"></div>
-            <!-- Temporizador visible + barra de progreso -->
-            <div style="display:flex;align-items:center;gap:8px;padding:3px 14px 5px;background:#F8F8F8;">
-                <span id="mpc-timer-txt" style="font-family:'Bebas Neue','Inter',sans-serif;font-size:13px;color:#333;letter-spacing:1px;min-width:32px;">0:05</span>
-                <div style="flex:1;height:4px;background:#E0E0E0;border-radius:2px;overflow:hidden;">
-                    <div id="mpc-progress" style="height:4px;background:linear-gradient(90deg,#E53935,#FF6D00);width:100%;transform-origin:left;transition:transform 120s linear;"></div>
-                </div>
-            </div>
-
-        </div>
-    </div>
 
     <!-- SCANNER COMPARATIVO -->
     <input id="scanner" inputmode="none" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus placeholder="ESCANEE CÓDIGO">
@@ -2009,7 +1984,7 @@
     const activo=document.activeElement;
     const ids=['cs-inp-articulo','cs-name-search','cs-inp-descripcion'];
     if(ids.some(id=>activo&&activo.id===id)) return;
-    const m=document.getElementById('modal-promo-color');
+    const m=null;
     if(!m||m.style.display==='none') this.focus();
 },120)">
                 </div>
@@ -2041,14 +2016,6 @@
         </div>
 
         <!-- ── TABS STOCK / PRECIOS ── -->
-        <div id="cs-tabs" style="display:none;flex-shrink:0;display:none;flex-direction:row;border-bottom:2px solid #DDD;background:#fff;">
-            <button id="cs-tab-stock" class="cs-tab cs-tab-active" onclick="csCambiarTab('stock')">
-                📦 STOCK
-            </button>
-            <button id="cs-tab-precios" class="cs-tab" onclick="csCambiarTab('precios')">
-                💰 PRECIOS &amp; PROMOS
-            </button>
-        </div>
 
         <!-- Búsqueda por nombre o código — SIEMPRE visible, en cualquier modo (Stock/Ambos/Precios) -->
         <div id="cs-name-search-wrap" style="display:none;padding:4px 8px 2px;flex-shrink:0;">
@@ -2119,12 +2086,8 @@
             <div id="cs-promos-list" style="display:flex;flex-direction:column;gap:4px;"></div>
             <!-- Versión -->
             <!-- Historial de lecturas -->
-            <div id="cs-historial-wrap" style="display:none;padding:6px 10px 2px;flex-shrink:0;">
-                <div style="font-family:'Inter',sans-serif;font-size:11px;font-weight:800;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">📋 Últimas lecturas</div>
-                <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
-            </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.72 — 16/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.73 — 16/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -2362,7 +2325,8 @@ function _pXlsxWorker() {
     _pXW.onerror = () => { Object.keys(_pXWcb).forEach(k => { const cb = _pXWcb[k]; delete _pXWcb[k]; cb({ ok: 0 }); }); _pXW = null; };
     return _pXW;
 }
-function pXlsxLeer(data, opts) {
+async function pXlsxLeer(data, opts) {
+    if (typeof XLSX === 'undefined') { try { pXlsxCargar(); showToast('⏳ Cargando lector de Excel…', '#111'); await pXlsxListo; } catch(e) {} }
     const sync = () => XLSX.read(data, opts);
     try {
         if (typeof Worker === 'undefined' || !opts || opts.type !== 'array') return Promise.resolve(sync());
@@ -2969,10 +2933,6 @@ function csSetModo(modo) {
 function csAplicarModo() {
     const panelStock = document.getElementById('cs-panel-stock');
     const panelPrec  = document.getElementById('cs-price-panel');
-    const tabs       = document.getElementById('cs-tabs');
-
-    // Los tabs no se usan más — siempre ocultos
-    if (tabs) tabs.style.display = 'none';
 
     if (csModoActual === 'ambos') {
         // Ver precios ARRIBA y stock ABAJO al mismo tiempo
@@ -2988,33 +2948,11 @@ function csAplicarModo() {
 }
 
 // ── MEJORA 6: Tabs Stock / Precios ──────────────────────────────────
-function csCambiarTab(tab) {
-    const tabStock   = document.getElementById('cs-tab-stock');
-    const tabPrecios = document.getElementById('cs-tab-precios');
-    const panelStock = document.getElementById('cs-panel-stock');
-    const panelPrec  = document.getElementById('cs-price-panel');
-    if (tab === 'stock') {
-        // Indicar si hay precios disponibles
-        const tabP = document.getElementById('cs-tab-precios');
-        if (tabP) tabP.textContent = '💰 PRECIOS' + (csPreciosDB && Object.keys(csPreciosDB).length > 0 ? ' ●' : '');
-        tabStock.classList.add('cs-tab-active');
-        tabPrecios.classList.remove('cs-tab-active');
-        panelStock.style.display = 'flex';
-        panelPrec.style.display  = 'none';
-    } else {
-        tabPrecios.classList.add('cs-tab-active');
-        tabStock.classList.remove('cs-tab-active');
-        panelStock.style.display = 'none';
-        panelPrec.style.display  = 'flex';
-    }
-}
 function csMostrarTabs(conPrecios) {
     // Aplicar según el modo seleccionado por el usuario
     csAplicarModo();
 }
 function csOcultarTabs() {
-    const tabs = document.getElementById('cs-tabs');
-    if (tabs) tabs.style.display = 'none';
     const panelStock = document.getElementById('cs-panel-stock');
     const panelPrec  = document.getElementById('cs-price-panel');
     // En modo precios: mostrar panel precios vacío; en otros: stock
@@ -6144,7 +6082,6 @@ function csParsePreciosXLSX(wb, nombreLibro) {
 }
 
 // ── PROMO COLOR: mostrar alerta al escanear un código con promo por color ──
-let _mpcTimer = null;
 let _csHistorial = []; // Últimos 10 códigos leídos
 
 function csAgregarHistorial(barcode) {
@@ -6160,22 +6097,7 @@ function csAgregarHistorial(barcode) {
     csRenderHistorial();
 }
 
-function csRenderHistorial() {
-    { const w = document.getElementById('cs-historial-wrap'); if (w) w.style.display = 'none'; return; }   // v27.63: se quitó "Últimas lecturas"
-    const wrap  = document.getElementById('cs-historial-wrap');
-    const lista = document.getElementById('cs-historial-lista');
-    if (!wrap || !lista || !_csHistorial.length) {
-        if (wrap) wrap.style.display = 'none';
-        return;
-    }
-    wrap.style.display = 'block';
-    lista.innerHTML = _csHistorial.map((h, i) =>
-        `<button onclick="csSeleccionarHistorial('${h.art}')"
-            style="background:${i===0?'#1565C0':'#F0F0F0'};color:${i===0?'#fff':'#333'};border:none;border-radius:8px;padding:4px 8px;font-family:'Inter',sans-serif;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;">
-            ${h.desc}
-        </button>`
-    ).join('');
-}
+function csRenderHistorial() { const w = document.getElementById('cs-historial-wrap'); if (w) w.style.display = 'none'; }   // v27.63: se quitó "Últimas lecturas"
 
 function csSeleccionarHistorial(art) {
     window._mpcLastArt = art;
@@ -6326,15 +6248,7 @@ function csBuscarManual() {
     csCheckPromoColor(fakeBc);
 }
 
-function csModalPromoCerrar() {
-    const modal = document.getElementById('modal-promo-color');
-    if (modal) modal.style.display = 'none';
-    if (_mpcTimer) { clearTimeout(_mpcTimer); _mpcTimer = null; }
-    setTimeout(() => {
-        const ci = document.getElementById('cs-inp-codbar');
-        if (ci) { ci.value = ''; ci.focus(); }
-    }, 50);
-}
+function csModalPromoCerrar() { /* v27.73: sin ventana flotante */ }
 
 // ── Alerta sonora + vibración cuando cambia un precio ──
 function csAlertaCambioPrecio() {
@@ -6359,61 +6273,14 @@ function csAlertaCambioPrecio() {
 }
 
 function csModalPromoMostrar(config) {
-    // config: {headerColor, ico, tipoLabel, titulo, desc, cod, items:[{tipo,nombre,precio,dto,color}]}
-    const modal   = document.getElementById('modal-promo-color');
-    const header  = document.getElementById('mpc-header');
-    const icoEl   = document.getElementById('mpc-ico');
-    const tipoEl  = document.getElementById('mpc-tipo-label');
-    const titEl   = document.getElementById('mpc-titulo');
-    const descEl  = document.getElementById('mpc-desc');
-    const codEl   = document.getElementById('mpc-cod');
-    const lista   = document.getElementById('mpc-lista');
-    const progress= document.getElementById('mpc-progress');
-    if (!modal || !lista) return;
-
-    if (header) header.style.background = config.headerColor || '#E53935';
-    if (icoEl)  icoEl.textContent  = config.ico || '🏷';
-    if (tipoEl) tipoEl.textContent = config.tipoLabel || '';
-    if (titEl)  titEl.textContent  = config.titulo || '';
-    if (descEl) descEl.textContent = config.desc || '';
-    if (codEl)  codEl.textContent  = config.cod || '';
-
-    lista.innerHTML = '';
+    // v27.73: ya no existe la ventana flotante. Esta función solo:
+    //  1) avisa si hubo cambio de precio entre memorándums, 2) pinta la promo por COLOR y la tabla de precios.
     const config_art = config.cod || '';
     const itemsBase = config.items || [];
-    const _preciosReales = itemsBase.filter(it => it.tipo !== 'color' && it.tipo !== 'sinprecio' && it.precio > 0);
-    // El COMBO (mayor) es condicional a llevar 2 unidades — no es un precio
-    // por unidad, así que NO compite por "más económico" contra Unitario/Oferta.
-    // Esa pelea es solo entre UNITARIO y OFERTA (precios de 1 sola prenda).
-    const _candidatosGanador = _preciosReales.filter(it => it.tipo !== 'combo');
-
-    // Caso A: el mismo campo (menor/oferta) tiene un valor distinto al
-    // del libro anterior (comparación exacta vía cambioInfo).
+    const _candidatosGanador = itemsBase.filter(it => it.tipo !== 'color' && it.tipo !== 'sinprecio' && it.tipo !== 'combo' && it.precio > 0);
     const _cambiados = _candidatosGanador.filter(it => it.cambio);
-    // Caso B: no hay un campo exactamente comparable, pero los precios
-    // unitario/oferta que se están mostrando vienen de MÁS DE UN libro
-    // distinto (p.ej. Unitario de Julio y una Oferta nueva de Agosto).
     const _librosDistintos = new Set(_candidatosGanador.map(it => it.libro || '').filter(l => l));
-    const _hayVariacionLibros = _librosDistintos.size > 1;
-
-    const _huboCambioReal = _cambiados.length > 0 || _hayVariacionLibros;
-    let _itemDestacado = null;
-    let itemsAMostrar = itemsBase;
-    if (_cambiados.length > 0) {
-        // Cambio exacto detectado: se mantienen todos los precios visibles,
-        // solo se resalta el más económico entre Unitario/Oferta que cambiaron.
-        _itemDestacado = _cambiados.reduce((a, b) => a.precio <= b.precio ? a : b);
-    } else if (_hayVariacionLibros) {
-        // Variación entre libros sin campo exacto comparable: mostrar SOLO
-        // el precio unitario/oferta más económico — el Combo se mantiene
-        // siempre visible aparte, porque no es comparable 1 a 1.
-        _itemDestacado = _candidatosGanador.reduce((a, b) => a.precio <= b.precio ? a : b);
-        itemsAMostrar = itemsBase.filter(it => it.tipo === 'color' || it.tipo === 'sinprecio' || it.tipo === 'combo' || it === _itemDestacado);
-    }
-    if (_huboCambioReal) csAlertaCambioPrecio();
-
-    // v27.63: YA NO se muestra la ventana flotante. La promo por COLOR (que no está en los cuadros)
-    // se muestra arriba de los precios, con los mismos colores de referencia.
+    if (_cambiados.length > 0 || _librosDistintos.size > 1) csAlertaCambioPrecio();
     {
         const _pcb = document.getElementById('cs-promo-color-box');
         const _col = itemsBase.find(it => it.tipo === 'color');
@@ -6426,136 +6293,11 @@ function csModalPromoMostrar(config) {
                     + '<span style="font-family:\'Barlow\',sans-serif;font-size:30px;font-weight:900;color:#000;line-height:1;">S/ ' + Number(_col.precio).toFixed(2) + '</span>'
                     + '<span style="font:900 13px Inter,sans-serif;color:#000;background:rgba(255,255,255,0.6);border-radius:6px;padding:2px 6px;">' + (_col.dto || '') + '</span></div>';
                 _pcb.style.display = 'block';
-            } else { _pcb.style.display = 'none'; _pcb.innerHTML = ''; }
+                _pcb.dataset.precio = Number(_col.precio).toFixed(2); _pcb.dataset.color = _col.color || '';   // v27.73: la tabla lo lee de aquí
+            } else { _pcb.style.display = 'none'; _pcb.innerHTML = ''; delete _pcb.dataset.precio; delete _pcb.dataset.color; }
         }
         try { window._csRefPintar && window._csRefPintar(config_art); } catch(e) {}
     }
-    return;
-
-
-    // v27.25: precio de etiqueta (ANTES) para mostrar junto al precio de promoción (AHORA)
-    const _etiqA = (typeof csPreciosDB !== 'undefined' && csPreciosDB[config_art] && csPreciosDB[config_art].etiqueta) || 0;
-    const _conAntes = it => _etiqA > 0 && it.precio > 0 && it.precio < _etiqA - 0.005 && ['promo','combo','oferta','color'].includes(it.tipo);
-    itemsAMostrar.forEach(item => {
-        const esMasBarato = _huboCambioReal && item === _itemDestacado;
-        const _ant = _conAntes(item);
-        const bgMap = {color:'linear-gradient(135deg,#E53935,#B71C1C)', promo:'#FFF3E0', combo:'#E3F2FD', oferta:'#E8F5E9', etiqueta:'#FFFDE7', sinprecio:'#F5F5F5'};
-        const clrMap= {color:'#fff', promo:'#E65100', combo:'#0288D1', oferta:'#2E7D32', etiqueta:'#F57F17', sinprecio:'#777'};
-        const isColor = item.tipo === 'color';
-        // v27.61: ventana compacta en formato HORIZONTAL (una fila por precio)
-        const _fam = "font-family:'Bebas Neue','Inter',sans-serif;";
-        const _antesH = _ant ? `<div style="font:800 10.5px Inter,sans-serif;color:#333;white-space:nowrap;">ANTES <span style="${_fam}font-size:19px;color:#555;text-decoration:line-through;text-decoration-thickness:2px;">S/ ${_etiqA.toFixed(2)}</span></div>` : '';
-        if (isColor) {
-            lista.innerHTML += `<div style="background:${bgMap.color};border-radius:12px;padding:8px 12px;display:flex;align-items:center;gap:10px;">
-                <div style="flex:1;min-width:0;"><div style="font:900 10.5px Inter,sans-serif;color:rgba(255,255,255,0.9);letter-spacing:1px;">PROMO COLOR</div>
-                    <div style="${_fam}font-size:17px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">🎨 ${item.color||''}</div>
-                    ${_ant ? `<div style="font:800 10.5px Inter,sans-serif;color:rgba(255,255,255,0.9);">ANTES <span style="${_fam}font-size:18px;text-decoration:line-through;">S/ ${_etiqA.toFixed(2)}</span></div>` : ''}</div>
-                <div style="${_fam}font-size:40px;color:#fff;line-height:1;white-space:nowrap;">S/ ${Number(item.precio).toFixed(2)}</div>
-                ${item.dto ? `<div style="${_fam}font-size:19px;color:#B71C1C;background:#fff;padding:2px 7px;border-radius:7px;white-space:nowrap;">${item.dto}</div>` : ''}
-               </div>`;
-        } else if (item.tipo === 'sinprecio') {
-            lista.innerHTML += `<div style="background:#F5F5F5;border-left:5px solid #999;border-radius:12px;padding:8px 12px;display:flex;justify-content:space-between;gap:8px;align-items:center;">
-                <div style="${_fam}font-size:17px;color:#333;text-transform:uppercase;letter-spacing:1px;">${item.nombre}</div>
-                <div style="${_fam}font-size:14px;color:#777;">${item.dto||''}</div></div>`;
-        } else {
-            lista.innerHTML += `<div style="background:${bgMap[item.tipo]||'#F5F5F5'};border-radius:12px;padding:7px 10px 7px 12px;border-left:5px solid ${clrMap[item.tipo]||'#999'};
-                    display:flex;align-items:center;gap:10px;box-shadow:0 2px 8px rgba(0,0,0,0.10);
-                    ${esMasBarato ? 'outline:3px solid #E65100;' : ''}">
-                <div style="flex:1;min-width:0;">
-                    <div style="${_fam}font-size:14px;color:#111;text-transform:uppercase;letter-spacing:0.5px;line-height:1.1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${item.nombre}${esMasBarato ? ' <span style="background:#E65100;color:#fff;font-size:10px;padding:1px 6px;border-radius:6px;">🔔 CAMBIÓ</span>' : (item.cambio ? ' <span style="background:#E65100;color:#fff;font-size:10px;padding:1px 6px;border-radius:6px;">🔔 CAMBIÓ</span>' : '')}</div>
-                    ${item.libro ? `<div style="font:700 9.5px Inter,sans-serif;color:#333;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">📖 ${item.libro}</div>` : ''}
-                </div>
-                <div style="text-align:right;flex-shrink:0;">
-                    ${_ant ? `<div style="font:800 10px Inter,sans-serif;color:#333;white-space:nowrap;">ANTES <span style="${_fam}font-size:16px;color:#555;text-decoration:line-through;">S/ ${_etiqA.toFixed(2)}</span> <b style="color:#2E7D32;">AHORA</b></div>` : ''}
-                    <div style="${_fam}font-size:${esMasBarato?'40px':'36px'};color:#000;line-height:0.95;white-space:nowrap;">S/ ${Number(item.precio).toFixed(2)}</div>
-                </div>
-                ${item.dto ? `<div style="${_fam}font-size:18px;color:#fff;background:#E65100;padding:3px 6px;border-radius:7px;white-space:nowrap;flex-shrink:0;">${item.dto}</div>` : ''}
-               </div>`;
-        }
-    });
-
-    // Configurar botón Ver Stock
-
-    // Botón VER STOCK — solo muestra el stock al presionar
-    // Configurar botón VER STOCK fijo
-    const _btnFijo = document.getElementById('mpc-btn-stock-fijo');
-    if (_btnFijo) {
-        _btnFijo.style.cssText += ';box-shadow:0 6px 16px rgba(21,101,192,0.4),0 2px 4px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.15);transform:translateY(-1px);';
-        _btnFijo.onclick = function() {
-        csModalPromoCerrar();
-        setTimeout(()=>{
-            // Mostrar el stock de ESTE producto sin cambiar la preferencia
-            // permanente de modo (Ambos/Solo Stock/Solo Precios del menú OPC.).
-            // Antes esto llamaba a csSetModo('stock'), que dejaba la app
-            // trabada en "solo stock" y ya no mostraba la ventana flotante
-            // de precios en los siguientes escaneos.
-            const _modoPrevio = csModoActual;
-            csModoActual = 'stock';
-            const a=document.getElementById('cs-inp-articulo');
-            if(a) a.value=window._mpcLastArt||'';
-            csBuscar();
-            csModoActual = _modoPrevio;
-        },80);
-    };
-    }
-
-    // ── Indicador de cambio de precio ──
-    const _cambioDiv = document.getElementById('mpc-cambio-banner');
-    const _pC = csPreciosDB[config.cod || ''] || {};
-    if (_cambioDiv) {
-        const ci = (_pC.cambio && _pC.cambioInfo) ? _pC.cambioInfo : null;
-        const antes = ci ? (ci.antes || {}) : {};
-        // El banner de arriba compara solo UNITARIO/OFERTA (precio por 1 prenda).
-        // El Combo (mayor) es condicional a llevar 2, así que su variación no
-        // debe mostrarse aquí como si fuera "el" cambio de precio del producto.
-        let difStr = '';
-        if (ci && antes.menor > 0 && _pC.menor > 0 && Math.abs(_pC.menor - antes.menor) > 0.01) {
-            difStr = ` — S/${antes.menor.toFixed(2)} → S/${_pC.menor.toFixed(2)}`;
-        } else if (ci && antes.oferta > 0 && _pC.oferta > 0 && Math.abs(_pC.oferta - antes.oferta) > 0.01) {
-            difStr = ` — S/${antes.oferta.toFixed(2)} → S/${_pC.oferta.toFixed(2)}`;
-        }
-        if (difStr) {
-            const libroStr = ci.libro ? ` (📖 ${ci.libro})` : '';
-            _cambioDiv.innerHTML = `🔔 CAMBIO DE PRECIO${difStr}${libroStr}`;
-            _cambioDiv.style.background = '#E65100';
-            _cambioDiv.style.display = 'block';
-        } else if (_hayVariacionLibros && _itemDestacado) {
-            // Variación entre libros sin campo exacto comparable (ej. una Oferta
-            // nueva de Agosto reemplazando al Unitario de Julio): mostrar el
-            // precio que ANTES era el más barato (solo Unitario/Oferta) → el nuevo.
-            const _otros = _candidatosGanador.filter(it => it !== _itemDestacado);
-            const _antesPrecio = _otros.length ? Math.min(...(_otros.map(o => o.precio))) : 0;
-            const difStr2 = _antesPrecio > 0
-                ? ` — S/${_antesPrecio.toFixed(2)} → S/${_itemDestacado.precio.toFixed(2)}`
-                : '';
-            const libroStr = _itemDestacado.libro ? ` (📖 ${_itemDestacado.libro})` : '';
-            _cambioDiv.innerHTML = `🔔 CAMBIO DE PRECIO${difStr2}${libroStr}`;
-            _cambioDiv.style.background = '#E65100';
-            _cambioDiv.style.display = 'block';
-        } else {
-            // Sin cambio → no mostrar nada
-            _cambioDiv.style.display = 'none';
-        }
-    }
-
-    modal.style.display = 'flex';
-    // Reset barra de progreso
-    if (progress) { progress.style.transition='none'; progress.style.transform='scaleX(1)'; }
-    // v27.45: la ventana de precios dura 5 segundos
-    const MPC_SEG = 5;
-    setTimeout(() => { if (progress) { progress.style.transition='transform ' + MPC_SEG + 's linear'; progress.style.transform='scaleX(0)'; } }, 50);
-    // Temporizador visible con cuenta regresiva
-    if (_mpcTimer) clearTimeout(_mpcTimer);
-    if (window._mpcTick) clearInterval(window._mpcTick);
-    let _secsLeft = MPC_SEG;
-    const _timerTxt = document.getElementById('mpc-timer-txt');
-    const _pinta = () => { if (_timerTxt) _timerTxt.textContent = Math.floor(_secsLeft / 60) + ':' + String(_secsLeft % 60).padStart(2,'0'); };
-    _pinta();
-    const _tickInterval = window._mpcTick = setInterval(() => {
-        _secsLeft--; _pinta();
-        if (_secsLeft <= 0) clearInterval(_tickInterval);
-    }, 1000);
-    _mpcTimer = setTimeout(() => { clearInterval(_tickInterval); csModalPromoCerrar(); }, MPC_SEG * 1000);
 }
 
 function csExportarExcel() {
@@ -8193,10 +7935,7 @@ function csOnBarcodeInput(val) {
         // Barcode completo de 13 dígitos
         const bc13 = val.trim().toUpperCase();
         // Cerrar modal anterior
-        if (_mpcTimer) { clearTimeout(_mpcTimer); _mpcTimer = null; }
-        const _mp = document.getElementById('modal-promo-color');
-        if (_mp) _mp.style.display = 'none';
-        const _pcb0 = document.getElementById('cs-promo-color-box'); if (_pcb0) { _pcb0.style.display = 'none'; _pcb0.innerHTML = ''; }
+        const _pcb0 = document.getElementById('cs-promo-color-box'); if (_pcb0) { _pcb0.style.display = 'none'; _pcb0.innerHTML = ''; delete _pcb0.dataset.precio; delete _pcb0.dataset.color; }
         // Guardar barcode y artículo para botón VER STOCK
         window._mpcLastBarcode = bc13;
         vibrar(35);
@@ -11150,10 +10889,6 @@ let _syAutoMT = null;
         try {
             // v27.51: el maestro de INVENTARIO ya NO se envía solo a todos. Se comparte únicamente
             // con el CONTEO COMPARTIDO (cada uno decide si se une). Stock y memorándum sí se envían solos.
-            if (false && _syPuedeAuto() && !syConteoId && _syMaestroSig() !== _syCarga.mae && maestroMap.size) {
-                clearTimeout(_syAutoMT);
-                _syAutoMT = setTimeout(() => { if (_syPuedeAuto() && _syMaestroSig() !== _syCarga.mae) { _syCarga.mae = _syMaestroSig(); syMaestroPublicar(); } }, 1500);
-            }
         } catch(e) {}
         return r;
     };
@@ -11173,14 +10908,7 @@ async function syMaestroPublicar() {
     } catch(e) { showToast('⚠️ No se pudo enviar el maestro a la nube: ' + e.message, '#E65100', 3500); return false; }
 }
 let _syMaeAvisado = 0;
-function syRevisarMaestro() {
-    return; // v27.51: ya no se ofrece el maestro de otro celular; el inventario se comparte solo al unirse a un conteo compartido
-    const ver = syMeta.maestroVer || 0;
-    if (!ver || ver <= (_syJ(SY_K_MAEVER, 0) || 0) || syMeta.maestroPor === (sySes && sySes.id) || _syMaeAvisado === ver) return;
-    _syMaeAvisado = ver;
-    if (syConteoId) { showToast('📋 ' + (syMeta.maestroPorN || 'El supervisor') + ' cargó un maestro nuevo. Lo recibirás al salir del conteo compartido.', '#1565C0', 4000); _syMaeAvisado = 0; return; }
-    mostrarConfirm('📋 Maestro nuevo', (syMeta.maestroPorN || 'El supervisor') + ' cargó un maestro nuevo' + (syMeta.maestroF ? ' (' + syMeta.maestroF + ')' : '') + ': ' + (syMeta.maestroN || 0).toLocaleString() + ' códigos, ' + (syMeta.maestroU || 0).toLocaleString() + ' unidades. ¿Actualizar INVENTARIO en este celular? Tus lecturas actuales se mantienen.', syMaestroRecibir);
-}
+function syRevisarMaestro() { /* v27.51: el maestro de inventario ya no se ofrece automáticamente */ }
 async function syMaestroRecibir() {
     showLoading('Recibiendo maestro...');
     try {
@@ -12175,33 +11903,6 @@ function pModulosRol() {
     if (typeof o === 'function') window.seleccionarModo = function(m) { const r = o.apply(this, arguments); try { poner(); if (m === 'stock' || m === 'ticket') aplicar(true); } catch(e) {} return r; };
 })();
 
-// ══ v27.65 — PROMO y MEMO dentro de cada cuadro de precio (debajo del %), ya no abajo ══
-(function() {
-    const st = document.createElement('style');
-    st.textContent = `
-    #cs-price-panel .cs-pf-promo { font:900 12px 'Barlow','Inter',sans-serif; color:#000; text-transform:uppercase; letter-spacing:0.3px; text-align:center; line-height:1.15; margin-top:5px; padding:0 4px; max-width:100%; }
-    #cs-price-panel .cs-pf-lib2 { font-size:11px; font-weight:800; color:#000; background:rgba(255,255,255,0.6); border-radius:8px; padding:2px 6px; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
-    #cs-price-panel #cs-pf-libro, #cs-price-panel #cs-pf-libro-combo { margin-top:4px !important; }
-    #cs-promo-info-abajo { display:none !important; }`;
-    document.head.appendChild(st);
-    function pasar() {
-        const vis = id => { const e = document.getElementById(id); return e && e.style.display !== 'none'; };
-        const tx = id => { const e = document.getElementById(id); return e ? (e.textContent || '').trim() : ''; };
-        const pon = (id, t) => { const e = document.getElementById(id); if (!e) return; e.textContent = t ? '🏷 ' + t : ''; e.style.display = t ? 'block' : 'none'; };
-        pon('cs-pf-promo-menor', vis('cs-promo-info-unitario') ? tx('cs-promo-nombre-unitario') : '');
-        pon('cs-pf-promo-combo', vis('cs-promo-info-combo') ? tx('cs-promo-nombre-combo') : '');
-        const ofOn = vis('cs-promo-info-oferta');
-        pon('cs-pf-promo-oferta', ofOn ? tx('cs-promo-nombre-oferta') : '');
-        const lo = document.getElementById('cs-pf-libro-oferta');
-        if (lo) { const t = ofOn ? tx('cs-promo-libro-oferta') : ''; lo.textContent = t; lo.style.display = t && t !== '📖 —' ? 'block' : 'none'; }
-    }
-    ['csRenderPrecios', 'csRenderPrecioFinal'].forEach(n => {
-        const o = window[n]; if (typeof o !== 'function') return;
-        window[n] = function() { const r = o.apply(this, arguments); try { pasar(); } catch(e) {} return r; };
-    });
-    window._csPromoEnCuadros = pasar;
-})();
-
 // ══ v27.66 — PRECIOS IGUAL QUE EL SISTEMA DE CAJA: etiqueta arriba, número en un cuadro de color, nada más.
 //    Debajo: tabla con la promoción y el memorándum de donde sale cada precio. ══
 (function() {
@@ -12245,10 +11946,9 @@ function pModulosRol() {
             filas.push([pr.nombre, pr.precio, pr.libro || (p.libros && p.libros[p.libros.length - 1]) || '']);
         });
         const pc = document.getElementById('cs-promo-color-box');
-        if (pc && pc.style.display !== 'none' && pc.textContent.trim()) {
-            const t = pc.textContent.replace(/\s+/g, ' ').trim();
-            const mm = t.match(/🎨\s*([^S]*?)\s*(?:ANTES.*?)?S\/\s*([\d.]+)/);
-            filas.push(['PROMO COLOR' + (mm ? ' · ' + mm[1].trim() : ''), mm ? parseFloat(mm[2]) : 0, (p && p.libros && p.libros[p.libros.length - 1]) || '']);
+        if (pc && pc.style.display !== 'none' && pc.dataset.precio) {
+            // v27.73: antes se leía del texto y fallaba con colores que tienen "S" (ROSA, SKY…)
+            filas.push(['PROMO COLOR' + (pc.dataset.color ? ' · ' + pc.dataset.color : ''), parseFloat(pc.dataset.precio) || 0, (p && p.libros && p.libros[p.libros.length - 1]) || '']);
         }
         if (filas.length) h += '<table class="rp-tab"><tr><th>Denominación</th><th class="rp-p">Precio</th><th>Memorándum</th></tr>'
             + filas.map(([n, v, l]) => '<tr><td>' + esc(n) + '</td><td class="rp-p">' + (v > 0 ? f2(v) : '—') + '</td><td>' + esc(l) + '</td></tr>').join('') + '</table>';
@@ -12275,7 +11975,7 @@ function pModulosRol() {
         ps.style.minHeight = ambos ? '150px' : '0';
         ps.style.borderTop = ambos ? '2px solid #1F3864' : '';
     }
-    ['csAplicarModo', 'csCambiarTab', 'csOcultarTabs', 'csRenderPrecios'].forEach(n => {
+    ['csAplicarModo', 'csOcultarTabs', 'csRenderPrecios'].forEach(n => {
         const o = window[n]; if (typeof o !== 'function') return;
         window[n] = function() { const r = o.apply(this, arguments); try { ordenar(); } catch(e) {} return r; };
     });
@@ -12287,7 +11987,7 @@ function pModulosRol() {
 //        3) dentro de un módulo vuelve al INICIO  4) en el inicio: "presiona otra vez para salir".
 (function() {
     const CIERRES = {
-        'modal-promo-color': () => csModalPromoCerrar(), 'modal-pin': () => cerrarPIN(), 'sy-modal': () => syCerrarModal(),
+        'modal-pin': () => cerrarPIN(), 'sy-modal': () => syCerrarModal(),
         'modalTkDel': () => cerrarModalTkDel(), 'modalTkDetalle': () => cerrarModalTkDetalle(), 'modalTkObs': () => cerrarModalTkObs(),
         'modalTkVentas': () => cerrarModalTkVentas(), 'modal-confirm': () => cerrarConfirm()
     };
