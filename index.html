@@ -1646,7 +1646,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.70 — 15/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.71 — 16/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -1876,6 +1876,11 @@
             </div>
         </div>
         <div class="bar-bg" style="height:3px;"><div id="bar-fill"></div></div>
+        <!-- v27.71: ver qué falta y qué sobra antes de guardar -->
+        <div style="display:flex;gap:8px;margin-top:6px;">
+            <button onclick="compVerDif('falta')" style="flex:1;padding:9px 6px;border:none;border-radius:10px;background:#C62828;color:#fff;font:900 13px Inter,sans-serif;cursor:pointer;">🔻 FALTA <span id="cdif-falta">0</span></button>
+            <button onclick="compVerDif('sobra')" style="flex:1;padding:9px 6px;border:none;border-radius:10px;background:#1565C0;color:#fff;font:900 13px Inter,sans-serif;cursor:pointer;">🔺 SOBRA <span id="cdif-sobra">0</span></button>
+        </div>
     </div>
 
     <!-- MODAL: ver maestro completo (código, cantidad, descripción) -->
@@ -2119,7 +2124,7 @@
                 <div id="cs-historial-lista" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
             </div>
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.70 — 15/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.71 — 16/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -5487,6 +5492,49 @@ function mostrarResumen(cbOk) {
     document.getElementById('res-btn-ok').onclick = () => { cerrarResumen(); cbOk(); };
     document.getElementById('modal-resumen').style.display = 'flex';
 }
+
+// ══ v27.71 — FALTA / SOBRA en vivo (antes de guardar) ══
+function _compDifLista(tipo) {
+    const out = [];
+    for (const [cod, v] of maestroMap) {
+        const d = tipo === 'falta' ? v.exp - v.real : v.real - v.exp;
+        if (d > 0) out.push({ cod, desc: descripcionMap.get(cod) || '', cant: d, exp: v.exp, real: v.real });
+    }
+    // color y talla (misma lógica que el detalle del reporte)
+    const ant = dlEntriesCache; dlEntriesCache = out;
+    out.forEach(e => { try { const ct = dlColorTalla(e); e.base = ct.base; e.color = ct.color; e.talla = ct.talla; } catch(x) { e.base = e.desc; e.color = ''; e.talla = ''; } });
+    dlEntriesCache = ant;
+    out.sort((a, b) => a.cod.localeCompare(b.cod));
+    return out;
+}
+function compDifContar() {
+    let f = 0, so = 0;
+    for (const [, v] of maestroMap) { if (v.exp > v.real) f += v.exp - v.real; else if (v.real > v.exp) so += v.real - v.exp; }
+    const a = document.getElementById('cdif-falta'), b = document.getElementById('cdif-sobra');
+    if (a) a.textContent = f.toLocaleString(); if (b) b.textContent = so.toLocaleString();
+}
+function compVerDif(tipo) {
+    const L = _compDifLista(tipo), tot = L.reduce((s, e) => s + e.cant, 0);
+    const esF = tipo === 'falta', col = esF ? '#C62828' : '#1565C0';
+    const lin = e => e.cod + ' - ' + (e.base || e.desc || '') + (e.color ? ' · ' + e.color : '') + (e.talla ? ' · T/' + e.talla : '') + ' - ' + e.cant;
+    window._compDifTxt = (esF ? 'FALTANTES' : 'SOBRANTES') + ' (' + L.length + ' códigos · ' + tot + ' unid.)\n' + L.map(lin).join('\n');
+    let m = document.getElementById('modal-comp-dif');
+    if (!m) { m = document.createElement('div'); m.id = 'modal-comp-dif'; m.style.cssText = 'position:fixed;inset:0;z-index:9800;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center;padding:10px;'; m.onclick = ev => { if (ev.target === m) m.style.display = 'none'; }; document.body.appendChild(m); }
+    const fila = e => '<div class="cdif-row" style="display:flex;gap:8px;align-items:center;padding:8px 6px;border-bottom:1px solid #eee;">'
+        + '<div style="flex:1;min-width:0;"><div style="font:900 13.5px Inter,sans-serif;color:#111;">' + e.cod + '</div>'
+        + '<div style="font:700 12px Inter,sans-serif;color:#333;">' + (e.base || e.desc || '<i style="color:#999">sin descripción</i>') + '</div>'
+        + '<div style="font:800 11.5px Inter,sans-serif;color:#555;">🎨 ' + (e.color || '—') + ' &nbsp;·&nbsp; 📏 T/' + (e.talla || '—') + (e.exp === 0 ? ' &nbsp;<span style="color:#E65100;">(no está en el maestro)</span>' : '') + '</div></div>'
+        + '<div style="text-align:right;"><div style="font:900 22px Barlow,Inter,sans-serif;color:' + col + ';">' + (esF ? '-' : '+') + e.cant + '</div><div style="font:700 10px Inter,sans-serif;color:#888;">esp ' + e.exp + ' · real ' + e.real + '</div></div></div>';
+    m.innerHTML = '<div style="background:#fff;border-radius:16px;width:100%;max-width:640px;max-height:92vh;display:flex;flex-direction:column;overflow:hidden;">'
+        + '<div style="background:' + col + ';color:#fff;padding:12px 14px;display:flex;align-items:center;gap:8px;"><div style="flex:1;font:900 16px Inter,sans-serif;">' + (esF ? '🔻 FALTA' : '🔺 SOBRA') + ' · ' + L.length + ' códigos · ' + tot + ' unid.</div>'
+        + '<button onclick="document.getElementById(\'modal-comp-dif\').style.display=\'none\'" style="border:none;background:rgba(255,255,255,0.25);color:#fff;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;">✕</button></div>'
+        + '<div style="padding:8px 10px;display:flex;gap:6px;"><input id="cdif-q" placeholder="🔍 Filtrar código, descripción, color o talla" oninput="(function(q){q=q.toUpperCase();document.querySelectorAll(\'#modal-comp-dif .cdif-row\').forEach(r=>r.style.display=r.textContent.toUpperCase().includes(q)?\'\':\'none\')})(this.value)" style="flex:1;min-width:0;padding:9px;border:1.5px solid #ccc;border-radius:10px;font:600 14px Inter,sans-serif;">'
+        + '<button onclick="try{navigator.clipboard.writeText(window._compDifTxt);showToast(\'📋 Copiado\',\'#111\')}catch(e){}" style="padding:0 10px;border:1.5px solid #999;border-radius:10px;background:#fff;font:800 12px Inter,sans-serif;">📋 Copiar</button>'
+        + '<button onclick="descargar(window._compDifTxt,\'' + (esF ? 'FALTANTES' : 'SOBRANTES') + '_\'+new Date().toISOString().slice(0,10)+\'.txt\')" style="padding:0 10px;border:1.5px solid #999;border-radius:10px;background:#fff;font:800 12px Inter,sans-serif;">📥 TXT</button></div>'
+        + '<div style="overflow-y:auto;padding:0 10px 10px;">' + (L.length ? L.map(fila).join('') : '<div style="padding:30px;text-align:center;font:800 15px Inter,sans-serif;color:#2E7D32;">✅ ' + (esF ? 'No falta nada' : 'No sobra nada') + '</div>') + '</div></div>';
+    m.style.display = 'flex';
+}
+(function() { const o = window.renderComp; if (typeof o === 'function') window.renderComp = function() { const r = o.apply(this, arguments); try { compDifContar(); } catch(e) {} return r; }; })();
 
 function cerrarResumen() {
     document.getElementById('modal-resumen').style.display = 'none';
