@@ -1638,7 +1638,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.73 — 16/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.75 — 17/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2087,7 +2087,7 @@
             <!-- Versión -->
             <!-- Historial de lecturas -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.73 — 16/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.75 — 17/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -9909,7 +9909,10 @@ function syUrl(path) { return syBase() + (path ? '/' + path : '') + '.json'; }
 async function syReq(method, path, data) {
     const opt = { method, headers:{ 'Content-Type':'application/json' } };
     if (data !== undefined) opt.body = JSON.stringify(data);
-    const r = await fetch(syUrl(path), opt);
+    // v27.74: una escritura que se cuelga (señal débil) se corta a los 45 s y se reintenta; antes dejaba la cola trabada
+    let tmr = null;
+    if (method !== 'GET' && typeof AbortController !== 'undefined') { const ac = new AbortController(); opt.signal = ac.signal; tmr = setTimeout(() => ac.abort(), (opt.body && opt.body.length > 200000) ? 600000 : 45000); }
+    let r; try { r = await fetch(syUrl(path), opt); } finally { if (tmr) clearTimeout(tmr); }
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const t = await r.text();
     return t ? JSON.parse(t) : null;
@@ -10061,7 +10064,9 @@ function syEscucharMeta() {
         // Usuarios cambiaron → refrescar lista (rol, PIN, eliminado)
         if ((syMeta.usrVer || 0) > (_syJ(SY_K.usrver, 0) || 0)) syRefrescarUsuarios();
         // Bases nuevas
-        if ((syMeta.basesVer || 0) > (_syJ(SY_K.basesver, 0) || 0) && syMeta.basesPor !== (sySes && sySes.id)) syOfrecerBases();
+        // v27.75: llegan SOLAS a todos los celulares menos al que las envió (antes se saltaba a todo el usuario,
+        // y los otros celulares del administrador nunca las recibían)
+        if ((syMeta.basesVer || 0) > (_syJ(SY_K.basesver, 0) || 0) && (syMeta.basesDev ? syMeta.basesDev !== _pDevId() : syMeta.basesPor !== (sySes && sySes.id))) syBasesAutoRecibir();
         // Almacén
         syAlmRevisar();
         // Maestro de inventario (v27.12)
@@ -10747,7 +10752,7 @@ function syAbrirBases() {
     let h = '<div class="sy-card"><div class="sy-h">' + (ver ? '📦 Última versión enviada' : '⚪ Aún no se enviaron bases') + '</div>'
         + (ver ? '<div class="sy-p">Por <b>' + syEsc(syMeta.basesPorN || '') + '</b> · ' + new Date(ver).toLocaleString('es-PE') + (ver === mia ? ' · ✅ este celular la tiene' : ' · 🟠 este celular no la tiene') + '</div>' : '')
         + '<div class="sy-p">Incluye: base de stock (Consultar Precio y Stock), memorándums/libros de precios, precios por mayor y la comparación de cambios de precio.</div>'
-        + '<div class="sy-p" style="color:#1565C0;"><b>Automático:</b> cuando un supervisor o administrador carga una base (stock, memorándum, maestro de inventario o almacén), se envía sola a los demás celulares.</div></div>';
+        + '<div class="sy-p" style="color:#1565C0;"><b>Automático:</b> cuando un supervisor o administrador carga una base de <b>stock</b> o un <b>memorándum</b>, se envía sola y TODOS los demás celulares la reciben solos (también tus otros equipos de administrador), sin preguntar ni recargar.</div></div>';
     if (ver && ver !== mia) h += '<button class="sy-btn" onclick="syBasesRecibir()">📥 RECIBIR BASES AHORA</button>';
     if (pPuede('publicar')) h += '<div class="sy-card"><div class="sy-h">📤 Enviar MIS bases a todos</div><div class="sy-p">Tamaño aprox.: ' + (tam / 1048576).toFixed(1) + ' MB. Los demás celulares reciben un aviso para actualizar.</div>'
         + '<button class="sy-btn"' + (tam ? '' : ' disabled') + ' onclick="syBasesEnviar()">📤 ENVIAR A TODOS</button></div>';
@@ -10764,12 +10769,39 @@ async function syBasesEnviar(silencioso) {
         // v27.34: también los precios POR TIENDA de cada memorándum (para filtrar por tienda en otros celulares)
         try { if (typeof syTdaEmpaquetar === 'function') await syReq('PUT', 'bases/tda', await syTdaEmpaquetar()); } catch(e) {}
         _syS(SY_K.basesver, ver);
-        await syReq('PATCH', 'meta', { basesVer: ver, basesPor: sySes.id, basesPorN: sySes.n });
+        await syReq('PATCH', 'meta', { basesVer: ver, basesPor: sySes.id, basesPorN: sySes.n, basesDev: _pDevId() });
         if (!silencioso) { hideLoading(); syAbrirBases(); showToast('✅ Bases enviadas. Los demás celulares recibirán el aviso.', '#2E7D32', 3500); }
         else showToast('☁️ Bases y precios enviados a todos los celulares', '#1565C0', 3000);
         return true;
     } catch(e) { if (!silencioso) hideLoading(); showToast('❌ No se pudo enviar a la nube: ' + e.message, '#B71C1C', 4000); return false; }
 }
+// v27.75: recepción automática y silenciosa. Se aplica en memoria (sin recargar la app ni cortar lo que estén haciendo).
+let _syBasesRecibiendo = 0;
+async function syBasesAutoRecibir() {
+    const ver = syMeta.basesVer || 0;
+    if (!ver || _syBasesRecibiendo === ver) return;
+    if (!navigator.onLine) return;   // se reintenta al volver internet (syEscucharMeta se dispara de nuevo)
+    _syBasesRecibiendo = ver;
+    try {
+        const data = await syReq('GET', 'bases/data');
+        if (!data) throw new Error('sin bases');
+        SY_BASES_KEYS.forEach(k => { const v = data[k.replace(/\./g, '_')]; if (v) localStorage.setItem(k, v); });
+        try { if (typeof syTdaDesempaquetar === 'function') await syTdaDesempaquetar(await syReq('GET', 'bases/tda')); } catch(e) {}
+        try { if (typeof lsGrandeEsperar === 'function') await lsGrandeEsperar(); } catch(e) {}
+        // aplicar en memoria
+        try { csStockDB = {}; csLoadSaved(); } catch(e) {}
+        try { csLoadPreciosMayorLocal(); } catch(e) {}
+        try { csLoadPreciosLocal(); } catch(e) {}
+        try { csLibrosRaw = JSON.parse(localStorage.getItem(CS_RAW_KEY) || '{}') || {}; } catch(e) {}
+        try { csSetBadge(Object.keys(csStockDB).length); csActualizarBadgeLibros(); } catch(e) {}
+        _syS(SY_K.basesver, ver);
+        showToast('📥 Bases nuevas recibidas' + (syMeta.basesPorN ? ' de ' + syMeta.basesPorN : '') + ': stock y memorándum actualizados', '#1565C0', 4000);
+    } catch(e) {
+        _syBasesRecibiendo = 0;   // se reintentará
+        setTimeout(() => { if (syActivo() && (syMeta.basesVer || 0) > (_syJ(SY_K.basesver, 0) || 0)) syBasesAutoRecibir(); }, 30000);
+    }
+}
+window.addEventListener('online', () => setTimeout(() => { try { if (syActivo() && (syMeta.basesVer || 0) > (_syJ(SY_K.basesver, 0) || 0)) syBasesAutoRecibir(); } catch(e) {} }, 2000));
 let _syBasesAvisado = 0;
 function syOfrecerBases() {
     const ver = syMeta.basesVer; if (_syBasesAvisado === ver) return; _syBasesAvisado = ver;
@@ -14557,8 +14589,23 @@ async function pPresenciaLatido(visible) {
     if (!syActivo()) return;
     const k = _pPresKey(); if (!k) return;
     const movil = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent);
-    try { await syReq('PUT', 'presencia/' + k, { u: sySes.id, n: sySes.n, r: sySes.r, ts: Date.now(), m: _pModuloActual(), d: movil ? 'Celular' : 'PC', v: visible !== false }); } catch(e) {}
+    let pend = 0, ver = ''; try { pend = asiPendientes(); } catch(e) {} try { ver = (document.body.innerText.match(/PIEERS PRO (v\d+\.\d+)/) || [])[1] || ''; } catch(e) {}
+    try { await syReq('PUT', 'presencia/' + k, { u: sySes.id, n: sySes.n, r: sySes.r, ts: Date.now(), m: _pModuloActual(), d: movil ? 'Celular' : 'PC', v: visible !== false, pend, ver }); } catch(e) {}
 }
+// v27.74: marcas de asistencia guardadas en el celular que aún no suben → avisar y seguir intentando
+(function() {
+    let avisado = 0;
+    function revisar() {
+        let n = 0; try { n = asiPendientes(); } catch(e) {}
+        if (!n) return;
+        if (navigator.onLine) { try { syFlush(); } catch(e) {} }
+        if (Date.now() - avisado > 90000) { avisado = Date.now(); showToast('⏳ Tienes ' + n + ' marca(s) de asistencia sin subir. ' + (navigator.onLine ? 'Deja la app abierta un momento…' : 'Prende tus datos o wifi para que suban.'), '#E65100', 5000); }
+    }
+    setInterval(revisar, 20000);
+    setTimeout(revisar, 3500);
+    window.addEventListener('online', () => setTimeout(revisar, 1500));
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') setTimeout(revisar, 800); });
+})();
 function pPresenciaSalir() { const k = _pPresKey(); if (k && syCfg) { try { syReq('DELETE', 'presencia/' + k); } catch(e) {} } }
 function _pHace(ms) { const s = Math.round(ms / 1000); if (s < 60) return 'hace ' + s + ' s'; const m = Math.round(s / 60); if (m < 60) return 'hace ' + m + ' min'; const h = Math.round(m / 60); if (h < 24) return 'hace ' + h + ' h'; return 'hace ' + Math.round(h / 24) + ' día(s)'; }
 function pEnLineaHtml() {
@@ -14580,7 +14627,9 @@ function pEnLineaHtml() {
         const p = f.on[0] || f.ds[0];
         const est = f.on.length ? '<span style="color:#2E7D32;font-weight:800;">🟢 En línea</span> · ' + f.on.map(x => (x.d === 'PC' ? '💻 ' : '📱 ') + syEsc(x.m || '')).join(' · ')
             : p ? '<span style="color:#888;">⚪ ' + _pHace(ahora - p.ts) + (p.m ? ' · ' + syEsc(p.m) : '') + '</span>' : '<span style="color:#aaa;">⚪ Nunca entró (desde esta versión)</span>';
-        return '<div class="sy-urow"><div class="sy-uname"><b>' + syEsc(f.u.n) + '</b> <span class="sy-tag">' + (SY_ROLES[f.u.r] || '') + '</span><br><span style="font-size:11.5px;">' + est + '</span></div></div>';
+        const pend = Math.max(0, ...f.ds.map(x => x.pend || 0)), ver = p && p.ver ? ' <span style="color:#999;font-size:10.5px;">' + syEsc(p.ver) + '</span>' : '';
+        const av = pend ? '<br><span style="font-size:11.5px;color:#E65100;font-weight:800;">⏳ ' + pend + ' marca(s) de asistencia sin subir en su celular</span>' : '';
+        return '<div class="sy-urow"><div class="sy-uname"><b>' + syEsc(f.u.n) + '</b> <span class="sy-tag">' + (SY_ROLES[f.u.r] || '') + '</span>' + ver + '<br><span style="font-size:11.5px;">' + est + '</span>' + av + '</div></div>';
     }).join('');
     return h;
 }
