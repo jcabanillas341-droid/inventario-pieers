@@ -1638,7 +1638,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.75 — 17/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.76 — 17/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2087,7 +2087,7 @@
             <!-- Versión -->
             <!-- Historial de lecturas -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.75 — 17/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.76 — 17/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -14477,7 +14477,7 @@ async function syTdaDesempaquetar(pack) {
 // Se quitan del menú ☰ OPC. "Bases compartidas", "Conteo compartido" y "Nube y usuarios".
 (function() {
     const st = document.createElement('style');
-    st.textContent = '#btn-sy-carpetas,#btn-sy-conteo,#btn-sy-nube{display:none !important;}'
+    st.textContent = '#btn-sy-carpetas,#btn-sy-conteo,#btn-sy-nube,#btn-sy-bases,#btn-sy-alm{display:none !important;}'   // v27.76: todo lo compartido va en el desplegable del inicio
         + '#p-nube-home{width:100%;max-width:360px;margin:2px auto 0;}'
         + '#p-nube-btn{width:100%;display:flex;align-items:center;gap:12px;padding:14px 16px;border:none;border-radius:16px;background:linear-gradient(135deg,#1565C0,#0D47A1);color:#fff;cursor:pointer;box-shadow:0 4px 14px rgba(13,71,161,.28);text-align:left;}'
         + '#p-nube-btn .t{font:900 15px Barlow,Inter,sans-serif;letter-spacing:.5px;display:block;}'
@@ -14499,7 +14499,9 @@ async function syTdaDesempaquetar(pack) {
         + '<span id="p-nube-flecha" style="font-size:16px;transition:transform .2s;">▼</span></button>'
         + '<div id="p-nube-panel">'
         + '<button class="p-nube-op" id="p-op-bases" onclick="pNubeHomeIr(\'bases\')"><span style="font-size:22px;">📁</span><span>Bases compartidas<small>Subir y cargar stock, guías y memorándums</small></span></button>'
+        + '<button class="p-nube-op" id="p-op-envbases" onclick="pNubeHomeIr(\'envbases\')"><span style="font-size:22px;">🔄</span><span>Enviar / recibir stock y memorándum<small>Ver la versión que tiene cada celular y reenviarla a todos</small></span></button>'
         + '<button class="p-nube-op" id="p-op-conteo" onclick="pNubeHomeIr(\'conteo\')"><span style="font-size:22px;">📋</span><span>Conteo compartido<small>Contar el inventario entre varios celulares</small></span></button>'
+        + '<button class="p-nube-op" id="p-op-alm" onclick="pNubeHomeIr(\'alm\')"><span style="font-size:22px;">🏪</span><span>Almacén compartido<small>Ingresos y retiros del almacén en todos los celulares</small></span></button>'
         + '<button class="p-nube-op" id="p-op-nube" onclick="pNubeHomeIr(\'nube\')"><span style="font-size:22px;">👥</span><span>Nube y usuarios<small>Conectar, iniciar sesión, usuarios y permisos</small></span></button>'
         + '</div>';
     if (ref && ref.parentNode) ref.parentNode.insertBefore(box, ref.nextSibling); else pm.appendChild(box);
@@ -14516,12 +14518,16 @@ function pNubeHomePintar() {
     const ob = document.getElementById('p-op-bases'), oc = document.getElementById('p-op-conteo');
     if (ob) ob.style.display = (!act || pPuede('cargar')) ? '' : 'none';
     if (oc) oc.style.display = (typeof pVendPuede !== 'function' || pVendPuede('comp')) ? '' : 'none';
+    const oa = document.getElementById('p-op-alm'); if (oa) oa.style.display = (typeof pVendPuede !== 'function' || pVendPuede('alm')) ? '' : 'none';
+    const oe = document.getElementById('p-op-envbases'); if (oe) oe.style.display = (typeof pVendPuede !== 'function' || pVendPuede('stock') || pVendPuede('ticket')) ? '' : 'none';
 }
 function pNubeHomeIr(q) {
     if (q === 'nube') return syAbrirNube();
     if (!syActivo()) { showToast('☁️ Primero conéctate a la nube e inicia sesión', '#1565C0', 3000); return syAbrirNube(); }
     if (q === 'bases') return syAbrirCarpetas();
     if (q === 'conteo') return syAbrirConteo();
+    if (q === 'envbases') return syAbrirBases();
+    if (q === 'alm') return syAbrirAlm();
 }
 (function() {
     const o = window.syPintarChip;
