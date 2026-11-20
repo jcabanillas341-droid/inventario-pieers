@@ -1638,7 +1638,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.76 — 17/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.79 — 20/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2087,7 +2087,7 @@
             <!-- Versión -->
             <!-- Historial de lecturas -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.76 — 17/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.79 — 20/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -2804,6 +2804,7 @@ document.getElementById('fileInput').addEventListener('change', function(e) {
                         // Formato Pedido/Factura (128002.xlsx) → convertir a maestro
                         res = _convertirPedidoXLSX(wb);
                     }
+                    if (!res.length) res = _convertirGuiaTallasDin(wb);   // v27.77: guía MOVIMIENTOS DE TIENDAS
 
                     if (res.length > 0) {
                         // Cargar como maestro del comparativo
@@ -3163,6 +3164,49 @@ function _convertirGuiaXLSX(wb) {
     return res;
 }
 
+// ── v27.77: GUÍA "MOVIMIENTOS DE TIENDAS" (SALIDA/INGRESO X TRASPASO, ej. 288423.xlsx)
+//    Cabecera: MODELO (col A) + PRODUCTO + tallas en la MISMA fila (S M L XL XS 2X 4X 3X ST o 26 28 30…)
+//    Color:    CÓDIGO COLOR (3) + nombre + cantidad debajo de cada talla.
+//    Las columnas se detectan solas (no son fijas). Código = P + modelo + color + posición de la talla (01,02…)
+function _convertirGuiaTallasDin(wb) {
+    try {
+        const TX = new Set(['XXS','XS','S','M','L','XL','XXL','XXXL','2X','3X','4X','5X','ST','STD','U','UNI','UNICA','ÚNICA','TU']);
+        const esTalla = v => { v = String(v == null ? '' : v).trim().toUpperCase(); return !!v && (TX.has(v) || /^\d{1,2}(\.5)?$/.test(v)); };
+        const esModelo = v => /^[A-Z0-9]{5,8}$/i.test(v) && /[A-Z]/i.test(v) && /\d/.test(v);
+        const res = [];
+        for (const nh of wb.SheetNames) {
+            const data = XLSX.utils.sheet_to_json(wb.Sheets[nh], { header: 1, defval: '' });
+            let mod = '', desc = '', tallas = null;
+            for (const row of data) {
+                const cel = []; row.forEach((v, j) => { const t = String(v == null ? '' : v).trim(); if (t) cel.push({ j, t }); });
+                if (!cel.length) continue;
+                const c0 = cel[0].j <= 1 ? cel[0].t : '';
+                if (/^(CODIGO|CÓDIGO|TOTAL)/i.test(c0)) continue;
+                // cabecera de modelo: código + descripción + tallas en la misma fila
+                if (esModelo(c0)) {
+                    const resto = cel.slice(1), it = resto.findIndex(c => esTalla(c.t));
+                    if (it > 0 && resto.slice(it).every(c => esTalla(c.t))) {
+                        mod = c0.toUpperCase(); desc = resto.slice(0, it).map(c => c.t).join(' ').replace(/\s+/g, ' ').trim();
+                        tallas = resto.slice(it).map((c, k) => ({ col: c.j, label: c.t.toUpperCase(), pos: String(k + 1).padStart(2, '0') }));
+                        continue;
+                    }
+                }
+                // fila de color
+                if (!tallas || !/^[A-Z0-9]{3}$/i.test(c0)) continue;
+                const primT = tallas[0].col;
+                const nom = cel.filter(c => c.j > cel[0].j && c.j < primT && !/^[A-Z0-9]{3}$/i.test(c.t) && !/^-?\d+(\.\d+)?$/.test(c.t)).map(c => c.t).join(' ').trim() || c0;
+                const val = col => { const n = parseInt(row[col]); return isNaN(n) ? null : n; };
+                tallas.forEach((t, k) => {
+                    let n = val(t.col);
+                    if (n === null) { const ant = k ? tallas[k - 1].col : -1, sig = k < tallas.length - 1 ? tallas[k + 1].col : 1e9; if (t.col - 1 > ant && val(t.col - 1) !== null) n = val(t.col - 1); else if (t.col + 1 < sig && val(t.col + 1) !== null) n = val(t.col + 1); }
+                    if (n > 0) res.push({ codigo: 'P' + mod + c0.toUpperCase() + t.pos, descripcion: desc + ' ' + nom + ' T/' + t.label, cantidad: n, colorNom: nom });
+                });
+            }
+        }
+        return res;
+    } catch(e) { return []; }
+}
+
 // ── v26.92: "DETALLE DE STOCK" en Excel (formato por bloques: fila MODELO,
 //    fila de tallas y filas por color, ej. PR0B7T4.xlsx). Se convierte al
 //    MISMO formato del CSV de Stock WAMA (una fila por color con LINEA) para
@@ -3391,10 +3435,12 @@ document.getElementById('guiaInput').addEventListener('change', function(e) {
                         // Guía de movimientos WAMA
                         res = _convertirGuiaXLSX(wb);
                         if (!res.length) res = _convertirPedidoXLSX(wb);
+                        if (!res.length) res = _convertirGuiaTallasDin(wb);
                     } else {
                         // Formato Pedido/Factura (128002.xlsx y similares)
                         res = _convertirPedidoXLSX(wb);
                         if (!res.length) res = _convertirGuiaXLSX(wb);
+                        if (!res.length) res = _convertirGuiaTallasDin(wb);   // v27.77: guía MOVIMIENTOS DE TIENDAS
                     }
                 } else {
                     // Usar parsearCSV que maneja correctamente las comillas del CSV de WAMA
@@ -3803,6 +3849,8 @@ document.getElementById('almInput').addEventListener('change', function(e) {
                 if (ext==='xlsx'||ext==='xls') {
                     const wb=await pXlsxLeer(new Uint8Array(evt.target.result),{type:'array'});
                     rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+                    const _din = _convertirGuiaTallasDin(wb);   // v27.78: guía MOVIMIENTOS DE TIENDAS
+                    if (_din.length) rows = _din.map(r => ({ 'CODIGO': r.codigo, 'DESCRIPCION': r.descripcion, 'STOCK': r.cantidad }));
                 } else if (ext==='txt') {
                     // Formato TXT: CODIGO/CANT  o  CODIGO|CANT|DESC  o  CODIGO;CANT
                     rows = evt.target.result.split('\n')
@@ -7886,7 +7934,8 @@ function csLoadFile(e) {
                 const _detCsF = _detalleStockXLSXaCSV(wb); if (_detCsF) csv = _detCsF;
             }
             const lineasCs = parsearCSV(csv);
-            const resCs = _convertirStockCSV(lineasCs);
+            let resCs = _convertirStockCSV(lineasCs);
+            if (!resCs.length && !isCsv) { try { resCs = _convertirGuiaTallasDin(await pXlsxLeer(ev.target.result, { type: 'array' })); } catch(e) {} }   // v27.78
             if (!resCs.length) throw new Error('Sin productos válidos en el archivo');
             csStockDB = {};
             resCs.forEach(r => {
@@ -8427,6 +8476,7 @@ function driveProcesar(ab, tipo) {
                 } else if (!esGuiaD) {
                     resD = _convertirPedidoXLSX(wb);
                 }
+                if (!resD.length) resD = _convertirGuiaTallasDin(wb);   // v27.78
                 if (resD.length > 0) {
                     maestroMap.clear(); totalEsp = 0;
                     resD.forEach(function(r) {
@@ -8500,6 +8550,7 @@ function driveProcesar(ab, tipo) {
                 }
                 var _detDrv = _detalleStockXLSXaCSV(wb); if (_detDrv) csvDriveTxt = _detDrv;
                 var resDrive = _convertirStockCSV(parsearCSV(csvDriveTxt));
+                if (!resDrive.length) resDrive = _convertirGuiaTallasDin(wb);   // v27.78
                 csStockDB = {};
                 resDrive.forEach(function(r) {
                     var cod = r.codigo.toUpperCase();
@@ -8556,6 +8607,8 @@ function driveProcesar(ab, tipo) {
                 } else {
                     try { res = _convertirGuiaXLSX(wb); } catch(e2) { res = []; }
                     if (!res.length) { var lineasP2 = csvTxt.split(/\r?\n/).map(function(l){ return csParseCSVLine(l); }); res = _convertirStockCSV(lineasP2); }
+                    if (!res.length) { try { res = _convertirPedidoXLSX(wb); } catch(e3) { res = []; } }
+                    if (!res.length) res = _convertirGuiaTallasDin(wb);   // v27.78: guía MOVIMIENTOS DE TIENDAS
                     _cargarResultadosEnModulo(res, modulo, driveArchivoNombre);
                 }
             }
@@ -8862,13 +8915,25 @@ if ('serviceWorker' in navigator) {
     // v27.29: se registra enseguida (sin esperar 'load'). El sw.js nuevo abre la app desde la
     // memoria del celular al instante y descarga la versión nueva por detrás.
     try { navigator.serviceWorker.register('/inventario-pieers/sw.js').catch(function(){}); } catch(e) {}
+    // v27.79: el aviso de versión nueva sale EN MEDIO de la pantalla
+    window.pAvisoNuevaVersion = function(ver) {
+        if (document.getElementById('p-nueva-version')) return;
+        var mia = (((document.getElementById('cs-version-badge') || {}).textContent || '').match(/v\d+\.\d+\w*/) || [''])[0];
+        var o = document.createElement('div'); o.id = 'p-nueva-version';
+        o.style.cssText = 'position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:20px;';
+        o.innerHTML = '<div style="background:#fff;border-radius:22px;padding:24px 20px 18px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.35);font-family:Inter,sans-serif;">'
+            + '<div style="font-size:54px;line-height:1;">🔄</div>'
+            + '<div style="font:900 21px Barlow,Inter,sans-serif;color:#0D47A1;margin-top:8px;">HAY UNA VERSIÓN NUEVA</div>'
+            + '<div style="font:700 14px Inter,sans-serif;color:#333;margin:8px 0 16px;">' + (ver ? 'Tienes la <b>' + mia + '</b> · nueva: <b>' + ver + '</b>.<br>' : '') + 'Actualiza para tener las últimas mejoras.</div>'
+            + '<button id="p-nv-si" style="width:100%;padding:15px;border:none;border-radius:14px;background:#1565C0;color:#fff;font:900 16px Inter,sans-serif;cursor:pointer;">ACTUALIZAR AHORA</button>'
+            + '<button id="p-nv-no" style="width:100%;margin-top:8px;padding:11px;border:1.5px solid #ccc;border-radius:12px;background:#fff;color:#555;font:800 13px Inter,sans-serif;cursor:pointer;">Más tarde</button></div>';
+        document.body.appendChild(o);
+        document.getElementById('p-nv-si').onclick = function() { location.reload(); };
+        document.getElementById('p-nv-no').onclick = function() { o.remove(); setTimeout(function() { window.pAvisoNuevaVersion(ver); }, 10 * 60000); };   // vuelve a avisar en 10 min
+    };
     navigator.serviceWorker.addEventListener('message', function(ev) {
-        if (!ev.data || ev.data.tipo !== 'nueva-version' || document.getElementById('p-nueva-version')) return;
-        var b = document.createElement('div'); b.id = 'p-nueva-version';
-        b.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:99999;background:#1565C0;color:#fff;font:800 13px Inter,sans-serif;padding:12px 18px;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.3);cursor:pointer;white-space:nowrap;';
-        b.textContent = '🔄 Hay una versión nueva — toca para actualizar';
-        b.onclick = function() { location.reload(); };
-        document.body.appendChild(b);
+        if (!ev.data || ev.data.tipo !== 'nueva-version') return;
+        window.pAvisoNuevaVersion(ev.data.ver || '');
     });
     // Además: revisar la copia guardada (el sw.js la actualiza por detrás) y comparar versiones
     function pRevisarVersion() {
@@ -8878,7 +8943,7 @@ if ('serviceWorker' in navigator) {
             if (!mia) return;
             caches.open('pieers-pro-v2').then(function(c) { return c.match('/inventario-pieers/index.html'); }).then(function(r) { return r ? r.text() : ''; }).then(function(t) {
                 var m = t && t.match(/PIEERS PRO (v\d+\.\d+\w*) —/);
-                if (m && m[1] !== mia[0]) navigator.serviceWorker.dispatchEvent ? window.postMessage && (function(){ var ev = new MessageEvent('message', { data: { tipo: 'nueva-version' } }); navigator.serviceWorker.dispatchEvent(ev); })() : 0;
+                if (m && m[1] !== mia[0]) window.pAvisoNuevaVersion(m[1]);
             }).catch(function(){});
         } catch(e) {}
     }
