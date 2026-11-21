@@ -1638,7 +1638,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.80 — 20/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.82 — 21/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2087,7 +2087,7 @@
             <!-- Versión -->
             <!-- Historial de lecturas -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.80 — 20/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.82 — 21/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -5730,7 +5730,7 @@ function csParsePreciosXLSX(wb, nombreLibro) {
         if (typeof entry.mayorLibro  !== 'string') entry.mayorLibro  = null;
         if (typeof entry.ofertaLibro !== 'string') entry.ofertaLibro = null;
         const antes = preciosAntes[cod] || {menor:0,mayor:0,oferta:0,etiqueta:0};
-        _csRawReg(cod, etiq, menor, mayor, oferta, tiendas); // v27.04
+        _csRawReg(cod, etiq, menor, mayor, oferta, tiendas, tipo, nombre); // v27.04 · v27.81: + nombre del combo
 
         // Registrar libro de origen (uno solo por libro, sin duplicar)
         if (!entry.libros.includes(libroId)) entry.libros.push(libroId);
@@ -6990,7 +6990,7 @@ function csSetBadge(cnt) {
     if (!badge) return;
     if (cnt > 0) {
         const u = csTotalUnidades();
-        badge.textContent = cnt + ' art. · ' + u.toLocaleString('es-PE') + ' u.';
+        badge.textContent = u.toLocaleString('es-PE') + ' prendas';   // v27.82: solo prendas cargadas
     } else {
         badge.textContent = 'SIN BASE';
     }
@@ -9685,7 +9685,7 @@ function csRawGuardar() {
     } catch(e) {}
 }
 // Llamado desde reg() del parser: registra el precio que trae ESTE libro para el código
-function _csRawReg(cod, etiq, menor, mayor, oferta, tiendas) {
+function _csRawReg(cod, etiq, menor, mayor, oferta, tiendas, tipo, nombre) {
     if (!_csRawActual || !cod) return;
     const r = _csRawActual[cod] || (_csRawActual[cod] = { etiqueta:0, menor:0, mayor:0, oferta:0, _t:{} });
     if (etiq > r.etiqueta) r.etiqueta = etiq;
@@ -9693,9 +9693,12 @@ function _csRawReg(cod, etiq, menor, mayor, oferta, tiendas) {
     const put = (k, v) => {
         if (!(v > 0)) return;
         const cur = r[k], curT = !!r._t[k];
-        if (!cur || (tiendas && !curT) || (tiendas === !!curT && v < cur)) { r[k] = v; r._t[k] = !!tiendas; }
+        if (!cur || (tiendas && !curT) || (tiendas === !!curT && v < cur)) { r[k] = v; r._t[k] = !!tiendas; return true; }
+        return false;
     };
-    put('menor', menor); put('mayor', mayor); put('oferta', oferta);
+    put('menor', menor);
+    if (put('mayor', mayor) && nombre) r.cn = String(nombre).trim();   // v27.81: nombre del combo de ESTE libro
+    put('oferta', oferta);
 }
 function _csRawFin(libroId) {
     if (!_csRawActual) return;
@@ -9705,6 +9708,23 @@ function _csRawFin(libroId) {
     csRawGuardar();
 }
 function _csRawPrecioFinal(r) { return r.oferta || r.menor || r.mayor || 0; }
+// v27.81: "2x149.90" — en qué combo está un código en un libro (del nombre de la promo)
+function _csComboTxt(nombre) {
+    const t = String(nombre || '').toUpperCase();
+    const m = t.match(/(\d+)\s*X\s*(?:S\/\.?\s*)?(\d+(?:[.,]\d+)?)/);
+    if (m) return m[1] + 'x' + (+m[2].replace(',', '.')).toFixed(2);
+    return t.replace(/^PROMO\.?\s*/, '').trim();
+}
+function _csComboNom(libro, cod) {
+    try {
+        const r = (csLibrosRaw[libro] || {})[cod];
+        if (r && r.cn) return _csComboTxt(r.cn);
+        const e = (typeof csPreciosDB !== 'undefined' && csPreciosDB[cod]) || null;
+        const pr = e && (e.promos || []).find(p => p.libro === libro && p.tipo === 'combo');
+        if (pr) return _csComboTxt(pr.nombre);
+    } catch(e) {}
+    return '';
+}
 function _csRawDesc(cod) {
     const d = (csStockDB && csStockDB[cod] && csStockDB[cod].desc) || '';
     if (d) return d;
@@ -9826,7 +9846,8 @@ function csRenderCambios() {
         let det = '';
         if (x.tipo === 'nuevo') det = ['etiqueta','menor','mayor','oferta'].filter(k => x.ahora[k] > 0).map(k => '<span style="margin-right:8px;">' + nomCampo[k] + ': <b>' + S(x.ahora[k]) + '</b></span>').join('');
         else if (x.tipo === 'retirado') det = ['etiqueta','menor','mayor','oferta'].filter(k => x.antes[k] > 0).map(k => '<span style="margin-right:8px;">' + nomCampo[k] + ': <s>' + S(x.antes[k]) + '</s></span>').join('');
-        else det = x.campos.map(k => '<span style="margin-right:8px;white-space:nowrap;">' + nomCampo[k] + ': <s style="color:#8A8F99;">' + S(x.antes[k]) + '</s> → <b style="color:' + col + ';">' + S(x.ahora[k]) + '</b></span>').join('');
+        else det = x.campos.map(k => { const ca = k === 'mayor' ? _csComboNom(a, x.cod) : '', cb = k === 'mayor' ? _csComboNom(b, x.cod) : '';
+            return '<span style="margin-right:8px;white-space:nowrap;">' + nomCampo[k] + ': <s style="color:#8A8F99;">' + S(x.antes[k]) + (ca ? ' (' + ca + ')' : '') + '</s> → <b style="color:' + col + ';">' + S(x.ahora[k]) + (cb ? ' (' + cb + ')' : '') + '</b></span>'; }).join('');
         const pct = (x.pa > 0 && x.pb > 0) ? ((x.pb - x.pa) / x.pa * 100) : null;
         const dif = (x.tipo === 'subio' || x.tipo === 'bajo') ? '<div style="font-family:\'Barlow Condensed\',sans-serif;font-size:15px;font-weight:800;color:' + col + ';white-space:nowrap;">' + (x.pb > x.pa ? '+' : '') + (x.pb - x.pa).toFixed(2) + (pct !== null ? ' <span style="font-size:11px;">(' + (pct > 0 ? '+' : '') + pct.toFixed(0) + '%)</span>' : '') + '</div>' : '';
         return '<div class="cs-cmb-item" style="background:#F8F8F8;border-radius:12px;padding:10px 12px;border-left:4px solid ' + col + ';">'
@@ -9862,17 +9883,18 @@ function csExportarCambiosExcel() {
         return [ {v:x.cod,s:'cod'}, {v:desc(x.cod),s:'t'}, {v:x.tienda,s:'t'}, {v:txt[x.tipo],s:'est'},
             {v:ua,s:'n',n:MON}, {v:ub,s:'n',n:MON},
             {v:g(x.antes,'mayor'),s:'n',n:MON}, {v:g(x.ahora,'mayor'),s:'n',n:MON},
+            {v:g(x.antes,'mayor') ? _csComboNom(a, x.cod) : '',s:'c'}, {v:g(x.ahora,'mayor') ? _csComboNom(b, x.cod) : '',s:'c'},
             {v:pctDto(x.antes),s:'pct',n:'0%;-0%;"—"'}, {v:pctDto(x.ahora),s:'pct',n:'0%;-0%;"—"'},
             {v:(ua>0&&ub>0)?ub-ua:0, f:`IF(OR(E${r}=0,F${r}=0),0,F${r}-E${r})`, s:'dif', n:'+#,##0.00;[Red]-#,##0.00;0.00'} ];
     });
     const cnt = t => lista.filter(x=>x.tipo===t).length;
     const hoja = {
         name:'CAMBIOS', tab:XL_C.rojo, titulo:`Cambios de precio — ${a} → ${b} — ${nomTienda}`,
-        sub:`Generado: ${new Date().toLocaleString('es-PE')}  ·  Usa el filtro de la columna TIENDA  ·  UNIT = precio por 1 prenda (oferta, si no unitario, si no etiqueta)  ·  % = descuento sobre etiqueta  ·  COMBO = precio c/u en combo`,
-        widths:[12,42,22,12,12,12,13,13,12,12,15],
-        header:['CÓDIGO','DESCRIPCIÓN','TIENDA','CAMBIO','UNIT. ANTES','UNIT. AHORA','COMBO ANTES','COMBO AHORA','% DTO. ANTES','% DTO. AHORA','SUBIÓ / BAJÓ S/'],
-        hstyle:['hr','hr','hr','hr','h','h','h','h','h','h','hr'], rows, filter:true,
-        total:['TOTAL', {v:n,f:`SUBTOTAL(103,A${r0}:A${rf})`,s:'tot',n:'#,##0" filas"'}, '', '', '', '', '', '', '', '', ''],
+        sub:`Generado: ${new Date().toLocaleString('es-PE')}  ·  Usa el filtro de la columna TIENDA  ·  UNIT = precio por 1 prenda (oferta, si no unitario, si no etiqueta)  ·  % = descuento sobre etiqueta  ·  COMBO = precio c/u en combo  ·  EN QUÉ COMBO = promoción (ej. 2x149.90)`,
+        widths:[12,42,22,12,12,12,13,13,15,15,12,12,15],
+        header:['CÓDIGO','DESCRIPCIÓN','TIENDA','CAMBIO','UNIT. ANTES','UNIT. AHORA','COMBO ANTES','COMBO AHORA','EN QUÉ COMBO ANTES','EN QUÉ COMBO AHORA','% DTO. ANTES','% DTO. AHORA','SUBIÓ / BAJÓ S/'],
+        hstyle:['hr','hr','hr','hr','h','h','h','h','h','h','h','h','hr'], rows, filter:true,
+        total:['TOTAL', {v:n,f:`SUBTOTAL(103,A${r0}:A${rf})`,s:'tot',n:'#,##0" filas"'}, '', '', '', '', '', '', '', '', '', '', ''],
         cf:[
             { ref:`D${r0}:D${rf}`, rules:[
                 { type:'cellIs', operator:'equal', formulae:['"SUBIÓ"'], color:'rojo', bold:true },
@@ -9880,7 +9902,7 @@ function csExportarCambiosExcel() {
                 { type:'cellIs', operator:'equal', formulae:['"NUEVO"'], color:'azul', bold:true },
                 { type:'cellIs', operator:'equal', formulae:['"YA NO ESTÁ"'], color:'gris', bold:true },
                 { type:'cellIs', operator:'equal', formulae:['"CAMBIÓ"'], color:'ambar', bold:true } ] },
-            { ref:`K${r0}:K${rf}`, rules:[
+            { ref:`M${r0}:M${rf}`, rules:[
                 { type:'cellIs', operator:'greaterThan', formulae:['0'], color:'rojoS', bold:true },
                 { type:'cellIs', operator:'lessThan', formulae:['0'], color:'verdeS', bold:true } ] }
         ]
@@ -12018,7 +12040,19 @@ function pModulosRol() {
     #cs-ref-precios .rp-tab td { text-align:left !important; color:#000 !important; background:#fff !important; font:13px Arial, Helvetica, sans-serif !important; }
     #cs-ref-precios .rp-tab td.rp-p, #cs-ref-precios .rp-tab th.rp-p { text-align:right !important; font-weight:bold !important; }
     #cs-ref-precios .rp-cambio { margin-top:8px; background:#FFF3E0; border:1px solid #E65100; color:#BF360C; font:bold 12px Arial, sans-serif; padding:5px 8px; }
-    body.modo-oscuro #cs-ref-precios .rp-lbl { color:#9EC5FF; }`;
+    body.modo-oscuro #cs-ref-precios .rp-lbl { color:#9EC5FF; }
+    /* v27.82: precios más chicos (3 por fila), descripción más chica y sin la línea de código/colores/total → más espacio para el stock */
+    #cs-ref-precios .rp-grid { grid-template-columns:1fr 1fr 1fr !important; gap:4px 6px !important; }
+    #cs-ref-precios .rp-lbl { font-size:11px !important; margin:0 0 1px 1px !important; }
+    #cs-ref-precios .rp-box { font-size:21px !important; padding:1px 5px !important; line-height:1.15 !important; }
+    #cs-ref-precios .rp-tab { margin-top:6px !important; }
+    #cs-ref-precios .rp-tab th { font-size:10.5px !important; padding:2px 4px !important; }
+    #cs-ref-precios .rp-tab td { font-size:11.5px !important; padding:3px 4px !important; }
+    #cs-codigo-texto { display:none !important; }
+    #cs-nombre-articulo { padding:3px 10px 0 !important; }
+    #cs-nombre-texto { font-size:15px !important; line-height:1.1 !important; letter-spacing:0.5px !important; }
+    #cs-version-badge { display:none !important; }
+    #cs-price-panel { padding-top:4px !important; }`;
     document.head.appendChild(st);
     const f2 = v => (Number(v) || 0).toFixed(2);
     const esc = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]));
@@ -12070,7 +12104,7 @@ function pModulosRol() {
         const ambos = pp.style.display !== 'none' && ps.style.display !== 'none';
         // con los dos visibles: precios con su altura (máx. 62%) y el stock ocupa el resto con su propio desplazamiento
         pp.style.flex = ambos ? '0 1 auto' : '1';
-        pp.style.maxHeight = ambos ? '62%' : '';
+        pp.style.maxHeight = ambos ? '46%' : '';   // v27.82: más espacio para el stock
         pp.style.paddingBottom = ambos ? '4px' : '';
         ps.style.minHeight = ambos ? '150px' : '0';
         ps.style.borderTop = ambos ? '2px solid #1F3864' : '';
