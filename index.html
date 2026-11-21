@@ -1638,7 +1638,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.82 — 21/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.83 — 21/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2087,7 +2087,7 @@
             <!-- Versión -->
             <!-- Historial de lecturas -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.82 — 21/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.83 — 21/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -8069,7 +8069,7 @@ function csBuscar() {
             const _nomTxtNS = document.getElementById('cs-nombre-texto');
             const _codTxtNS = document.getElementById('cs-codigo-texto');
             if (_nomDivNS && _nomTxtNS) {
-                _nomTxtNS.textContent = (precioData.desc || codBusq) + ' ⚠ Sin stock';
+                _nomTxtNS.innerHTML = '<span style="color:#C62828;margin-right:6px;">' + codBusq + '</span>' + String(precioData.desc || '').replace(/[&<>]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[c])) + ' ⚠ Sin stock';   // v27.83
                 if (_codTxtNS) _codTxtNS.textContent = codBusq;
                 _nomDivNS.style.display = 'block';
             }
@@ -8104,7 +8104,7 @@ function csBuscar() {
     const _nomTxt2 = document.getElementById('cs-nombre-texto');
     const _codTxt2 = document.getElementById('cs-codigo-texto');
     if (_nomDiv2 && _nomTxt2) {
-        _nomTxt2.textContent = data.desc || '';
+        _nomTxt2.innerHTML = '<span style="color:#C62828;margin-right:6px;">' + key + '</span>' + String(data.desc || '').replace(/[&<>]/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[c]));   // v27.83: código al costado
         if (_codTxt2) _codTxt2.textContent = key + ' | ' + data.colors.length + ' color(es) | TOTAL: ' + tot;
         _nomDiv2.style.display = 'block';
     }
