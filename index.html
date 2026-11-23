@@ -1638,7 +1638,7 @@
     </div>
     <div style="position:relative;z-index:1;width:100%;display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 0 4px;">
         <!-- Versión y fecha (arriba) -->
-        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.84 — 22/Nov/2026</div>
+        <div id="sel-version" style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">v27.86 — 23/Nov/2026</div>
         <!-- Logo -->
         <!-- v27.30: logo oficial PIEERS en lugar de la "P" y del texto "PIEERS PRO" -->
         <div id="p-logo-inicio" style="background:#000;border-radius:18px;padding:16px 22px;box-shadow:0 10px 28px rgba(0,0,0,0.28);animation:pFloat 4.2s ease-in-out infinite;">
@@ -2087,7 +2087,7 @@
             <!-- Versión -->
             <!-- Historial de lecturas -->
             <div id="cs-version-badge" style="text-align:center;padding:6px;margin-top:4px;">
-                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.84 — 22/Nov/2026</span>
+                <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#999;letter-spacing:1px;text-transform:uppercase;">PIEERS PRO v27.86 — 23/Nov/2026</span>
             </div>
             <!-- Nombre de promo y libro debajo de los precios -->
             <div id="cs-promo-info-abajo" style="margin-top:6px;display:none;">
@@ -10839,7 +10839,7 @@ function syAbrirBases() {
     let h = '<div class="sy-card"><div class="sy-h">' + (ver ? '📦 Última versión enviada' : '⚪ Aún no se enviaron bases') + '</div>'
         + (ver ? '<div class="sy-p">Por <b>' + syEsc(syMeta.basesPorN || '') + '</b> · ' + new Date(ver).toLocaleString('es-PE') + (ver === mia ? ' · ✅ este celular la tiene' : ' · 🟠 este celular no la tiene') + '</div>' : '')
         + '<div class="sy-p">Incluye: base de stock (Consultar Precio y Stock), memorándums/libros de precios, precios por mayor y la comparación de cambios de precio.</div>'
-        + '<div class="sy-p" style="color:#1565C0;"><b>Automático:</b> cuando un supervisor o administrador carga una base de <b>stock</b> o un <b>memorándum</b>, se envía sola y TODOS los demás celulares la reciben solos (también tus otros equipos de administrador), sin preguntar ni recargar.</div></div>';
+        + '<div class="sy-p" style="color:#1565C0;"><b>Automático:</b> cuando un supervisor o administrador carga una base de <b>stock</b>, un <b>memorándum</b> o los <b>precios por mayor</b>, se envía sola y TODOS los demás celulares la reciben solos (también tus otros equipos de administrador), sin preguntar ni recargar.</div></div>';
     if (ver && ver !== mia) h += '<button class="sy-btn" onclick="syBasesRecibir()">📥 RECIBIR BASES AHORA</button>';
     if (pPuede('publicar')) h += '<div class="sy-card"><div class="sy-h">📤 Enviar MIS bases a todos</div><div class="sy-p">Tamaño aprox.: ' + (tam / 1048576).toFixed(1) + ' MB. Los demás celulares reciben un aviso para actualizar.</div>'
         + '<button class="sy-btn"' + (tam ? '' : ' disabled') + ' onclick="syBasesEnviar()">📤 ENVIAR A TODOS</button></div>';
@@ -10847,7 +10847,8 @@ function syAbrirBases() {
 }
 async function syBasesEnviar(silencioso) {
     if (!pPuede('publicar')) return syDenegar();
-    if (!silencioso) showLoading('Enviando bases a la nube...');
+    const boton = silencioso === 'boton'; if (boton) silencioso = false;   // v27.86: botón del inicio → envía directo, sin abrir ventana
+    if (!silencioso) showLoading('Enviando stock, memorándum y precio por mayor...');
     try {
         const data = {};
         SY_BASES_KEYS.forEach(k => { const v = localStorage.getItem(k); if (v) data[k.replace(/\./g, '_')] = v; });
@@ -10857,7 +10858,7 @@ async function syBasesEnviar(silencioso) {
         try { if (typeof syTdaEmpaquetar === 'function') await syReq('PUT', 'bases/tda', await syTdaEmpaquetar()); } catch(e) {}
         _syS(SY_K.basesver, ver);
         await syReq('PATCH', 'meta', { basesVer: ver, basesPor: sySes.id, basesPorN: sySes.n, basesDev: _pDevId() });
-        if (!silencioso) { hideLoading(); syAbrirBases(); showToast('✅ Bases enviadas. Los demás celulares recibirán el aviso.', '#2E7D32', 3500); }
+        if (!silencioso) { hideLoading(); if (!boton) syAbrirBases(); showToast('✅ Enviado a todos: stock, memorándum y precio por mayor. Los demás celulares lo reciben solos.', '#2E7D32', 4000); }
         else showToast('☁️ Bases y precios enviados a todos los celulares', '#1565C0', 3000);
         return true;
     } catch(e) { if (!silencioso) hideLoading(); showToast('❌ No se pudo enviar a la nube: ' + e.message, '#B71C1C', 4000); return false; }
@@ -12073,13 +12074,16 @@ function pModulosRol() {
         const p = (typeof csPreciosDB !== 'undefined' && csPreciosDB[cod]) || null;
         const m = (typeof csPreciosMayorDB !== 'undefined' && csPreciosMayorDB[cod]) || null;
         if (!p && !m) { el.innerHTML = ''; return; }
-        const etq = (p && p.etiqueta) || (m && m.etiqueta) || 0;
-        const xMay = parseFloat((document.getElementById('cs-p-mayor-val') || {}).textContent) || 0;
+        // v27.85: Precio x Mayor SOLO del archivo de precios por mayor y del MISMO código.
+        // (antes se leía de la pantalla antes de actualizarla → mostraba el del artículo anterior)
+        const etq = (m && m.etiqueta > 0) ? m.etiqueta : ((p && p.etiqueta) || 0);
+        const xMay = (m && m.mayor > 0) ? m.mayor : 0;
+        const ofMay = (m && String(m.tipo || '').toUpperCase() === 'OF' && m.oferta > 0) ? m.oferta : 0;   // producto de OFERTA según precios por mayor
         const cajas = [['Precio x Etiqueta', '#FFFF99', etq]];
         if (!(p && p.esOferta)) cajas.push(['Precio x Menor', '#FF8000', (p && p.menor) || 0]);
         if (p && p.mayor > 0 && !p.esOferta) cajas.push(['Precio x Combo', '#99CCFF', p.mayor]);
         cajas.push(['Precio x Mayor', '#00FFFF', xMay]);
-        cajas.push(['Precio x Oferta', '#00FF00', (p && p.oferta) || 0]);
+        cajas.push(['Precio x Oferta', '#00FF00', ofMay || (p && p.oferta) || 0]);
         let h = '<div class="rp-grid">' + cajas.map(([l, c, v]) => '<div><div class="rp-lbl">' + l + '</div><div class="rp-box" style="background:' + c + ';">' + f2(v) + '</div></div>').join('') + '</div>';
         // Promociones y memorándum
         const filas = [], vis = new Set();
@@ -12092,6 +12096,7 @@ function pModulosRol() {
             // v27.73: antes se leía del texto y fallaba con colores que tienen "S" (ROSA, SKY…)
             filas.push(['PROMO COLOR' + (pc.dataset.color ? ' · ' + pc.dataset.color : ''), parseFloat(pc.dataset.precio) || 0, (p && p.libros && p.libros[p.libros.length - 1]) || '']);
         }
+        if (ofMay && !filas.some(f => /OFERTA/i.test(f[0]))) filas.push(['OFERTA', ofMay, 'Precios por mayor']);
         const pct = v => (etq > 0 && v > 0 && v < etq) ? '-' + Math.round((1 - v / etq) * 100) + '%' : '';
         if (filas.length) h += '<table class="rp-tab"><tr><th>Promoción</th><th class="rp-p">%</th><th class="rp-p">Precio</th><th>Memorándum</th></tr>'
             + filas.map(([n, v, l]) => '<tr><td title="' + esc(n) + '">' + esc(abrev(n)) + '</td><td class="rp-p" style="color:#C62828 !important;">' + pct(v) + '</td><td class="rp-p">' + (v > 0 ? f2(v) : '—') + '</td><td>' + esc(l) + '</td></tr>').join('') + '</table>';
@@ -14610,7 +14615,7 @@ async function syTdaDesempaquetar(pack) {
         + '<span id="p-nube-flecha" style="font-size:16px;transition:transform .2s;">▼</span></button>'
         + '<div id="p-nube-panel">'
         + '<button class="p-nube-op" id="p-op-bases" onclick="pNubeHomeIr(\'bases\')"><span style="font-size:22px;">📁</span><span>Bases compartidas<small>Subir y cargar stock, guías y memorándums</small></span></button>'
-        + '<button class="p-nube-op" id="p-op-envbases" onclick="pNubeHomeIr(\'envbases\')"><span style="font-size:22px;">🔄</span><span>Enviar / recibir stock y memorándum<small>Ver la versión que tiene cada celular y reenviarla a todos</small></span></button>'
+        + '<button class="p-nube-op" id="p-op-envbases" onclick="pNubeHomeIr(\'envbases\')"><span style="font-size:22px;">🔄</span><span>Enviar stock, memorándum y precio por mayor<small>Un toque: se envía a todos los celulares al instante</small></span></button>'
         + '<button class="p-nube-op" id="p-op-conteo" onclick="pNubeHomeIr(\'conteo\')"><span style="font-size:22px;">📋</span><span>Conteo compartido<small>Contar el inventario entre varios celulares</small></span></button>'
         + '<button class="p-nube-op" id="p-op-alm" onclick="pNubeHomeIr(\'alm\')"><span style="font-size:22px;">🏪</span><span>Almacén compartido<small>Ingresos y retiros del almacén en todos los celulares</small></span></button>'
         + '<button class="p-nube-op" id="p-op-nube" onclick="pNubeHomeIr(\'nube\')"><span style="font-size:22px;">👥</span><span>Nube y usuarios<small>Conectar, iniciar sesión, usuarios y permisos</small></span></button>'
@@ -14637,7 +14642,11 @@ function pNubeHomeIr(q) {
     if (!syActivo()) { showToast('☁️ Primero conéctate a la nube e inicia sesión', '#1565C0', 3000); return syAbrirNube(); }
     if (q === 'bases') return syAbrirCarpetas();
     if (q === 'conteo') return syAbrirConteo();
-    if (q === 'envbases') return syAbrirBases();
+    if (q === 'envbases') {   // v27.86: un toque = enviar ya (administrador/supervisor) o recibir ya (los demás)
+        if (pPuede('publicar')) return syBasesEnviar('boton');
+        if ((syMeta.basesVer || 0) > (_syJ(SY_K.basesver, 0) || 0)) { showToast('📥 Recibiendo bases…', '#1565C0'); return syBasesAutoRecibir(); }
+        return showToast('✅ Ya tienes las últimas bases', '#2E7D32');
+    }
     if (q === 'alm') return syAbrirAlm();
 }
 (function() {
